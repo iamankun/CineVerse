@@ -1,7 +1,7 @@
 {
   "extends": [
     "development",
-    "production",
+    "production"
   ],
   "hints": {
     "no-inline-styles": "on"

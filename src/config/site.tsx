@@ -14,8 +14,8 @@ import {
 import { TbFolder, TbFolderFilled } from "react-icons/tb";
 
 export const siteConfig: SiteConfigType = {
-  name: "Cinextma",
-  description: "Your only choice for a free movies and tv shows streaming website.",
+  name: "CineVerse",
+  description: "Vũ trụ Điện Ảnh cho Gen",
   favicon: "/favicon.ico",
   navItems: [
     {
@@ -128,7 +128,10 @@ export const siteConfig: SiteConfigType = {
     ],
   },
   socials: {
-    github: "https://github.com/wisnuwirayuda15/cinextma",
+    website: "https://cineverse.ankun.dev",
+    youtube: "https://youtube.com/@ankun_music",
+    facebook: "https://facebook.com/ankunstudio",
+
   },
 };
 
