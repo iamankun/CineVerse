@@ -1,59 +1,65 @@
-"use client";
+"uses client";
 
 import useBreakpoints from "@/hooks/useBreakpoints";
 import { Accordion, AccordionItem, Link } from "@heroui/react";
+import { title } from "process";
+import { RiZzzFill } from "react-icons/ri";
+import z from "zod";
 
 const FAQS = [
   {
-    title: "🤔 What is Cinextma?",
+    title: "🤔 CineVerse là gì?",
     description:
-      "Just like every other website, Cinextma is also a streaming site that helps to easily access all the TV shows and movies we wanted, without spending hours searching for them.",
+      "Giống như mọi trang web khác, Cinextma cũng là một trang web phát trực tuyến giúp bạn dễ dàng truy cập tất cả các chương trình truyền hình và phim ảnh mà bạn muốn mà không cần mất hàng giờ tìm kiếm.",
   },
   {
-    title: "❓ So what do we actually do?",
+    title: "❓ Vậy chúng tôi thực sự làm gì?",
     description:
-      "Well, let me tell you what we don’t do: we definitely don’t illegally host our files. We do not store any copyright-protected content on our website. Any linked content is stored only in third-party websites. This is a promotional website only. All files placed here are for introducing purpose. We highly ENCOURAGE users to BUY the CDs or DVDs of the movie or the music they like.",
+      "Để tôi nói cho bạn biết những gì chúng tôi không làm: chúng tôi chắc chắn không lưu trữ dữ liệu bất hợp pháp. Chúng tôi không lưu trữ bất kỳ nội dung nào được bảo vệ bản quyền trên trang web của mình. Mọi nội dung được liên kết chỉ được lưu trữ trên các trang web của bên thứ ba. Đây chỉ là trang web quảng cáo. Tất cả các tệp được đặt ở đây chỉ nhằm mục đích giới thiệu. Chúng tôi KHUYẾN KHÍCH người dùng MUA đĩa CD hoặc DVD của bộ phim hoặc nhạc mà họ thích.",
   },
   {
-    title: "🚫 I cannot watch video because of ads",
+    title: "🚫 Tôi không thể xem video vì quảng cáo",
     description: (
       <p>
-        We are very sorry that we can't help you with that. We have no control in the ads being
-        served. Don't download anything in the popups. If you don't want to be annoyed. We highly
-        recommend subscribing to a legal streaming service that you can afford (or use an adblocker
-        like{" "}
+        Chúng tôi rất tiếc vì không thể giúp bạn. Chúng tôi không kiểm soát được quảng cáo được
+        phát. Vui lòng không tải xuống bất cứ điều gì trong cửa sổ bật lên. Nếu bạn không muốn bị làm phiền. Chúng tôi thực sự khuyên bạn nên đăng ký một dịch vụ phát trực tuyến hợp pháp mà bạn có thể chi trả được (hoặc sử dụng trình chặn quảng cáo như {" "}
+
         <Link href="https://ublockorigin.com/" target="_blank" className="font-bold">
+
           uBlock Origin
-        </Link>{" "}
-        or{" "}
+        </Link>{" "} or {" "}
+
         <Link href="https://adblockplus.org/" target="_blank" className="font-bold">
+
           Adblock Plus
         </Link>
         ).
       </p>
     ),
   },
+
   {
-    title: "🐌 Streaming speed is slow or all videos do not play",
+    title: "🐌 Tốc độ phát trực tuyến chậm hoặc tất cả video đều không phát",
     description:
-      "When you go on the page with the episode, in 99% of the cases there is a video player. What you have to do is click the Play button, of course. If it does not work (Don’t be judgmental! Everybody makes mistakes!), just click on the Servers you see on the top right of your device. You will get a list of servers [Vidlink, VidSrc etc.] Try choosing different server, it will definitely solve the problem.",
+
+      "Khi bạn vào trang có tập phim, trong 99% trường hợp sẽ có trình phát video. Tất nhiên, bạn phải nhấp vào nút Phát. Nếu nó không hoạt động (Đừng phán xét! Ai cũng mắc lỗi!), chỉ cần nhấp vào Máy chủ bạn thấy ở góc trên bên phải thiết bị. Bạn sẽ nhận được một danh sách của các máy chủ [Vidlink, VidSrc, v.v.] Hãy thử chọn một máy chủ khác, chắc chắn vấn đề sẽ được giải quyết.",
   },
   {
-    title: "😁 I want to download video",
+    title: "😁 Tôi muốn tải xuống video",
     description:
-      "Since we don't store any files, so we don't have any download feature here. All files found on this site have been collected from various sources across the web and are believed to be in the public domain.",
+      "Vì chúng tôi không lưu trữ bất kỳ tệp nào, nên chúng tôi không có tính năng tải xuống nào ở đây. Tất cả các tệp được tìm thấy trên trang web này đều được thu thập từ nhiều nguồn khác nhau trên web và được cho là thuộc phạm vi công cộng.",
   },
   {
-    title: "😟 Is it safe to stream in this website?",
+    title: "😟 Phát trực tuyến trên trang web này có an toàn không?",
     description:
-      "This website is undoubtedly safer to stream, however downloading, uploading is illegal. You will not get into any trouble while using our website. It's highly not recommended to download the files and share them to the public, It might get you in trouble.",
+      "Trang web này chắc chắn an toàn hơn để phát trực tuyến, tuy nhiên việc tải xuống, tải lên là bất hợp pháp. Bạn sẽ không gặp bất kỳ rắc rối nào khi sử dụng trang web của chúng tôi. Chúng tôi không khuyến khích tải xuống các tệp và chia sẻ chúng với công chúng, điều này có thể gây ra rắc rối cho bạn.",
   },
 ];
 
 const FAQ = () => {
   const { mobile } = useBreakpoints();
 
-  return (
+  return RiZzzFill(
     <Accordion variant="splitted" isCompact={mobile}>
       {FAQS.map(({ title, description }) => (
         <AccordionItem key={title} aria-label={title} title={title}>

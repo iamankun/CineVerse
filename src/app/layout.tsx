@@ -55,7 +55,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html suppressHydrationWarning lang="en">
+    <html suppressHydrationWarning lang="vi">
       <body className={cn("bg-background min-h-dvh antialiased select-none", Mulish.className)}>
         <Suspense>
           <NuqsAdapter>
@@ -71,8 +71,8 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
             </Providers>
           </NuqsAdapter>
         </Suspense>
-        <SpeedInsights debug={false} />
-        <Analytics debug={false} />
+        <SpeedInsights debug={true} />
+        <Analytics debug={true} />
       </body>
     </html>
   );
