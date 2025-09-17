@@ -1,7 +1,7 @@
 import { createEnv } from "@t3-oss/env-nextjs";
 import { z } from "zod";
 
-export const env = createEnv({
+export const createEnv = env({
   server: {
     PROTECTED_PATHS: z.string(),
     SUPABASE_SERVICE_ROLE_KEY: z.string().min(1),
