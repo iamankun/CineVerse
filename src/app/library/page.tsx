@@ -7,7 +7,7 @@ const UnauthorizedNotice = dynamic(() => import("@/components/ui/notice/Unauthor
 const LibraryList = dynamic(() => import("@/components/sections/Library/List"));
 
 export const metadata: Metadata = {
-  title: `Library | ${siteConfig.name}`,
+  title: `Rạp phim | ${siteConfig.name}`,
 };
 
 const getUser = cache(async () => {
@@ -28,8 +28,8 @@ const LibraryPage: NextPage = async () => {
     <Suspense>
       {error || !user ? (
         <UnauthorizedNotice
-          title="Sign in to access your library"
-          description="Create a free account to save your favorite movies and TV shows!"
+          title="Bạn phải đăng nhập vào thư viện"
+          description="Nếu chưa có tài khoản hãy tham gia tạo ngay một tài khoản cho bạn!"
         />
       ) : (
         <LibraryList />

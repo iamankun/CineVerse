@@ -1,17 +1,17 @@
 import { createEnv } from "@t3-oss/env-nextjs";
 import { z } from "zod";
 
-export const createEnv = env({
+export const env = createEnv({
   server: {
-    PROTECTED_PATHS: z.string(),
+    PROTECTED_PATHS: z.string().optional(),
     SUPABASE_SERVICE_ROLE_KEY: z.string().min(1),
   },
   client: {
     NEXT_PUBLIC_TMDB_ACCESS_TOKEN: z.string().min(1),
-    NEXT_PUBLIC_SUPABASE_URL: z.url().min(1),
+    NEXT_PUBLIC_SUPABASE_URL: z.string().url().min(1),
     NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: z.string().min(1),
-    NEXT_PUBLIC_CAPTCHA_SITE_KEY: z.string().min(1),
-    NEXT_PUBLIC_AVATAR_PROVIDER_URL: z.url().min(1),
+    NEXT_PUBLIC_CAPTCHA_SITE_KEY: z.string().optional(),
+    NEXT_PUBLIC_AVATAR_PROVIDER_URL: z.string().url().optional(),
   },
   experimental__runtimeEnv: {
     NEXT_PUBLIC_TMDB_ACCESS_TOKEN: process.env.NEXT_PUBLIC_TMDB_ACCESS_TOKEN,

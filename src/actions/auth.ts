@@ -82,7 +82,7 @@ const signInWithEmailAction: AuthAction<LoginFormInput> = async (data, supabase)
     console.error("Username check error:", usernameError);
     return {
       success: false,
-      message: `Database error. Could not get username for ${user.user.email}.`,
+      message: `CineVerse báo lỗi. Không thể tọa tài khoản với Email: ${user.user.email}.`,
     };
   }
 
@@ -99,7 +99,7 @@ const signUpAction: AuthAction<RegisterFormInput> = async (data, supabase) => {
 
   if (usernameError) {
     console.error("Username check error:", usernameError);
-    return { success: false, message: "Database error. Could not check username availability." };
+    return { success: false, message: "CineVerse báo lỗi. Tài khoản không khớp." };
   }
 
   if (usernameExists) {
@@ -116,7 +116,11 @@ const signUpAction: AuthAction<RegisterFormInput> = async (data, supabase) => {
   });
 
   if (signUpError) return { success: false, message: signUpError.message };
-  if (!authData.user) return { success: false, message: "User not created. Please try again." };
+  if (!authData.user)
+    return {
+      success: false,
+      message: "Bạn không thể tạo tài khoản, có lẽ đã xảy ra vấn đề. Hãy thử lại ngay!",
+    };
 
   // Insert profile
   const { error: profileError } = await supabase
@@ -127,13 +131,13 @@ const signUpAction: AuthAction<RegisterFormInput> = async (data, supabase) => {
     console.error("Profile creation error:", profileError);
     // This is a critical error. The user exists in auth but not in profiles.
     // It's better to return a generic error and log it for investigation.
-    return { success: false, message: "Could not create user profile. Please contact support." };
+    return { success: false, message: "Không thể tạo hồ sơ người dùng. Vui lòng liên hệ hỗ trợ." };
   }
 
   return {
     success: true,
     message:
-      "Sign up successful. Please check your email for verification. Check spam folder if you don't see it.",
+      "Thông tin đăng ký đã ghi nhận thành công rồi bạn ơi, mở hộp thư xem vé xuất hành đến CineVerse (Xác minh)",
   };
 };
 
@@ -149,7 +153,7 @@ const sendResetPasswordEmailAction: AuthAction<ForgotPasswordFormInput> = async 
 
   return {
     success: true,
-    message: `We have sent an email to ${data.email}. Check spam folder if you don't see it.`,
+    message: `CineVerse đã gửi thư điện tử đến ${data.email}. Kiểm tra spam nếu mail chưa có.`,
   };
 };
 
@@ -160,7 +164,10 @@ const resetPasswordAction: AuthAction<ResetPasswordFormInput> = async (data, sup
 
   if (error) return { success: false, message: error.message };
 
-  return { success: true, message: "Password has been reset successfully." };
+  return {
+    success: true,
+    message: "Mật khẩu mới đã phát hành. Từ nay hãy nhớ lấy mật khẩu mới này.",
+  };
 };
 
 export const signIn = createAuthAction(LoginFormSchema, signInWithEmailAction);
@@ -177,5 +184,5 @@ export const signOut = async (): ActionResponse => {
 
   if (error) return { success: false, message: error.message };
 
-  return { success: true, message: "You have been signed out." };
+  return { success: true, message: "Bạn đã đăng xuất khỏi vũ trụ" };
 };

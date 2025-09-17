@@ -23,7 +23,9 @@
     ],
     "paths": {
       "@/*": [
-        "./src/*"
+        "./src/*",
+        "./public/*",
+        "./supabase/"
       ]
     },
     "target": "ES2017"

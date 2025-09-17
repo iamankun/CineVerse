@@ -107,7 +107,7 @@ const AuthLoginForm: React.FC<AuthFormProps> = ({ setForm }) => {
             Forgot password?
           </Link>
         </div>
-        {isVerifying && (
+        {isVerifying && env.NEXT_PUBLIC_CAPTCHA_SITE_KEY && (
           <Turnstile
             className="flex h-fit w-full items-center justify-center"
             siteKey={env.NEXT_PUBLIC_CAPTCHA_SITE_KEY}

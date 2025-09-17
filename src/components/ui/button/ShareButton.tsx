@@ -32,7 +32,7 @@ interface ShareButtonProps {
   type?: ContentType;
 }
 
-const HASTAGS = ["cinextma", "free", "movies", "streaming"];
+const HASTAGS = ["CineVerse", "free", "movies", "streaming"];
 
 const SHARE_BUTTONS = [
   {
@@ -79,7 +79,7 @@ const SHARE_BUTTONS = [
 
 const ShareButton: React.FC<ShareButtonProps> = ({ title, id, type = "movie" }) => {
   const url = `https://${location.hostname}/${type}/${id}`;
-  const description = `Check out and stream ${title} on Cinextma for FREE!!`;
+  const description = `Kiểm tra đầu ra và trực tiếp ${title} trên CineVerse cho Gen!!`;
 
   const [opened, { open, close }] = useDisclosure(false);
 

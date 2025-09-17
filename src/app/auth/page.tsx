@@ -3,7 +3,7 @@ import { siteConfig } from "@/config/site";
 import { Metadata, NextPage } from "next";
 
 export const metadata: Metadata = {
-  title: `Welcome Back to ${siteConfig.name}`,
+  title: `Chào mừng bạn trở lại CineVerse ${siteConfig.name}`,
 };
 
 const AuthPage: NextPage = () => {

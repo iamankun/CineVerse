@@ -119,7 +119,7 @@ const AuthRegisterForm: React.FC<AuthFormProps> = ({ setForm }) => {
           startContent={<LockPassword className="text-xl" />}
           isDisabled={isSubmitting || isVerifying}
         />
-        {isVerifying && (
+        {isVerifying && env.NEXT_PUBLIC_CAPTCHA_SITE_KEY && (
           <Turnstile
             className="flex h-fit w-full items-center justify-center"
             siteKey={env.NEXT_PUBLIC_CAPTCHA_SITE_KEY}
