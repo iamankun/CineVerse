@@ -2,8 +2,9 @@
   "name": "cineverse",
   "version": "1.2.0",
   "private": true,
+  "type": "module",
   "engines": {
-    "node": "<=22.0.0"
+    "node": "^22.18.0"
   },
   "scripts": {
     "dev": "next dev --turbopack",
@@ -48,7 +49,8 @@
     "use-long-press": "^3.3.0",
     "vaul": "^1.1.2",
     "yet-another-react-lightbox": "^3.25.0",
-    "zod": "^4.1.1"
+    "zod": "^4.1.1",
+    "npm": "^10.9.3"
   },
   "devDependencies": {
     "@iconify/react": "^6.0.0",

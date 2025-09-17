@@ -4,12 +4,12 @@ const ContinueWatching = dynamic(() => import("@/components/sections/Home/Contin
 const HomePageList = dynamic(() => import("@/components/sections/Home/List"));
 
 const HomePage: NextPage = () => {
-  return (
-    <div className="flex flex-col gap-3 md:gap-8">
-      <ContinueWatching />
-      <HomePageList />
-    </div>
-  );
+    return (
+        <div className="flex flex-col gap-3 md:gap-8">
+            <ContinueWatching />
+            <HomePageList />
+        </div>
+    );
 };
 
 export default HomePage;
