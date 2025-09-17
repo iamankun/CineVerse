@@ -18,6 +18,9 @@
     "incremental": true,
     "plugins": [
       {
+        "name": "cineverse"
+      },
+      {
         "name": "next"
       }
     ],

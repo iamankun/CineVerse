@@ -1,6 +1,7 @@
 # CineVerse - Vũ Trụ Điện Ảnh
 
-<div style="text-align:center">
+An Kun Studio hân hạnh giới thiệu dự án CineVerse - Vũ trụ điện ảnh
+[Bé L đang chờ bạn đến](https://github.com/iamankun/CineVerse/blob/main/public/ava.gif?raw=true)
 
 ![Ảnh chụp màn hình Mockup CINEXTMA](./src/public/img/mockup.png)
 
@@ -13,7 +14,7 @@
 
 - Với các tab như Anime, Phim mới ra rạp, phim bộ, phim lẻ... và nội dung gốc sạch, rõ ràng, không chèn linh tinh như quảng cáo, cá độ, luôn luôn cập nhật mới.
 
-- Nội dung lồng tiếng:
+         Nội dung lồng tiếng:
 
 - Chỉ định quốc gia: Vi_VN
 - Ngôn ngữ mã nguồn: React, Node, Typerscript, Javascript, hỗ trợ tùy chỉnh dữ liệu vùng quốc gia mặc định khi phiên bản toàn cầu
