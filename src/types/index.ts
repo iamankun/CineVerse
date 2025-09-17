@@ -57,7 +57,9 @@ export type SiteConfigType = {
     icon: React.ReactNode;
   }[];
   socials: {
-    github: string;
+    website: string;
+    facebook: string;
+    youtube: string;
   };
 };
 
@@ -66,13 +68,13 @@ export type PlayersProps = {
   source: `https://${string}`;
   recommended?: boolean;
   fast?: boolean;
-  ads?: boolean;
+  ads?: false;
   resumable?: boolean;
 };
 
 export type Settings = {
   theme: "light" | "dark" | "system";
-  showSpecialSeason: boolean;
-  disableAnimation: boolean;
-  saveWatchHistory: boolean;
+  showSpecialSeason: true;
+  disableAnimation: false;
+  saveWatchHistory: true;
 };

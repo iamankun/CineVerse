@@ -1,13 +1,13 @@
-import { Poppins as FontPoppins, Saira as FontSaira } from "next/font/google";
+import { Mulish as FontMulish, Dosis as FontDosis } from "next/font/google";
 
-export const Poppins = FontPoppins({
+export const Mulish = FontMulish({
   subsets: ["latin-ext"],
   weight: ["400", "500", "600", "700"],
-  variable: "--font-poppins",
+  variable: "--font-mulish",
 });
 
-export const Saira = FontSaira({
+export const Dosis = FontDosis({
   subsets: ["latin-ext"],
   weight: ["400", "500", "600", "700"],
-  variable: "--font-saira",
+  variable: "--font-dosis",
 });

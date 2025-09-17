@@ -3,19 +3,19 @@ import * as z from "zod";
 const AuthFormSchema = z.object({
   username: z
     .string()
-    .min(3, "Username must be at least 3 characters long")
-    .max(25, "Username must not exceed 20 characters"),
-  email: z.email("Invalid email address"),
-  password: z.string().min(8, "Password must be at least 8 characters long"),
+    .min(3, "Tài khoản của bạn cần đủ hơn 3 chữ")
+    .max(25, "Tài khoản của bạn cần tối thiểu 25 chữ"),
+  email: z.email("Địa chỉ Emual của bạn phải có để xác minh"),
+  password: z.string().min(5, "Mật khẩu nhớ lưu lại nha đồng chí"),
   loginPassword: z.string(),
-  confirm: z.string().min(1, "Password confirmation is required"),
-  captchaToken: z.string().min(500, "Token too short").max(5000, "Token too long").optional(),
+  confirm: z.string().min(1, "Xác nhận mật khẩu"),
+  captchaToken: z.string().min(500, "Đoạn mã ngắn").max(5000, "Đoạn mã dài").optional(),
 });
 
 const RegisterFormSchema = AuthFormSchema.omit({ loginPassword: true }).refine(
   (data) => data.password === data.confirm,
   {
-    message: "Passwords do not match",
+    message: "Mật khẩu chưa đúng nha, oánh lại đi",
     path: ["confirm"],
   },
 );
@@ -33,7 +33,7 @@ const ResetPasswordFormSchema = AuthFormSchema.pick({
   confirm: true,
   captchaToken: true,
 }).refine((data) => data.password === data.confirm, {
-  message: "Passwords do not match",
+  message: "Mật khẩu chưa đúng nha, oánh lại đi",
   path: ["confirm"],
 });
 

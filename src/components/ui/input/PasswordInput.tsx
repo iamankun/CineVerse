@@ -24,13 +24,13 @@ const getStrength = (password: string): number => {
   return Math.max(100 - (100 / (requirements.length + 1)) * multiplier, 10);
 };
 
-const PasswordRequirement = memo(({ meets, label }: { meets: boolean; label: string }) => {`n  PasswordRequirement.displayName = "PasswordRequirement";
+const PasswordRequirement = memo(({ meets, label }: { meets: boolean; label: string }) => {
   return (
     <p className={`mt-1.5 flex items-center text-small ${meets ? "text-success" : "text-danger"}`}>
       {meets ? <Check className="text-xl" /> : <Close className="scale-150 text-xl" />}
       <span className="ml-2.5">{label}</span>
     </p>
-  );`n});`n`nPasswordRequirement.displayName = "PasswordRequirement";
+  );
 });
 
 type PasswordInputProps = Omit<React.ComponentProps<typeof Input>, "type" | "endContent"> & {
@@ -98,7 +98,7 @@ const PasswordInput = forwardRef<HTMLInputElement, PasswordInputProps>(
           </div>
         )}
       </div>
-    );`n});`n`nPasswordRequirement.displayName = "PasswordRequirement";
+    );
   },
 );
 

@@ -19,31 +19,31 @@ export const siteConfig: SiteConfigType = {
   favicon: "/favicon.ico",
   navItems: [
     {
-      label: "Home",
+      label: "",
       href: "/",
       icon: <GoHome className="size-full" />,
       activeIcon: <GoHomeFill className="size-full" />,
     },
     {
-      label: "Discover",
+      label: "",
       href: "/discover",
       icon: <IoCompassOutline className="size-full" />,
       activeIcon: <IoCompass className="size-full" />,
     },
     {
-      label: "Search",
+      label: "",
       href: "/search",
       icon: <BiSearchAlt2 className="size-full" />,
       activeIcon: <BiSolidSearchAlt2 className="size-full" />,
     },
     {
-      label: "Library",
+      label: "n",
       href: "/library",
       icon: <TbFolder className="size-full" />,
       activeIcon: <TbFolderFilled className="size-full" />,
     },
     {
-      label: "About",
+      label: "",
       href: "/about",
       icon: <IoInformationCircleOutline className="size-full" />,
       activeIcon: <IoInformationCircle className="size-full" />,
@@ -66,61 +66,61 @@ export const siteConfig: SiteConfigType = {
   queryLists: {
     movies: [
       {
-        name: "Today's Trending Movies",
+        name: "Tóp tren-đì (Trendy)",
         query: () => tmdb.trending.trending("movie", "day"),
         param: "todayTrending",
       },
       {
-        name: "This Week's Trending Movies",
+        name: "Điện Ảnh - Tuần này",
         query: () => tmdb.trending.trending("movie", "week"),
         param: "thisWeekTrending",
       },
       {
-        name: "Popular Movies",
+        name: "Điện Ảnh - Phổ biến",
         query: () => tmdb.movies.popular(),
         param: "popular",
       },
       {
-        name: "Now Playing Movies",
+        name: "Điện Ảnh - Xem ngay",
         query: () => tmdb.movies.nowPlaying(),
         param: "nowPlaying",
       },
       {
-        name: "Upcoming Movies",
+        name: "Điện Ảnh - Sắp tới",
         query: () => tmdb.movies.upcoming(),
         param: "upcoming",
       },
       {
-        name: "Top Rated Movies",
+        name: "Điện Ảnh - Do bạn bình chọn ",
         query: () => tmdb.movies.topRated(),
         param: "topRated",
       },
     ],
     tvShows: [
       {
-        name: "Today's Trending TV Shows",
+        name: "Chương trình TV - Hôm nay",
         query: () => tmdb.trending.trending("tv", "day"),
         param: "todayTrending",
       },
       {
-        name: "This Week's Trending TV Shows",
+        name: "Chương trình TV - Tuần này",
         query: () => tmdb.trending.trending("tv", "week"),
         param: "thisWeekTrending",
       },
       {
-        name: "Popular TV Shows",
+        name: "Chương trình TV - Phổ biến",
         // @ts-expect-error: Property 'adult' is missing in type 'PopularTvShowResult' but required in type 'TV'.
         query: () => tmdb.tvShows.popular(),
         param: "popular",
       },
       {
-        name: "On The Air TV Shows",
+        name: "Chương trình TV - On Air",
         // @ts-expect-error: Property 'adult' is missing in type 'OnTheAirResult' but required in type 'TV'.
         query: () => tmdb.tvShows.onTheAir(),
         param: "onTheAir",
       },
       {
-        name: "Top Rated TV Shows",
+        name: "Chương trình Tv - Do bạn lựa chọn",
         // @ts-expect-error: Property 'adult' is missing in type 'TopRatedTvShowResult' but required in type 'TV'.
         query: () => tmdb.tvShows.topRated(),
         param: "topRated",

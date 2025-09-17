@@ -4,5 +4,5 @@ export const DEFAULT_SETTINGS: Settings = {
   theme: "dark",
   disableAnimation: false,
   saveWatchHistory: true,
-  showSpecialSeason: false,
+  showSpecialSeason: true,
 };

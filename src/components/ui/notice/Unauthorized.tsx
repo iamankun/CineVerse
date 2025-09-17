@@ -15,10 +15,10 @@ const UnauthorizedNotice: React.FC<UnauthorizedNoticeProps> = ({ title, descript
       <p className="text-default-500">{description}</p>
       <div className="flex gap-2">
         <Button color="primary" variant="flat" as={Link} href="/auth?form=register">
-          Sign Up
+          Đăng ký
         </Button>
         <Button color="primary" as={Link} href="/auth">
-          Sign In
+          Đămg nhập
         </Button>
       </div>
     </div>
