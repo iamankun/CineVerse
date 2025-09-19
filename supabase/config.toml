@@ -188,26 +188,26 @@ port = "env(SUPABASE_AUTH_SMTP_PORT)"
 user = "env(SUPABASE_AUTH_SMTP_EMAIL)"
 pass = "env(SUPABASE_AUTH_SMTP_PASSWORD)"
 admin_email = "env(SUPABASE_AUTH_SMTP_EMAIL)"
-sender_name = "Cinextma"
+sender_name = "CineVerse - Thông báo tài khoản"
 
 # Uncomment to customize email template
 # [auth.email.template.invite]
-# subject = "You have been invited"
+# subject = "Bạn có một yêu cầu"
 # content_path = "./supabase/templates/invite.html"
 
 [auth.email.template.confirmation]
-subject = "Confirm Your Email"
+subject = "Chấp nhận Email tham gia Vũ Trụ Điện Ảnh"
 content_path = "./supabase/templates/confirmation.html"
 
 [auth.email.template.recovery]
-subject = "Reset Your Password"
+subject = "Thay đổi mật khẩu"
 content_path = "./supabase/templates/recovery.html"
 
 [auth.sms]
 # Allow/disallow new user signups via SMS to your project.
 enable_signup = false
 # If enabled, users need to confirm their phone number before signing in.
-enable_confirmations = false
+enable_confirmations = true
 # Template for sending OTP to users
 template = "Your code is {{ .Code }}"
 # Controls the minimum amount of time that must pass before sending another sms otp.
