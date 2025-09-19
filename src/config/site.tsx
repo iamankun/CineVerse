@@ -37,7 +37,7 @@ export const siteConfig: SiteConfigType = {
       activeIcon: <BiSolidSearchAlt2 className="size-full" />,
     },
     {
-      label: "n",
+      label: "",
       href: "/library",
       icon: <TbFolder className="size-full" />,
       activeIcon: <TbFolderFilled className="size-full" />,
