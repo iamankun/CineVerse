@@ -1,6 +1,6 @@
 "use client";
 
-import { searchMultiInVietnamese } from "@/utils/tmdb";
+import { search } from "@/utils/tmdb";
 import TvShowHomeCard from "@/components/sections/TV/Cards/Poster";
 import BackToTopButton from "@/components/ui/button/BackToTopButton";
 import { ContentType } from "@/types";
