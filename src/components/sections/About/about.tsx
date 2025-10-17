@@ -1,17 +1,14 @@
+"use client";
+
 import { DiCode } from "react-icons/di";
 import { siteConfig } from "@/config/site";
 import Link from "next/link";
-import { Metadata } from "next/dist/lib/metadata/types/metadata-interface";
 import dynamic from "next/dynamic";
 import { Suspense } from "react";
-import { NextPage } from "next";
+
 const FAQ = dynamic(() => import("@/components/sections/About/FAQ"));
 
-export const metadata: Metadata = {
-  title: `Giới thiệu | ${siteConfig.name}`,
-};
-
-const AboutPage: NextPage = () => {
+const AboutPage = () => {
   return (
     <div className="flex w-full justify-center">
       <div className="flex w-full max-w-2xl flex-col gap-5">
