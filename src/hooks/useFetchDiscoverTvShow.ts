@@ -15,12 +15,16 @@ const useFetchDiscoverTvShows = ({
   type = "discover",
   genres,
 }: FetchDiscoverTvShows): Promise<TvShowDiscoverResult> => {
-  const discover = () => tmdb.discover.tvShow({ page: page, with_genres: genres });
-  const todayTrending = () => tmdb.trending.trending("tv", "day", { page: page });
-  const thisWeekTrending = () => tmdb.trending.trending("tv", "week", { page: page });
-  const popular = () => tmdb.tvShows.popular({ page: page });
-  const onTheAir = () => tmdb.tvShows.onTheAir({ page: page });
-  const topRated = () => tmdb.tvShows.topRated({ page: page });
+  const discover = () => tmdb.discover.tvShow({ 
+    page: page, 
+    with_genres: genres,
+    language: 'vi'
+  });
+  const todayTrending = () => tmdb.trending.trending("tv", "day", { page: page, language: 'vi-VN' });
+  const thisWeekTrending = () => tmdb.trending.trending("tv", "week", { page: page, language: 'vi-VN' });
+  const popular = () => tmdb.tvShows.popular({ page: page, language: 'vi-VN' });
+  const onTheAir = () => tmdb.tvShows.onTheAir({ page: page, language: 'vi-VN' });
+  const topRated = () => tmdb.tvShows.topRated({ page: page, language: 'vi-VN' });
 
   const queryData = {
     discover,

@@ -33,7 +33,7 @@ const MovieDetailPage: NextPage<Params<{ id: number }>> = ({ params }) => {
         "recommendations",
         "similar",
         "reviews",
-        "watch/providers",
+        "watch/providers"
       ]),
     queryKey: ["movie-detail", id],
   });

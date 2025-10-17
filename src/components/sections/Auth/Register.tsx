@@ -78,6 +78,7 @@ const AuthRegisterForm: React.FC<AuthFormProps> = ({ setForm }) => {
           isInvalid={!!errors.username?.message}
           errorMessage={errors.username?.message}
           isRequired
+          spellCheck="false"
           label="Username"
           placeholder="Enter your username"
           variant="underlined"
@@ -88,6 +89,7 @@ const AuthRegisterForm: React.FC<AuthFormProps> = ({ setForm }) => {
           {...register("email")}
           isInvalid={!!errors.email?.message}
           errorMessage={errors.email?.message}
+          spellCheck="false"
           isRequired
           label="Email Address"
           placeholder="Enter your email"

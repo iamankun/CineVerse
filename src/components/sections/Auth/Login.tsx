@@ -79,6 +79,7 @@ const AuthLoginForm: React.FC<AuthFormProps> = ({ setForm }) => {
           isInvalid={!!errors.email?.message}
           errorMessage={errors.email?.message}
           isRequired
+          spellCheck="false"
           label="Email Address"
           placeholder="Enter your email"
           type="email"

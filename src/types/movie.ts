@@ -1,5 +1,27 @@
 import { Database } from "@/utils/supabase/types";
 import { ContentType } from ".";
+import { Movie, MovieDetails, TV, TvShowDetails } from 'tmdb-ts';
+
+export interface MovieResponse {
+  page: number;
+  results: Movie[];
+  total_pages: number;
+  total_results: number;
+}
+
+export interface TvShowResponse {
+  page: number;
+  results: TV[];
+  total_pages: number;
+  total_results: number;
+}
+
+export interface TMDBResponse<T> {
+  page: number;
+  results: T[];
+  total_pages: number;
+  total_results: number;
+}
 
 export type HistoryDetail = Database["public"]["Tables"]["histories"]["Row"];
 

@@ -63,6 +63,7 @@ const PasswordInput = forwardRef<HTMLInputElement, PasswordInputProps>(
       >
         <Input
           ref={ref}
+          spellCheck="false"
           type={show ? "text" : "password"}
           endContent={
             <IconButton

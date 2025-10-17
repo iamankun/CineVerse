@@ -44,6 +44,7 @@ const SearchInput = ({
       ref={inputRef}
       isDisabled={isDisabled}
       autoComplete="off"
+      spellCheck="false"
       autoFocus={autoFocus}
       className={cn(className, "w-full")}
       placeholder={placeholder}

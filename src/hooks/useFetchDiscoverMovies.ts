@@ -15,13 +15,13 @@ const useFetchDiscoverMovies = ({
   type = "discover",
   genres,
 }: FetchDiscoverMovies): Promise<MovieDiscoverResult> => {
-  const discover = () => tmdb.discover.movie({ page: page, with_genres: genres });
-  const todayTrending = () => tmdb.trending.trending("movie", "day", { page: page });
-  const thisWeekTrending = () => tmdb.trending.trending("movie", "week", { page: page });
-  const popular = () => tmdb.movies.popular({ page: page });
-  const nowPlaying = () => tmdb.movies.nowPlaying({ page: page });
-  const upcoming = () => tmdb.movies.upcoming({ page: page });
-  const topRated = () => tmdb.movies.topRated({ page: page });
+  const discover = () => tmdb.discover.movie({ page: page, with_genres: genres, language: 'vi-VN' });
+  const todayTrending = () => tmdb.trending.trending("movie", "day", { page: page, language: 'vi-VN' });
+  const thisWeekTrending = () => tmdb.trending.trending("movie", "week", { page: page, language: 'vi-VN' });
+  const popular = () => tmdb.movies.popular({ page: page, language: 'vi-VN' });
+  const nowPlaying = () => tmdb.movies.nowPlaying({ page: page, language: 'vi-VN' });
+  const upcoming = () => tmdb.movies.upcoming({ page: page, language: 'vi-VN' });
+  const topRated = () => tmdb.movies.topRated({ page: page, language: 'vi-VN' });
 
   const queryData = {
     discover,
