@@ -1,6 +1,9 @@
+"use client";
+
 import { Image as ImageProps } from "tmdb-ts";
 import { Image } from "@heroui/react";
 import { getImageUrl } from "@/utils/movies";
+import { sortBackdrops } from "@/utils/helpers";
 import Gallery from "@/components/ui/overlay/Gallery";
 import { Slide } from "yet-another-react-lightbox";
 import { useState } from "react";
@@ -14,7 +17,11 @@ interface PhotosSectionProps {
 
 const PhotosSection: React.FC<PhotosSectionProps> = ({ images, type = "movie" }) => {
   const [index, setIndex] = useState<number>(-1);
-  const slides: Slide[] = images.map(({ file_path, width, height }) => ({
+  
+  // Sắp xếp backdrops: null (no language) ưu tiên trước, sau đó theo vote_average
+  const sortedImages = sortBackdrops(images);
+  
+  const slides: Slide[] = sortedImages.map(({ file_path, width, height }) => ({
     src: getImageUrl(file_path, "backdrop", true),
     description: `${width}x${height}`,
   }));
@@ -23,7 +30,7 @@ const PhotosSection: React.FC<PhotosSectionProps> = ({ images, type = "movie" })
     <section id="gallery" className="z-3 flex flex-col gap-2">
       <SectionTitle color={type === "movie" ? "primary" : "warning"}>Photos</SectionTitle>
       <div className="grid grid-cols-2 place-items-center gap-3 sm:grid-cols-4">
-        {images.slice(0, 4).map(({ file_path }, index) => (
+        {sortedImages.slice(0, 4).map(({ file_path }, index) => (
           <div key={file_path} className="group relative">
             <Image
               onClick={() => setIndex(index)}
@@ -35,12 +42,12 @@ const PhotosSection: React.FC<PhotosSectionProps> = ({ images, type = "movie" })
               className="aspect-video cursor-pointer"
             />
 
-            {index === 3 && images.length > 4 ? (
+            {index === 3 && sortedImages.length > 4 ? (
               <div
                 className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center rounded-medium bg-black/40 text-xl font-bold text-white backdrop-blur-xs"
                 onClick={() => setIndex(index)}
               >
-                +{images.length - 4}
+                +{sortedImages.length - 4}
               </div>
             ) : (
               <div className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center">

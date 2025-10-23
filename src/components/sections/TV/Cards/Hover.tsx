@@ -1,6 +1,6 @@
-import { tmdb } from "@/api/tmdb";
+import { getTvShowDetails } from "@/api/tmdb";
 import Genres from "@/components/ui/other/Genres";
-import { cn, isEmpty } from "@/utils/helpers";
+import { cn, isEmpty, getPreferredLogo } from "@/utils/helpers";
 import { Calendar, List, Play, Season } from "@/utils/icons";
 import { getImageUrl, mutateTvShowTitle } from "@/utils/movies";
 import { Button, Chip, Image, Link, Spinner } from "@heroui/react";
@@ -11,7 +11,7 @@ import BookmarkButton from "@/components/ui/button/BookmarkButton";
 
 const TvShowHoverCard: React.FC<{ id: number; fullWidth?: boolean }> = ({ id, fullWidth }) => {
   const { data: tv, isPending } = useQuery({
-    queryFn: () => tmdb.tvShows.details(id, ["images"]),
+    queryFn: () => getTvShowDetails(id, ["images"], true),
     queryKey: ["get-tv-detail-on-hover-poster", id],
   });
 
@@ -26,15 +26,15 @@ const TvShowHoverCard: React.FC<{ id: number; fullWidth?: boolean }> = ({ id, fu
   if (!tv) return null;
 
   const title = mutateTvShowTitle(tv);
-  const firstReleaseYear = new Date(tv.first_air_date).getFullYear();
-  const lastReleaseYear = new Date(tv.last_air_date).getFullYear();
-  const releaseYears = `${firstReleaseYear} ${firstReleaseYear !== lastReleaseYear ? ` - ${lastReleaseYear}` : ""}`;
+  const firstReleaseYear = tv.first_air_date ? new Date(tv.first_air_date).getFullYear() : null;
+  const lastReleaseYear = tv.last_air_date ? new Date(tv.last_air_date).getFullYear() : null;
+  const releaseYears = firstReleaseYear 
+    ? `${firstReleaseYear}${lastReleaseYear && firstReleaseYear !== lastReleaseYear ? ` - ${lastReleaseYear}` : ""}` 
+    : "N/A";
   const fullTitle = title;
   const backdropImage = getImageUrl(tv.backdrop_path, "backdrop");
-  const titleImage = getImageUrl(
-    tv.images.logos.find((logo) => logo.iso_639_1 === "en")?.file_path,
-    "title",
-  );
+  const preferredLogo = getPreferredLogo(tv.images.logos);
+  const titleImage = getImageUrl(preferredLogo?.file_path, "title");
   const bookmarkData: SavedMovieDetails = {
     type: "tv",
     adult: "adult" in tv ? (tv.adult as boolean) : false,

@@ -1,6 +1,6 @@
 "use client";
 
-import { search } from "@/utils/tmdb";
+import { tmdb } from "@/api/tmdb";
 import TvShowHomeCard from "@/components/sections/TV/Cards/Poster";
 import BackToTopButton from "@/components/ui/button/BackToTopButton";
 import { ContentType } from "@/types";
@@ -29,7 +29,7 @@ const fetchData = async ({
   query,
 }: FetchType): Promise<Search<Movie> | Search<TV>> => {
   if (type === "movie") return tmdb.search.movies({ query, page, language: "vi-VN", region: "VN" });
-  return tmdb.search.tvShows({ query, page, language: "vi-VN", region: "VN" });
+  return tmdb.search.tvShows({ query, page, language: "vi-VN" });
 };
 
 const SearchList = () => {

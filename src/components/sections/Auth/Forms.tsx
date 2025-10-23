@@ -36,12 +36,12 @@ const AuthForms: React.FC = () => {
   );
 
   const { data: movies, isPending: isPendingMovies } = useQuery({
-    queryFn: () => tmdb.trending.trending("movie", "day"),
+    queryFn: () => tmdb.trending.trending("movie", "day", { language: 'vi-VN' }),
     queryKey: ["movie-auth-posters"],
   });
 
   const { data: tvShows, isPending: isPendingTv } = useQuery({
-    queryFn: () => tmdb.trending.trending("tv", "day"),
+    queryFn: () => tmdb.trending.trending("tv", "day", { language: 'vi-VN' }),
     queryKey: ["tv-auth-posters"],
   });
 

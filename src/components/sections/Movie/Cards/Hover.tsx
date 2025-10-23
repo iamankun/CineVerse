@@ -1,9 +1,9 @@
-import { tmdb } from "@/api/tmdb";
+import { getMovieDetails } from "@/api/tmdb";
 import BookmarkButton from "@/components/ui/button/BookmarkButton";
 import Genres from "@/components/ui/other/Genres";
 import Rating from "@/components/ui/other/Rating";
 import { SavedMovieDetails } from "@/types/movie";
-import { cn, isEmpty } from "@/utils/helpers";
+import { cn, isEmpty, getPreferredLogo } from "@/utils/helpers";
 import { Calendar, Clock } from "@/utils/icons";
 import { getImageUrl, movieDurationString, mutateMovieTitle } from "@/utils/movies";
 import { Button, Chip, Image, Link, Spinner } from "@heroui/react";
@@ -13,7 +13,7 @@ import { Genre } from "tmdb-ts";
 
 const HoverPosterCard: React.FC<{ id: number; fullWidth?: boolean }> = ({ id, fullWidth }) => {
   const { data: movie, isPending } = useQuery({
-    queryFn: () => tmdb.movies.details(id, ["images"]),
+    queryFn: () => getMovieDetails(id, ["images"], true),
     queryKey: ["get-movie-detail-on-hover-poster", id],
   });
 
@@ -31,10 +31,8 @@ const HoverPosterCard: React.FC<{ id: number; fullWidth?: boolean }> = ({ id, fu
   const releaseYear = movie.release_date ? new Date(movie.release_date).getFullYear() : undefined;
   const fullTitle = title;
   const backdropImage = getImageUrl(movie.backdrop_path, "backdrop");
-  const titleImage = getImageUrl(
-    movie.images.logos.find((logo) => logo.iso_639_1 === "en")?.file_path,
-    "title",
-  );
+  const preferredLogo = getPreferredLogo(movie.images.logos);
+  const titleImage = getImageUrl(preferredLogo?.file_path, "title");
   const bookmarkData: SavedMovieDetails = {
     type: "movie",
     adult: movie.adult,

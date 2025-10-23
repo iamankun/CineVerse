@@ -3,7 +3,7 @@ import { useWindowScroll } from "@mantine/hooks";
 import { AppendToResponse } from "tmdb-ts/dist/types/options";
 import { getImageUrl, mutateTvShowTitle } from "@/utils/movies";
 import { TvShowDetails } from "tmdb-ts";
-import { isEmpty } from "@/utils/helpers";
+import { isEmpty, getPreferredLogo } from "@/utils/helpers";
 
 const TvShowBackdropSection: React.FC<{
   tv: AppendToResponse<TvShowDetails, "images"[], "movie">;
@@ -12,10 +12,8 @@ const TvShowBackdropSection: React.FC<{
   const title = mutateTvShowTitle(tv);
   const opacity = Math.min((y / 1000) * 2, 1);
   const backdropImage = getImageUrl(tv.backdrop_path, "backdrop", true);
-  const titleImage = getImageUrl(
-    tv.images.logos.find((logo) => logo.iso_639_1 === "en")?.file_path,
-    "title",
-  );
+  const preferredLogo = getPreferredLogo(tv.images.logos);
+  const titleImage = getImageUrl(preferredLogo?.file_path, "title");
 
   return (
     <section id="backdrop" className="fixed inset-0 h-[35vh] md:h-[50vh] lg:h-[70vh]">

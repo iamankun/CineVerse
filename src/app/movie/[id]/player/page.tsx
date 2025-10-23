@@ -19,7 +19,7 @@ const MoviePlayerPage: NextPage<Params<{ id: number }>> = ({ params }) => {
     isPending,
     error,
   } = useQuery({
-    queryFn: () => tmdb.movies.details(id),
+    queryFn: () => tmdb.movies.details(id, [], 'vi-VN'),
     queryKey: ["movie-player-detail", id],
   });
 

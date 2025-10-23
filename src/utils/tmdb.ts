@@ -51,7 +51,6 @@ export const getMovieDetailsInVietnamese = async (movieId: number, append_to_res
     return await response.json();
   } catch (error) {
     console.error('Error fetching movie details:', error);
-    // Fallback to original TMDB client if direct API call fails
-    return tmdb.movies.details(movieId, append_to_response);
+    throw error;
   }
 };

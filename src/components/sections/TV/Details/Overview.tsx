@@ -25,9 +25,11 @@ export const TvShowOverviewSection: React.FC<TvShowOverviewSectionProps> = ({
   tv,
   onViewEpisodesClick,
 }) => {
-  const firstReleaseYear = new Date(tv.first_air_date).getFullYear();
-  const lastReleaseYear = new Date(tv.last_air_date).getFullYear();
-  const releaseYears = `${firstReleaseYear} ${firstReleaseYear !== lastReleaseYear ? ` - ${lastReleaseYear}` : ""}`;
+  const firstReleaseYear = tv.first_air_date ? new Date(tv.first_air_date).getFullYear() : null;
+  const lastReleaseYear = tv.last_air_date ? new Date(tv.last_air_date).getFullYear() : null;
+  const releaseYears = firstReleaseYear 
+    ? `${firstReleaseYear}${lastReleaseYear && firstReleaseYear !== lastReleaseYear ? ` - ${lastReleaseYear}` : ""}` 
+    : "N/A";
   const posterImage = getImageUrl(tv.poster_path);
   const title = mutateTvShowTitle(tv);
   const fullTitle = title;

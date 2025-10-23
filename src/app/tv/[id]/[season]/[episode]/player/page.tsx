@@ -21,7 +21,7 @@ const TvShowPlayerPage: NextPage<Params<{ id: number; season: number; episode: n
     isPending: isPendingTv,
     error: errorTv,
   } = useQuery({
-    queryFn: () => tmdb.tvShows.details(id),
+    queryFn: () => tmdb.tvShows.details(id, [], 'vi-VN'),
     queryKey: ["tv-show-player-details", id],
   });
 

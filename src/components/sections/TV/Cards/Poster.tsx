@@ -20,7 +20,7 @@ interface TvShowPosterCardProps {
 const TvShowPosterCard: React.FC<TvShowPosterCardProps> = ({ tv, variant = "full" }) => {
   const { hovered, ref } = useHover();
   const [opened, handlers] = useDisclosure(false);
-  const releaseYear = new Date(tv.first_air_date).getFullYear();
+  const releaseYear = tv.first_air_date ? new Date(tv.first_air_date).getFullYear() : "N/A";
   const posterImage = getImageUrl(tv.poster_path);
   const title = mutateTvShowTitle(tv);
   const { mobile } = useBreakpoints();

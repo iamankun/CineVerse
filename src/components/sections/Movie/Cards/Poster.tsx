@@ -20,7 +20,7 @@ interface MoviePosterCardProps {
 const MoviePosterCard: React.FC<MoviePosterCardProps> = ({ movie, variant = "full" }) => {
   const { hovered, ref } = useHover();
   const [opened, handlers] = useDisclosure(false);
-  const releaseYear = new Date(movie.release_date).getFullYear();
+  const releaseYear = movie.release_date ? new Date(movie.release_date).getFullYear() : "N/A";
   const posterImage = getImageUrl(movie.poster_path);
   const title = mutateMovieTitle(movie);
   const { mobile } = useBreakpoints();

@@ -16,9 +16,26 @@ interface TrailerProps {
 const Trailer: React.FC<TrailerProps> = ({ videos, color = "primary" }) => {
   const [opened, handlers] = useDisclosure(false);
   const c = useCustomCarousel();
-  const trailers = videos.filter(
+  
+  // Lọc trailers YouTube
+  const youtubeTrailers = videos.filter(
     (trailer) => trailer.site === "YouTube" && trailer.type === "Trailer",
   );
+
+  // Ưu tiên trailer tiếng Việt trước, sau đó tiếng Anh, cuối cùng là ngôn ngữ khác
+  const sortedTrailers = youtubeTrailers.sort((a, b) => {
+    const getPriority = (lang: string | undefined) => {
+      if (lang === 'vi') return 1;
+      if (lang === 'en') return 2;
+      return 3; // Các ngôn ngữ khác có priority thấp hơn nhưng vẫn được hiển thị
+    };
+    
+    const aPriority = getPriority(a.iso_639_1 || undefined);
+    const bPriority = getPriority(b.iso_639_1 || undefined);
+    return aPriority - bPriority;
+  });
+
+  const trailers = sortedTrailers;
   const multiple = trailers.length > 1;
 
   const handleClose = () => {

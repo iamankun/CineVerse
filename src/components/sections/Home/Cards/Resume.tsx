@@ -14,7 +14,7 @@ interface ResumeCardProps {
 }
 
 const ResumeCard: React.FC<ResumeCardProps> = ({ media }) => {
-  const releaseYear = new Date(media.release_date).getFullYear();
+  const releaseYear = media.release_date ? new Date(media.release_date).getFullYear() : "N/A";
   const posterImage = getImageUrl(media.backdrop_path || media.poster_path || "");
 
   const getRedirectLink = useCallback(() => {

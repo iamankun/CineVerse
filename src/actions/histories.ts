@@ -53,8 +53,8 @@ export const syncHistory = async (
 
     const media =
       data.mediaType === "movie"
-        ? await tmdb.movies.details(data.mtmdbId)
-        : await tmdb.tvShows.details(data.mtmdbId);
+        ? await tmdb.movies.details(data.mtmdbId, [], 'vi-VN')
+        : await tmdb.tvShows.details(data.mtmdbId, [], 'vi-VN');
 
     // Insert or update history
     const { data: history, error } = await supabase

@@ -144,3 +144,50 @@ export const shuffleArray = <T>(array: T[]): T[] => {
 export const diff = (a: number, b: number): number => {
   return Math.abs(Math.round(a) - Math.round(b));
 };
+
+/**
+ * Tìm logo ưu tiên theo ngôn ngữ (vi-VN trước, sau đó en-US, cuối cùng là ngôn ngữ khác)
+ * 
+ * @param logos - Mảng các logo từ TMDB
+ * @returns Logo phù hợp nhất hoặc undefined
+ */
+export const getPreferredLogo = <T extends { iso_639_1: string | null; file_path?: string }>(logos: T[]): T | undefined => {
+  if (!logos || logos.length === 0) return undefined;
+  
+  // Ưu tiên tiếng Việt
+  const viLogo = logos.find((logo) => logo.iso_639_1 === "vi");
+  if (viLogo) return viLogo;
+  
+  // Sau đó là tiếng Anh
+  const enLogo = logos.find((logo) => logo.iso_639_1 === "en");
+  if (enLogo) return enLogo;
+  
+  // Tiếp theo là logo không có ngôn ngữ (null = universal logo)
+  const nullLogo = logos.find((logo) => logo.iso_639_1 === null);
+  if (nullLogo) return nullLogo;
+  
+  // Cuối cùng, nếu không có vi/en/null, sử dụng logo đầu tiên (ngôn ngữ khác)
+  return logos[0];
+};
+
+/**
+ * Sắp xếp backdrops ưu tiên null (no language) trước, sau đó theo vote_average
+ * Backdrops thường không có ngôn ngữ cụ thể
+ * 
+ * @param backdrops - Mảng backdrops từ TMDB
+ * @returns Mảng backdrops đã sắp xếp
+ */
+export const sortBackdrops = <T extends { iso_639_1: string | null; vote_average?: number }>(backdrops: T[]): T[] => {
+  if (!backdrops || backdrops.length === 0) return [];
+  
+  return [...backdrops].sort((a, b) => {
+    // Ưu tiên backdrops không có ngôn ngữ (null)
+    if (a.iso_639_1 === null && b.iso_639_1 !== null) return -1;
+    if (a.iso_639_1 !== null && b.iso_639_1 === null) return 1;
+    
+    // Nếu cùng null hoặc cùng có language, sort theo vote_average
+    const aVote = a.vote_average || 0;
+    const bVote = b.vote_average || 0;
+    return bVote - aVote; // Giảm dần (cao -> thấp)
+  });
+};

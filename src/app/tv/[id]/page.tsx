@@ -1,6 +1,6 @@
 "use client";
 
-import { tmdb } from "@/api/tmdb";
+import { getTvShowDetails } from "@/api/tmdb";
 import { Params } from "@/types";
 import { Spinner } from "@heroui/react";
 import { useScrollIntoView } from "@mantine/hooks";
@@ -27,8 +27,8 @@ const TVShowDetailPage: NextPage<Params<{ id: number }>> = ({ params }) => {
     isPending,
     error,
   } = useQuery({
-    queryFn: async () => {
-      const details = await tmdb.tvShows.details(id, [
+    queryFn: () =>
+      getTvShowDetails(id, [
         "images",
         "videos",
         "credits",
@@ -37,32 +37,7 @@ const TVShowDetailPage: NextPage<Params<{ id: number }>> = ({ params }) => {
         "similar",
         "reviews",
         "watch/providers"
-      ]);
-      // Thêm tham số ngôn ngữ vào URL request
-      const response = await fetch(
-        `https://api.themoviedb.org/3/tv/${id}?language=vi-VN&append_to_response=${[
-          "images",
-          "videos",
-          "credits",
-          "keywords",
-          "recommendations",
-          "similar",
-          "reviews",
-          "watch/providers"
-        ].join(',')}&region=VN`,
-        {
-          headers: {
-            'Authorization': `Bearer ${process.env.NEXT_PUBLIC_TMDB_ACCESS_TOKEN}`,
-            'accept': 'application/json'
-          }
-        }
-      );
-      const data = await response.json();
-      return {
-        ...details,
-        ...data
-      };
-    },
+      ], true),
     queryKey: ["tv-show-detail", id],
   });
 
