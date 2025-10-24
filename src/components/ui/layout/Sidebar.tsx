@@ -6,11 +6,11 @@ import { usePathname } from "next/navigation";
 
 const Sidebar: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const pathName = usePathname();
-  const hrefs = siteConfig.navItems.map((item) => item.href);
-  const shouldShowSidebar = hrefs.includes(pathName);
+  const href = siteConfig.navItems.map((item) => item.href);
+  const shouldShowSidebar = href.includes(pathName);
 
   return (
-    <div className="flex h-full">
+    <div className="flex h-full flex-1">
       {shouldShowSidebar && (
         <div className="hidden md:block">
           <div className="left-0 top-0 w-20" />
