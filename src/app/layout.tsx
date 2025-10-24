@@ -6,6 +6,7 @@ import "../styles/lightbox.css";
 import Providers from "./providers";
 import TopNavbar from "@/components/ui/layout/TopNavbar";
 import BottomNavbar from "@/components/ui/layout/BottomNavbar";
+import Footer from "@/components/ui/layout/Footer";
 import Sidebar from "@/components/ui/layout/Sidebar";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Analytics } from "@vercel/analytics/next";
@@ -51,22 +52,24 @@ export const viewport: Viewport = {
     { media: "(prefers-color-scheme: light)", color: "#FFFFFF" },
     { media: "(prefers-color-scheme: dark)", color: "#0D0C0F" },
   ],
+  viewportFit: "cover",
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html suppressHydrationWarning lang="vi">
-      <body className={cn("bg-background min-h-dvh antialiased select-none", Mulish.className)}>
+      <body className={cn("bg-background min-h-dvh antialiased select-none flex flex-col", Mulish.className)}>
         <Suspense>
           <NuqsAdapter>
             <Providers>
               {IS_PRODUCTION && <Disclaimer />}
               <TopNavbar />
               <Sidebar>
-                <main className={cn("container mx-auto max-w-full", SpacingClasses.main)}>
+                <main className={cn("container mx-auto max-w-full flex-1", SpacingClasses.main)}>
                   {children}
                 </main>
               </Sidebar>
+              <Footer />
               <BottomNavbar />
             </Providers>
           </NuqsAdapter>

@@ -88,3 +88,20 @@
 @utility movie-grid {
   @apply grid size-full max-w-6xl grid-cols-2 justify-center gap-2 sm:grid-cols-3 md:gap-4 lg:grid-cols-[repeat(auto-fit,minmax(200px,50px))];
 }
+
+/* iOS Safe Area Support */
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+  .pb-safe-bottom-nav {
+    padding-bottom: max(1rem, env(safe-area-inset-bottom)) !important;
+  }
+  
+  .pb-safe-footer {
+    padding-bottom: calc(5.5rem + env(safe-area-inset-bottom)) !important;
+  }
+  
+  @media (min-width: 768px) {
+    .pb-safe-footer {
+      padding-bottom: 0 !important;
+    }
+  }
+}
