@@ -128,16 +128,19 @@ const CineVerseHero = () => {
     return null;
   }
 
-  const title = "title" in currentItem ? currentItem.title : currentItem.name;
-  const backdropUrl = getImageUrl(currentItem.backdrop_path, "original");
-  const releaseYear = "release_date" in currentItem 
-    ? new Date(currentItem.release_date).getFullYear()
-    : "first_air_date" in currentItem 
-    ? new Date(currentItem.first_air_date).getFullYear()
+  // Type assertion sau khi đã check null
+  const item = currentItem as NonNullable<typeof currentItem>;
+
+  const title = "title" in item ? item.title : item.name;
+  const backdropUrl = getImageUrl(item.backdrop_path, "backdrop", true);
+  const releaseYear = "release_date" in item 
+    ? new Date(item.release_date).getFullYear()
+    : "first_air_date" in item 
+    ? new Date(item.first_air_date).getFullYear()
     : "";
 
   // Lấy trailer/video từ TMDB videos với ưu tiên ngôn ngữ
-  const videos = (currentItem as any).videos?.results || [];
+  const videos = (item as any).videos?.results || [];
   
   // Ưu tiên: vi → en → ja/ko → bất kỳ ngôn ngữ nào
   const trailer = 
@@ -166,9 +169,9 @@ const CineVerseHero = () => {
     setCurrentIndex((prev) => (prev === content.length - 1 ? 0 : prev + 1));
   };
 
-  const detailUrl = currentItem.contentType === "movie" 
-    ? `/movie/${currentItem.id}` 
-    : `/tv/${currentItem.id}`;
+  const detailUrl = item.contentType === "movie" 
+    ? `/movie/${item.id}` 
+    : `/tv/${item.id}`;
 
   return (
     <div className="relative h-[600px] w-full overflow-hidden rounded-xl md:h-[700px]">
@@ -217,7 +220,7 @@ const CineVerseHero = () => {
           {logoPath ? (
             <div className="relative h-24 w-full max-w-md md:h-32 lg:h-40">
               <Image
-                src={getImageUrl(logoPath, "original")}
+                src={getImageUrl(logoPath, "title", true)}
                 alt={title}
                 fill
                 className="object-contain object-left"
@@ -232,7 +235,7 @@ const CineVerseHero = () => {
 
           {/* Description */}
           <p className="line-clamp-3 text-base text-gray-200 md:text-lg">
-            {currentItem.overview || "Nội dung đang được cập nhật..."}
+            {item.overview || "Nội dung đang được cập nhật..."}
           </p>
 
           {/* Buttons */}
@@ -262,10 +265,10 @@ const CineVerseHero = () => {
           </div>
 
           {/* Rating Badge */}
-          {"vote_average" in currentItem && currentItem.vote_average > 0 && (
+          {"vote_average" in item && item.vote_average > 0 && (
             <div className="flex items-center gap-2">
               <Chip color="success" variant="flat" size="lg">
-                ⭐ {currentItem.vote_average.toFixed(1)}
+                ⭐ {item.vote_average.toFixed(1)}
               </Chip>
               {releaseYear && (
                 <Chip variant="flat" size="lg">
