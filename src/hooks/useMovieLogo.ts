@@ -5,6 +5,11 @@ export const useMovieLogo = (movieId: number, type: "movie" | "tv") => {
   const [logoPath, setLogoPath] = useState<string | null>(null);
 
   useEffect(() => {
+    // Don't fetch if movieId is invalid
+    if (!movieId || movieId === 0) {
+      return;
+    }
+
     const fetchLogo = async () => {
       try {
         const response = await fetch(

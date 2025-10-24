@@ -19,7 +19,7 @@ const Footer: React.FC<FooterProps> = ({ className }) => {
   return (
     <footer
       className={cn(
-        "pb-safe-footer bottom-0 w-full border-t border-divider bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60",
+        "relative w-full border-t border-divider bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 pb-safe-bottom-nav",
         className,
       )}
     >

@@ -5,14 +5,10 @@ import { usePathname } from "next/navigation";
 import { Navbar, NavbarBrand, NavbarContent, NavbarItem } from "@heroui/react";
 import BackButton from "@/components/ui/button/BackButton";
 import { useWindowScroll } from "@mantine/hooks";
-import SearchInput from "../input/SearchInput";
 import ThemeSwitchDropdown from "../input/ThemeSwitchDropdown";
 import FullscreenToggleButton from "../button/FullscreenToggleButton";
-import Link from "next/link";
 import { cn } from "@/utils/helpers";
 import BrandLogo from "../other/BrandLogo";
-import IconButton from "../button/IconButton";
-import { User } from "@/utils/icons";
 import UserProfileButton from "../button/UserProfileButton";
 
 const TopNavbar = () => {
@@ -52,18 +48,6 @@ const TopNavbar = () => {
       <NavbarBrand>
         {show ? <BrandLogo /> : <BackButton href={tv ? "/?content=tv" : "/"} />}
       </NavbarBrand>
-      {show && !pathName.startsWith("/search") && (
-        <NavbarContent className="hidden w-full max-w-lg gap-2 md:flex" justify="center">
-          <NavbarItem className="w-full">
-            <Link href="/search" className="w-full">
-              <SearchInput
-                className="pointer-events-none"
-                placeholder="Đang tìm kiếm trong Vũ Trụ..."
-              />
-            </Link>
-          </NavbarItem>
-        </NavbarContent>
-      )}
       <NavbarContent justify="end">
         <NavbarItem className="flex gap-1">
           <ThemeSwitchDropdown />
