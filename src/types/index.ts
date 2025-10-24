@@ -71,6 +71,36 @@ export type PlayersProps = {
   fast?: boolean;
   ads?: false;
   resumable?: boolean;
+  isCineVerseSource?: boolean;
+};
+
+export type CineVerseSource = {
+  provider: "youtube" | "dailymotion";
+  title: string;
+  url: string;
+  quality?: string;
+  language?: string;
+  subtitles?: string[];
+};
+
+export type CineVerseMovieData = {
+  tmdbId: number;
+  title: string;
+  sources: CineVerseSource[];
+  lastUpdated: string;
+};
+
+export type CineVerseTvData = {
+  tmdbId: number;
+  title: string;
+  seasons: {
+    [season: string]: {
+      [episode: string]: {
+        sources: CineVerseSource[];
+      };
+    };
+  };
+  lastUpdated: string;
 };
 
 export type Settings = {

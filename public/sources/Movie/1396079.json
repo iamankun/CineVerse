@@ -1,0 +1,22 @@
+{
+  "tmdbId": 1396079,
+  "title": "Nhà Gia Tiên",
+  "year": 2025,
+  "sources": [
+    {
+      "provider": "dailymotion",
+      "title": "Dailymotion - Phụ đề",
+      "url": "https://www.dailymotion.com/embed/video/x9mok9a",
+      "language": "vi",
+      "subtitles": ["vi"]
+    }
+  ],
+  "metadata": {
+    "movie-rating": "T13",
+    "genre": ["Drama", "Family"],
+    "duration": 120,
+    "status": "Released",
+    "note": "Phim Việt Nam - Nguồn Dailymotion chất lượng cao"
+  },
+  "lastUpdated": "2025-10-24T00:00:00Z"
+}

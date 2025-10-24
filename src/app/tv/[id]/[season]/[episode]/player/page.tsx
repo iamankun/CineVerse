@@ -1,6 +1,6 @@
 "use client";
 
-import { tmdb } from "@/api/tmdb";
+import { tmdb, getTvSeasonDetailsWithCineVerse } from "@/api/tmdb";
 import { Params } from "@/types";
 import { Spinner } from "@heroui/react";
 import { useQuery } from "@tanstack/react-query";
@@ -30,8 +30,8 @@ const TvShowPlayerPage: NextPage<Params<{ id: number; season: number; episode: n
     isPending: isPendingSeason,
     error: errorSeason,
   } = useQuery({
-    queryFn: () => tmdb.tvShows.season(id, season),
-    queryKey: ["tv-show-season", id, season],
+    queryFn: () => getTvSeasonDetailsWithCineVerse(id, season),
+    queryKey: ["tv-show-season-merged", id, season],
   });
 
   const { data: startAt, isPending: isPendingStartAt } = useQuery({
@@ -44,7 +44,7 @@ const TvShowPlayerPage: NextPage<Params<{ id: number; season: number; episode: n
   }
 
   const EPISODE = seasonDetail?.episodes.find(
-    (e) => e.episode_number.toString() === episode.toString(),
+    (e: { episode_number: number }) => e.episode_number.toString() === episode.toString(),
   );
 
   if (!EPISODE || errorTv || errorSeason) notFound();
@@ -54,7 +54,7 @@ const TvShowPlayerPage: NextPage<Params<{ id: number; season: number; episode: n
   if (isNotReleased) notFound();
 
   const currentEpisodeIndex = seasonDetail.episodes.findIndex(
-    (e) => e.episode_number === EPISODE.episode_number,
+    (e: { episode_number: number }) => e.episode_number === EPISODE.episode_number,
   );
 
   const nextEpisodeNumber =

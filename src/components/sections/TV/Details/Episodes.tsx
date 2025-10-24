@@ -1,4 +1,4 @@
-import { tmdb } from "@/api/tmdb";
+import { getTvSeasonDetailsWithCineVerse } from "@/api/tmdb";
 import useBreakpoints from "@/hooks/useBreakpoints";
 import { cn, formatDate, isEmpty } from "@/utils/helpers";
 import { PlayOutline } from "@/utils/icons";
@@ -32,8 +32,8 @@ const TvShowEpisodesSelection: React.FC<TvShowEpisodesSelectionProps> = ({
   filters: { searchQuery, sortedByName, layout } = {},
 }) => {
   const { data, isPending } = useQuery({
-    queryFn: () => tmdb.tvShows.season(id, seasonNumber),
-    queryKey: ["tv-show-episodes", id, seasonNumber],
+    queryFn: () => getTvSeasonDetailsWithCineVerse(id, seasonNumber),
+    queryKey: ["tv-show-episodes-merged", id, seasonNumber],
   });
 
   if (isPending) {
@@ -47,10 +47,10 @@ const TvShowEpisodesSelection: React.FC<TvShowEpisodesSelectionProps> = ({
   if (!data) return null;
 
   const EPISODES = data.episodes
-    .filter((episode) =>
+    .filter((episode: { name: string }) =>
       searchQuery ? episode.name.toLowerCase().includes(searchQuery.toLowerCase()) : true,
     )
-    .sort((a, b) => (sortedByName ? a.name.localeCompare(b.name) : 0));
+    .sort((a: { name: string }, b: { name: string }) => (sortedByName ? a.name.localeCompare(b.name) : 0));
 
   if (isEmpty(EPISODES)) {
     return (
@@ -63,7 +63,7 @@ const TvShowEpisodesSelection: React.FC<TvShowEpisodesSelectionProps> = ({
   if (layout === "grid") {
     return (
       <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3">
-        {EPISODES.map((episode) => (
+        {EPISODES.map((episode: Episode) => (
           <EpisodeGridCard key={episode.id} episode={episode} id={id} />
         ))}
       </div>
@@ -72,7 +72,7 @@ const TvShowEpisodesSelection: React.FC<TvShowEpisodesSelectionProps> = ({
 
   return (
     <div className="grid grid-cols-1 gap-2 sm:gap-4">
-      {EPISODES.map((episode, index) => (
+      {EPISODES.map((episode: Episode, index: number) => (
         <EpisodeListCard key={episode.id} episode={episode} order={index + 1} id={id} />
       ))}
     </div>

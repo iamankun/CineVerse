@@ -119,6 +119,108 @@ export async function getTvShowDetails(
   return response.json();
 }
 
+/**
+ * Lấy TV season details với support cho include_image_language
+ */
+export async function getTvSeasonDetails(
+  tvId: number,
+  seasonNumber: number,
+  includeImages: boolean = false
+) {
+  const params = new URLSearchParams({
+    language: 'vi-VN',
+  });
+
+  // Thêm include_image_language nếu cần
+  if (includeImages) {
+    params.append('include_image_language', 'vi,en,null');
+  }
+
+  const response = await fetch(
+    `https://api.themoviedb.org/3/tv/${tvId}/season/${seasonNumber}?${params.toString()}`,
+    {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'accept': 'application/json'
+      },
+      cache: 'force-cache',
+      next: { revalidate: 3600 } // Cache 1 hour
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error(`Failed to fetch TV season details: ${response.statusText}`);
+  }
+
+  return response.json();
+}
+
+/**
+ * Lấy TV season details với merge CineVerse sources
+ * Ưu tiên: TMDB metadata + CineVerse episodes (bổ sung thiếu)
+ */
+export async function getTvSeasonDetailsWithCineVerse(
+  tvId: number,
+  seasonNumber: number
+) {
+  // Fetch both TMDB and CineVerse data in parallel
+  const [tmdbData, cineVerseResponse] = await Promise.all([
+    getTvSeasonDetails(tvId, seasonNumber).catch(() => null),
+    fetch(`/api/sources/tv/${tvId}`).then(r => r.ok ? r.json() : null).catch(() => null)
+  ]);
+
+  // If no CineVerse data, return TMDB only
+  if (!cineVerseResponse?.success || !cineVerseResponse.data?.seasons?.[seasonNumber]) {
+    return tmdbData;
+  }
+
+  const cineVerseEpisodes = cineVerseResponse.data.seasons[seasonNumber];
+  const cineVerseEpisodeNumbers = Object.keys(cineVerseEpisodes).map(Number);
+  
+  // Start with TMDB episodes (if available)
+  const episodes = tmdbData?.episodes ? [...tmdbData.episodes] : [];
+  const existingEpisodeNumbers = episodes.map((ep: any) => ep.episode_number);
+
+  // Add missing episodes from CineVerse
+  cineVerseEpisodeNumbers.forEach((episodeNum) => {
+    if (!existingEpisodeNumbers.includes(episodeNum)) {
+      const ep = cineVerseEpisodes[episodeNum];
+      episodes.push({
+        id: tvId * 1000 + seasonNumber * 100 + episodeNum, // Generate unique ID
+        episode_number: episodeNum,
+        name: ep.title || `Tập ${episodeNum}`,
+        overview: ep.sources?.[0]?.title || 'CineVerse - Nguồn nội bộ',
+        still_path: null,
+        air_date: new Date().toISOString().split('T')[0],
+        runtime: 24, // Default runtime
+        season_number: seasonNumber,
+        hasCineVerseSource: true,
+        cineVerseOnly: true // Flag to indicate this episode is from CineVerse only
+      });
+    } else {
+      // Mark TMDB episodes that also have CineVerse sources
+      const index = episodes.findIndex((ep: any) => ep.episode_number === episodeNum);
+      if (index !== -1) {
+        episodes[index].hasCineVerseSource = true;
+      }
+    }
+  });
+
+  // Sort episodes by episode_number
+  episodes.sort((a: any, b: any) => a.episode_number - b.episode_number);
+
+  return {
+    ...tmdbData,
+    id: tvId,
+    season_number: seasonNumber,
+    episodes,
+    name: tmdbData?.name || `Mùa ${seasonNumber}`,
+    overview: tmdbData?.overview || '',
+    poster_path: tmdbData?.poster_path || null,
+    air_date: tmdbData?.air_date || new Date().toISOString().split('T')[0],
+  };
+}
+
 // =======================
 // Các hàm search tiện ích
 // =======================

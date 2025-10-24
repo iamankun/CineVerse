@@ -1,20 +1,27 @@
 import { PlayersProps } from "@/types";
+import { fetchCineVerseMovieSources, fetchCineVerseTvSources } from "./cineverse-sources";
 
 /**
  * Generates a list of movie players with their respective titles and source URLs.
- * Each player is constructed using the provided movie ID.
+ * Prioritizes CineVerse internal sources (YouTube/Dailymotion) if available.
  *
  * @param {string | number} id - The ID of the movie to be embedded in the player URLs.
  * @param {number} [startAt] - The start position in seconds to be embedded in the player URLs. Optional.
- * @returns {PlayersProps[]} - An array of objects, each containing
+ * @returns {Promise<PlayersProps[]>} - An array of objects, each containing
  * the title of the player and the corresponding source URL.
  */
-export const getMoviePlayers = (id: string | number, startAt?: number): PlayersProps[] => {
-  return [
+export const getMoviePlayers = async (
+  id: string | number,
+  startAt?: number
+): Promise<PlayersProps[]> => {
+  // Try to fetch CineVerse sources first
+  const cineVerseSources = await fetchCineVerseMovieSources(id);
+
+  const externalSources: PlayersProps[] = [
     {
       title: "VidLink",
       source: `https://vidlink.pro/movie/${id}?player=jw&primaryColor=006fee&secondaryColor=a2a2a2&iconColor=eefdec&autoplay=false&startAt=${startAt || ""}`,
-      recommended: true,
+      recommended: !cineVerseSources, // Only recommended if no CineVerse sources
       fast: true,
       ads: false,
       resumable: true,
@@ -22,7 +29,7 @@ export const getMoviePlayers = (id: string | number, startAt?: number): PlayersP
     {
       title: "VidLink 2",
       source: `https://vidlink.pro/movie/${id}?primaryColor=006fee&autoplay=false&startAt=${startAt}`,
-      recommended: true,
+      recommended: false,
       fast: true,
       ads: false,
       resumable: true,
@@ -87,7 +94,7 @@ export const getMoviePlayers = (id: string | number, startAt?: number): PlayersP
     {
       title: "VidSrc 5",
       source: `https://vidsrc.cc/v3/embed/movie/${id}?autoPlay=false`,
-      recommended: true,
+      recommended: false,
       fast: true,
       ads: false,
     },
@@ -97,30 +104,36 @@ export const getMoviePlayers = (id: string | number, startAt?: number): PlayersP
       ads: false,
     },
   ];
+
+  // Return CineVerse sources first (prioritized), then external sources
+  return cineVerseSources ? [...cineVerseSources, ...externalSources] : externalSources;
 };
 
 /**
  * Generates a list of TV show players with their respective titles and source URLs.
- * Each player is constructed using the provided TV show ID, season, and episode.
+ * Prioritizes CineVerse internal sources (YouTube/Dailymotion) if available.
  *
  * @param {string | number} id - The ID of the TV show to be embedded in the player URLs.
  * @param {string | number} [season] - The season number of the TV show episode to be embedded.
  * @param {string | number} [episode] - The episode number of the TV show episode to be embedded.
  * @param {number} [startAt] - The start position in seconds to be embedded in the player URLs. Optional.
- * @returns {PlayersProps[]} - An array of objects, each containing
+ * @returns {Promise<PlayersProps[]>} - An array of objects, each containing
  * the title of the player and the corresponding source URL.
  */
-export const getTvShowPlayers = (
+export const getTvShowPlayers = async (
   id: string | number,
   season: number,
   episode: number,
-  startAt?: number,
-): PlayersProps[] => {
-  return [
+  startAt?: number
+): Promise<PlayersProps[]> => {
+  // Try to fetch CineVerse sources first
+  const cineVerseSources = await fetchCineVerseTvSources(id, season, episode);
+
+  const externalSources: PlayersProps[] = [
     {
       title: "VidLink",
       source: `https://vidlink.pro/tv/${id}/${season}/${episode}?player=jw&primaryColor=f5a524&secondaryColor=a2a2a2&iconColor=eefdec&autoplay=false&startAt=${startAt || ""}`,
-      recommended: true,
+      recommended: !cineVerseSources, // Only recommended if no CineVerse sources
       fast: true,
       ads: false,
       resumable: true,
@@ -128,7 +141,7 @@ export const getTvShowPlayers = (
     {
       title: "VidLink 2",
       source: `https://vidlink.pro/tv/${id}/${season}/${episode}?primaryColor=f5a524&autoplay=false&startAt=${startAt}`,
-      recommended: true,
+      recommended: false,
       fast: true,
       ads: false,
       resumable: true,
@@ -193,7 +206,7 @@ export const getTvShowPlayers = (
     {
       title: "VidSrc 5",
       source: `https://vidsrc.cc/v3/embed/tv/${id}/${season}/${episode}?autoPlay=true`,
-      recommended: true,
+      recommended: false,
       fast: true,
       ads: false,
     },
@@ -203,4 +216,7 @@ export const getTvShowPlayers = (
       ads: false,
     },
   ];
+
+  // Return CineVerse sources first (prioritized), then external sources
+  return cineVerseSources ? [...cineVerseSources, ...externalSources] : externalSources;
 };
