@@ -124,7 +124,7 @@ const CineVerseHero = () => {
   // Call hooks unconditionally at top level
   const logoPath = useMovieLogo(currentId, currentContentType);
 
-  if (isPending || !content || content.length === 0) {
+  if (isPending || !content || content.length === 0 || !currentItem) {
     return null;
   }
 
