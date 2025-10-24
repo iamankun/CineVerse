@@ -97,7 +97,7 @@ const OverviewSection: React.FC<OverviewSectionProps> = ({ movie }) => {
                 variant="shadow"
                 startContent={<FaCirclePlay size={22} />}
               >
-                Play Now
+                Xem ngay
               </Button>
               <Trailer videos={movie.videos.results} />
             </div>

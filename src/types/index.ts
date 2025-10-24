@@ -54,6 +54,7 @@ export type SiteConfigType = {
   };
   themes: {
     name: "light" | "dark" | "system";
+    label: string;
     icon: React.ReactNode;
   }[];
   socials: {

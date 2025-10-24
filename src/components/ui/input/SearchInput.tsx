@@ -2,9 +2,8 @@
 
 import { useRef } from "react";
 import { FaSearch } from "react-icons/fa";
-import { Input, InputProps, Kbd, Spinner } from "@heroui/react";
+import { Input, InputProps, Spinner } from "@heroui/react";
 import { cn } from "@/utils/helpers";
-import { useHotkeys } from "@mantine/hooks";
 import { useRouter } from "@bprogress/next";
 import { usePathname } from "next/navigation";
 
@@ -17,27 +16,11 @@ const SearchInput = ({
   onChange,
   className,
   autoFocus,
-  placeholder = "Search...",
+  placeholder = "Đang tìm phim cho bạn...",
   isLoading,
   isDisabled,
 }: SearchInputProps) => {
   const inputRef = useRef<HTMLInputElement>(null);
-  const router = useRouter();
-  const pathName = usePathname();
-
-  useHotkeys([
-    [
-      "ctrl+K",
-      () => {
-        if (pathName !== "/search") {
-          router.push("/search");
-        } else {
-          inputRef.current?.focus();
-        }
-      },
-      { preventDefault: true },
-    ],
-  ]);
 
   return (
     <Input
@@ -55,13 +38,19 @@ const SearchInput = ({
         inputWrapper: "bg-secondary-background",
         input: "text-sm",
       }}
-      aria-label="Search"
-      type="search"
+      aria-label="Tìm kiếm"
+      type="Tìm kiếm"
       labelPlacement="outside"
-      endContent={<Kbd className="hidden md:inline-block">CTRL+K</Kbd>}
       startContent={
-        <div className="pointer-events-none flex shrink-0 items-center pr-1 text-default-400">
-          {isLoading ? <Spinner color="default" size="sm" /> : <FaSearch />}
+        isLoading && (
+          <div className="pointer-events-none flex shrink-0 items-center pr-1 text-default-400">
+            <Spinner color="default" size="sm" />
+          </div>
+        )
+      }
+      endContent={
+        <div className="pointer-events-none flex shrink-0 items-center pl-1 text-default-400">
+          <FaSearch />
         </div>
       }
     />

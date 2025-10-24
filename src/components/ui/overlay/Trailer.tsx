@@ -43,8 +43,12 @@ const Trailer: React.FC<TrailerProps> = ({ videos, color = "primary" }) => {
     c.scrollTo(0);
   };
 
-  if (!isEmpty(trailers)) {
-    return (
+  // Nếu không có trailer, không hiển thị gì
+  if (isEmpty(trailers)) {
+    return null;
+  }
+
+  return (
       <>
         <Button
           color="danger"
@@ -136,7 +140,6 @@ const Trailer: React.FC<TrailerProps> = ({ videos, color = "primary" }) => {
         </Modal>
       </>
     );
-  }
 };
 
 export default Trailer;

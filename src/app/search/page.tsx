@@ -5,7 +5,7 @@ import { Suspense } from "react";
 const SearchList = dynamic(() => import("@/components/sections/Search/List"));
 
 export const metadata: Metadata = {
-  title: `Search Movies | ${siteConfig.name}`,
+  title: `Tìm kiếm Phim | ${siteConfig.name}`,
 };
 
 const SearchPage: NextPage = () => {

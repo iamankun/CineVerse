@@ -37,7 +37,7 @@ const ContentTypeSelection: React.FC<ContentTypeSelectionProps> = ({ onTypeChang
         title={
           <div className="flex items-center space-x-2">
             <Movie />
-            <span>Movies</span>
+            <span>Điện Ảnh</span>
           </div>
         }
       />
@@ -46,7 +46,7 @@ const ContentTypeSelection: React.FC<ContentTypeSelectionProps> = ({ onTypeChang
         title={
           <div className="flex items-center space-x-2">
             <TV />
-            <span>TV Series</span>
+            <span>Chương trình TV</span>
           </div>
         }
       />

@@ -28,8 +28,8 @@ export const tmdb = new TMDB(token);
 // =======================
 
 /**
- * Lấy movie details với support cho include_image_language
- * Để lấy logo/images đa ngôn ngữ (vi, en, null)
+ * Lấy movie details với support cho include_image_language và include_video_language
+ * Để lấy logo/images/videos đa ngôn ngữ (vi, en, null)
  */
 export async function getMovieDetails(
   movieId: number,
@@ -47,6 +47,12 @@ export async function getMovieDetails(
   // Thêm include_image_language nếu có images trong append_to_response
   if (includeImages || appendToResponse.includes('images')) {
     params.append('include_image_language', 'vi,en,null');
+  }
+
+  // Thêm include_video_language nếu có videos trong append_to_response
+  // Để lấy trailers đa ngôn ngữ (vi, en, và các ngôn ngữ khác)
+  if (appendToResponse.includes('videos')) {
+    params.append('include_video_language', 'vi,en,null');
   }
 
   const response = await fetch(
@@ -69,7 +75,7 @@ export async function getMovieDetails(
 }
 
 /**
- * Lấy TV show details với support cho include_image_language
+ * Lấy TV show details với support cho include_image_language và include_video_language
  */
 export async function getTvShowDetails(
   tvId: number,
@@ -87,6 +93,11 @@ export async function getTvShowDetails(
   // Thêm include_image_language nếu có images trong append_to_response
   if (includeImages || appendToResponse.includes('images')) {
     params.append('include_image_language', 'vi,en,null');
+  }
+
+  // Thêm include_video_language nếu có videos trong append_to_response
+  if (appendToResponse.includes('videos')) {
+    params.append('include_video_language', 'vi,en,null');
   }
 
   const response = await fetch(

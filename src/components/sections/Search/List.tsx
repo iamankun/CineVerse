@@ -81,7 +81,7 @@ const SearchList = () => {
     if (isEmpty(data?.pages[0].results)) {
       return (
         <h5 className="mt-56 text-center text-xl">
-          No {content === "movie" ? "movies" : "TV series"} found with query{" "}
+          Không tìm thấy {content === "movie" ? "phim" : "chương trình TV"} nào với từ khóa{" "}
           <span className="font-bold text-warning">"{debouncedSearchQuery}"</span>
         </h5>
       );
@@ -91,8 +91,8 @@ const SearchList = () => {
       <>
         <h5 className="text-center text-xl">
           <span className="motion-preset-focus">
-            Found <span className="font-bold text-primary">{data?.pages[0].total_results}</span>{" "}
-            {content === "movie" ? "movies" : "TV series"} with query{" "}
+            Tìm thấy <span className="font-bold text-primary">{data?.pages[0].total_results}</span>{" "}
+            {content === "movie" ? "phim" : "chương trình TV"} với từ khóa{" "}
             <span className="font-bold text-warning">"{debouncedSearchQuery}"</span>
           </span>
         </h5>

@@ -34,13 +34,18 @@ const TopNavbar = () => {
       position="sticky"
       maxWidth="full"
       classNames={{ wrapper: "px-2 md:px-4" }}
-      className={cn("inset-0 h-min bg-transparent", {
-        "bg-background": show,
-      })}
+      className={cn(
+        "inset-0 h-min backdrop-blur-xl backdrop-saturate-150",
+        "bg-background/70 border-b border-white/10",
+        "shadow-[0_8px_32px_0_rgba(0,0,0,0.37)]",
+        {
+          "bg-background/80": show,
+        }
+      )}
     >
       {!show && (
         <div
-          className="absolute inset-0 h-full w-full border-b border-background bg-background"
+          className="absolute inset-0 h-full w-full"
           style={{ opacity: opacity }}
         />
       )}
@@ -53,7 +58,7 @@ const TopNavbar = () => {
             <Link href="/search" className="w-full">
               <SearchInput
                 className="pointer-events-none"
-                placeholder="Search your favorite movies..."
+                placeholder="Đang tìm kiếm trong Vũ Trụ..."
               />
             </Link>
           </NavbarItem>

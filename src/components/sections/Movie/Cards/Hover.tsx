@@ -113,7 +113,7 @@ const HoverPosterCard: React.FC<{ id: number; fullWidth?: boolean }> = ({ id, fu
                 variant="shadow"
                 startContent={<Icon icon="solar:play-circle-bold" fontSize={24} />}
               >
-                Play Now
+                Xem ngay
               </Button>
               <BookmarkButton data={bookmarkData} isTooltipDisabled />
             </div>

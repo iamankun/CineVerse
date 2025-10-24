@@ -14,41 +14,41 @@ import {
 import { DISCLAIMER_STORAGE_KEY, IS_BROWSER } from "@/utils/constants";
 import { cn } from "@/utils/helpers";
 
-const COUNTDOWN_DURATION = 10;
+const COUNTDOWN_DURATION = 3;
 const MODAL_SIZE = "3xl";
 const DISCLAIMER_CONTENT = {
-  title: "Disclaimer",
+  title: "Tuyên bố Miễn trừ Trách nhiệm",
   paragraphs: [
     {
       id: "welcome",
       content:
-        "Welcome to Cinextma - a free and open-source movie streaming website. Please read this disclaimer carefully before using this website.",
+        "Chào mừng đến với CineVerse - Website xem phim miễn phí và mã nguồn mở. Vui lòng đọc kỹ tuyên bố này trước khi sử dụng website.",
     },
     {
       id: "purpose",
-      content: "Cinextma is developed solely for",
-      emphasis: "educational and learning purposes.",
+      content: "CineVerse được phát triển hoàn toàn cho",
+      emphasis: "mục đích người việt yêu điện ảnh và chương trình truyền hình.",
       continuation:
-        "This website is an open-source project intended to demonstrate web development skills and is not meant to promote or encourage digital piracy in any form.",
+        "Website này là dự án mã nguồn nhằm khuyến khích đẩy mạnh các dự án phim và truyền hình bao gồm cả điện ảnh lồng tiếng và phụ đề.",
     },
     {
       id: "content-source",
       content:
-        "All content displayed on Cinextma (including but not limited to movies, images, posters, and related information) is sourced from",
-      emphasis: "third-party providers through APIs or embedding.",
+        "Tất cả nội dung hiển thị trên CineVerse (bao gồm nhưng không giới hạn ở phim, hình ảnh, poster và thông tin liên quan) được lấy từ",
+      emphasis: "các nhà cung cấp bên thứ ba thông qua API TMDB và nhúng nội dung bên thứ 3 như YouTube, Dailymotion và các bên phân phối khác.",
       continuation:
-        "I do not host, store, or distribute any media files on my servers. The website merely aggregates content that is already available on the internet.",
+        "Tôi không lưu trữ, phân phối hay host bất kỳ tệp media nào trên server. Website chỉ tổng hợp nội dung đã có sẵn trên internet.",
     },
     {
       id: "responsibility",
       content:
-        "By using Cinextma, you acknowledge that I bears no responsibility for user actions, content accuracy, or any direct or indirect damages arising from the use of this website. Users are solely responsible for their actions while using this service. I respect intellectual property rights and will respond to legitimate requests from copyright holders for content removal.",
+        "Bằng việc sử dụng CineVerse, bạn thừa nhận rằng tôi không chịu trách nhiệm về hành động của người dùng, độ chính xác của nội dung, hoặc bất kỳ thiệt hại trực tiếp hay gián tiếp nào phát sinh từ việc sử dụng website này. Người dùng hoàn toàn chịu trách nhiệm về hành động của mình khi sử dụng dịch vụ. Tôi tôn trọng quyền sở hữu trí tuệ và sẽ phản hồi các yêu cầu hợp pháp từ chủ sở hữu bản quyền để gỡ bỏ nội dung.",
     },
     {
       id: "usage",
       content:
-        "This website should only be used for learning purposes. Any illegal activities, including but not limited to unauthorized downloading, redistribution of content, or commercial use, are strictly prohibited. By using Cinextma, you agree to these terms and acknowledge that",
-      emphasis: "you use the service at your own risk.",
+        "Website này đang trong quá trình hoàn thiện nên rất mong bạn thông cảm khi có lỗi diễn ra. Mọi hoạt động bất hợp pháp, bao gồm nhưng không giới hạn ở tải xuống trái phép, phân phối lại nội dung, hoặc sử dụng thương mại đều bị nghiêm cấm. Bằng việc sử dụng CineVerse, bạn đồng ý với các điều khoản này và thừa nhận rằng",
+      emphasis: "bạn sử dụng dịch vụ với rủi ro của chính mình.",
     },
   ],
 };
@@ -95,7 +95,7 @@ const Disclaimer: React.FC = () => {
 
   const isButtonDisabled = secondsRemaining > 0;
   const buttonText = useMemo(
-    () => `Agree${isButtonDisabled ? ` (${secondsRemaining})` : ""}`,
+    () => `Đồng ý${isButtonDisabled ? ` (${secondsRemaining})` : ""}`,
     [isButtonDisabled, secondsRemaining],
   );
 

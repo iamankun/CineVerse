@@ -33,7 +33,7 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
     >
       <ContentTypeSelection className="justify-center" />
       <SearchInput
-        placeholder={`Search your favorite ${content === "movie" ? "movies" : "TV shows"}...`}
+        placeholder={`Tìm kiếm ${content === "movie" ? "phim" : "chương trình TV"} yêu thích...`}
         isLoading={isPending && isSearchTriggered}
         autoFocus
         value={searchQuery}

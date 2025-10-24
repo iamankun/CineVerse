@@ -15,35 +15,35 @@ import { TbFolder, TbFolderFilled } from "react-icons/tb";
 
 export const siteConfig: SiteConfigType = {
   name: "CineVerse",
-  description: "Vũ trụ Điện Ảnh cho Gen",
+  description: "Vũ trụ Điện Ảnh dành cho bạn",
   favicon: "/favicon.ico",
   navItems: [
     {
-      label: "",
+      label: "CineVerse",
       href: "/",
       icon: <GoHome className="size-full" />,
       activeIcon: <GoHomeFill className="size-full" />,
     },
     {
-      label: "",
+      label: "Khám phá",
       href: "/discover",
       icon: <IoCompassOutline className="size-full" />,
       activeIcon: <IoCompass className="size-full" />,
     },
     {
-      label: "",
+      label: "Tìm kiếm",
       href: "/search",
       icon: <BiSearchAlt2 className="size-full" />,
       activeIcon: <BiSolidSearchAlt2 className="size-full" />,
     },
     {
-      label: "",
+      label: "Thư viện",
       href: "/library",
       icon: <TbFolder className="size-full" />,
       activeIcon: <TbFolderFilled className="size-full" />,
     },
     {
-      label: "",
+      label: "Giới thiệu",
       href: "/about",
       icon: <IoInformationCircleOutline className="size-full" />,
       activeIcon: <IoInformationCircle className="size-full" />,
@@ -52,14 +52,17 @@ export const siteConfig: SiteConfigType = {
   themes: [
     {
       name: "light",
+      label: "Sáng",
       icon: <IoIosSunny className="size-full" />,
     },
     {
       name: "dark",
+      label: "Tối",
       icon: <IoMoon className="size-full" />,
     },
     {
       name: "system",
+      label: "Hệ thống",
       icon: <HiComputerDesktop className="size-full" />,
     },
   ],
