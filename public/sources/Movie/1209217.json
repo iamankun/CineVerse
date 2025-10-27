@@ -1,0 +1,21 @@
+{
+  "tmdbId": 1209217,
+  "title": "Ngôi Sao 5 Cánh 1 Triệu Đô",
+  "year": 2024,
+  "sources": [
+    {
+      "provider": "dailymotion",
+      "url": "https://www.dailymotion.com/embed/video/k7o3G7XEmSp7szD0HRo",
+      "language": "vi",
+      "subtitles": ["vi"]
+    }
+  ],
+  "metadata": {
+    "movie-rating": "K",
+    "genre": ["Anime", "Action", "Adventure"],
+    "duration": 120,
+    "status": "Released",
+    "note": "Phim Điện Ảnh Lồng Tiếng"
+  },
+  "lastUpdated": "2025-10-27T00:00:00Z"
+}
