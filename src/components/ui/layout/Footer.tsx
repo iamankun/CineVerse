@@ -75,9 +75,6 @@ const Footer: React.FC<FooterProps> = ({ className }) => {
                 height={48}
                 className="h-12 w-auto pointer-events-none"
               />
-              <h3 className="text-2xl font-bold text-warning group-hover:text-warning-400 transition-colors pointer-events-none">
-                CineVerse
-              </h3>
             </button>
             <p className="mb-4 text-sm text-foreground-600">
               {siteConfig.description}
@@ -178,22 +175,26 @@ const Footer: React.FC<FooterProps> = ({ className }) => {
               Điều khoản
             </Link>
             <span>•</span>
-            <p>v1.2.3</p>
+            <p>v1.3.0</p>
           </div>
         </div>
 
         {/* TMDB Attribution */}
-        <div className="mt-6 text-center">
-          <p className="text-xs text-foreground-400">
-            Dữ liệu phim được cung cấp bởi{" "}
-            <Link
-              isExternal
-              href="https://www.themoviedb.org"
-              className="text-warning hover:underline"
-            >
-              The Movie Database (TMDB)
-            </Link>
-          </p>
+        <div className="mt-6 flex items-center gap-2 text-xs text-foreground-400">
+          <span>Dữ liệu phim được cung cấp bởi</span>
+          <Link
+            isExternal
+            href="https://www.themoviedb.org"
+            className="inline-block transition-opacity hover:opacity-80"
+          >
+            <Image
+              src="https://www.themoviedb.org/assets/2/v4/logos/v2/blue_short-8e7b30f73a4020692ccca9c88bafe5dcb6f8a62a4c6bc55cd9ba82bb2cd95f6c.svg"
+              alt="The Movie Database (TMDB)"
+              width={80}
+              height={20}
+              className="h-5 w-auto"
+            />
+          </Link>
         </div>
       </div>
     </footer>

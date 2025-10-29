@@ -6,13 +6,12 @@ export default function Loading() {
       <div className="flex flex-col items-center gap-6">
         <Image
           src="/logo.gif"
-          alt="CineVerse Loading"
+          alt="CineVerse đang tải..."
           width={150}
           height={150}
           priority
           unoptimized
         />
-        <h3 className="text-xl font-bold text-warning">CineVerse</h3>
       </div>
     </div>
   );

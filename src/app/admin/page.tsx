@@ -1,0 +1,78 @@
+"use client";
+
+import { useRouter } from "next/navigation";
+import { Card, CardBody, CardHeader } from "@heroui/react";
+import { IoStatsChart, IoNotifications } from "react-icons/io5";
+
+export default function AdminPage() {
+  const router = useRouter();
+
+  const adminOptions = [
+    {
+      title: "Dashboard",
+      description: "Xem thống kê và quản lý hệ thống",
+      icon: <IoStatsChart className="text-6xl" />,
+      path: "/admin/dashboard",
+      color: "bg-gradient-to-br from-blue-500 to-cyan-500",
+    },
+    {
+      title: "Thông báo",
+      description: "Quản lý thông báo và tin tức",
+      icon: <IoNotifications className="text-6xl" />,
+      path: "/admin/notifications",
+      color: "bg-gradient-to-br from-orange-500 to-red-500",
+    },
+  ];
+
+  return (
+    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-gray-900 via-gray-800 to-black p-4">
+      <div className="w-full max-w-5xl">
+        {/* Header */}
+        <div className="mb-12 text-center">
+          <h1 className="mb-4 text-5xl font-bold text-white">
+            CineVerse Vietnam
+          </h1>
+          <p className="text-xl text-gray-400">
+            Lựa chọn tính năng
+          </p>
+        </div>
+
+        {/* Options Grid */}
+        <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
+          {adminOptions.map((option) => (
+            <Card
+              key={option.path}
+              isPressable
+              isHoverable
+              onPress={() => router.push(option.path)}
+              className="transform border-2 border-transparent bg-gray-800/50 backdrop-blur-sm transition-all duration-300 hover:scale-105 hover:border-white/20 hover:shadow-2xl"
+            >
+              <CardHeader className="flex-col items-start px-6 pt-6">
+                <div
+                  className={`mb-4 flex h-20 w-20 items-center justify-center rounded-2xl ${option.color} text-white shadow-lg`}
+                >
+                  {option.icon}
+                </div>
+                <h2 className="text-3xl font-bold text-white">
+                  {option.title}
+                </h2>
+              </CardHeader>
+              <CardBody className="px-6 pb-6">
+                <p className="text-lg text-gray-400">
+                  {option.description}
+                </p>
+              </CardBody>
+            </Card>
+          ))}
+        </div>
+
+        {/* Footer Info */}
+        <div className="mt-12 text-center">
+          <p className="text-sm text-gray-500">
+            Bản quyền CineVerse thuộc An Kun Studio tại Việt Nam
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}

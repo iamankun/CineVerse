@@ -5,7 +5,6 @@ import { useEffect, useState } from "react";
 import TopNavbar from "@/components/ui/layout/TopNavbar";
 import BottomNavbar from "@/components/ui/layout/BottomNavbar";
 import Footer from "@/components/ui/layout/Footer";
-import Sidebar from "@/components/ui/layout/Sidebar";
 import { FloatingNavBar } from "@/components/ui/layout/FloatingNavBar";
 import { cn } from "@/utils/helpers";
 import { IS_PRODUCTION, SpacingClasses } from "@/utils/constants";
@@ -44,11 +43,9 @@ export default function RootLayoutContent({ children }: { children: React.ReactN
     <>
       {IS_PRODUCTION && <Disclaimer />}
       <TopNavbar />
-      <Sidebar>
-        <main className={cn("container mx-auto max-w-full flex-1 pb-safe-footer", SpacingClasses.main)}>
-          {children}
-        </main>
-      </Sidebar>
+      <main className={cn("container mx-auto max-w-full flex-1 pb-safe-footer", SpacingClasses.main)}>
+        {children}
+      </main>
       <Footer />
       <BottomNavbar />
       <FloatingNavBar />
