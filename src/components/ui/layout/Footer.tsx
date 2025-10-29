@@ -7,6 +7,8 @@ import { usePathname } from "next/navigation";
 import Image from "next/image";
 import { FaFacebook, FaYoutube, FaGithub } from "react-icons/fa";
 import { IoMail } from "react-icons/io5";
+import { clearAllCache, reloadAfterCacheClear } from "@/utils/cache";
+import { useState } from "react";
 
 interface FooterProps {
   className?: string;
@@ -15,6 +17,36 @@ interface FooterProps {
 const Footer: React.FC<FooterProps> = ({ className }) => {
   const pathName = usePathname();
   const currentYear = new Date().getFullYear();
+  const [isClearing, setIsClearing] = useState(false);
+
+  const handleClearCache = async () => {
+    if (isClearing) return;
+
+    setIsClearing(true);
+
+    try {
+      const result = await clearAllCache();
+
+      if (result.success) {
+        // Hiển thị thông báo thành công
+        console.log("✅", result.message);
+        if (result.details && result.details.length > 0) {
+          console.log("Chi tiết:", result.details);
+        }
+
+        // Reload trang sau 1 giây
+        reloadAfterCacheClear(1000);
+      } else {
+        console.error("❌", result.message);
+        alert(result.message);
+        setIsClearing(false);
+      }
+    } catch (error) {
+      console.error("Clear cache error:", error);
+      alert("Có lỗi khi làm mới cache");
+      setIsClearing(false);
+    }
+  };
 
   return (
     <footer
@@ -28,10 +60,25 @@ const Footer: React.FC<FooterProps> = ({ className }) => {
         <div className="grid grid-cols-1 gap-8 md:grid-cols-4">
           {/* Brand Section */}
           <div className="col-span-1 md:col-span-2">
-            <div className="mb-4 flex items-center gap-2">
-              <Image src="/logo.gif" alt="CineVerse" width={48} height={48} className="h-12 w-auto" />
-              <h3 className="text-2xl font-bold text-warning">CineVerse</h3>
-            </div>
+            <button
+              onClick={handleClearCache}
+              disabled={isClearing}
+              type="button"
+              className="mb-4 flex items-center gap-2 transition-transform hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed group cursor-pointer select-auto"
+              title="Click để làm mới toàn bộ cache"
+              aria-label="Làm mới cache"
+            >
+              <Image
+                src="/logo.gif"
+                alt="CineVerse"
+                width={48}
+                height={48}
+                className="h-12 w-auto pointer-events-none"
+              />
+              <h3 className="text-2xl font-bold text-warning group-hover:text-warning-400 transition-colors pointer-events-none">
+                CineVerse
+              </h3>
+            </button>
             <p className="mb-4 text-sm text-foreground-600">
               {siteConfig.description}
             </p>

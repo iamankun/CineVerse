@@ -21,11 +21,15 @@ const MoviePlayerPage: NextPage<Params<{ id: number }>> = ({ params }) => {
   } = useQuery({
     queryFn: () => tmdb.movies.details(id, [], 'vi-VN'),
     queryKey: ["movie-player-detail", id],
+    staleTime: 86400000, // 24 hours (1 ngày)
+    gcTime: 86400000, // 24 hours
   });
 
   const { data: startAt, isPending: isPendingStartAt } = useQuery({
     queryFn: () => getMovieLastPosition(id),
     queryKey: ["movie-player-start-at", id],
+    staleTime: 86400000, // 24 hours
+    gcTime: 86400000, // 24 hours
   });
 
   if (isPending || isPendingStartAt) {

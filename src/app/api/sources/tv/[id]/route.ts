@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { readFile } from "fs/promises";
 import { join } from "path";
 
+export const dynamic = 'force-dynamic';
+
 // Helper function to convert Movie parts format to TV seasons format
 function convertPartsToSeasons(movieData: any) {
   if (!movieData.parts) return null;
@@ -70,21 +72,35 @@ export async function GET(
     
     // Nếu có season và episode, trả về nguồn cụ thể cho tập đó
     if (season && episode && data.seasons?.[season]?.[episode]) {
-      return NextResponse.json({ 
-        success: true, 
-        data: {
-          tmdbId: data.tmdbId,
-          title: data.title,
-          season: parseInt(season),
-          episode: parseInt(episode),
-          sources: data.seasons[season][episode].sources,
-          isConverted
+      return NextResponse.json(
+        { 
+          success: true, 
+          data: {
+            tmdbId: data.tmdbId,
+            title: data.title,
+            season: parseInt(season),
+            episode: parseInt(episode),
+            sources: data.seasons[season][episode].sources,
+            isConverted
+          }
+        },
+        {
+          headers: {
+            'Cache-Control': 'public, s-maxage=86400, stale-while-revalidate=172800', // Cache 1 ngày, stale 2 ngày
+          }
         }
-      });
+      );
     }
     
     // Nếu không có season/episode, trả về toàn bộ dữ liệu
-    return NextResponse.json({ success: true, data, isConverted });
+    return NextResponse.json(
+      { success: true, data, isConverted },
+      {
+        headers: {
+          'Cache-Control': 'public, s-maxage=86400, stale-while-revalidate=172800', // Cache 1 ngày, stale 2 ngày
+        }
+      }
+    );
   } catch (error) {
     // File không tồn tại hoặc lỗi đọc file
     return NextResponse.json(

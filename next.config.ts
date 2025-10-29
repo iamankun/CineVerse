@@ -27,6 +27,10 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "image.tmdb.org",
       },
+      {
+        protocol: "https",
+        hostname: "wallpapercave.com",
+      },
     ],
   },
   // https://github.com/payloadcms/payload/issues/12550#issuecomment-2939070941

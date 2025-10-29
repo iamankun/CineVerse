@@ -4,18 +4,12 @@ import { Mulish } from "@/utils/fonts";
 import "../styles/globals.css";
 import "../styles/lightbox.css";
 import Providers from "./providers";
-import TopNavbar from "@/components/ui/layout/TopNavbar";
-import BottomNavbar from "@/components/ui/layout/BottomNavbar";
-import Footer from "@/components/ui/layout/Footer";
-import Sidebar from "@/components/ui/layout/Sidebar";
+import RootLayoutContent from "@/components/RootLayoutContent";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Analytics } from "@vercel/analytics/next";
 import { cn } from "@/utils/helpers";
-import { IS_PRODUCTION, SpacingClasses } from "@/utils/constants";
-import dynamic from "next/dynamic";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { Suspense } from "react";
-const Disclaimer = dynamic(() => import("@/components/ui/overlay/Disclaimer"));
 
 export const metadata: Metadata = {
   title: siteConfig.name,
@@ -62,15 +56,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <Suspense>
           <NuqsAdapter>
             <Providers>
-              {IS_PRODUCTION && <Disclaimer />}
-              <TopNavbar />
-              <Sidebar>
-                <main className={cn("container mx-auto max-w-full flex-1 pb-safe-footer", SpacingClasses.main)}>
-                  {children}
-                </main>
-              </Sidebar>
-              <Footer />
-              <BottomNavbar />
+              <RootLayoutContent>{children}</RootLayoutContent>
             </Providers>
           </NuqsAdapter>
         </Suspense>

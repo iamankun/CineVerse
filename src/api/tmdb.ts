@@ -63,7 +63,10 @@ export async function getMovieDetails(
         'accept': 'application/json'
       },
       cache: 'force-cache',
-      next: { revalidate: 3600 } // Cache 1 hour
+      next: { 
+        revalidate: 86400, // Cache 24 hours (1 ngày) - Tăng từ 1h lên 1 ngày cho xem liên tục
+        tags: ['tmdb', 'movies', `movie-${movieId}`, 'images', 'videos', 'trailers', 'logos']
+      }
     }
   );
 
@@ -108,7 +111,10 @@ export async function getTvShowDetails(
         'accept': 'application/json'
       },
       cache: 'force-cache',
-      next: { revalidate: 3600 } // Cache 1 hour
+      next: { 
+        revalidate: 86400, // Cache 24 hours (1 ngày)
+        tags: ['tmdb', 'tv-shows', `tv-${tvId}`, 'images', 'videos', 'trailers', 'logos']
+      }
     }
   );
 
@@ -144,7 +150,10 @@ export async function getTvSeasonDetails(
         'accept': 'application/json'
       },
       cache: 'force-cache',
-      next: { revalidate: 3600 } // Cache 1 hour
+      next: { 
+        revalidate: 86400, // Cache 24 hours (1 ngày)
+        tags: ['tmdb', 'tv-shows', `tv-${tvId}`, `season-${seasonNumber}`, 'images', 'posters']
+      }
     }
   );
 

@@ -3,7 +3,6 @@
 import { tmdb } from "@/api/tmdb";
 import ThreeDMarquee from "@/components/ui/background/ThreeDMarquee";
 import IconButton from "@/components/ui/button/IconButton";
-import Brand from "@/components/ui/other/BrandLogo";
 import { SpacingClasses } from "@/utils/constants";
 import { cn, isEmpty, shuffleArray } from "@/utils/helpers";
 import { ArrowLeft } from "@/utils/icons";
@@ -14,6 +13,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { usePathname } from "next/navigation";
 import { parseAsBoolean, parseAsStringLiteral, useQueryState } from "nuqs";
 import { useEffect, useMemo } from "react";
+import Image from "next/image";
 import AuthForgotPasswordForm from "./ForgotPassword";
 import AuthLoginForm from "./Login";
 import AuthRegisterForm from "./Register";
@@ -95,7 +95,14 @@ const AuthForms: React.FC = () => {
                 icon={<ArrowLeft className="text-4xl transition-transform group-hover:scale-125" />}
               />
             )}
-            <Brand className="text-3xl md:text-4xl" animate />
+            <Image
+              src="/logo.gif"
+              alt="CineVerse Logo"
+              width={120}
+              height={120}
+              className="rounded-xl"
+              priority
+            />
           </CardHeader>
           <ScrollShadow hideScrollBar visibility="none">
             <AnimatePresence mode="sync">

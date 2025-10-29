@@ -5,6 +5,8 @@ export const env = createEnv({
   server: {
     PROTECTED_PATHS: z.string().optional(),
     SUPABASE_SERVICE_ROLE_KEY: z.string().min(1),
+    ADMIN_ACCOUNT: z.string().min(1),
+    ADMIN_PASSWORD: z.string().min(1),
   },
   client: {
     NEXT_PUBLIC_TMDB_ACCESS_TOKEN: z.string().min(1),

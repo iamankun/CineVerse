@@ -23,6 +23,8 @@ const TvShowPlayerPage: NextPage<Params<{ id: number; season: number; episode: n
   } = useQuery({
     queryFn: () => tmdb.tvShows.details(id, [], 'vi-VN'),
     queryKey: ["tv-show-player-details", id],
+    staleTime: 86400000, // 24 hours (1 ngày)
+    gcTime: 86400000, // 24 hours
   });
 
   const {
@@ -32,11 +34,15 @@ const TvShowPlayerPage: NextPage<Params<{ id: number; season: number; episode: n
   } = useQuery({
     queryFn: () => getTvSeasonDetailsWithCineVerse(id, season),
     queryKey: ["tv-show-season-merged", id, season],
+    staleTime: 86400000, // 24 hours
+    gcTime: 86400000, // 24 hours
   });
 
   const { data: startAt, isPending: isPendingStartAt } = useQuery({
     queryFn: () => getTvShowLastPosition(id, season, episode),
     queryKey: ["tv-show-player-start-at", id, season, episode],
+    staleTime: 86400000, // 24 hours
+    gcTime: 86400000, // 24 hours
   });
 
   if (isPendingTv || isPendingSeason || isPendingStartAt) {

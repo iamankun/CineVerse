@@ -34,7 +34,7 @@ const MoviePlayer: React.FC<MoviePlayerProps> = ({ movie, startAt }) => {
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [movieRating, setMovieRating] = useState<{ rating: string; description: string } | null>(null);
   const [videoCurrentTime, setVideoCurrentTime] = useState(0);
-  const logoPath = useMovieLogo(movie.id, "movie");
+  const logoPath = useMovieLogo(movie.id, "movie", movie.original_language);
   const cardRef = useRef<HTMLDivElement>(null);
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const title = mutateMovieTitle(movie);

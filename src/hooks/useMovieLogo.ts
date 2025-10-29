@@ -1,7 +1,13 @@
 import { useEffect, useState } from "react";
 import { env } from "@/utils/env";
 
-export const useMovieLogo = (movieId: number, type: "movie" | "tv") => {
+interface UseMovieLogoOptions {
+  movieId: number;
+  type: "movie" | "tv";
+  originalLanguage?: string;
+}
+
+export const useMovieLogo = (movieId: number, type: "movie" | "tv", originalLanguage?: string) => {
   const [logoPath, setLogoPath] = useState<string | null>(null);
 
   useEffect(() => {
@@ -31,14 +37,28 @@ export const useMovieLogo = (movieId: number, type: "movie" | "tv") => {
         
         console.log(`Logo data for ${type} ${movieId}:`, data);
         
-        // Find Vietnamese logo first, fallback to English, then any logo
+        // Priority order: vi-VN → en → null → original language → any
+        // CHỈ sử dụng original language khi KHÔNG có vi, en, hoặc null
         const viLogo = data.logos?.find((logo: any) => logo.iso_639_1 === "vi");
         const enLogo = data.logos?.find((logo: any) => logo.iso_639_1 === "en");
+        const nullLogo = data.logos?.find((logo: any) => logo.iso_639_1 === null);
+        const originalLogo = originalLanguage 
+          ? data.logos?.find((logo: any) => logo.iso_639_1 === originalLanguage)
+          : null;
         const anyLogo = data.logos?.[0];
         
-        const selectedLogo = viLogo || enLogo || anyLogo;
+        // Select logo with priority: VI LUÔN ƯU TIÊN TRƯỚC
+        const selectedLogo = viLogo || enLogo || nullLogo || originalLogo || anyLogo;
         
-        console.log("Selected logo:", selectedLogo);
+        console.log("Logo selection:", {
+          hasVi: !!viLogo,
+          hasEn: !!enLogo,
+          hasNull: !!nullLogo,
+          hasOriginal: !!originalLogo,
+          selected: selectedLogo?.iso_639_1,
+          originalLanguage,
+          priority: viLogo ? "vi" : enLogo ? "en" : nullLogo ? "null" : originalLogo ? "original" : "any"
+        });
         
         if (selectedLogo) {
           setLogoPath(selectedLogo.file_path);
@@ -51,7 +71,7 @@ export const useMovieLogo = (movieId: number, type: "movie" | "tv") => {
     };
 
     fetchLogo();
-  }, [movieId, type]);
+  }, [movieId, type, originalLanguage]);
 
   return logoPath;
 };

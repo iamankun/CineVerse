@@ -120,9 +120,10 @@ const CineVerseHero = () => {
   const currentItem = content?.[currentIndex];
   const currentContentType = currentItem?.contentType || "movie";
   const currentId = currentItem?.id || 0;
+  const originalLanguage = currentItem ? ("original_language" in currentItem ? currentItem.original_language : undefined) : undefined;
   
   // Call hooks unconditionally at top level
-  const logoPath = useMovieLogo(currentId, currentContentType);
+  const logoPath = useMovieLogo(currentId, currentContentType, originalLanguage);
 
   if (isPending || !content || content.length === 0 || !currentItem) {
     return null;
