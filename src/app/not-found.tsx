@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useRef } from "react";
+import { FloatingNavBar } from "@/components/ui/layout/FloatingNavBar";
 
 // Component chính
 const NotFound: React.FC = () => {
@@ -310,6 +311,9 @@ const NotFound: React.FC = () => {
                         <div className="astronaut__head-visor-flare2"></div>
                     </div>
                 </div>
+
+                {/* FloatingNavBar */}
+                <FloatingNavBar />
             </div>
         </>
     );
