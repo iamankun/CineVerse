@@ -5,9 +5,9 @@ import { FloatingNavBar } from "@/components/ui/layout/FloatingNavBar";
 
 // Component chính
 const NotFound: React.FC = () => {
-    // 1. Typescript for Refs
-    const visorCanvasRef: React.RefObject<HTMLCanvasElement> = useRef(null);
-    const cordCanvasRef: React.RefObject<HTMLCanvasElement> = useRef(null);
+    // 1. Typescript for Refs - Thêm generic type cho useRef
+    const visorCanvasRef = useRef<HTMLCanvasElement>(null);
+    const cordCanvasRef = useRef<HTMLCanvasElement>(null);
     
     // Sử dụng useEffect để đặt document title
     useEffect(() => {
