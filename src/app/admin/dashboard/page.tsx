@@ -13,8 +13,14 @@ import {
   Textarea,
   Divider,
   Chip,
+  Table,
+  TableHeader,
+  TableColumn,
+  TableBody,
+  TableRow,
+  TableCell,
 } from "@heroui/react";
-import { IoSearch, IoSave, IoRefresh, IoAdd, IoTrash } from "react-icons/io5";
+import { IoSearch, IoSave, IoRefresh, IoAdd, IoTrash, IoList, IoCreate } from "react-icons/io5";
 import { searchMovies, searchTV, getMovieDetails, getTvShowDetails } from "@/api/tmdb";
 import Image from "next/image";
 
@@ -52,6 +58,12 @@ interface ExistingSource {
   title: string;
   year: number;
   type: "movie" | "tv";
+  mtime: Date;
+  // TV-specific
+  totalSeasons?: number;
+  totalEpisodes?: number;
+  // Movie-specific
+  sourcesCount?: number;
 }
 
 export default function DashboardPage() {
@@ -61,6 +73,9 @@ export default function DashboardPage() {
   const [isSearching, setIsSearching] = useState(false);
   const [selectedItem, setSelectedItem] = useState<TMDBResult | null>(null);
   const [isLoadingDetails, setIsLoadingDetails] = useState(false);
+  
+  // View mode: "form" hoặc "table"
+  const [viewMode, setViewMode] = useState<"form" | "table">("table");
   
   // Form data - Dynamic structure based on content type
   const [formData, setFormData] = useState<any>({
@@ -88,12 +103,14 @@ export default function DashboardPage() {
 
   // Existing sources
   const [existingSources, setExistingSources] = useState<ExistingSource[]>([]);
+  const [allSources, setAllSources] = useState<ExistingSource[]>([]); // Tất cả sources cho bảng
   const [isLoadingExisting, setIsLoadingExisting] = useState(false);
   const [currentJsonData, setCurrentJsonData] = useState<string>("");
 
   // Load existing sources
   useEffect(() => {
     loadExistingSources();
+    loadAllSources(); // Load tất cả sources cho bảng
   }, [contentType]);
 
   const loadExistingSources = async () => {
@@ -108,6 +125,19 @@ export default function DashboardPage() {
       console.error("Error loading existing sources:", error);
     } finally {
       setIsLoadingExisting(false);
+    }
+  };
+
+  // Load tất cả sources (không filter theo type)
+  const loadAllSources = async () => {
+    try {
+      const response = await fetch(`/api/sources/list`);
+      if (response.ok) {
+        const data = await response.json();
+        setAllSources(data.sources || []);
+      }
+    } catch (error) {
+      console.error("Error loading all sources:", error);
     }
   };
 
@@ -190,21 +220,30 @@ export default function DashboardPage() {
   };
 
   // Load existing source data
-  const handleLoadExisting = async (tmdbId: number) => {
+  const handleLoadExisting = async (tmdbId: number, sourceType?: "movie" | "tv") => {
     try {
-      const response = await fetch(`/api/sources/${contentType}/${tmdbId}`);
+      const typeToLoad = sourceType || contentType;
+      const response = await fetch(`/api/sources/${typeToLoad}/${tmdbId}`);
       if (response.ok) {
         const result = await response.json();
         // API returns { success: true, data: {...} }
         const data = result.success ? result.data : result;
+        
+        // Set content type nếu khác với hiện tại
+        if (sourceType && sourceType !== contentType) {
+          setContentType(sourceType);
+        }
         
         setFormData(data);
         setSelectedItem({ id: tmdbId } as TMDBResult);
         // Hiển thị JSON data
         setCurrentJsonData(JSON.stringify(data, null, 2));
         
+        // Chuyển sang chế độ form
+        setViewMode("form");
+        
         // For TV shows, set initial season and episode
-        if (contentType === "tv" && data.seasons) {
+        if (typeToLoad === "tv" && data.seasons) {
           const firstSeason = Object.keys(data.seasons)[0];
           if (firstSeason) {
             setSelectedSeason(firstSeason);
@@ -465,13 +504,132 @@ export default function DashboardPage() {
       <div className="mx-auto max-w-7xl">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="mb-2 text-4xl font-bold text-white">
-            Hệ thống quản lý CineVerse
-          </h1>
-          <p className="text-gray-400">Quản lý nguồn phim và chương trình TV</p>
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="mb-2 text-4xl font-bold text-white">
+                Hệ thống quản lý CineVerse
+              </h1>
+              <p className="text-gray-400">Quản lý nguồn phim và chương trình TV</p>
+            </div>
+            <div className="flex gap-2">
+              <Button
+                color={viewMode === "table" ? "primary" : "default"}
+                variant={viewMode === "table" ? "solid" : "flat"}
+                startContent={<IoList />}
+                onPress={() => setViewMode("table")}
+              >
+                Xem bảng
+              </Button>
+              <Button
+                color={viewMode === "form" ? "primary" : "default"}
+                variant={viewMode === "form" ? "solid" : "flat"}
+                startContent={<IoCreate />}
+                onPress={() => setViewMode("form")}
+              >
+                Thêm/Sửa
+              </Button>
+            </div>
+          </div>
         </div>
 
-        <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+        {viewMode === "table" ? (
+          /* TABLE VIEW: Hiển thị tất cả sources */
+          <Card className="bg-gray-800/50 backdrop-blur-sm">
+            <CardHeader className="flex items-center justify-between">
+              <h3 className="text-2xl font-semibold text-white">
+                Tất cả nguồn phim ({allSources.length})
+              </h3>
+              <Button
+                size="sm"
+                isIconOnly
+                variant="flat"
+                onPress={loadAllSources}
+              >
+                <IoRefresh />
+              </Button>
+            </CardHeader>
+            <CardBody>
+              <Table
+                aria-label="Bảng nguồn phim"
+                classNames={{
+                  base: "max-h-[600px] overflow-auto",
+                  table: "min-h-[400px]",
+                }}
+              >
+                <TableHeader>
+                  <TableColumn>LOẠI</TableColumn>
+                  <TableColumn>TMDB ID</TableColumn>
+                  <TableColumn>TIÊU ĐỀ</TableColumn>
+                  <TableColumn>NĂM</TableColumn>
+                  <TableColumn>CHI TIẾT</TableColumn>
+                  <TableColumn>NGÀY CẬP NHẬT</TableColumn>
+                  <TableColumn>HÀNH ĐỘNG</TableColumn>
+                </TableHeader>
+                <TableBody>
+                  {allSources.map((source) => (
+                    <TableRow key={`${source.type}-${source.tmdbId}`}>
+                      <TableCell>
+                        <Chip
+                          color={source.type === "movie" ? "primary" : "warning"}
+                          variant="flat"
+                          size="sm"
+                        >
+                          {source.type === "movie" ? "Phim" : "TV"}
+                        </Chip>
+                      </TableCell>
+                      <TableCell>
+                        <span className="font-mono text-sm text-gray-300">
+                          {source.tmdbId}
+                        </span>
+                      </TableCell>
+                      <TableCell>
+                        <span className="font-semibold text-white">
+                          {source.title}
+                        </span>
+                      </TableCell>
+                      <TableCell>
+                        <span className="text-gray-400">{source.year}</span>
+                      </TableCell>
+                      <TableCell>
+                        {source.type === "movie" ? (
+                          <Chip size="sm" variant="flat" color="success">
+                            {source.sourcesCount || 0} nguồn
+                          </Chip>
+                        ) : (
+                          <div className="flex gap-2">
+                            <Chip size="sm" variant="flat" color="secondary">
+                              {source.totalSeasons || 0} seasons
+                            </Chip>
+                            <Chip size="sm" variant="flat" color="secondary">
+                              {source.totalEpisodes || 0} tập
+                            </Chip>
+                          </div>
+                        )}
+                      </TableCell>
+                      <TableCell>
+                        <span className="text-xs text-gray-500">
+                          {new Date(source.mtime).toLocaleDateString("vi-VN")}
+                        </span>
+                      </TableCell>
+                      <TableCell>
+                        <Button
+                          size="sm"
+                          color="primary"
+                          variant="flat"
+                          onPress={() => handleLoadExisting(source.tmdbId, source.type)}
+                        >
+                          Chỉnh sửa
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </CardBody>
+          </Card>
+        ) : (
+          /* FORM VIEW: Original layout */
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">{
           {/* Left Column: Search & Existing */}
           <div className="lg:col-span-1">
             {/* Content Type Selection */}
@@ -1046,6 +1204,7 @@ export default function DashboardPage() {
             </Card>
           </div>
         </div>
+        )}
       </div>
     </div>
   );
