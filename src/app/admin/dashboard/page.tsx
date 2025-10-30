@@ -23,6 +23,7 @@ import {
 import { IoSearch, IoSave, IoRefresh, IoAdd, IoTrash, IoList, IoCreate } from "react-icons/io5";
 import { searchMovies, searchTV, getMovieDetails, getTvShowDetails } from "@/api/tmdb";
 import Image from "next/image";
+import AdminGuard from "@/components/AdminGuard";
 
 interface TMDBResult {
   id: number;
@@ -500,8 +501,9 @@ export default function DashboardPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black p-4">
-      <div className="mx-auto max-w-7xl">
+    <AdminGuard>
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black p-4">
+        <div className="mx-auto max-w-7xl">
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center justify-between">
@@ -1205,7 +1207,8 @@ export default function DashboardPage() {
           </div>
         </div>
         )}
+        </div>
       </div>
-    </div>
+    </AdminGuard>
   );
 }

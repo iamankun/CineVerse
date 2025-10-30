@@ -99,9 +99,15 @@ export async function GET(request: Request) {
     // Sắp xếp theo thời gian mới nhất
     const sortedSources = allSources.sort((a, b) => b.mtime.getTime() - a.mtime.getTime());
     
+    // Tách ra movieIds và tvIds để hỗ trợ CineVerseSources component
+    const movieIds = sortedSources.filter(s => s.type === "movie").map(s => s.tmdbId);
+    const tvIds = sortedSources.filter(s => s.type === "tv").map(s => s.tmdbId);
+    
     return NextResponse.json({
       sources: sortedSources,
-      total: sortedSources.length
+      total: sortedSources.length,
+      movieIds: movieIds,
+      tvIds: tvIds
     });
   } catch (error) {
     console.error('Error listing sources:', error);

@@ -3,7 +3,6 @@
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import TopNavbar from "@/components/ui/layout/TopNavbar";
-import BottomNavbar from "@/components/ui/layout/BottomNavbar";
 import Footer from "@/components/ui/layout/Footer";
 import { FloatingNavBar } from "@/components/ui/layout/FloatingNavBar";
 import { cn } from "@/utils/helpers";
@@ -47,7 +46,6 @@ export default function RootLayoutContent({ children }: { children: React.ReactN
         {children}
       </main>
       <Footer />
-      <BottomNavbar />
       <FloatingNavBar />
     </>
   );

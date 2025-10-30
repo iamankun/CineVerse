@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { Card, CardBody, CardHeader } from "@heroui/react";
 import { IoStatsChart, IoNotifications } from "react-icons/io5";
+import AdminGuard from "@/components/AdminGuard";
 
 export default function AdminPage() {
   const router = useRouter();
@@ -25,7 +26,8 @@ export default function AdminPage() {
   ];
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-gray-900 via-gray-800 to-black p-4">
+    <AdminGuard>
+      <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-gray-900 via-gray-800 to-black p-4">
       <div className="w-full max-w-5xl">
         {/* Header */}
         <div className="mb-12 text-center">
@@ -72,7 +74,8 @@ export default function AdminPage() {
             Bản quyền CineVerse thuộc An Kun Studio tại Việt Nam
           </p>
         </div>
+        </div>
       </div>
-    </div>
+    </AdminGuard>
   );
 }
