@@ -1,7 +1,7 @@
 {
   "tmdbId": 86031,
   "title": "Dr. Stone",
-  "audioVersion": "LongTieng",
+  "audioVersion": "Lồng tiếng",
   "year": 2019,
   "seasons": {
     "1": {
@@ -851,8 +851,8 @@
       "Shounen"
     ],
     "totalEpisodes": 57,
-    "totalSeasons": 3,
+    "totalSeasons": 4,
     "status": "Returning Series",
-    "note": "Phiên bản lồng tiếng từ Ani-One Vietnam. Đầy đủ 58 tập (24 + 11 + 22 + 1 OVA) của cả 3 mùa Dr. Stone."
+    "note": "Phiên bản lồng tiếng từ Ani-One Vietnam. Mùa 1: Dr. Stone (24 tập), Mùa 2: Dr. Stone: Ryusui (OVA đặc biệt - 2 tập), Mùa 3: Dr. Stone: Stone Wars (11 tập), Mùa 4: Dr. Stone: New World (22 tập). Tổng cộng 59 tập."
   }
 }

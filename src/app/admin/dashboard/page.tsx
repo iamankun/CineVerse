@@ -95,7 +95,7 @@ export default function DashboardPage() {
     seasons: {} as { [seasonNumber: string]: SeasonData }, // For TV shows
     metadata: {
       "movie-rating": "K",
-      audioVersion: "vietsub", // "vietsub" hoặc "lồng tiếng"
+      audioVersion: "subtitle", // "subtitle", "dubbed", or "original"
       lastUpdate: new Date().toISOString(),
       genre: [] as string[],
       duration: 0,
@@ -884,9 +884,15 @@ export default function DashboardPage() {
                         <Chip 
                           size="sm" 
                           variant="flat" 
-                          color={source.metadata?.audioVersion === "lồng tiếng" ? "secondary" : "default"}
+                          color={
+                            source.metadata?.audioVersion === "dubbed" ? "secondary" : 
+                            source.metadata?.audioVersion === "original" ? "primary" : 
+                            "default"
+                          }
                         >
-                          {source.metadata?.audioVersion === "lồng tiếng" ? "Lồng tiếng" : "Vietsub"}
+                          {source.metadata?.audioVersion === "dubbed" ? "Lồng tiếng" : 
+                           source.metadata?.audioVersion === "original" ? "Gốc" : 
+                           "Vietsub"}
                         </Chip>
                       </TableCell>
                       <TableCell>
@@ -1072,10 +1078,22 @@ export default function DashboardPage() {
           {/* Right Column: Form */}
           <div className="lg:col-span-2">
             <Card className="bg-gray-800/50 backdrop-blur-sm">
-              <CardHeader>
-                <h3 className="text-2xl font-semibold text-white">
-                  {selectedItem ? "Chỉnh sửa thông tin" : "Chọn phim để bắt đầu"}
-                </h3>
+              <CardHeader className="flex-col gap-3">
+                <div className="flex w-full items-center justify-between">
+                  <h3 className="text-2xl font-semibold text-white">
+                    {selectedItem ? "Chỉnh sửa thông tin" : "Chọn phim để bắt đầu"}
+                  </h3>
+                  {selectedItem && (
+                    <Button
+                      color="primary"
+                      size="md"
+                      startContent={<IoSave />}
+                      onPress={handleSave}
+                    >
+                      Lưu dữ liệu
+                    </Button>
+                  )}
+                </div>
               </CardHeader>
               <CardBody className="space-y-6">
                 {isLoadingDetails ? (
@@ -1088,8 +1106,10 @@ export default function DashboardPage() {
                     <div className="grid grid-cols-2 gap-4">
                       <Input
                         label="TMDB ID"
+                        type="number"
                         value={formData.tmdbId.toString()}
-                        isReadOnly
+                        onChange={(e) => setFormData((prev: any) => ({ ...prev, tmdbId: parseInt(e.target.value) || 0 }))}
+                        description="Có thể chỉnh sửa nếu ID trên TMDB không chính xác"
                         classNames={{
                           input: "text-white",
                           inputWrapper: "bg-gray-700",
@@ -1149,8 +1169,9 @@ export default function DashboardPage() {
                           base: "text-white",
                         }}
                       >
-                        <SelectItem key="vietsub">Vietsub (Phụ đề)</SelectItem>
-                        <SelectItem key="lồng tiếng">Lồng tiếng</SelectItem>
+                        <SelectItem key="subtitle">Phụ đề</SelectItem>
+                        <SelectItem key="dubbed">Lồng Tiếng</SelectItem>
+                        <SelectItem key="original">Nguyên bản</SelectItem>
                       </Select>
 
                       <Input
