@@ -8,15 +8,22 @@
       "title": "Dailymotion - Phụ đề",
       "url": "https://www.dailymotion.com/embed/video/x9mok9a",
       "language": "vi",
-      "subtitles": ["vi"]
+      "subtitles": [
+        "vi"
+      ]
     }
   ],
   "metadata": {
     "movie-rating": "T13",
-    "genre": ["Drama", "Family"],
+    "genre": [
+      "Drama",
+      "Family"
+    ],
     "duration": 120,
     "status": "Released",
-    "note": "Phim Việt Nam - Nguồn Dailymotion chất lượng cao"
+    "note": "Phim Việt Nam - Nguồn Dailymotion chất lượng cao",
+    "audioVersion": "lồng tiếng",
+    "lastUpdate": "2025-10-30T14:18:04.026Z"
   },
   "lastUpdated": "2025-10-24T00:00:00Z"
 }
