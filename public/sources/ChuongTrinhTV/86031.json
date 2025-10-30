@@ -304,6 +304,32 @@
     },
     "2": {
       "1": {
+        "title": "Tập 1 - Ngoại truyện - Ryusui - Khoa Kịch Nghệ Vương Quốc Khoa Học ",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Ani-One Vietnam - Lồng tiếng",
+            "url": "https://www.youtube.com/watch?v=J0zqUQALoXI",
+            "language": "vi",
+            "subtitles": ["vi"]
+          }
+        ]
+      },
+      "2": {
+        "title": "Tập 2 - Ngoại truyện - Ryusui - Khoa Kịch Nghệ Vương Quốc Khoa Học 2",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Ani-One Vietnam - Lồng tiếng",
+            "url": "https://www.youtube.com/watch?v=15Ae_gO0PE4",
+            "language": "vi",
+            "subtitles": ["vi"]
+          }
+        ]
+      }
+    },
+    "3": {
+      "1": {
         "title": "Tập 25 - Cuộc Chiến Thế Giới Đá Bắt Đầu",
         "sources": [
           {
@@ -436,7 +462,7 @@
         ]
       }
     },
-    "3": {
+    "4": {
       "1": {
         "title": "Tập 37 - New World Order",
         "sources": [
