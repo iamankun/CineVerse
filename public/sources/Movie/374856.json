@@ -9,15 +9,23 @@
       "title": "Conan Điện Ảnh - Cơn Ác Mộng Đen Tối - Lồng Tiếng",
       "url": "https://www.dailymotion.com/embed/video/k357O5gl7Mf5CtDdxOA",
       "language": "vi",
-      "subtitles": ["vi"]
+      "subtitles": [
+        "vi"
+      ]
     }
   ],
   "metadata": {
     "movie-rating": "K",
-    "genre": ["Anime", "Action", "Adventure"],
+    "genre": [
+      "Anime",
+      "Action",
+      "Adventure"
+    ],
     "duration": 120,
     "status": "Released",
-    "note": "Phim Điện Ảnh Lồng Tiếng"
+    "note": "Phim Điện Ảnh Lồng Tiếng",
+    "audioVersion": "LongTieng",
+    "lastUpdate": "2025-10-30T14:50:31.136Z"
   },
   "lastUpdated": "2025-10-27T00:00:00Z"
 }
