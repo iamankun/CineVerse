@@ -95,7 +95,7 @@ export default function DashboardPage() {
     seasons: {} as { [seasonNumber: string]: SeasonData }, // For TV shows
     metadata: {
       "movie-rating": "K",
-      audioVersion: "subtitle", // "subtitle", "dubbed", or "original"
+      audioVersion: "PhuDe", // "PhuDe", "LongTieng", or "Goc"
       lastUpdate: new Date().toISOString(),
       genre: [] as string[],
       duration: 0,
@@ -552,11 +552,13 @@ export default function DashboardPage() {
                              new Date().toISOString();
       
       // Detect audio version from note or metadata
-      let audioVersion = parsedData.metadata?.audioVersion || "vietsub";
+      let audioVersion = parsedData.metadata?.audioVersion || "subtitle";
       if (!parsedData.metadata?.audioVersion) {
         const note = parsedData.metadata?.note || "";
         if (note.toLowerCase().includes("lồng tiếng")) {
-          audioVersion = "lồng tiếng";
+          audioVersion = "dubbed";
+        } else if (note.toLowerCase().includes("nguyên bản") || note.toLowerCase().includes("original")) {
+          audioVersion = "original";
         }
       }
       
