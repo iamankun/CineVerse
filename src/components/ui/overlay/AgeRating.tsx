@@ -10,7 +10,7 @@ const AgeRating: React.FC<AgeRatingProps> = ({ rating, ratingDescription }) => {
   const [isExpanded, setIsExpanded] = useState(false);
 
   useEffect(() => {
-    // Show expanded rating notification every 10 minutes
+    // Show expanded rating notification every 5 minutes
     const showRating = () => {
       setIsExpanded(true);
 
@@ -23,8 +23,8 @@ const AgeRating: React.FC<AgeRatingProps> = ({ rating, ratingDescription }) => {
     // Show immediately on mount
     showRating();
 
-    // Then repeat every 10 minutes (600000ms)
-    const interval = setInterval(showRating, 600000);
+    // Then repeat every 5 minutes (300000ms)
+    const interval = setInterval(showRating, 300000);
 
     return () => clearInterval(interval);
   }, []);

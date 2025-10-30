@@ -39,9 +39,9 @@ const WatchingWithBrand: React.FC<WatchingWithBrandProps> = ({
     // Calculate elapsed video minutes since last show
     const videoMinutesElapsed = Math.floor((videoCurrentTime - lastVideoTimeShown) / 60);
 
-    // Show every 30 minutes of VIDEO time (not real time)
+    // Show every 6 minutes of VIDEO time (not real time)
     // This tracks actual playback time, so seeking/pausing doesn't affect it
-    if (videoMinutesElapsed >= 30 && !showMessage) {
+    if (videoMinutesElapsed >= 6 && !showMessage) {
       setShowMessage(true);
       setLastVideoTimeShown(videoCurrentTime);
 
