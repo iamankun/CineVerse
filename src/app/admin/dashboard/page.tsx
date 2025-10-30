@@ -552,13 +552,13 @@ export default function DashboardPage() {
                              new Date().toISOString();
       
       // Detect audio version from note or metadata
-      let audioVersion = parsedData.metadata?.audioVersion || "subtitle";
+      let audioVersion = parsedData.metadata?.audioVersion || "PhuDe";
       if (!parsedData.metadata?.audioVersion) {
         const note = parsedData.metadata?.note || "";
         if (note.toLowerCase().includes("lồng tiếng")) {
-          audioVersion = "dubbed";
+          audioVersion = "LongTieng";
         } else if (note.toLowerCase().includes("nguyên bản") || note.toLowerCase().includes("original")) {
-          audioVersion = "original";
+          audioVersion = "Goc";
         }
       }
       
@@ -887,14 +887,14 @@ export default function DashboardPage() {
                           size="sm" 
                           variant="flat" 
                           color={
-                            source.metadata?.audioVersion === "dubbed" ? "secondary" : 
-                            source.metadata?.audioVersion === "original" ? "primary" : 
+                            source.metadata?.audioVersion === "LongTieng" ? "secondary" : 
+                            source.metadata?.audioVersion === "Goc" ? "primary" : 
                             "default"
                           }
                         >
-                          {source.metadata?.audioVersion === "dubbed" ? "Lồng tiếng" : 
-                           source.metadata?.audioVersion === "original" ? "Gốc" : 
-                           "Vietsub"}
+                          {source.metadata?.audioVersion === "LongTieng" ? "Lồng tiếng" : 
+                           source.metadata?.audioVersion === "Goc" ? "Gốc" : 
+                           "Phụ đề"}
                         </Chip>
                       </TableCell>
                       <TableCell>
@@ -1171,9 +1171,9 @@ export default function DashboardPage() {
                           base: "text-white",
                         }}
                       >
-                        <SelectItem key="subtitle">Phụ đề</SelectItem>
-                        <SelectItem key="dubbed">Lồng Tiếng</SelectItem>
-                        <SelectItem key="original">Nguyên bản</SelectItem>
+                        <SelectItem key="PhuDe">Phụ đề</SelectItem>
+                        <SelectItem key="LongTieng">Lồng Tiếng</SelectItem>
+                        <SelectItem key="Goc">Nguyên bản</SelectItem>
                       </Select>
 
                       <Input
