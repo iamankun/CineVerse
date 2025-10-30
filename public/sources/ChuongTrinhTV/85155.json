@@ -1,0 +1,591 @@
+{
+  "tmdbId": 85155,
+  "title": "Lúc đó tôi chuyển sinh thành slime",
+  "audioVersion": "LongTieng",
+  
+  "year": 2018,
+  "seasons": {
+    "1": {
+      "1": {
+        "title": "Tập 1 - Bạo Phong Long Veldora",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Muse Vietnam - Lồng tiếng",
+            "url": "https://www.youtube.com/embed/lyInk14-C3E",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ]
+          }
+        ]
+      },
+      "2": {
+        "title": "Tập 2 - Gặp gỡ Goblin",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Muse Vietnam - Lồng tiếng",
+            "url": "https://www.youtube.com/embed/1k-U3kQBfH0",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ]
+          }
+        ]
+      },
+      "3": {
+        "title": "Tập 3 - Trận chiến ở làng Goblin",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Muse Vietnam - Lồng tiếng",
+            "url": "https://www.youtube.com/embed/e9LEeyMr60Y",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ]
+          }
+        ]
+      },
+      "4": {
+        "title": "Tập 4 - Tại Vương quốc của người lùn",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Muse Vietnam - Lồng tiếng",
+            "url": "https://www.youtube.com/embed/BsotIT47OOI",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ]
+          }
+        ]
+      },
+      "5": {
+        "title": "Tập 5 - Anh Hùng Vương, Gazel Dwargo",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Muse Vietnam - Lồng tiếng",
+            "url": "https://www.youtube.com/embed/LP_e9yHK4Zg",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ]
+          }
+        ]
+      },
+      "6": {
+        "title": "Tập 6 - Shizu",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Muse Vietnam - Lồng tiếng",
+            "url": "https://www.youtube.com/embed/Q6om5hQQu0c",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ]
+          }
+        ]
+      },
+      "7": {
+        "title": "Tập 7 - Kẻ chinh phục Hắc Hỏa",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Muse Vietnam - Lồng tiếng",
+            "url": "https://www.youtube.com/embed/APVrg-fdgdI",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ]
+          }
+        ]
+      },
+      "8": {
+        "title": "Tập 8 - Ý chí được kế thừa",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Muse Vietnam - Lồng tiếng",
+            "url": "https://www.youtube.com/embed/KlF9ukCtVtM",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ]
+          }
+        ]
+      },
+      "9": {
+        "title": "Tập 9 - Cuộc tấn công của Ogre",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Muse Vietnam - Lồng tiếng",
+            "url": "https://www.youtube.com/embed/X55np7Fu7P8",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ]
+          }
+        ]
+      },
+      "10": {
+        "title": "Tập 10 - Orc Lord",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Muse Vietnam - Lồng tiếng",
+            "url": "https://www.youtube.com/embed/z8ucWppX3SQ",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ]
+          }
+        ]
+      },
+      "11": {
+        "title": "Tập 11 - Gabiru Tới Rồi!",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Muse Vietnam - Lồng tiếng",
+            "url": "https://www.youtube.com/embed/cSPrOo10tc0",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ]
+          }
+        ]
+      },
+      "12": {
+        "title": "Tập 12 - Bánh Răng Bắt Đầu Lệch Trục",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Muse Vietnam - Lồng tiếng",
+            "url": "https://www.youtube.com/embed/IaYkDb3XJvk",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ]
+          }
+        ]
+      },
+      "13": {
+        "title": "Tập 13 - Đại Chiến",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Muse Vietnam - Lồng tiếng",
+            "url": "https://www.youtube.com/embed/9HEWZElVLtk",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ]
+          }
+        ]
+      },
+      "14": {
+        "title": "Tập 14 - Kẻ Ăn Thịt Tất Cả",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Muse Vietnam - Lồng tiếng",
+            "url": "https://www.youtube.com/embed/q0je98uP1PY",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ]
+          }
+        ]
+      },
+      "15": {
+        "title": "Tập 15 - Liên minh rừng Jura",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Muse Vietnam - Lồng tiếng",
+            "url": "https://www.youtube.com/embed/WuWkaV5BQRY",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ]
+          }
+        ]
+      },
+      "16": {
+        "title": "Tập 16 - Ma Vương Milim Tấn Công",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Muse Vietnam - Lồng tiếng",
+            "url": "https://www.youtube.com/embed/yJe4fPy69Lg",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ]
+          }
+        ]
+      },
+      "17": {
+        "title": "Tập 17 - Cuộc Họp",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Muse Vietnam - Lồng tiếng",
+            "url": "https://www.youtube.com/embed/hElEXH2NAJA",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ]
+          }
+        ]
+      },
+      "18": {
+        "title": "Tập 18 - Ác Ý Lẻn Vào",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Muse Vietnam - Lồng tiếng",
+            "url": "https://www.youtube.com/embed/q3tKbCYWGuU",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ]
+          }
+        ]
+      },
+      "19": {
+        "title": "Tập 19 - Charybdis",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Muse Vietnam - Lồng tiếng",
+            "url": "https://www.youtube.com/embed/1JeJMHRUsNE",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ]
+          }
+        ]
+      },
+      "20": {
+        "title": "Tập 20 - Yuuki Kagurazaka",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Muse Vietnam - Lồng tiếng",
+            "url": "https://www.youtube.com/embed/RaYCOxJQgwo",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ]
+          }
+        ]
+      },
+      "21": {
+        "title": "Tập 21 - Những học trò của Shizu-san",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Muse Vietnam - Lồng tiếng",
+            "url": "https://www.youtube.com/embed/UU7iDshyvMk",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ]
+          }
+        ]
+      },
+      "22": {
+        "title": "Tập 22 - Chinh phục Mê cung",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Muse Vietnam - Lồng tiếng",
+            "url": "https://www.youtube.com/embed/XyfSs3Hsrs8",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ]
+          }
+        ]
+      },
+      "23": {
+        "title": "Tập 23 - Những Linh Hồn Được Cứu Rỗi",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Muse Vietnam - Lồng tiếng",
+            "url": "https://www.youtube.com/embed/bvBv_vk-gTQ",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ]
+          }
+        ]
+      },
+      "24": {
+        "title": "Tập 24 - Ngoại truyện: Hắc Ám và Mặt Nạ",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Muse Vietnam - Lồng tiếng",
+            "url": "https://www.youtube.com/embed/F4kl5CHyMIE",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ]
+          }
+        ]
+      }
+    },
+    "2": {
+      "1": {
+        "title": "Tập 25 - Những ngày bận rộn của Rimuru",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Muse Vietnam - Lồng tiếng",
+            "url": "https://www.youtube.com/embed/hnxZWGPO45I",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ]
+          }
+        ]
+      },
+      "2": {
+        "title": "Tập 26 - Giao dịch với Thú quốc",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Muse Vietnam - Lồng tiếng",
+            "url": "https://www.youtube.com/embed/5ZrXhfEUSgI",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ]
+          }
+        ]
+      },
+      "3": {
+        "title": "Tập 27 - Thế giới yêu ma",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Muse Vietnam - Vietsub",
+            "url": "https://www.youtube.com/watch?v=GmUYrTNTVKY",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ]
+          }
+        ]
+      },
+      "4": {
+        "title": "Tập 28 - Hội nghị Walpurgis",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Muse Vietnam - Vietsub",
+            "url": "https://www.youtube.com/watch?v=EpoOJ9AMSQg",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ]
+          }
+        ]
+      },
+      "5": {
+        "title": "Tập 29 - Cuộc đối đầu",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Muse Vietnam - Vietsub",
+            "url": "https://www.youtube.com/watch?v=-HhD4pVNUYc",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ]
+          }
+        ]
+      },
+      "6": {
+        "title": "Tập 30 - Megiddo",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Muse Vietnam - Vietsub",
+            "url": "https://www.youtube.com/watch?v=QXQA-2yLZvI",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ]
+          }
+        ]
+      },
+      "7": {
+        "title": "Tập 31 - Tuyệt vọng",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Muse Vietnam - Lồng tiếng",
+            "url": "https://www.youtube.com/watch?v=J_7WMo5-jsQ",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ]
+          }
+        ]
+      },
+      "8": {
+        "title": "Tập 32 - Hy vọng",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Muse Vietnam - Vietsub",
+            "url": "https://www.youtube.com/watch?v=cDJ7Px7OR14",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ]
+          }
+        ]
+      },
+      "9": {
+        "title": "Tập 33 - Đánh cược mọi thứ",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Muse Vietnam - Lồng tiếng",
+            "url": "https://www.youtube.com/embed/Q-91uqVvASE",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ]
+          }
+        ]
+      },
+      "10": {
+        "title": "Tập 34 - Giác tỉnh của Ma Vương",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Muse Vietnam - Vietsub",
+            "url": "https://www.youtube.com/watch?v=6Ehg7ALvin4",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ]
+          }
+        ]
+      },
+      "11": {
+        "title": "Tập 35 - Trở thành Ma Vương",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Muse Vietnam - Vietsub",
+            "url": "https://www.youtube.com/watch?v=NqN0lCw0gDQ",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ]
+          }
+        ]
+      },
+      "12": {
+        "title": "Tập 36 - Sự sống còn của lâu đài",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Muse Vietnam - Vietsub",
+            "url": "",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ]
+          }
+        ]
+      }
+    },
+    "3": {
+      "1": {
+        "title": "Tập 49 - Ác quỷ và mưu kế",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Muse Vietnam - Lồng tiếng",
+            "url": "https://www.youtube.com/embed/uvLZISYTHMU",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ]
+          }
+        ]
+      },
+      "9": {
+        "title": "Tập 57",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Muse Vietnam - Việt sub",
+            "url": "https://www.youtube.com/embed/_Cutp64CCws",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ]
+          }
+        ]
+      },
+      "11": {
+        "title": "Tập 59",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Muse Vietnam - Lồng tiếng",
+            "url": "https://www.youtube.com/embed/Lb-AnSCZdLc",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ]
+          }
+        ]
+      },
+      "21": {
+        "title": "Tập 69",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Muse Vietnam - Lồng tiếng",
+            "url": "https://www.youtube.com/embed/bDr5r9P4apY",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "metadata": {
+    "movie-rating": "T13",
+    "audioVersion": "lồng tiếng",
+    "lastUpdate": "2025-10-30T13:28:04.178Z",
+    "studio": "8bit",
+    "genre": [
+      "Fantasy",
+      "Isekai",
+      "Comedy",
+      "Action"
+    ],
+    "totalEpisodes": 33,
+    "totalSeasons": 3,
+    "status": "Returning Series",
+    "note": "Phiên bản lồng tiếng & vietsub từ Muse Vietnam. Ưu tiên lồng tiếng, bổ sung vietsub nếu thiếu. Một số tập đang thiếu và cần được bổ sung."
+  }
+}

@@ -7,6 +7,12 @@ export const env = createEnv({
     SUPABASE_SERVICE_ROLE_KEY: z.string().min(1),
     ADMIN_ACCOUNT: z.string().min(1),
     ADMIN_PASSWORD: z.string().min(1),
+    // Storage configuration
+    BLOB_READ_WRITE_TOKEN: z.string().optional(),
+    GITHUB_TOKEN: z.string().optional(),
+    GITHUB_OWNER: z.string().optional(),
+    GITHUB_REPO: z.string().optional(),
+    VERCEL_DEPLOY_HOOK: z.string().url().optional(),
   },
   client: {
     NEXT_PUBLIC_TMDB_ACCESS_TOKEN: z.string().min(1),

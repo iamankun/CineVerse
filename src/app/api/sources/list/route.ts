@@ -8,6 +8,12 @@ type SourceInfo = {
   year: number;
   type: "movie" | "tv";
   mtime: Date;
+  // Metadata
+  metadata?: {
+    "movie-rating"?: string;
+    audioVersion?: string;
+    lastUpdate?: string;
+  };
   // TV-specific
   totalSeasons?: number;
   totalEpisodes?: number;
@@ -32,21 +38,31 @@ export async function GET(request: Request) {
           if (file.endsWith('.json')) {
             const id = parseInt(file.replace('.json', ''));
             if (!isNaN(id)) {
-              const filePath = path.join(moviePath, file);
-              const stats = await fs.stat(filePath);
-              
-              // Đọc nội dung file để lấy thông tin
-              const content = await fs.readFile(filePath, "utf-8");
-              const data = JSON.parse(content);
-              
-              allSources.push({
-                tmdbId: data.tmdbId || id,
-                title: data.title || "Unknown",
-                year: data.year || 0,
-                type: "movie",
-                mtime: stats.mtime,
-                sourcesCount: data.sources?.length || 0,
-              });
+              try {
+                const filePath = path.join(moviePath, file);
+                const stats = await fs.stat(filePath);
+                
+                // Đọc nội dung file để lấy thông tin
+                const content = await fs.readFile(filePath, "utf-8");
+                const data = JSON.parse(content);
+                
+                allSources.push({
+                  tmdbId: data.tmdbId || id,
+                  title: data.title || "Unknown",
+                  year: data.year || 0,
+                  type: "movie",
+                  mtime: stats.mtime,
+                  sourcesCount: data.sources?.length || 0,
+                  metadata: data.metadata ? {
+                    "movie-rating": data.metadata["movie-rating"],
+                    audioVersion: data.metadata.audioVersion,
+                    lastUpdate: data.metadata.lastUpdate,
+                  } : undefined,
+                });
+              } catch (fileError) {
+                console.error(`Error parsing movie file ${file}:`, fileError);
+                // Skip invalid JSON files and continue
+              }
             }
           }
         }
@@ -64,30 +80,40 @@ export async function GET(request: Request) {
           if (file.endsWith('.json')) {
             const id = parseInt(file.replace('.json', ''));
             if (!isNaN(id)) {
-              const filePath = path.join(tvPath, file);
-              const stats = await fs.stat(filePath);
-              
-              // Đọc nội dung file để lấy thông tin
-              const content = await fs.readFile(filePath, "utf-8");
-              const data = JSON.parse(content);
-              
-              // Tính tổng số episodes
-              let totalEpisodes = 0;
-              if (data.seasons) {
-                Object.values(data.seasons).forEach((season: any) => {
-                  totalEpisodes += Object.keys(season).length;
+              try {
+                const filePath = path.join(tvPath, file);
+                const stats = await fs.stat(filePath);
+                
+                // Đọc nội dung file để lấy thông tin
+                const content = await fs.readFile(filePath, "utf-8");
+                const data = JSON.parse(content);
+                
+                // Tính tổng số episodes
+                let totalEpisodes = 0;
+                if (data.seasons) {
+                  Object.values(data.seasons).forEach((season: any) => {
+                    totalEpisodes += Object.keys(season).length;
+                  });
+                }
+                
+                allSources.push({
+                  tmdbId: data.tmdbId || id,
+                  title: data.title || "Unknown",
+                  year: data.year || 0,
+                  type: "tv",
+                  mtime: stats.mtime,
+                  totalSeasons: data.seasons ? Object.keys(data.seasons).length : 0,
+                  totalEpisodes: totalEpisodes,
+                  metadata: data.metadata ? {
+                    "movie-rating": data.metadata["movie-rating"],
+                    audioVersion: data.metadata.audioVersion,
+                    lastUpdate: data.metadata.lastUpdate,
+                  } : undefined,
                 });
+              } catch (fileError) {
+                console.error(`Error parsing TV file ${file}:`, fileError);
+                // Skip invalid JSON files and continue
               }
-              
-              allSources.push({
-                tmdbId: data.tmdbId || id,
-                title: data.title || "Unknown",
-                year: data.year || 0,
-                type: "tv",
-                mtime: stats.mtime,
-                totalSeasons: data.seasons ? Object.keys(data.seasons).length : 0,
-                totalEpisodes: totalEpisodes,
-              });
             }
           }
         }

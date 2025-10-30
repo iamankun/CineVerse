@@ -1,0 +1,28 @@
+{
+  "tmdbId": 1062807,
+  "title": "SPY x FAMILY CODE: White",
+  "year": 2023,
+  "sources": [
+    {
+      "provider": "youtube",
+      "title": "SPY x FAMILY CODE: White",
+      "url": "https://youtu.be/r-9gLgmzmvQ",
+      "language": "vi",
+      "subtitles": [
+        "vi"
+      ]
+    }
+  ],
+  "metadata": {
+    "movie-rating": "K",
+    "genre": [
+      "Phim Hoạt Hình",
+      "Phim Hài",
+      "Phim Phiêu Lưu",
+      "Phim Hành Động"
+    ],
+    "duration": 110,
+    "status": "Released",
+    "note": "LongTieng"
+  }
+}

@@ -20,10 +20,11 @@ import {
   TableRow,
   TableCell,
 } from "@heroui/react";
-import { IoSearch, IoSave, IoRefresh, IoAdd, IoTrash, IoList, IoCreate } from "react-icons/io5";
+import { IoSearch, IoSave, IoRefresh, IoAdd, IoTrash, IoList, IoCreate, IoLogOut, IoClipboard } from "react-icons/io5";
 import { searchMovies, searchTV, getMovieDetails, getTvShowDetails } from "@/api/tmdb";
 import Image from "next/image";
 import AdminGuard from "@/components/AdminGuard";
+import { useRouter } from "next/navigation";
 
 interface TMDBResult {
   id: number;
@@ -60,6 +61,12 @@ interface ExistingSource {
   year: number;
   type: "movie" | "tv";
   mtime: Date;
+  // Metadata
+  metadata?: {
+    "movie-rating"?: string;
+    audioVersion?: string;
+    lastUpdate?: string;
+  };
   // TV-specific
   totalSeasons?: number;
   totalEpisodes?: number;
@@ -68,6 +75,7 @@ interface ExistingSource {
 }
 
 export default function DashboardPage() {
+  const router = useRouter();
   const [contentType, setContentType] = useState<"movie" | "tv">("movie");
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState<TMDBResult[]>([]);
@@ -87,6 +95,8 @@ export default function DashboardPage() {
     seasons: {} as { [seasonNumber: string]: SeasonData }, // For TV shows
     metadata: {
       "movie-rating": "K",
+      audioVersion: "vietsub", // "vietsub" hoặc "lồng tiếng"
+      lastUpdate: new Date().toISOString(),
       genre: [] as string[],
       duration: 0,
       status: "Released",
@@ -107,6 +117,10 @@ export default function DashboardPage() {
   const [allSources, setAllSources] = useState<ExistingSource[]>([]); // Tất cả sources cho bảng
   const [isLoadingExisting, setIsLoadingExisting] = useState(false);
   const [currentJsonData, setCurrentJsonData] = useState<string>("");
+  
+  // JSON paste feature
+  const [jsonInput, setJsonInput] = useState<string>("");
+  const [showJsonInput, setShowJsonInput] = useState(false);
 
   // Load existing sources
   useEffect(() => {
@@ -186,6 +200,8 @@ export default function DashboardPage() {
           sources: [],
           metadata: {
             "movie-rating": "K",
+            audioVersion: "vietsub",
+            lastUpdate: new Date().toISOString(),
             genre: details.genres?.map((g: any) => g.name) || [],
             duration: details.runtime || 0,
             status: details.status || "Released",
@@ -201,6 +217,8 @@ export default function DashboardPage() {
           seasons: {},
           metadata: {
             "movie-rating": "K",
+            audioVersion: "vietsub",
+            lastUpdate: new Date().toISOString(),
             genre: details.genres?.map((g: any) => g.name) || [],
             duration: details.episode_run_time?.[0] || 0,
             status: details.status || "Returning Series",
@@ -448,6 +466,177 @@ export default function DashboardPage() {
     }));
   };
 
+  // Logout handler
+  const handleLogout = async () => {
+    try {
+      await fetch("/api/admin/auth/logout", { method: "POST" });
+      router.push("/admin/login");
+    } catch (error) {
+      console.error("Logout error:", error);
+    }
+  };
+
+  // Auto-fix and clean JSON string
+  const cleanJsonString = (jsonStr: string): string => {
+    let cleaned = jsonStr;
+    
+    // 1. Remove BOM (Byte Order Mark)
+    cleaned = cleaned.replace(/^\uFEFF/, '');
+    
+    // 2. Remove weird characters like _20., _123.
+    cleaned = cleaned.replace(/\s*_\d+\.\s*/g, ' ');
+    
+    // 3. Remove comments (// and /* */)
+    cleaned = cleaned.replace(/\/\*[\s\S]*?\*\//g, '');
+    cleaned = cleaned.replace(/\/\/.*/g, '');
+    
+    // 4. Fix trailing commas before closing brackets
+    cleaned = cleaned.replace(/,(\s*[}\]])/g, '$1');
+    
+    // 5. Remove multiple spaces
+    cleaned = cleaned.replace(/\s+/g, ' ');
+    
+    // 6. Remove control characters except newlines, tabs, and spaces
+    cleaned = cleaned.replace(/[\x00-\x08\x0B-\x0C\x0E-\x1F\x7F]/g, '');
+    
+    return cleaned;
+  };
+
+  // Handle JSON paste with auto-fix
+  const handleJsonPaste = () => {
+    try {
+      // Auto-clean JSON string first
+      let cleanedInput = cleanJsonString(jsonInput);
+      
+      // Try to parse cleaned JSON
+      let parsedData;
+      try {
+        parsedData = JSON.parse(cleanedInput);
+      } catch (firstError) {
+        // If still fails, try more aggressive cleaning
+        console.log("First parse failed, trying aggressive cleaning...");
+        
+        // Remove all control characters except newlines and tabs
+        cleanedInput = cleanedInput.replace(/[\x00-\x09\x0B-\x0C\x0E-\x1F\x7F]/g, '');
+        
+        // Try parse again
+        parsedData = JSON.parse(cleanedInput);
+      }
+      
+      // Validate required fields
+      if (!parsedData.tmdbId || !parsedData.title) {
+        alert("JSON phải chứa ít nhất tmdbId và title");
+        return;
+      }
+      
+      // Determine content type from data structure
+      const isMovie = parsedData.sources && Array.isArray(parsedData.sources);
+      const isTv = parsedData.seasons && typeof parsedData.seasons === "object";
+      
+      if (!isMovie && !isTv) {
+        alert("JSON phải chứa 'sources' (phim) hoặc 'seasons' (TV show)");
+        return;
+      }
+      
+      // Set content type
+      const detectedType = isMovie ? "movie" : "tv";
+      if (detectedType !== contentType) {
+        setContentType(detectedType);
+      }
+      
+      // Handle lastUpdate/lastUpdated field (support both naming conventions)
+      const lastUpdateValue = parsedData.metadata?.lastUpdate || 
+                             parsedData.metadata?.lastUpdated || 
+                             parsedData.lastUpdated || 
+                             parsedData.lastUpdate || 
+                             new Date().toISOString();
+      
+      // Detect audio version from note or metadata
+      let audioVersion = parsedData.metadata?.audioVersion || "vietsub";
+      if (!parsedData.metadata?.audioVersion) {
+        const note = parsedData.metadata?.note || "";
+        if (note.toLowerCase().includes("lồng tiếng")) {
+          audioVersion = "lồng tiếng";
+        }
+      }
+      
+      // Ensure metadata exists with defaults
+      const metadata = {
+        "movie-rating": parsedData.metadata?.["movie-rating"] || "K",
+        audioVersion: audioVersion,
+        lastUpdate: lastUpdateValue,
+        genre: parsedData.metadata?.genre || [],
+        duration: parsedData.metadata?.duration || 0,
+        status: parsedData.metadata?.status || (isMovie ? "Released" : "Returning Series"),
+        note: parsedData.metadata?.note || "",
+        ...(isTv && {
+          studio: parsedData.metadata?.studio || "",
+          totalEpisodes: parsedData.metadata?.totalEpisodes || 0,
+          totalSeasons: parsedData.metadata?.totalSeasons || Object.keys(parsedData.seasons || {}).length,
+        }),
+      };
+      
+      // Set form data
+      setFormData({
+        tmdbId: parsedData.tmdbId,
+        title: parsedData.title,
+        year: parsedData.year || new Date().getFullYear(),
+        ...(isMovie ? { sources: parsedData.sources } : { seasons: parsedData.seasons }),
+        metadata,
+      });
+      
+      // Set selected item for UI
+      setSelectedItem({ 
+        id: parsedData.tmdbId,
+        title: parsedData.title,
+        name: parsedData.title,
+      } as TMDBResult);
+      
+      // For TV shows, set initial season and episode
+      if (isTv && parsedData.seasons) {
+        const firstSeason = Object.keys(parsedData.seasons)[0];
+        if (firstSeason) {
+          setSelectedSeason(firstSeason);
+          const firstEpisode = Object.keys(parsedData.seasons[firstSeason])[0];
+          if (firstEpisode) {
+            setSelectedEpisode(firstEpisode);
+          }
+        }
+      }
+      
+      // Show current JSON data (cleaned version)
+      const cleanedData = {
+        tmdbId: parsedData.tmdbId,
+        title: parsedData.title,
+        year: parsedData.year || new Date().getFullYear(),
+        ...(isMovie ? { sources: parsedData.sources } : { seasons: parsedData.seasons }),
+        metadata,
+      };
+      setCurrentJsonData(JSON.stringify(cleanedData, null, 2));
+      
+      // Clear input and close modal
+      setJsonInput("");
+      setShowJsonInput(false);
+      
+      alert("✅ Đã tải và tự động sửa JSON thành công!\n- Loại: " + (isMovie ? "Phim" : "TV Show") + "\n- Rating: " + metadata["movie-rating"] + "\n- Âm thanh: " + audioVersion);
+    } catch (error: any) {
+      console.error("JSON parse error:", error);
+      
+      // Provide more helpful error message
+      let errorMsg = "⚠️ Không thể tự động sửa JSON này:\n\n";
+      if (error.message) {
+        errorMsg += error.message + "\n\n";
+      }
+      errorMsg += "💡 JSON quá lỗi, vui lòng kiểm tra thủ công:\n";
+      errorMsg += "- Có đóng mở ngoặc {} [] đúng không?\n";
+      errorMsg += "- Các chuỗi text có nằm trong dấu \" không?\n";
+      errorMsg += "- Có dấu phẩy , giữa các trường không?\n";
+      errorMsg += "- Dùng JSON validator online để kiểm tra";
+      
+      alert(errorMsg);
+    }
+  };
+
   // Save data
   const handleSave = async () => {
     // Validation based on content type
@@ -456,20 +645,29 @@ export default function DashboardPage() {
       return;
     }
 
+    // Update lastUpdate timestamp before saving
+    const dataToSave = {
+      ...formData,
+      metadata: {
+        ...formData.metadata,
+        lastUpdate: new Date().toISOString(),
+      },
+    };
+
     if (contentType === "movie") {
-      if (!formData.sources || formData.sources.length === 0) {
+      if (!dataToSave.sources || dataToSave.sources.length === 0) {
         alert("Vui lòng thêm ít nhất một nguồn cho phim");
         return;
       }
     } else {
       // TV show validation
-      if (!formData.seasons || Object.keys(formData.seasons).length === 0) {
+      if (!dataToSave.seasons || Object.keys(dataToSave.seasons).length === 0) {
         alert("Vui lòng thêm ít nhất một season");
         return;
       }
       
       // Check if at least one episode exists
-      const hasEpisodes = Object.values(formData.seasons).some(
+      const hasEpisodes = Object.values(dataToSave.seasons).some(
         (season: any) => Object.keys(season).length > 0
       );
       
@@ -483,13 +681,15 @@ export default function DashboardPage() {
       const response = await fetch(`/api/sources/${contentType}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(dataToSave),
       });
 
       if (response.ok) {
         alert("Lưu thành công!");
         loadExistingSources();
-        setCurrentJsonData(JSON.stringify(formData, null, 2));
+        setCurrentJsonData(JSON.stringify(dataToSave, null, 2));
+        // Update formData with new timestamp
+        setFormData(dataToSave);
       } else {
         const error = await response.text();
         alert(`Lỗi khi lưu dữ liệu: ${error}`);
@@ -530,9 +730,81 @@ export default function DashboardPage() {
               >
                 Thêm/Sửa
               </Button>
+              <Button
+                color="secondary"
+                variant="flat"
+                startContent={<IoClipboard />}
+                onPress={() => {
+                  setShowJsonInput(!showJsonInput);
+                  setViewMode("form");
+                }}
+              >
+                Dán JSON
+              </Button>
+              <Button
+                color="danger"
+                variant="flat"
+                startContent={<IoLogOut />}
+                onPress={handleLogout}
+              >
+                Đăng xuất
+              </Button>
             </div>
           </div>
         </div>
+
+        {/* JSON Paste Input */}
+        {showJsonInput && (
+          <Card className="mb-6 bg-gradient-to-r from-purple-900/50 to-blue-900/50 backdrop-blur-sm">
+            <CardHeader>
+              <h3 className="text-xl font-semibold text-white">
+                Dán JSON trực tiếp
+              </h3>
+            </CardHeader>
+            <CardBody className="space-y-4">
+              <Textarea
+                placeholder='{"tmdbId": 123, "title": "Tên phim", "year": 2024, "sources": [...] hoặc "seasons": {...}, "metadata": {...}}'
+                value={jsonInput}
+                onChange={(e) => setJsonInput(e.target.value)}
+                minRows={10}
+                classNames={{
+                  input: "text-white font-mono text-sm",
+                  inputWrapper: "bg-gray-900/50",
+                }}
+              />
+              <div className="flex gap-3">
+                <Button
+                  color="success"
+                  startContent={<IoClipboard />}
+                  onPress={handleJsonPaste}
+                  isDisabled={!jsonInput.trim()}
+                >
+                  Tải JSON vào form
+                </Button>
+                <Button
+                  color="default"
+                  variant="flat"
+                  onPress={() => {
+                    setShowJsonInput(false);
+                    setJsonInput("");
+                  }}
+                >
+                  Đóng
+                </Button>
+              </div>
+              <div className="text-sm text-gray-400">
+                <p className="mb-2">💡 <strong>Hướng dẫn:</strong></p>
+                <ul className="list-disc space-y-1 pl-5">
+                  <li>Dán toàn bộ JSON từ file hoặc nguồn khác</li>
+                  <li>JSON phải chứa: <code className="text-purple-300">tmdbId</code>, <code className="text-purple-300">title</code></li>
+                  <li>Phim cần có: <code className="text-purple-300">sources</code> (array)</li>
+                  <li>TV show cần có: <code className="text-purple-300">seasons</code> (object)</li>
+                  <li>Metadata sẽ được tự động điền với giá trị mặc định nếu thiếu</li>
+                </ul>
+              </div>
+            </CardBody>
+          </Card>
+        )}
 
         {viewMode === "table" ? (
           /* TABLE VIEW: Hiển thị tất cả sources */
@@ -563,6 +835,8 @@ export default function DashboardPage() {
                   <TableColumn>TMDB ID</TableColumn>
                   <TableColumn>TIÊU ĐỀ</TableColumn>
                   <TableColumn>NĂM</TableColumn>
+                  <TableColumn>RATING</TableColumn>
+                  <TableColumn>ÂM THANH</TableColumn>
                   <TableColumn>CHI TIẾT</TableColumn>
                   <TableColumn>NGÀY CẬP NHẬT</TableColumn>
                   <TableColumn>HÀNH ĐỘNG</TableColumn>
@@ -593,6 +867,29 @@ export default function DashboardPage() {
                         <span className="text-gray-400">{source.year}</span>
                       </TableCell>
                       <TableCell>
+                        <Chip 
+                          size="sm" 
+                          variant="flat" 
+                          color={
+                            source.metadata?.["movie-rating"] === "T18" ? "danger" :
+                            source.metadata?.["movie-rating"] === "T16" ? "warning" :
+                            source.metadata?.["movie-rating"] === "T13" ? "primary" :
+                            "success"
+                          }
+                        >
+                          {source.metadata?.["movie-rating"] || "K"}
+                        </Chip>
+                      </TableCell>
+                      <TableCell>
+                        <Chip 
+                          size="sm" 
+                          variant="flat" 
+                          color={source.metadata?.audioVersion === "lồng tiếng" ? "secondary" : "default"}
+                        >
+                          {source.metadata?.audioVersion === "lồng tiếng" ? "Lồng tiếng" : "Vietsub"}
+                        </Chip>
+                      </TableCell>
+                      <TableCell>
                         {source.type === "movie" ? (
                           <Chip size="sm" variant="flat" color="success">
                             {source.sourcesCount || 0} nguồn
@@ -609,9 +906,16 @@ export default function DashboardPage() {
                         )}
                       </TableCell>
                       <TableCell>
-                        <span className="text-xs text-gray-500">
-                          {new Date(source.mtime).toLocaleDateString("vi-VN")}
-                        </span>
+                        <div className="flex flex-col gap-1">
+                          <span className="text-xs text-gray-500">
+                            File: {new Date(source.mtime).toLocaleDateString("vi-VN")}
+                          </span>
+                          {source.metadata?.lastUpdate && (
+                            <span className="text-xs text-blue-400">
+                              Update: {new Date(source.metadata.lastUpdate).toLocaleDateString("vi-VN")}
+                            </span>
+                          )}
+                        </div>
                       </TableCell>
                       <TableCell>
                         <Button
@@ -812,6 +1116,57 @@ export default function DashboardPage() {
                         inputWrapper: "bg-gray-700",
                       }}
                     />
+
+                    {/* Metadata Fields */}
+                    <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+                      <Select
+                        label="Movie Rating"
+                        selectedKeys={[formData.metadata["movie-rating"]]}
+                        onChange={(e) => setFormData((prev: any) => ({
+                          ...prev,
+                          metadata: { ...prev.metadata, "movie-rating": e.target.value }
+                        }))}
+                        classNames={{
+                          base: "text-white",
+                        }}
+                      >
+                        <SelectItem key="P">P - Mọi lứa tuổi</SelectItem>
+                        <SelectItem key="K">K - Dưới 13 tuổi (có phụ huynh)</SelectItem>
+                        <SelectItem key="T13">T13 - Từ 13 tuổi trở lên</SelectItem>
+                        <SelectItem key="T16">T16 - Từ 16 tuổi trở lên</SelectItem>
+                        <SelectItem key="T18">T18 - Từ 18 tuổi trở lên</SelectItem>
+                        <SelectItem key="C">C - Bị cấm chiếu</SelectItem>
+                      </Select>
+
+                      <Select
+                        label="Phiên bản âm thanh"
+                        selectedKeys={[formData.metadata.audioVersion]}
+                        onChange={(e) => setFormData((prev: any) => ({
+                          ...prev,
+                          metadata: { ...prev.metadata, audioVersion: e.target.value }
+                        }))}
+                        classNames={{
+                          base: "text-white",
+                        }}
+                      >
+                        <SelectItem key="vietsub">Vietsub (Phụ đề)</SelectItem>
+                        <SelectItem key="lồng tiếng">Lồng tiếng</SelectItem>
+                      </Select>
+
+                      <Input
+                        label="Thời gian cập nhật"
+                        type="datetime-local"
+                        value={formData.metadata.lastUpdate ? new Date(formData.metadata.lastUpdate).toISOString().slice(0, 16) : ""}
+                        onChange={(e) => setFormData((prev: any) => ({
+                          ...prev,
+                          metadata: { ...prev.metadata, lastUpdate: new Date(e.target.value).toISOString() }
+                        }))}
+                        classNames={{
+                          input: "text-white",
+                          inputWrapper: "bg-gray-700",
+                        }}
+                      />
+                    </div>
 
                     <Textarea
                       label="Ghi chú"
