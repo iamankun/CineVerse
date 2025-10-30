@@ -6,11 +6,22 @@ import { commitToGitHub, triggerVercelDeploy } from "@/utils/github";
 import { env } from "@/utils/env";
 
 export async function POST(request: Request) {
+  console.log("📥 TV Route: Received POST request");
+  
   try {
     const data = await request.json();
+    console.log("📦 TV Route: Parsed data", {
+      tmdbId: data.tmdbId,
+      title: data.title,
+      hasSeasons: !!data.seasons,
+      seasonCount: Object.keys(data.seasons || {}).length,
+      hasMetadata: !!data.metadata,
+      audioVersion: data.metadata?.audioVersion,
+    });
     
     // Validate required fields
     if (!data.tmdbId || !data.title || !data.seasons) {
+      console.error("❌ TV Route: Missing required fields");
       return NextResponse.json(
         { error: "Missing required fields: tmdbId, title, seasons" },
         { status: 400 }

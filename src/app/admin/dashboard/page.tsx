@@ -200,7 +200,7 @@ export default function DashboardPage() {
           sources: [],
           metadata: {
             "movie-rating": "K",
-            audioVersion: "vietsub",
+            audioVersion: "PhuDe",
             lastUpdate: new Date().toISOString(),
             genre: details.genres?.map((g: any) => g.name) || [],
             duration: details.runtime || 0,
@@ -217,7 +217,7 @@ export default function DashboardPage() {
           seasons: {},
           metadata: {
             "movie-rating": "K",
-            audioVersion: "vietsub",
+            audioVersion: "PhuDe",
             lastUpdate: new Date().toISOString(),
             genre: details.genres?.map((g: any) => g.name) || [],
             duration: details.episode_run_time?.[0] || 0,
@@ -555,9 +555,9 @@ export default function DashboardPage() {
       let audioVersion = parsedData.metadata?.audioVersion || "PhuDe";
       if (!parsedData.metadata?.audioVersion) {
         const note = parsedData.metadata?.note || "";
-        if (note.toLowerCase().includes("lồng tiếng")) {
+        if (note.toLowerCase().includes("Lồng Tiếng")) {
           audioVersion = "LongTieng";
-        } else if (note.toLowerCase().includes("nguyên bản") || note.toLowerCase().includes("original")) {
+        } else if (note.toLowerCase().includes("Nguyên Bản") || note.toLowerCase().includes("original")) {
           audioVersion = "Goc";
         }
       }
@@ -680,13 +680,25 @@ export default function DashboardPage() {
     }
 
     try {
+      console.log("🚀 Bắt đầu lưu dữ liệu...", {
+        contentType,
+        tmdbId: dataToSave.tmdbId,
+        title: dataToSave.title,
+        hasMetadata: !!dataToSave.metadata,
+        audioVersion: dataToSave.metadata?.audioVersion,
+      });
+
       const response = await fetch(`/api/sources/${contentType}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(dataToSave),
       });
 
+      console.log("📡 Response status:", response.status, response.statusText);
+
       if (response.ok) {
+        const result = await response.json();
+        console.log("✅ Lưu thành công:", result);
         alert("Lưu thành công!");
         loadExistingSources();
         setCurrentJsonData(JSON.stringify(dataToSave, null, 2));
@@ -694,11 +706,17 @@ export default function DashboardPage() {
         setFormData(dataToSave);
       } else {
         const error = await response.text();
+        console.error("❌ Lỗi từ server:", error);
         alert(`Lỗi khi lưu dữ liệu: ${error}`);
       }
-    } catch (error) {
-      console.error("Save error:", error);
-      alert("Lỗi khi lưu dữ liệu");
+    } catch (error: any) {
+      console.error("💥 Save error:", error);
+      console.error("Error details:", {
+        message: error.message,
+        stack: error.stack,
+        name: error.name,
+      });
+      alert(`Lỗi khi lưu dữ liệu: ${error.message || "Không thể kết nối đến server"}`);
     }
   };
 
