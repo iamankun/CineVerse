@@ -905,13 +905,25 @@ export default function DashboardPage() {
                           size="sm" 
                           variant="flat" 
                           color={
-                            source.metadata?.audioVersion === "LongTieng" ? "secondary" : 
-                            source.metadata?.audioVersion === "Goc" ? "primary" : 
+                            (source.metadata?.audioVersion === "LongTieng" || 
+                             source.metadata?.audioVersion === "lồng tiếng" ||
+                             source.metadata?.audioVersion === "Lồng tiếng" ||
+                             source.metadata?.audioVersion === "Lồng Tiếng") ? "secondary" : 
+                            (source.metadata?.audioVersion === "Goc" || 
+                             source.metadata?.audioVersion === "gốc" ||
+                             source.metadata?.audioVersion === "Gốc" ||
+                             source.metadata?.audioVersion === "nguyên bản") ? "primary" : 
                             "default"
                           }
                         >
-                          {source.metadata?.audioVersion === "LongTieng" ? "Lồng tiếng" : 
-                           source.metadata?.audioVersion === "Goc" ? "Gốc" : 
+                          {(source.metadata?.audioVersion === "LongTieng" || 
+                            source.metadata?.audioVersion === "lồng tiếng" ||
+                            source.metadata?.audioVersion === "Lồng tiếng" ||
+                            source.metadata?.audioVersion === "Lồng Tiếng") ? "Lồng tiếng" : 
+                           (source.metadata?.audioVersion === "Goc" || 
+                            source.metadata?.audioVersion === "gốc" ||
+                            source.metadata?.audioVersion === "Gốc" ||
+                            source.metadata?.audioVersion === "nguyên bản") ? "Gốc" : 
                            "Phụ đề"}
                         </Chip>
                       </TableCell>
