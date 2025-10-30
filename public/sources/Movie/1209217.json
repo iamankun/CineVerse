@@ -8,15 +8,23 @@
       "provider": "dailymotion",
       "url": "https://www.dailymotion.com/embed/video/k7o3G7XEmSp7szD0HRo",
       "language": "vi",
-      "subtitles": ["vi"]
+      "subtitles": [
+        "vi"
+      ]
     }
   ],
   "metadata": {
     "movie-rating": "K",
-    "genre": ["Anime", "Action", "Adventure"],
+    "genre": [
+      "Anime",
+      "Action",
+      "Adventure"
+    ],
     "duration": 120,
     "status": "Released",
-    "note": "Phim Điện Ảnh Lồng Tiếng"
+    "note": "Phim Điện Ảnh Lồng Tiếng",
+    "audioVersion": "LongTieng",
+    "lastUpdate": "2025-10-30T14:50:04.196Z"
   },
   "lastUpdated": "2025-10-27T00:00:00Z"
 }
