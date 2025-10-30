@@ -905,25 +905,32 @@ export default function DashboardPage() {
                           size="sm" 
                           variant="flat" 
                           color={
-                            (source.metadata?.audioVersion === "LongTieng" || 
-                             source.metadata?.audioVersion === "lồng tiếng" ||
-                             source.metadata?.audioVersion === "Lồng tiếng" ||
-                             source.metadata?.audioVersion === "Lồng Tiếng") ? "secondary" : 
-                            (source.metadata?.audioVersion === "Goc" || 
-                             source.metadata?.audioVersion === "gốc" ||
-                             source.metadata?.audioVersion === "Gốc" ||
-                             source.metadata?.audioVersion === "nguyên bản") ? "primary" : 
+                            // Check Goc first (original audio)
+                            source.metadata?.audioVersion === "Goc" || 
+                            source.metadata?.audioVersion === "gốc" ||
+                            source.metadata?.audioVersion === "Gốc" ||
+                            source.metadata?.audioVersion === "nguyên bản" ||
+                            source.metadata?.audioVersion === "original" ? "primary" :
+                            // Then check LongTieng (dubbed)
+                            source.metadata?.audioVersion === "LongTieng" || 
+                            source.metadata?.audioVersion === "lồng tiếng" ||
+                            source.metadata?.audioVersion === "Lồng tiếng" ||
+                            source.metadata?.audioVersion === "Lồng Tiếng" ||
+                            source.metadata?.audioVersion === "dubbed" ? "secondary" : 
+                            // Default: PhuDe (subtitle)
                             "default"
                           }
                         >
-                          {(source.metadata?.audioVersion === "LongTieng" || 
-                            source.metadata?.audioVersion === "lồng tiếng" ||
-                            source.metadata?.audioVersion === "Lồng tiếng" ||
-                            source.metadata?.audioVersion === "Lồng Tiếng") ? "Lồng tiếng" : 
-                           (source.metadata?.audioVersion === "Goc" || 
-                            source.metadata?.audioVersion === "gốc" ||
-                            source.metadata?.audioVersion === "Gốc" ||
-                            source.metadata?.audioVersion === "nguyên bản") ? "Gốc" : 
+                          {source.metadata?.audioVersion === "Goc" || 
+                           source.metadata?.audioVersion === "gốc" ||
+                           source.metadata?.audioVersion === "Gốc" ||
+                           source.metadata?.audioVersion === "nguyên bản" ||
+                           source.metadata?.audioVersion === "original" ? "Gốc" :
+                           source.metadata?.audioVersion === "LongTieng" || 
+                           source.metadata?.audioVersion === "lồng tiếng" ||
+                           source.metadata?.audioVersion === "Lồng tiếng" ||
+                           source.metadata?.audioVersion === "Lồng Tiếng" ||
+                           source.metadata?.audioVersion === "dubbed" ? "Lồng tiếng" : 
                            "Phụ đề"}
                         </Chip>
                       </TableCell>
