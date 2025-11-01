@@ -1,0 +1,163 @@
+{
+  "tmdbId": 302662,
+  "title": "Running Man Vietnam",
+  "year": 2019,
+  "seasons": {
+    "1": {
+      "1": {
+        "title": "Tập 1",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Running Man Vietnam",
+            "url": "https://www.youtube.com/watch?v=cqWLyDTrAeM",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ]
+          },
+          {
+            "provider": "youtube",
+            "title": "Running Man Vietnam",
+            "url": "https://www.youtube.com/watch?v=9fDw0IpvulQ",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ]
+          },
+          {
+            "provider": "youtube",
+            "title": "Running Man Vietnam",
+            "url": "https://www.youtube.com/watch?v=BzFEcD_BDfM",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ]
+          },
+          {
+            "provider": "youtube",
+            "title": "Running Man Vietnam",
+            "url": "https://www.youtube.com/watch?v=oBK9vtNT64s",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ]
+          },
+          {
+            "provider": "youtube",
+            "title": "Running Man Vietnam",
+            "url": "https://www.youtube.com/watch?v=Og-b_cnkh4U",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ]
+          },
+          {
+            "provider": "youtube",
+            "title": "Running Man Vietnam",
+            "url": "https://www.youtube.com/watch?v=fvpPOpIL8t0",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ]
+          },
+          {
+            "provider": "youtube",
+            "title": "Running Man Vietnam",
+            "url": "https://www.youtube.com/watch?v=BCC6HKjiKrU",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ]
+          },
+          {
+            "provider": "youtube",
+            "title": "Running Man Vietnam",
+            "url": "https://www.youtube.com/watch?v=6VVg3Ilea-M",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ]
+          },
+          {
+            "provider": "youtube",
+            "title": "Running Man Vietnam",
+            "url": "https://www.youtube.com/watch?v=VDdv19rMpH0",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ]
+          },
+          {
+            "provider": "youtube",
+            "title": "Running Man Vietnam",
+            "url": "https://www.youtube.com/watch?v=qGNA_n4XSD4",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ]
+          },
+          {
+            "provider": "youtube",
+            "title": "Running Man Vietnam",
+            "url": "https://www.youtube.com/watch?v=BIo5vuvGhbs",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ]
+          },
+          {
+            "provider": "youtube",
+            "title": "Running Man Vietnam",
+            "url": "https://www.youtube.com/watch?v=jGG3mpx-Gik",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ]
+          },
+          {
+            "provider": "youtube",
+            "title": "Running Man Vietnam",
+            "url": "https://www.youtube.com/watch?v=ZbC1N_ICKCM",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ]
+          },
+          {
+            "provider": "youtube",
+            "title": "Running Man Vietnam",
+            "url": "https://www.youtube.com/watch?v=t64pV_6UJgU",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ]
+          },
+          {
+            "provider": "youtube",
+            "title": "Running Man Vietnam",
+            "url": "https://www.youtube.com/watch?v=Fr5gs9fGjyo",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "metadata": {
+    "movie-rating": "K",
+    "audioVersion": "PhuDe",
+    "lastUpdate": "2025-11-01T14:09:38.871Z",
+    "genre": [
+      "Reality"
+    ],
+    "duration": 75,
+    "status": "Returning Series",
+    "note": "",
+    "studio": "VieOn Network",
+    "totalEpisodes": 1,
+    "totalSeasons": 1
+  }
+}
