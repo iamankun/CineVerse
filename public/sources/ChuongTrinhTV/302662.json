@@ -14,7 +14,8 @@
             "language": "vi",
             "subtitles": [
               "vi"
-            ]
+            ],
+            "quality": "1080p"
           },
           {
             "provider": "youtube",
@@ -23,7 +24,8 @@
             "language": "vi",
             "subtitles": [
               "vi"
-            ]
+            ],
+            "quality": "1080p"
           },
           {
             "provider": "youtube",
@@ -32,7 +34,8 @@
             "language": "vi",
             "subtitles": [
               "vi"
-            ]
+            ],
+            "quality": "1080p"
           },
           {
             "provider": "youtube",
@@ -50,7 +53,8 @@
             "language": "vi",
             "subtitles": [
               "vi"
-            ]
+            ],
+            "quality": "1080p"
           },
           {
             "provider": "youtube",
@@ -59,7 +63,8 @@
             "language": "vi",
             "subtitles": [
               "vi"
-            ]
+            ],
+            "quality": "1080p"
           },
           {
             "provider": "youtube",
@@ -68,7 +73,8 @@
             "language": "vi",
             "subtitles": [
               "vi"
-            ]
+            ],
+            "quality": "1080p"
           },
           {
             "provider": "youtube",
@@ -77,7 +83,8 @@
             "language": "vi",
             "subtitles": [
               "vi"
-            ]
+            ],
+            "quality": "1080p"
           },
           {
             "provider": "youtube",
@@ -86,7 +93,8 @@
             "language": "vi",
             "subtitles": [
               "vi"
-            ]
+            ],
+            "quality": "1080p"
           },
           {
             "provider": "youtube",
@@ -149,7 +157,7 @@
   "metadata": {
     "movie-rating": "K",
     "audioVersion": "PhuDe",
-    "lastUpdate": "2025-11-01T14:09:38.871Z",
+    "lastUpdate": "2025-11-01T14:11:23.031Z",
     "genre": [
       "Reality"
     ],
