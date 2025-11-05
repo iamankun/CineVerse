@@ -18,7 +18,8 @@ const GoogleLoginButton: React.FC<GoogleLoginButtonProps> = ({ variant = "faded"
       const { error } = await supabase.auth.signInWithOAuth({
         provider: "google",
         options: {
-          redirectTo: `${location.origin}/api/auth/callback`,
+          redirectTo: `${window.location.origin}/api/auth/callback`,
+          skipBrowserRedirect: false,
           queryParams: {
             access_type: "offline",
             prompt: "consent",
