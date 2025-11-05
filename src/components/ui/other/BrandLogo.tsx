@@ -25,6 +25,7 @@ const BrandLogo: React.FC<BrandLogoProps> = ({ animate = true, className }) => {
           height={80}
           className="h-8 w-8 object-contain transition-opacity group-hover:opacity-80 md:h-10 md:w-10"
           priority
+          unoptimized
         />
       </picture>
     </Link>

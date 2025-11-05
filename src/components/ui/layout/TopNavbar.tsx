@@ -29,12 +29,11 @@ const TopNavbar = () => {
   return (
     <Navbar
       disableScrollHandler
-      isBlurred={true}
+      isBlurred={false}
       position="sticky"
       maxWidth="full"
       classNames={{ 
-        wrapper: "px-2 md:px-4",
-        base: show ? "bg-black/10 backdrop-blur-md" : ""
+        wrapper: "px-2 md:px-4"
       }}
       className={cn(
         "inset-0 h-min z-50 transition-all duration-300",
