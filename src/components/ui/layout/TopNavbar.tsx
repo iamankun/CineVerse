@@ -30,18 +30,20 @@ const TopNavbar = () => {
     <Navbar
       disableScrollHandler
       isBlurred={false}
-      position="sticky"
       maxWidth="full"
+      shouldHideOnScroll={false}
+      isBordered={false}
       classNames={{ 
-        wrapper: "px-2 md:px-4"
+        wrapper: "px-2 md:px-4",
       }}
       className={cn(
-        "inset-0 h-min z-50 transition-all duration-300",
+        "fixed top-0 left-0 right-0 w-full h-min z-[9999] transition-all duration-300",
         {
           "bg-black/10 backdrop-blur-md border-b border-white/5": show,
           "bg-background/90 backdrop-blur-xl border-b border-white/10": !show,
         }
       )}
+      style={{ position: 'fixed', top: 0, left: 0, right: 0 }}
     >
       {show && y > 100 && (
         <div

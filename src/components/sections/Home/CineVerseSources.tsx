@@ -125,6 +125,44 @@ const CineVerseHero = () => {
   // Call hooks unconditionally at top level
   const logoPath = useMovieLogo(currentId, currentContentType, originalLanguage);
 
+  // Fetch metadata từ sources API để lấy movie-rating
+  const { data: sourceMetadata } = useQuery({
+    queryKey: ["source-metadata", currentId, currentContentType],
+    queryFn: async () => {
+      try {
+        const endpoint = currentContentType === "movie" 
+          ? `/api/sources/movie/${currentId}` 
+          : `/api/sources/tv/${currentId}`;
+        const response = await fetch(endpoint);
+        if (!response.ok) return null;
+        const result = await response.json();
+        return result.success ? result.data : null;
+      } catch (error) {
+        console.error("Error fetching source metadata:", error);
+        return null;
+      }
+    },
+    enabled: !!currentId,
+    staleTime: 1000 * 60 * 60,
+  });
+
+  // Fetch movie-rating definitions
+  const { data: movieRatings } = useQuery({
+    queryKey: ["movie-ratings"],
+    queryFn: async () => {
+      try {
+        const response = await fetch('/sources/movie-rating.json');
+        if (!response.ok) return null;
+        const data = await response.json();
+        return data["Movie-Rating"] || null;
+      } catch (error) {
+        console.error("Error fetching movie ratings:", error);
+        return null;
+      }
+    },
+    staleTime: Infinity, // Cache forever since ratings don't change
+  });
+
   if (isPending || !content || content.length === 0 || !currentItem) {
     return null;
   }
@@ -139,6 +177,13 @@ const CineVerseHero = () => {
     : "first_air_date" in item 
     ? new Date(item.first_air_date).getFullYear()
     : "";
+
+  // Get movie rating info
+  const ratingCode = sourceMetadata?.metadata?.["movie-rating"];
+  const ratingDescription = ratingCode && movieRatings ? movieRatings[ratingCode] : null;
+  const ratingDisplay = ratingCode && ratingDescription 
+    ? `${ratingCode} - ${ratingDescription}` 
+    : ratingCode || null;
 
   // Lấy trailer/video từ TMDB videos với ưu tiên ngôn ngữ
   const videos = (item as any).videos?.results || [];
@@ -210,29 +255,44 @@ const CineVerseHero = () => {
       </div>
 
       {/* Content */}
-      <div className="relative z-10 flex h-full flex-col justify-center px-6 md:px-12 lg:px-16">
-        <div className="max-w-2xl space-y-2">
+      <div className="relative z-10 flex h-full flex-col justify-end pb-12 px-6 md:px-12 lg:px-16 md:pb-16 lg:pb-20">
+        <div className="max-w-2xl space-y-2 md:space-y-3 lg:space-y-4">
           {/* Badge */}
-          <Chip color="warning" variant="flat" size="sm" className="text-xs uppercase">
-            CineVerse Original
-          </Chip>
+          <div className="flex items-center gap-2 flex-wrap">
+            <Chip color="warning" variant="flat" size="sm" className="text-xs uppercase">
+              CineVerse Original
+            </Chip>
+            {/* Audio Version Logo */}
+            {(sourceMetadata?.audioVersion === "Lồng tiếng" || sourceMetadata?.metadata?.audioVersion === "LongTieng") && (
+              <div className="relative h-20 w-20 md:h-12 md:w-24 shrink-0">
+                <Image
+                  src="/longtieng.png"
+                  alt="Lồng tiếng"
+                  fill
+                  className="object-contain"
+                />
+              </div>
+            )}
+          </div>
 
           {/* Title - Logo or Text */}
-          {logoPath ? (
-            <div className="relative h-16 w-full max-w-xs md:h-20 lg:h-24">
-              <Image
-                src={getImageUrl(logoPath, "title", true)}
-                alt={title}
-                fill
-                className="object-contain object-left"
-                priority
-              />
-            </div>
-          ) : (
-            <h1 className="text-2xl font-bold text-white md:text-4xl lg:text-5xl">
-              {title}
-            </h1>
-          )}
+          <div className="flex items-center gap-2 md:gap-3">
+            {logoPath ? (
+              <div className="relative h-16 w-full max-w-xs md:h-20 lg:h-24">
+                <Image
+                  src={getImageUrl(logoPath, "title", true)}
+                  alt={title}
+                  fill
+                  className="object-contain object-left"
+                  priority
+                />
+              </div>
+            ) : (
+              <h1 className="text-2xl font-bold text-white md:text-4xl lg:text-5xl">
+                {title}
+              </h1>
+            )}
+          </div>
 
           {/* Description */}
           <p className="line-clamp-2 text-sm text-gray-200 md:text-base">
@@ -266,18 +326,23 @@ const CineVerseHero = () => {
           </div>
 
           {/* Rating Badge */}
-          {"vote_average" in item && item.vote_average > 0 && (
-            <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap">
+            {"vote_average" in item && item.vote_average > 0 && (
               <Chip color="success" variant="flat" size="sm">
                 TMDB {item.vote_average.toFixed(1)}
               </Chip>
-              {releaseYear && (
-                <Chip variant="flat" size="sm">
-                  {releaseYear}
-                </Chip>
-              )}
-            </div>
-          )}
+            )}
+            {releaseYear && (
+              <Chip variant="flat" size="sm">
+                {releaseYear}
+              </Chip>
+            )}
+            {ratingDisplay && (
+              <Chip color="warning" variant="flat" size="sm" className="max-w-fit">
+                {ratingDisplay}
+              </Chip>
+            )}
+          </div>
         </div>
       </div>
 
