@@ -40,6 +40,13 @@
     border-color: var(--color-gray-200, currentcolor);
   }
 
+  /* Prevent horizontal scroll */
+  html,
+  body {
+    overflow-x: hidden;
+    max-width: 100vw;
+  }
+
   h1 {
     @apply text-3xl font-black md:text-4xl;
   }

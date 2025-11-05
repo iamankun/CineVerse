@@ -16,22 +16,17 @@ const BrandLogo: React.FC<BrandLogoProps> = ({ animate = true, className }) => {
 
   return (
     <Link href="/" className="group">
-      <span className={cn("flex items-center gap-2", className)}>
-        <Next
-          className={cn("size-6 transition-colors md:size-8", {
-            "text-primary": content === "movie",
-            "text-warning": content === "tv",
-          })}
-        />
+      <picture>
+        <source srcSet="/logo-80.webp" type="image/webp" />
         <Image
-          src="/logo.gif"
+          src="/logo-80.gif"
           alt="CineVerse Logo"
-          width={120}
-          height={40}
-          className="h-auto w-24 object-contain transition-opacity group-hover:opacity-80 md:w-32"
+          width={80}
+          height={80}
+          className="h-8 w-8 object-contain transition-opacity group-hover:opacity-80 md:h-10 md:w-10"
           priority
         />
-      </span>
+      </picture>
     </Link>
   );
 };

@@ -10,10 +10,13 @@ import FullscreenToggleButton from "../button/FullscreenToggleButton";
 import { cn } from "@/utils/helpers";
 import BrandLogo from "../other/BrandLogo";
 import UserProfileButton from "../button/UserProfileButton";
+import { Next } from "@/utils/icons";
+import useDiscoverFilters from "@/hooks/useDiscoverFilters";
 
 const TopNavbar = () => {
   const pathName = usePathname();
   const [{ y }] = useWindowScroll();
+  const { content } = useDiscoverFilters();
   const opacity = Math.min((y / 1000) * 5, 1);
   const hrefs = siteConfig.navItems.map((item) => item.href);
   const show = hrefs.includes(pathName);
@@ -26,29 +29,43 @@ const TopNavbar = () => {
   return (
     <Navbar
       disableScrollHandler
-      isBlurred={false}
+      isBlurred={true}
       position="sticky"
       maxWidth="full"
-      classNames={{ wrapper: "px-2 md:px-4" }}
+      classNames={{ 
+        wrapper: "px-2 md:px-4",
+        base: show ? "bg-black/10 backdrop-blur-md" : ""
+      }}
       className={cn(
-        "inset-0 h-min backdrop-blur-xl backdrop-saturate-150",
-        "bg-background/70 border-b border-white/10",
-        "shadow-[0_8px_32px_0_rgba(0,0,0,0.37)]",
+        "inset-0 h-min z-50 transition-all duration-300",
         {
-          "bg-background/80": show,
+          "bg-black/10 backdrop-blur-md border-b border-white/5": show,
+          "bg-background/90 backdrop-blur-xl border-b border-white/10": !show,
         }
       )}
     >
-      {!show && (
+      {show && y > 100 && (
         <div
-          className="absolute inset-0 h-full w-full"
-          style={{ opacity: opacity }}
+          className="absolute inset-0 h-full w-full bg-black/30 backdrop-blur-md transition-opacity duration-300"
+          style={{ opacity: Math.min(y / 300, 0.8) }}
         />
       )}
-      <NavbarBrand>
+      <NavbarBrand className="relative z-10">
         {show ? <BrandLogo /> : <BackButton href={tv ? "/?content=tv" : "/"} />}
       </NavbarBrand>
-      <NavbarContent justify="end">
+      <NavbarContent justify="center" className="relative z-10">
+        {show && (
+          <NavbarItem>
+            <Next
+              className={cn("size-6 transition-colors md:size-8", {
+                "text-primary": content === "movie",
+                "text-warning": content === "tv",
+              })}
+            />
+          </NavbarItem>
+        )}
+      </NavbarContent>
+      <NavbarContent justify="end" className="relative z-10">
         <NavbarItem className="flex gap-1">
           <ThemeSwitchDropdown />
           <FullscreenToggleButton />

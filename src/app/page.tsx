@@ -6,10 +6,14 @@ const CineVerseSources = dynamic(() => import("@/components/sections/Home/CineVe
 
 const HomePage: NextPage = () => {
     return (
-        <div className="flex flex-col gap-3 md:gap-8">
-            <CineVerseSources />
-            <ContinueWatching />
-            <HomePageList />
+        <div className="flex flex-col">
+            <div className="-mx-3 -mt-8 sm:-mx-5">
+                <CineVerseSources />
+            </div>
+            <div className="flex flex-col gap-3 mt-3 md:gap-8 md:mt-8">
+                <ContinueWatching />
+                <HomePageList />
+            </div>
         </div>
     );
 };

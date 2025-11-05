@@ -42,7 +42,7 @@ export default function RootLayoutContent({ children }: { children: React.ReactN
     <>
       {IS_PRODUCTION && <Disclaimer />}
       <TopNavbar />
-      <main className={cn("container mx-auto max-w-full flex-1 pb-safe-footer", SpacingClasses.main)}>
+      <main className={cn("container mx-auto max-w-full flex-1 pb-safe-footer overflow-x-hidden", SpacingClasses.main)}>
         {children}
       </main>
       <Footer />

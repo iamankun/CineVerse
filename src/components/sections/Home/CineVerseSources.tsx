@@ -175,7 +175,7 @@ const CineVerseHero = () => {
     : `/tv/${item.id}`;
 
   return (
-    <div className="relative h-[600px] w-full overflow-hidden rounded-xl md:h-[700px]">
+    <div className="relative h-[600px] w-screen overflow-hidden md:h-[700px]">
       {/* Background - Trailer Video hoặc Backdrop Image */}
       <div className="absolute inset-0 z-0">
         {trailerUrl ? (
@@ -211,15 +211,15 @@ const CineVerseHero = () => {
 
       {/* Content */}
       <div className="relative z-10 flex h-full flex-col justify-center px-6 md:px-12 lg:px-16">
-        <div className="max-w-2xl space-y-4">
+        <div className="max-w-2xl space-y-2">
           {/* Badge */}
-          <Chip color="warning" variant="flat" size="sm" className="uppercase">
+          <Chip color="warning" variant="flat" size="sm" className="text-xs uppercase">
             CineVerse Original
           </Chip>
 
           {/* Title - Logo or Text */}
           {logoPath ? (
-            <div className="relative h-24 w-full max-w-md md:h-32 lg:h-40">
+            <div className="relative h-16 w-full max-w-xs md:h-20 lg:h-24">
               <Image
                 src={getImageUrl(logoPath, "title", true)}
                 alt={title}
@@ -229,25 +229,25 @@ const CineVerseHero = () => {
               />
             </div>
           ) : (
-            <h1 className="text-4xl font-bold text-white md:text-6xl lg:text-7xl">
+            <h1 className="text-2xl font-bold text-white md:text-4xl lg:text-5xl">
               {title}
             </h1>
           )}
 
           {/* Description */}
-          <p className="line-clamp-3 text-base text-gray-200 md:text-lg">
+          <p className="line-clamp-2 text-sm text-gray-200 md:text-base">
             {item.overview || "Nội dung đang được cập nhật..."}
           </p>
 
           {/* Buttons */}
-          <div className="flex flex-wrap gap-3">
+          <div className="flex flex-wrap gap-2">
             <Button
               as={Link}
               href={detailUrl}
-              size="lg"
+              size="md"
               color="default"
               variant="solid"
-              startContent={<IoPlayOutline className="text-2xl" />}
+              startContent={<IoPlayOutline className="text-xl" />}
               className="bg-white font-semibold text-black hover:bg-white/90"
             >
               Xem ngay
@@ -255,10 +255,10 @@ const CineVerseHero = () => {
             <Button
               as={Link}
               href={detailUrl}
-              size="lg"
+              size="md"
               color="default"
               variant="flat"
-              startContent={<IoInformationCircleOutline className="text-2xl" />}
+              startContent={<IoInformationCircleOutline className="text-xl" />}
               className="bg-white/20 font-semibold text-white backdrop-blur-sm hover:bg-white/30"
             >
               Chi tiết
@@ -268,11 +268,11 @@ const CineVerseHero = () => {
           {/* Rating Badge */}
           {"vote_average" in item && item.vote_average > 0 && (
             <div className="flex items-center gap-2">
-              <Chip color="success" variant="flat" size="lg">
-                ⭐ {item.vote_average.toFixed(1)}
+              <Chip color="success" variant="flat" size="sm">
+                TMDB {item.vote_average.toFixed(1)}
               </Chip>
               {releaseYear && (
-                <Chip variant="flat" size="lg">
+                <Chip variant="flat" size="sm">
                   {releaseYear}
                 </Chip>
               )}

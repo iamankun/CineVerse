@@ -52,7 +52,7 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html suppressHydrationWarning lang="vi">
-      <body className={cn("bg-background min-h-dvh antialiased select-none flex flex-col", Mulish.className)}>
+      <body className={cn("bg-background min-h-dvh antialiased select-none flex flex-col overflow-x-hidden", Mulish.className)}>
         <Suspense>
           <NuqsAdapter>
             <Providers>
