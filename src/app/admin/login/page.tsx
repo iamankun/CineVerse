@@ -58,20 +58,20 @@ export default function AdminLoginPage() {
 
       if (data.success) {
         addToast({
-          title: "Chào mừng Quản trị viên!",
-          description: "Đã quay trở lại CineVerse",
+          title: "Chào mừng quản trị viên CineVerse",
+          description: "Đã quay trở lại!",
           color: "success",
         });
         
         setTimeout(() => {
-          router.push("/admin/dash");
+          router.push("/admin/dashboard");
           router.refresh();
         }, 1000);
       } else {
-        setError(data.message || "Login failed");
+        setError(data.message || "Đăng nhập thất bại");
       }
     } catch (err) {
-      setError("An error occurred. Please try again.");
+      setError("Đã xảy ra lỗi. Vui lòng thử lại.");
     } finally {
       setLoading(false);
     }
@@ -112,7 +112,7 @@ export default function AdminLoginPage() {
             <form onSubmit={handleSubmit} className="flex flex-col gap-4">
               <Input
                 label="Tài khoản"
-                placeholder="Nhập tài khoản"
+                placeholder="Tài khoản "
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 isRequired
@@ -121,7 +121,7 @@ export default function AdminLoginPage() {
               <Input
                 label="Mật khẩu"
                 type="password"
-                placeholder="Nhập mật khẩu"
+                placeholder="Mật khẩu "
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 isRequired
@@ -136,7 +136,7 @@ export default function AdminLoginPage() {
                 isLoading={loading}
                 className="w-full"
               >
-                Đăng nhập
+                Vào hệ thống
               </Button>
             </form>
           </CardBody>

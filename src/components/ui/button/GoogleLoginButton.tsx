@@ -27,19 +27,19 @@ const GoogleLoginButton: React.FC<GoogleLoginButtonProps> = ({ variant = "faded"
         },
       });
       
-      console.log("OAuth response:", { data, error });
+      console.log("Trả kết quả xác minh:", { data, error });
       
       if (error) {
-        console.error("OAuth error:", error);
+        console.error("Lỗi xác minh:", error);
         addToast({
           title: error.message,
           color: "danger",
         });
       }
     } catch (error) {
-      console.error("Google login error:", error);
+      console.error("Lỗi đăng nhập Google:", error);
       addToast({
-        title: error instanceof Error ? error.message : "An error occurred. Please try again.",
+        title: error instanceof Error ? error.message : "Đã xảy ra lỗi. Vui lòng thử lại.",
         color: "danger",
       });
     }
