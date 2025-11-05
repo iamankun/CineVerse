@@ -1,8 +1,9 @@
-import { NextResponse } from "next/server";
-import { createClient } from "@/utils/supabase/server";
+import { NextResponse, type NextRequest } from "next/server";
+import { createServerClient } from "@supabase/ssr";
 import { IS_DEVELOPMENT } from "@/utils/constants";
+import { env } from "@/utils/env";
 
-export const GET = async (request: Request) => {
+export const GET = async (request: NextRequest) => {
   const { searchParams, origin } = new URL(request.url);
   const code = searchParams.get("code");
 
@@ -12,7 +13,26 @@ export const GET = async (request: Request) => {
   }
 
   if (code) {
-    const supabase = await createClient();
+    let supabaseResponse = NextResponse.next({ request });
+
+    const supabase = createServerClient(
+      env.NEXT_PUBLIC_SUPABASE_URL,
+      env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+      {
+        cookies: {
+          getAll() {
+            return request.cookies.getAll();
+          },
+          setAll(cookiesToSet) {
+            cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value));
+            supabaseResponse = NextResponse.next({ request });
+            cookiesToSet.forEach(({ name, value, options }) =>
+              supabaseResponse.cookies.set(name, value, options),
+            );
+          },
+        },
+      },
+    );
 
     const {
       data: { user },
@@ -82,15 +102,21 @@ export const GET = async (request: Request) => {
       }
 
       const forwardedHost = request.headers.get("x-forwarded-host"); // original origin before load balancer
+      
+      const redirectUrl = IS_DEVELOPMENT
+        ? `${origin}${next}`
+        : forwardedHost
+          ? `https://${forwardedHost}${next}`
+          : `${origin}${next}`;
 
-      if (IS_DEVELOPMENT) {
-        // we can be sure that there is no load balancer in between, so no need to watch for X-Forwarded-Host
-        return NextResponse.redirect(`${origin}${next}`);
-      } else if (forwardedHost) {
-        return NextResponse.redirect(`https://${forwardedHost}${next}`);
-      } else {
-        return NextResponse.redirect(`${origin}${next}`);
-      }
+      const redirectResponse = NextResponse.redirect(redirectUrl);
+      
+      // Copy all cookies from supabaseResponse to redirectResponse
+      supabaseResponse.cookies.getAll().forEach((cookie) => {
+        redirectResponse.cookies.set(cookie.name, cookie.value, cookie);
+      });
+
+      return redirectResponse;
     }
   }
 
