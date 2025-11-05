@@ -39,16 +39,19 @@ export const GET = async (request: NextRequest) => {
       error,
     } = await supabase.auth.exchangeCodeForSession(code);
 
-    if (!error) {
-      // Insert username
-      if (user) {
-        console.info({ user });
+    if (error) {
+      console.error("exchangeCodeForSession error:", error);
+      return NextResponse.redirect(`${origin}/auth?error=true&message=${encodeURIComponent(error.message)}`);
+    }
 
-        const { data: profile } = await supabase
-          .from("profiles")
-          .select("username")
-          .eq("id", user.id)
-          .single();
+    if (user) {
+      console.info("User authenticated:", { id: user.id, email: user.email });
+
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("username")
+        .eq("id", user.id)
+        .single();
 
         if (!profile) {
           // Get base username dari Google
@@ -99,7 +102,7 @@ export const GET = async (request: NextRequest) => {
             console.log("Profile created with username:", uniqueUsername);
           }
         }
-      }
+      
 
       const forwardedHost = request.headers.get("x-forwarded-host"); // original origin before load balancer
       
