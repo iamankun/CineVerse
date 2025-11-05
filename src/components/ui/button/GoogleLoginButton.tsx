@@ -15,7 +15,7 @@ const supabase = createClient();
 const GoogleLoginButton: React.FC<GoogleLoginButtonProps> = ({ variant = "faded", ...props }) => {
   const handleGoogleLogin = useCallback(async () => {
     try {
-      const { error } = await supabase.auth.signInWithOAuth({
+      const { data, error } = await supabase.auth.signInWithOAuth({
         provider: "google",
         options: {
           redirectTo: `${window.location.origin}/api/auth/callback`,
@@ -26,7 +26,11 @@ const GoogleLoginButton: React.FC<GoogleLoginButtonProps> = ({ variant = "faded"
           },
         },
       });
+      
+      console.log("OAuth response:", { data, error });
+      
       if (error) {
+        console.error("OAuth error:", error);
         addToast({
           title: error.message,
           color: "danger",
