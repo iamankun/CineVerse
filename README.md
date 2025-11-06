@@ -1,7 +1,7 @@
 # CineVerse - Vũ Trụ Điện Ảnh
 
 An Kun Studio hân hạnh giới thiệu dự án CineVerse - Vũ trụ điện ảnh
-[Bé L đang chờ bạn đến](https://github.com/iamankun/CineVerse/blob/main/public/ava.gif?raw=true)
+[Bé L đang chờ bạn đến](./public/ava.gif)
 
 ![Ảnh chụp màn hình Mockup CINEXTMA](./public/mockup.gif)
 
