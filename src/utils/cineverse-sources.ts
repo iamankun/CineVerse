@@ -1,6 +1,60 @@
 import { CineVerseMovieData, CineVerseTvData, PlayersProps } from "@/types";
 
 /**
+ * Converts YouTube watch URLs to embed URLs
+ * Supports formats:
+ * - youtube.com/watch?v=VIDEO_ID
+ * - m.youtube.com/watch?v=VIDEO_ID
+ * - youtu.be/VIDEO_ID
+ * - youtube.com/v/VIDEO_ID
+ */
+function convertYouTubeUrl(url: string): string {
+  try {
+    const urlObj = new URL(url);
+    
+    // Handle youtube.com/watch?v=... and m.youtube.com/watch?v=...
+    if ((urlObj.hostname.includes('youtube.com') || urlObj.hostname.includes('m.youtube.com')) && urlObj.pathname === '/watch') {
+      const videoId = urlObj.searchParams.get('v');
+      if (videoId) {
+        return `https://www.youtube.com/embed/${videoId}?autoplay=1&modestbranding=1&rel=0`;
+      }
+    }
+    
+    // Handle youtu.be/...
+    if (urlObj.hostname === 'youtu.be') {
+      const videoId = urlObj.pathname.slice(1); // Remove leading /
+      if (videoId) {
+        return `https://www.youtube.com/embed/${videoId}?autoplay=1&modestbranding=1&rel=0`;
+      }
+    }
+    
+    // Handle youtube.com/v/... and m.youtube.com/v/...
+    if ((urlObj.hostname.includes('youtube.com') || urlObj.hostname.includes('m.youtube.com')) && urlObj.pathname.startsWith('/v/')) {
+      const videoId = urlObj.pathname.split('/v/')[1];
+      if (videoId) {
+        return `https://www.youtube.com/embed/${videoId}?autoplay=1&modestbranding=1&rel=0`;
+      }
+    }
+    
+    // Already an embed URL or not a YouTube URL
+    return url;
+  } catch (error) {
+    console.warn('Failed to parse YouTube URL:', url, error);
+    return url;
+  }
+}
+
+/**
+ * Processes source URL based on provider type
+ */
+function processSourceUrl(provider: string, url: string): string {
+  if (provider.toLowerCase() === 'youtube') {
+    return convertYouTubeUrl(url);
+  }
+  return url;
+}
+
+/**
  * Fetches CineVerse internal movie sources from JSON files
  * @param id - TMDB movie ID
  * @returns Array of player sources or null if not available
@@ -40,7 +94,7 @@ export const fetchCineVerseMovieSources = async (
       
       return {
         title: `CineVerse${partLabel}`.trim(),
-        source: source.url as `https://${string}`,
+        source: processSourceUrl(source.provider, source.url) as `https://${string}`,
         recommended: index === 0, // Đánh dấu nguồn đầu tiên là recommended
         fast: true,
         ads: false,
@@ -81,7 +135,7 @@ export const fetchCineVerseTvSources = async (
     return data.sources.map((source: any, index: number) => {
       return {
         title: `CineVerse`,
-        source: source.url as `https://${string}`,
+        source: processSourceUrl(source.provider, source.url) as `https://${string}`,
         recommended: index === 0,
         fast: true,
         ads: false,

@@ -1,5 +1,6 @@
 import { ADS_WARNING_STORAGE_KEY, SpacingClasses } from "@/utils/constants";
 import { siteConfig } from "@/config/site";
+import BrandLogo from "@/components/ui/other/BrandLogo";
 import useBreakpoints from "@/hooks/useBreakpoints";
 import { cn } from "@/utils/helpers";
 import { mutateMovieTitle } from "@/utils/movies";
@@ -13,6 +14,7 @@ import { MovieDetails } from "tmdb-ts/dist/types/movies";
 import { useVidlinkPlayer } from "@/hooks/useVidlinkPlayer";
 import { useMovieLogo } from "@/hooks/useMovieLogo";
 import { PlayersProps } from "@/types";
+import { AdBlocker } from "@/utils/ad-blocker";
 const AdsWarning = dynamic(() => import("@/components/ui/overlay/AdsWarning"));
 const AgeRating = dynamic(() => import("@/components/ui/overlay/AgeRating"));
 const WatchingWithBrand = dynamic(() => import("@/components/ui/overlay/WatchingWithBrand"));
@@ -35,6 +37,18 @@ const MoviePlayer: React.FC<MoviePlayerProps> = ({ movie, startAt }) => {
   const [movieRating, setMovieRating] = useState<{ rating: string; description: string } | null>(null);
   const [videoCurrentTime, setVideoCurrentTime] = useState(0);
   const logoPath = useMovieLogo(movie.id, "movie", movie.original_language);
+  
+  // Debug logging
+  useEffect(() => {
+    console.log(`🎭 Movie Player Debug:`, {
+      id: movie.id,
+      movieRating,
+      logoPath,
+      movieOriginalLanguage: movie.original_language,
+      seen,
+    });
+  }, [movie.id, movieRating, logoPath, movie.original_language, seen]);
+  
   const cardRef = useRef<HTMLDivElement>(null);
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const title = mutateMovieTitle(movie);
@@ -49,14 +63,29 @@ const MoviePlayer: React.FC<MoviePlayerProps> = ({ movie, startAt }) => {
   useVidlinkPlayer({ saveHistory: true });
   useDocumentTitle(`Play ${title} | ${siteConfig.name}`);
 
+  // Initialize ad blocker
+  useEffect(() => {
+    const adBlocker = AdBlocker.getInstance();
+    adBlocker.init();
+
+    return () => {
+      adBlocker.destroy();
+    };
+  }, []);
+
   // Fetch players (including CineVerse sources)
   useEffect(() => {
     getMoviePlayers(movie.id, startAt).then(setPlayers);
 
     // Fetch movie rating from CineVerse JSON
+    console.log(`🎬 Fetching movie rating for ID: ${movie.id}`);
     fetch(`/sources/Movie/${movie.id}.json`)
-      .then(res => res.ok ? res.json() : null)
+      .then(res => {
+        console.log(`📡 Movie JSON fetch status:`, res.ok, res.status);
+        return res.ok ? res.json() : null;
+      })
       .then(data => {
+        console.log(`📊 Movie JSON data:`, data?.metadata?.["movie-rating"]);
         if (data?.metadata?.["movie-rating"]) {
           const rating = data.metadata["movie-rating"];
           // Fetch rating descriptions
@@ -64,14 +93,19 @@ const MoviePlayer: React.FC<MoviePlayerProps> = ({ movie, startAt }) => {
             .then(res => res.json())
             .then(ratingData => {
               const description = ratingData["Movie-Rating"][rating];
+              console.log(`✅ Movie Rating loaded:`, rating, description);
               if (description) {
                 setMovieRating({ rating, description });
               }
             })
-            .catch(() => {});
+            .catch((err) => {
+              console.error(`❌ Failed to load rating descriptions:`, err);
+            });
         }
       })
-      .catch(() => {});
+      .catch((err) => {
+        console.error(`❌ Failed to load Movie JSON:`, err);
+      });
   }, [movie.id, startAt]);
 
   // Listen for video time updates from iframe
@@ -143,6 +177,39 @@ const MoviePlayer: React.FC<MoviePlayerProps> = ({ movie, startAt }) => {
     };
   }, []);
 
+  // Handle orientation change on mobile - auto enter fullscreen on landscape
+  useEffect(() => {
+    if (!mobile) return;
+
+    const handleOrientationChange = () => {
+      // Check if landscape mode
+      const isLandscape = window.matchMedia('(orientation: landscape)').matches;
+      
+      if (isLandscape && cardRef.current && !isFullscreen) {
+        // Enter fullscreen when rotating to landscape
+        const requestFullscreen = cardRef.current.requestFullscreen ||
+          (cardRef.current as any).webkitRequestFullscreen ||
+          (cardRef.current as any).mozRequestFullScreen ||
+          (cardRef.current as any).msRequestFullscreen;
+
+        if (requestFullscreen) {
+          requestFullscreen.call(cardRef.current).catch((err: Error) => {
+            console.warn('Failed to enter fullscreen on orientation change:', err);
+          });
+        }
+      }
+    };
+
+    // Listen for orientation changes
+    window.addEventListener('orientationchange', handleOrientationChange);
+    window.matchMedia('(orientation: landscape)').addEventListener('change', handleOrientationChange);
+
+    return () => {
+      window.removeEventListener('orientationchange', handleOrientationChange);
+      window.matchMedia('(orientation: landscape)').removeEventListener('change', handleOrientationChange);
+    };
+  }, [mobile, isFullscreen]);
+
   // Make card fullscreen with keyboard shortcut
   useEffect(() => {
     const handleKeyPress = (e: KeyboardEvent) => {
@@ -203,17 +270,17 @@ const MoviePlayer: React.FC<MoviePlayerProps> = ({ movie, startAt }) => {
     <>
       <AdsWarning />
 
-      <div className={cn("relative", SpacingClasses.reset)}>
+      <div className="relative overflow-hidden">
         <MoviePlayerHeader
           id={movie.id}
           movieName={title}
           onOpenSource={handlers.open}
           hidden={idle && !mobile}
         />
-        <Card ref={cardRef} shadow="md" radius="none" className="relative h-screen bg-black">
-          <Skeleton className="absolute h-full w-full" />
-          {seen && (
-            <>
+        <div className="relative h-screen overflow-hidden" ref={cardRef}>
+          <Card shadow="md" radius="none" className="absolute inset-0 bg-black">
+            <Skeleton className="absolute h-full w-full" />
+            {seen && (
               <iframe
                 ref={iframeRef}
                 allowFullScreen
@@ -221,60 +288,51 @@ const MoviePlayer: React.FC<MoviePlayerProps> = ({ movie, startAt }) => {
                 src={PLAYER.source}
                 className={cn("z-10 h-full w-full", { "pointer-events-none": idle && !mobile })}
               />
-              {/* Top overlay: Age Rating + Logo */}
-              <div 
-                className={cn(
-                  "absolute top-4 left-4 right-4 flex items-start justify-between gap-4 transition-opacity duration-300 pointer-events-none",
-                  { "opacity-0": idle && !mobile && !isFullscreen, "opacity-100": !idle || mobile || isFullscreen }
-                )}
-                style={{ zIndex: 2147483647 }}
-              >
-                {/* Age Rating on the left - No background, just shadow */}
-                {movieRating && (
-                  <AgeRating rating={movieRating.rating} ratingDescription={movieRating.description} />
-                )}
+            )}
+          </Card>
+          
+          {/* Top overlay: Age Rating + Logo */}
+          <div 
+            className="flex items-start justify-between gap-4"
+            style={{ 
+              position: 'fixed',
+              top: '1.5rem',
+              left: '1.5rem',
+              right: '1.5rem',
+              zIndex: 2147483647,
+              pointerEvents: 'none'
+            }}
+          >
+            {/* Age Rating on the left */}
+            {movieRating && (
+              <AgeRating rating={movieRating.rating} ratingDescription={movieRating.description} />
+            )}
 
-                {/* CineVerse Logo on the right */}
-                <div className="flex-shrink-0">
-                  <img 
-                    src="/logo.gif" 
-                    alt="CineVerse" 
-                    className="h-14 w-auto"
-                    style={{ 
-                      maxHeight: '56px',
-                      width: 'auto',
-                      filter: 'drop-shadow(0 4px 12px rgba(0, 0, 0, 0.8))'
-                    }}
-                  />
-                </div>
-              </div>
-
-              {/* Bottom overlay: Watching With Brand */}
-              <div 
-                className={cn(
-                  "absolute bottom-8 left-8 transition-opacity duration-300 pointer-events-none",
-                  { "opacity-0": idle && !mobile && !isFullscreen, "opacity-100": !idle || mobile || isFullscreen }
-                )}
-                style={{ zIndex: 2147483647 }}
-              >
-                <WatchingWithBrand 
-                  movieTitle={title} 
-                  logoPath={logoPath}
-                  posterPath={movie.poster_path}
-                  isVisible={!idle || mobile || isFullscreen}
-                  videoCurrentTime={videoCurrentTime}
-                />
-              </div>
-            </>
-          )}
-        </Card>
-        
-        {/* Fullscreen hint */}
-        {!isFullscreen && !mobile && (
-          <div className="fixed bottom-4 right-4 z-50 text-xs text-foreground/40 pointer-events-none">
-            Nhấn F để fullscreen hoặc dùng nút fullscreen trên video
+            {/* CineVerse Logo on the right */}
+            <div className="flex-shrink-0 scale-[1.5]">
+              <BrandLogo animate={true} />
+            </div>
           </div>
-        )}
+
+          {/* Bottom overlay: Watching With Brand */}
+          {seen && (
+            <div 
+              className={cn(
+                "absolute bottom-8 left-8 transition-opacity duration-300 pointer-events-none",
+                { "opacity-0": idle && !mobile && !isFullscreen, "opacity-100": !idle || mobile || isFullscreen }
+              )}
+              style={{ zIndex: 2147483647 }}
+            >
+              <WatchingWithBrand 
+                movieTitle={title} 
+                logoPath={logoPath}
+                posterPath={movie.poster_path}
+                isVisible={!idle || mobile || isFullscreen}
+                videoCurrentTime={videoCurrentTime}
+              />
+            </div>
+          )}
+        </div>
       </div>
 
       <MoviePlayerSourceSelection

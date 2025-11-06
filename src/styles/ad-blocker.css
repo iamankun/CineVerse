@@ -1,0 +1,108 @@
+/* ============================================
+   CineVerse Ad Blocker - Block all third-party ads
+   ============================================ */
+
+/* Block common ad containers */
+iframe[src*="ads"],
+iframe[src*="doubleclick"],
+iframe[src*="googlesyndication"],
+iframe[src*="googletagservices"],
+iframe[src*="advertising"],
+iframe[id*="google_ads"],
+div[id*="ad-"],
+div[class*="ad-"],
+div[class*="advertisement"],
+div[id*="advertisement"],
+.ad-container,
+.ads-container,
+.advertisement-container,
+#ad-banner,
+#ads-banner,
+.ad-banner,
+.ads-banner {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  width: 0 !important;
+  height: 0 !important;
+  position: absolute !important;
+  left: -9999px !important;
+}
+
+/* Block overlay ads and popups */
+.ad-overlay,
+.popup-ad,
+.modal-ad,
+div[style*="z-index: 999"],
+div[style*="z-index: 9999"] {
+  display: none !important;
+}
+
+/* Block video ads in players */
+.video-ads,
+.vjs-ad-playing,
+.ima-ad-container,
+video[src*="ads"],
+video[src*="advertisement"] {
+  display: none !important;
+  opacity: 0 !important;
+}
+
+/* Block tracking scripts and analytics */
+script[src*="analytics"],
+script[src*="tracking"],
+script[src*="metrics"],
+img[src*="tracking"],
+img[src*="pixel"],
+img[width="1"][height="1"] {
+  display: none !important;
+}
+
+/* Prevent click-jacking and fake play buttons */
+div[onclick*="window.open"],
+a[target="_blank"][href*="ad"],
+a[href*="click"],
+a[href*="redirect"] {
+  pointer-events: none !important;
+  cursor: default !important;
+}
+
+/* Clean iframe player embedding - remove suspicious overlays */
+iframe + div[style*="position: absolute"],
+iframe + div[style*="z-index"],
+iframe ~ div[onclick] {
+  display: none !important;
+}
+
+/* Block common ad networks */
+[class*="taboola"],
+[id*="taboola"],
+[class*="outbrain"],
+[id*="outbrain"],
+[class*="mgid"],
+[id*="mgid"],
+[class*="propeller"],
+[id*="propeller"],
+[class*="adnow"],
+[id*="adnow"] {
+  display: none !important;
+}
+
+/* Block popunder and redirect scripts */
+body > script[src*="popunder"],
+body > script[src*="redirect"],
+body > div[style*="display:none"] > script {
+  display: none !important;
+}
+
+/* Additional protection for embedded players */
+.plyr__ads,
+.jwplayer-ad,
+.jw-ad,
+#player-ads,
+.player-ad-container {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}

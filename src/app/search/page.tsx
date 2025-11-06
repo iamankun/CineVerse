@@ -1,7 +1,6 @@
 import { siteConfig } from "@/config/site";
 import dynamic from "next/dynamic";
 import { Metadata, NextPage } from "next/types";
-import { Suspense } from "react";
 const SearchList = dynamic(() => import("@/components/sections/Search/List"));
 
 export const metadata: Metadata = {
@@ -9,11 +8,7 @@ export const metadata: Metadata = {
 };
 
 const SearchPage: NextPage = () => {
-  return (
-    <Suspense>
-      <SearchList />
-    </Suspense>
-  );
+  return <SearchList />;
 };
 
 export default SearchPage;

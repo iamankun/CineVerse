@@ -88,11 +88,18 @@ export async function GET(request: Request) {
                 const content = await fs.readFile(filePath, "utf-8");
                 const data = JSON.parse(content);
                 
-                // Tính tổng số episodes
+                // Tính tổng số episodes và sources
                 let totalEpisodes = 0;
+                let totalSources = 0;
                 if (data.seasons) {
                   Object.values(data.seasons).forEach((season: any) => {
                     totalEpisodes += Object.keys(season).length;
+                    // Count sources for each episode
+                    Object.values(season).forEach((episode: any) => {
+                      if (episode.sources && Array.isArray(episode.sources)) {
+                        totalSources += episode.sources.length;
+                      }
+                    });
                   });
                 }
                 
@@ -104,6 +111,7 @@ export async function GET(request: Request) {
                   mtime: stats.mtime,
                   totalSeasons: data.seasons ? Object.keys(data.seasons).length : 0,
                   totalEpisodes: totalEpisodes,
+                  sourcesCount: totalSources,
                   metadata: data.metadata ? {
                     "movie-rating": data.metadata["movie-rating"],
                     audioVersion: data.metadata.audioVersion,

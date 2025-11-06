@@ -38,14 +38,11 @@ const TopNavbar = () => {
       }}
       className={cn(
         "fixed top-0 left-0 right-0 w-full h-min z-[9999] transition-all duration-300",
-        {
-          "bg-black/10 backdrop-blur-md border-b border-white/5": show,
-          "bg-background/90 backdrop-blur-xl border-b border-white/10": !show,
-        }
+        "bg-black/10 backdrop-blur-md border-b border-white/5"
       )}
       style={{ position: 'fixed', top: 0, left: 0, right: 0 }}
     >
-      {show && y > 100 && (
+      {y > 100 && (
         <div
           className="absolute inset-0 h-full w-full bg-black/30 backdrop-blur-md transition-opacity duration-300"
           style={{ opacity: Math.min(y / 300, 0.8) }}
@@ -55,16 +52,14 @@ const TopNavbar = () => {
         {show ? <BrandLogo /> : <BackButton href={tv ? "/?content=tv" : "/"} />}
       </NavbarBrand>
       <NavbarContent justify="center" className="relative z-10">
-        {show && (
-          <NavbarItem>
-            <Next
-              className={cn("size-6 transition-colors md:size-8", {
-                "text-primary": content === "movie",
-                "text-warning": content === "tv",
-              })}
-            />
-          </NavbarItem>
-        )}
+        <NavbarItem>
+          <Next
+            className={cn("size-6 transition-colors md:size-8", {
+              "text-primary": (show && content === "movie") || (!show && !tv),
+              "text-warning": (show && content === "tv") || (!show && tv),
+            })}
+          />
+        </NavbarItem>
       </NavbarContent>
       <NavbarContent justify="end" className="relative z-10">
         <NavbarItem className="flex gap-1">

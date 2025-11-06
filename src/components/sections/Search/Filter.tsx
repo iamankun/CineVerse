@@ -29,6 +29,7 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
     <div
       className={cn("flex w-full max-w-xl flex-col justify-center gap-5 text-center", {
         "absolute-center px-3 md:px-0": !isSearchTriggered,
+        "mt-8": isSearchTriggered,
       })}
     >
       <ContentTypeSelection className="justify-center" />

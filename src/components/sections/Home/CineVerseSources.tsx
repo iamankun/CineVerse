@@ -4,7 +4,7 @@ import { tmdb } from "@/api/tmdb";
 import { Button, Chip } from "@heroui/react";
 import { useQuery } from "@tanstack/react-query";
 import { Movie, TV } from "tmdb-ts/dist/types";
-import { useState } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { IoPlayOutline, IoInformationCircleOutline, IoVolumeHighOutline, IoVolumeMuteOutline } from "react-icons/io5";
 import { IoIosArrowBack, IoIosArrowForward } from "react-icons/io";
 import { getImageUrl } from "@/utils/movies";
@@ -109,12 +109,25 @@ const fetchCineVerseContent = async () => {
 const CineVerseHero = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isMuted, setIsMuted] = useState(true);
+  const playerRef = useRef<any>(null);
+  const iframeRef = useRef<HTMLIFrameElement>(null);
 
   const { data: content, isPending } = useQuery({
     queryKey: ["cineverse-sources", "vi-VN"],
     queryFn: fetchCineVerseContent,
     staleTime: 1000 * 60 * 60,
   });
+
+  // Navigation handlers - Define early so they can be used in useEffect
+  const handleNext = useCallback(() => {
+    if (!content) return;
+    setCurrentIndex((prev) => (prev === content.length - 1 ? 0 : prev + 1));
+  }, [content]);
+
+  const handlePrevious = useCallback(() => {
+    if (!content) return;
+    setCurrentIndex((prev) => (prev === 0 ? content.length - 1 : prev - 1));
+  }, [content]);
 
   // Get current item first for hooks
   const currentItem = content?.[currentIndex];
@@ -163,18 +176,13 @@ const CineVerseHero = () => {
     staleTime: Infinity, // Cache forever since ratings don't change
   });
 
-  if (isPending || !content || content.length === 0 || !currentItem) {
-    return null;
-  }
-
-  // Type assertion sau khi đã check null
+  // Calculate all values before early return
   const item = currentItem as NonNullable<typeof currentItem>;
-
-  const title = "title" in item ? item.title : item.name;
-  const backdropUrl = getImageUrl(item.backdrop_path, "backdrop", true);
-  const releaseYear = "release_date" in item 
+  const title = item && ("title" in item ? item.title : "name" in item ? item.name : "");
+  const backdropUrl = item ? getImageUrl(item.backdrop_path, "backdrop", true) : "";
+  const releaseYear = item && "release_date" in item 
     ? new Date(item.release_date).getFullYear()
-    : "first_air_date" in item 
+    : item && "first_air_date" in item 
     ? new Date(item.first_air_date).getFullYear()
     : "";
 
@@ -186,7 +194,7 @@ const CineVerseHero = () => {
     : ratingCode || null;
 
   // Lấy trailer/video từ TMDB videos với ưu tiên ngôn ngữ
-  const videos = (item as any).videos?.results || [];
+  const videos = item ? ((item as any).videos?.results || []) : [];
   
   // Ưu tiên: vi → en → ja/ko → bất kỳ ngôn ngữ nào
   const trailer = 
@@ -196,28 +204,42 @@ const CineVerseHero = () => {
     videos.find((v: any) => v.site === "YouTube");
   
   // Debug log
-  console.log(`Slide ${currentIndex + 1} (${title}):`, {
-    hasVideos: videos.length > 0,
-    videoCount: videos.length,
-    videos: videos.map((v: any) => ({ type: v.type, site: v.site, key: v.key, lang: v.iso_639_1 })),
-    trailerFound: !!trailer,
-    trailerKey: trailer?.key,
-    trailerLang: trailer?.iso_639_1
-  });
+  if (item) {
+    console.log(`Slide ${currentIndex + 1} (${title}):`, {
+      hasVideos: videos.length > 0,
+      videoCount: videos.length,
+      videos: videos.map((v: any) => ({ type: v.type, site: v.site, key: v.key, lang: v.iso_639_1 })),
+      trailerFound: !!trailer,
+      trailerKey: trailer?.key,
+      trailerLang: trailer?.iso_639_1
+    });
+  }
   
   const trailerUrl = trailer ? `https://www.youtube.com/embed/${trailer.key}?autoplay=1&mute=${isMuted ? 1 : 0}&controls=0&loop=1&playlist=${trailer.key}&playsinline=1&modestbranding=1&rel=0&showinfo=0` : null;
 
-  const handlePrevious = () => {
-    setCurrentIndex((prev) => (prev === 0 ? content.length - 1 : prev - 1));
-  };
+  // Auto-advance to next trailer after video duration - MUST be before any return
+  useEffect(() => {
+    if (!content || content.length === 0 || !trailer) return;
 
-  const handleNext = () => {
-    setCurrentIndex((prev) => (prev === content.length - 1 ? 0 : prev + 1));
-  };
+    // Tự động chuyển trailer sau 2 phút (120 giây)
+    const autoAdvanceTimer = setTimeout(() => {
+      console.log('Auto-advancing to next trailer after 2 minutes');
+      handleNext();
+    }, 120000); // 120 seconds = 2 minutes
 
-  const detailUrl = item.contentType === "movie" 
+    return () => {
+      clearTimeout(autoAdvanceTimer);
+    };
+  }, [content, handleNext, currentIndex, trailer]);
+
+  const detailUrl = item && item.contentType === "movie" 
     ? `/movie/${item.id}` 
-    : `/tv/${item.id}`;
+    : item ? `/tv/${item.id}` : "/";
+
+  // Early return AFTER all hooks
+  if (isPending || !content || content.length === 0 || !currentItem || !item) {
+    return null;
+  }
 
   return (
     <div className="relative h-[600px] w-screen overflow-hidden md:h-[700px]">
@@ -227,6 +249,7 @@ const CineVerseHero = () => {
           <>
             <div className="absolute inset-0 overflow-hidden">
               <iframe
+                ref={iframeRef}
                 key={`trailer-${currentIndex}`}
                 src={trailerUrl}
                 className="absolute left-1/2 top-1/2 h-[56.25vw] min-h-full w-[177.77vh] min-w-full -translate-x-1/2 -translate-y-1/2"

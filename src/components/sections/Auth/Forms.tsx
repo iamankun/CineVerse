@@ -7,6 +7,7 @@ import { SpacingClasses } from "@/utils/constants";
 import { cn, isEmpty, shuffleArray } from "@/utils/helpers";
 import { ArrowLeft } from "@/utils/icons";
 import { getImageUrl } from "@/utils/movies";
+import BrandLogo from "@/components/ui/other/BrandLogo";
 import { addToast, Card, CardBody, CardHeader, ScrollShadow, Spinner } from "@heroui/react";
 import { useQuery } from "@tanstack/react-query";
 import { AnimatePresence, motion } from "framer-motion";
@@ -95,14 +96,9 @@ const AuthForms: React.FC = () => {
                 icon={<ArrowLeft className="text-4xl transition-transform group-hover:scale-125" />}
               />
             )}
-            <Image
-              src="/logo.gif"
-              alt="CineVerse Logo"
-              width={120}
-              height={120}
-              className="rounded-xl"
-              priority
-            />
+            <div className="scale-150">
+              <BrandLogo animate={true} />
+            </div>
           </CardHeader>
           <ScrollShadow hideScrollBar visibility="none">
             <AnimatePresence mode="sync">

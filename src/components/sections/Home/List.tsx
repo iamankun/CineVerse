@@ -17,7 +17,7 @@ const HomePageList: React.FC = () => {
   );
 
   return (
-    <div className="flex flex-col gap-12">
+    <div className="flex flex-col gap-12 mt-8">
       <ContentTypeSelection className="justify-center" />
       <div className="relative flex min-h-32 flex-col gap-12">
         <Suspense

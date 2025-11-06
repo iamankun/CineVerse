@@ -9,7 +9,7 @@ const DiscoverFilters = () => {
     useDiscoverFilters();
 
   return (
-    <div className="flex w-full flex-wrap justify-center gap-3">
+    <div className="flex w-full flex-wrap justify-center gap-3 mt-8">
       <ContentTypeSelection className="mb-5 justify-center" />
       <div className="flex w-full flex-wrap justify-center gap-3">
         <Select

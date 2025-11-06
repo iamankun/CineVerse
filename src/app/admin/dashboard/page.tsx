@@ -253,6 +253,22 @@ export default function DashboardPage() {
           setContentType(sourceType);
         }
         
+        // For TV shows, recalculate totalSeasons and totalEpisodes
+        if (typeToLoad === "tv" && data.seasons) {
+          const totalSeasons = Object.keys(data.seasons).length;
+          let totalEpisodes = 0;
+          Object.values(data.seasons).forEach((season: any) => {
+            totalEpisodes += Object.keys(season).length;
+          });
+          
+          // Update metadata with calculated values
+          data.metadata = {
+            ...data.metadata,
+            totalSeasons,
+            totalEpisodes,
+          };
+        }
+        
         setFormData(data);
         setSelectedItem({ id: tmdbId } as TMDBResult);
         // Hiển thị JSON data
@@ -457,13 +473,27 @@ export default function DashboardPage() {
     const newSeasonData = { ...formData.seasons[seasonNum] };
     delete newSeasonData[episodeNum];
     
-    setFormData((prev: any) => ({
-      ...prev,
-      seasons: {
+    setFormData((prev: any) => {
+      const updatedSeasons = {
         ...prev.seasons,
         [seasonNum]: newSeasonData,
-      },
-    }));
+      };
+      
+      // Recalculate totalEpisodes
+      const totalEpisodes = Object.values(updatedSeasons).reduce(
+        (total: number, season: any) => total + Object.keys(season).length,
+        0
+      );
+      
+      return {
+        ...prev,
+        seasons: updatedSeasons,
+        metadata: {
+          ...prev.metadata,
+          totalEpisodes,
+        },
+      };
+    });
   };
 
   // Logout handler
@@ -562,6 +592,16 @@ export default function DashboardPage() {
         }
       }
       
+      // Calculate totalSeasons and totalEpisodes for TV shows
+      let totalSeasons = 0;
+      let totalEpisodes = 0;
+      if (isTv && parsedData.seasons) {
+        totalSeasons = Object.keys(parsedData.seasons).length;
+        Object.values(parsedData.seasons).forEach((season: any) => {
+          totalEpisodes += Object.keys(season).length;
+        });
+      }
+      
       // Ensure metadata exists with defaults
       const metadata = {
         "movie-rating": parsedData.metadata?.["movie-rating"] || "K",
@@ -573,8 +613,8 @@ export default function DashboardPage() {
         note: parsedData.metadata?.note || "",
         ...(isTv && {
           studio: parsedData.metadata?.studio || "",
-          totalEpisodes: parsedData.metadata?.totalEpisodes || 0,
-          totalSeasons: parsedData.metadata?.totalSeasons || Object.keys(parsedData.seasons || {}).length,
+          totalEpisodes,
+          totalSeasons,
         }),
       };
       
@@ -677,6 +717,20 @@ export default function DashboardPage() {
         alert("Vui lòng thêm ít nhất một episode");
         return;
       }
+
+      // Auto-calculate totalSeasons and totalEpisodes for TV shows
+      const totalSeasons = Object.keys(dataToSave.seasons).length;
+      let totalEpisodes = 0;
+      Object.values(dataToSave.seasons).forEach((season: any) => {
+        totalEpisodes += Object.keys(season).length;
+      });
+
+      // Update metadata with calculated values
+      dataToSave.metadata = {
+        ...dataToSave.metadata,
+        totalSeasons,
+        totalEpisodes,
+      };
     }
 
     try {
@@ -940,12 +994,17 @@ export default function DashboardPage() {
                             {source.sourcesCount || 0} nguồn
                           </Chip>
                         ) : (
-                          <div className="flex gap-2">
-                            <Chip size="sm" variant="flat" color="secondary">
-                              {source.totalSeasons || 0} seasons
-                            </Chip>
-                            <Chip size="sm" variant="flat" color="secondary">
-                              {source.totalEpisodes || 0} tập
+                          <div className="flex flex-col gap-1">
+                            <div className="flex gap-2">
+                              <Chip size="sm" variant="flat" color="secondary">
+                                {source.totalSeasons || 0} seasons
+                              </Chip>
+                              <Chip size="sm" variant="flat" color="secondary">
+                                {source.totalEpisodes || 0} tập
+                              </Chip>
+                            </div>
+                            <Chip size="sm" variant="flat" color="success">
+                              {source.sourcesCount || 0} nguồn
                             </Chip>
                           </div>
                         )}

@@ -1,17 +1,14 @@
-import Image from "next/image";
+import BrandLogo from "@/components/ui/other/BrandLogo";
+import SpaceBackground from "@/components/ui/other/SpaceBackground";
 
 export default function Loading() {
   return (
-    <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-background">
-      <div className="flex flex-col items-center gap-6">
-        <Image
-          src="/logo.gif"
-          alt="CineVerse đang tải..."
-          width={150}
-          height={150}
-          priority
-          unoptimized
-        />
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center">
+      <SpaceBackground />
+      <div className="logo-container flex flex-col items-center gap-6">
+        <div className="scale-[1.875]">
+          <BrandLogo animate={true} />
+        </div>
       </div>
     </div>
   );

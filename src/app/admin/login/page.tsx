@@ -4,6 +4,7 @@ import React, { useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { Input, Button, Card, CardHeader, CardBody, Spinner, addToast } from "@heroui/react";
 import Image from "next/image";
+import BrandLogo from "@/components/ui/other/BrandLogo";
 import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
 import { tmdb } from "@/api/tmdb";
@@ -97,16 +98,9 @@ export default function AdminLoginPage() {
           className="border-foreground-200 bg-background/70 dark:bg-background/80 pointer-events-auto w-full max-w-lg border-2 p-1 backdrop-blur-md md:p-3"
         >
           <CardHeader className="flex flex-col gap-3 px-6 pt-8 items-center">
-            <Link href="/" className="group">
-              <Image
-                src="/logo.gif"
-                alt="CineVerse Logo"
-                width={120}
-                height={120}
-                className="rounded-xl transition-opacity group-hover:opacity-80"
-                priority
-              />
-            </Link>
+            <div className="scale-150">
+              <BrandLogo animate={true} />
+            </div>
           </CardHeader>
           <CardBody className="px-6 pb-6">
             <form onSubmit={handleSubmit} className="flex flex-col gap-4">

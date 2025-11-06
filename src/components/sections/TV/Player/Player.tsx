@@ -1,4 +1,5 @@
 import { siteConfig } from "@/config/site";
+import BrandLogo from "@/components/ui/other/BrandLogo";
 import { cn } from "@/utils/helpers";
 import { getTvShowPlayers } from "@/utils/players";
 import { Card, Skeleton } from "@heroui/react";
@@ -12,6 +13,7 @@ import { ADS_WARNING_STORAGE_KEY, SpacingClasses } from "@/utils/constants";
 import { useVidlinkPlayer } from "@/hooks/useVidlinkPlayer";
 import { useMovieLogo } from "@/hooks/useMovieLogo";
 import { PlayersProps } from "@/types";
+import { AdBlocker } from "@/utils/ad-blocker";
 const AdsWarning = dynamic(() => import("@/components/ui/overlay/AdsWarning"));
 const AgeRating = dynamic(() => import("@/components/ui/overlay/AgeRating"));
 const WatchingWithBrand = dynamic(() => import("@/components/ui/overlay/WatchingWithBrand"));
@@ -50,6 +52,19 @@ const TvShowPlayer: React.FC<TvShowPlayerProps> = ({
   const [movieRating, setMovieRating] = useState<{ rating: string; description: string } | null>(null);
   const [videoCurrentTime, setVideoCurrentTime] = useState(0);
   const logoPath = useMovieLogo(id, "tv", tv.original_language);
+  
+  // Debug logging
+  useEffect(() => {
+    console.log(`🎭 TV Player Debug:`, {
+      id,
+      movieRating,
+      logoPath,
+      tvOriginalLanguage: tv.original_language,
+      seen,
+      hasMovieRating: !!movieRating,
+    });
+  }, [id, movieRating, logoPath, tv.original_language, seen]);
+  
   const cardRef = useRef<HTMLDivElement>(null);
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const idle = useIdle(3000);
@@ -68,14 +83,29 @@ const TvShowPlayer: React.FC<TvShowPlayerProps> = ({
     `Play ${props.seriesName} - ${props.seasonName} - ${episode.name} | ${siteConfig.name}`,
   );
 
+  // Initialize ad blocker
+  useEffect(() => {
+    const adBlocker = AdBlocker.getInstance();
+    adBlocker.init();
+
+    return () => {
+      adBlocker.destroy();
+    };
+  }, []);
+
   // Fetch players (including CineVerse sources)
   useEffect(() => {
     getTvShowPlayers(id, episode.season_number, episode.episode_number, startAt).then(setPlayers);
 
     // Fetch movie rating from CineVerse JSON
+    console.log(`🎬 Fetching TV rating for ID: ${id}`);
     fetch(`/sources/ChuongTrinhTV/${id}.json`)
-      .then(res => res.ok ? res.json() : null)
+      .then(res => {
+        console.log(`📡 TV JSON fetch status:`, res.ok, res.status);
+        return res.ok ? res.json() : null;
+      })
       .then(data => {
+        console.log(`📊 TV JSON data:`, data?.metadata?.["movie-rating"]);
         if (data?.metadata?.["movie-rating"]) {
           const rating = data.metadata["movie-rating"];
           // Fetch rating descriptions
@@ -83,14 +113,19 @@ const TvShowPlayer: React.FC<TvShowPlayerProps> = ({
             .then(res => res.json())
             .then(ratingData => {
               const description = ratingData["Movie-Rating"][rating];
+              console.log(`✅ TV Rating loaded:`, rating, description);
               if (description) {
                 setMovieRating({ rating, description });
               }
             })
-            .catch(() => {});
+            .catch((err) => {
+              console.error(`❌ Failed to load rating descriptions:`, err);
+            });
         }
       })
-      .catch(() => {});
+      .catch((err) => {
+        console.error(`❌ Failed to load TV JSON:`, err);
+      });
   }, [id, episode.season_number, episode.episode_number, startAt]);
 
   // Listen for video time updates from iframe
@@ -162,6 +197,39 @@ const TvShowPlayer: React.FC<TvShowPlayerProps> = ({
     };
   }, []);
 
+  // Handle orientation change on mobile - auto enter fullscreen on landscape
+  useEffect(() => {
+    if (!mobile) return;
+
+    const handleOrientationChange = () => {
+      // Check if landscape mode
+      const isLandscape = window.matchMedia('(orientation: landscape)').matches;
+      
+      if (isLandscape && cardRef.current && !isFullscreen) {
+        // Enter fullscreen when rotating to landscape
+        const requestFullscreen = cardRef.current.requestFullscreen ||
+          (cardRef.current as any).webkitRequestFullscreen ||
+          (cardRef.current as any).mozRequestFullScreen ||
+          (cardRef.current as any).msRequestFullscreen;
+
+        if (requestFullscreen) {
+          requestFullscreen.call(cardRef.current).catch((err: Error) => {
+            console.warn('Failed to enter fullscreen on orientation change:', err);
+          });
+        }
+      }
+    };
+
+    // Listen for orientation changes
+    window.addEventListener('orientationchange', handleOrientationChange);
+    window.matchMedia('(orientation: landscape)').addEventListener('change', handleOrientationChange);
+
+    return () => {
+      window.removeEventListener('orientationchange', handleOrientationChange);
+      window.matchMedia('(orientation: landscape)').removeEventListener('change', handleOrientationChange);
+    };
+  }, [mobile, isFullscreen]);
+
   // Make card fullscreen with keyboard shortcut
   useEffect(() => {
     const handleKeyPress = (e: KeyboardEvent) => {
@@ -222,7 +290,7 @@ const TvShowPlayer: React.FC<TvShowPlayerProps> = ({
     <>
       <AdsWarning />
 
-      <div className={cn("relative", SpacingClasses.reset)}>
+      <div className="relative overflow-hidden">
         <TvShowPlayerHeader
           id={id}
           episode={episode}
@@ -233,10 +301,10 @@ const TvShowPlayer: React.FC<TvShowPlayerProps> = ({
           {...props}
         />
 
-        <Card ref={cardRef} shadow="md" radius="none" className="relative h-screen bg-black">
-          <Skeleton className="absolute h-full w-full" />
-          {seen && (
-            <>
+        <div className="relative h-screen overflow-hidden" ref={cardRef}>
+          <Card shadow="md" radius="none" className="absolute inset-0 bg-black">
+            <Skeleton className="absolute h-full w-full" />
+            {seen && (
               <iframe
                 ref={iframeRef}
                 allowFullScreen
@@ -244,60 +312,54 @@ const TvShowPlayer: React.FC<TvShowPlayerProps> = ({
                 src={PLAYER.source}
                 className={cn("z-10 h-full w-full", { "pointer-events-none": idle && !mobile })}
               />
-              {/* Top overlay: Age Rating + Logo */}
-              <div 
-                className={cn(
-                  "absolute top-4 left-4 right-4 flex items-start justify-between gap-4 transition-opacity duration-300 pointer-events-none",
-                  { "opacity-0": idle && !mobile && !isFullscreen, "opacity-100": !idle || mobile || isFullscreen }
-                )}
-                style={{ zIndex: 2147483647 }}
-              >
-                {/* Age Rating on the left - No background, just shadow */}
-                {movieRating && (
-                  <AgeRating rating={movieRating.rating} ratingDescription={movieRating.description} />
-                )}
+            )}
+          </Card>
+          
+          {/* Top overlay: Age Rating + Logo */}
+          <div 
+            className="flex items-start justify-between gap-4"
+            style={{ 
+              position: 'fixed',
+              top: '1.5rem',
+              left: '1.5rem',
+              right: '1.5rem',
+              zIndex: 2147483647,
+              pointerEvents: 'none'
+            }}
+          >
+            {/* Age Rating on the left */}
+            {movieRating && (
+              <AgeRating rating={movieRating.rating} ratingDescription={movieRating.description} />
+            )}
 
-                {/* CineVerse Logo on the right */}
-                <div className="flex-shrink-0">
-                  <img 
-                    src="/logo.gif" 
-                    alt="CineVerse" 
-                    className="h-14 w-auto"
-                    style={{ 
-                      maxHeight: '56px',
-                      width: 'auto',
-                      filter: 'drop-shadow(0 4px 12px rgba(0, 0, 0, 0.8))'
-                    }}
-                  />
-                </div>
-              </div>
-
-              {/* Bottom overlay: Watching With Brand */}
-              <div 
-                className={cn(
-                  "absolute bottom-8 left-8 transition-opacity duration-300 pointer-events-none",
-                  { "opacity-0": idle && !mobile && !isFullscreen, "opacity-100": !idle || mobile || isFullscreen }
-                )}
-                style={{ zIndex: 2147483647 }}
-              >
-                <WatchingWithBrand 
-                  movieTitle={props.seriesName} 
-                  logoPath={logoPath}
-                  posterPath={tv.poster_path}
-                  isVisible={!idle || mobile || isFullscreen}
-                  videoCurrentTime={videoCurrentTime}
-                />
-              </div>
-            </>
-          )}
-        </Card>
-        
-        {/* Fullscreen hint */}
-        {!isFullscreen && !mobile && (
-          <div className="fixed bottom-4 right-4 z-50 text-xs text-foreground/40 pointer-events-none">
-            Nhấn F để fullscreen hoặc dùng nút fullscreen trên video
+            {/* CineVerse Logo on the right */}
+            <div style={{ 
+              flexShrink: 0,
+              transform: 'scale(1.5)'
+            }}>
+              <BrandLogo animate={true} />
+            </div>
           </div>
-        )}
+
+          {/* Bottom overlay: Watching With Brand */}
+          {seen && (
+            <div 
+              className={cn(
+                "absolute bottom-8 left-8 transition-opacity duration-300 pointer-events-none",
+                { "opacity-0": idle && !mobile && !isFullscreen, "opacity-100": !idle || mobile || isFullscreen }
+              )}
+              style={{ zIndex: 2147483647 }}
+            >
+              <WatchingWithBrand 
+                movieTitle={props.seriesName} 
+                logoPath={logoPath}
+                posterPath={tv.poster_path}
+                isVisible={!idle || mobile || isFullscreen}
+                videoCurrentTime={videoCurrentTime}
+              />
+            </div>
+          )}
+        </div>
       </div>
 
       <TvShowPlayerSourceSelection

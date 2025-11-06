@@ -13,8 +13,10 @@ const Disclaimer = dynamic(() => import("@/components/ui/overlay/Disclaimer"));
 export default function RootLayoutContent({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const [isNotFound, setIsNotFound] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const isAdminRoute = pathname?.startsWith("/admin");
   const isAuthRoute = pathname?.startsWith("/auth");
+  const isPlayerRoute = pathname?.includes("/movie/") || pathname?.includes("/tv/");
 
   useEffect(() => {
     // Check if body has not-found marker
@@ -32,20 +34,34 @@ export default function RootLayoutContent({ children }: { children: React.ReactN
     return () => observer.disconnect();
   }, [pathname]);
 
+  // Set loading to false after 3 seconds delay
+  useEffect(() => {
+    setIsLoading(true);
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 3000);
+
+    return () => clearTimeout(timer);
+  }, [pathname]);
+
   // For admin, auth routes, and 404 page, render without navbar/footer
   if (isAdminRoute || isAuthRoute || isNotFound) {
     return <>{children}</>;
   }
 
-  // Normal layout with navbar/footer
+  // Normal layout with navbar/footer (hide footer during loading or on player pages)
   return (
     <>
       {IS_PRODUCTION && <Disclaimer />}
       <TopNavbar />
-      <main className={cn("container mx-auto max-w-full flex-1 pb-safe-footer overflow-x-hidden pt-20", SpacingClasses.main)}>
+      <main className={cn(
+        "container mx-auto max-w-full flex-1 overflow-x-hidden",
+        isPlayerRoute ? "" : "pb-safe-footer pt-20",
+        !isPlayerRoute && SpacingClasses.main
+      )}>
         {children}
       </main>
-      <Footer />
+      {!isLoading && !isPlayerRoute && <Footer />}
       <FloatingNavBar />
     </>
   );

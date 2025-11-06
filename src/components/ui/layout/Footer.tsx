@@ -1,5 +1,6 @@
 "use client";
 
+import BrandLogo from "@/components/ui/other/BrandLogo";
 import { siteConfig } from "@/config/site";
 import { cn } from "@/utils/helpers";
 import { Link } from "@heroui/react";
@@ -68,13 +69,9 @@ const Footer: React.FC<FooterProps> = ({ className }) => {
               title="Click để làm mới toàn bộ cache"
               aria-label="Làm mới cache"
             >
-              <Image
-                src="/logo.gif"
-                alt="CineVerse"
-                width={48}
-                height={48}
-                className="h-12 w-auto pointer-events-none"
-              />
+              <div className="scale-150 pointer-events-none">
+                <BrandLogo animate={true} />
+              </div>
             </button>
             <p className="mb-4 text-sm text-foreground-600">
               {siteConfig.description}
