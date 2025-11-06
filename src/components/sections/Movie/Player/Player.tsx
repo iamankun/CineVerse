@@ -73,6 +73,25 @@ const MoviePlayer: React.FC<MoviePlayerProps> = ({ movie, startAt }) => {
     };
   }, []);
 
+  // Suppress react-remove-scroll errors (library bug with modal cleanup)
+  useEffect(() => {
+    const originalError = console.error;
+    console.error = (...args: any[]) => {
+      if (
+        typeof args[0] === 'string' &&
+        args[0].includes("Failed to execute 'contains' on 'Node'")
+      ) {
+        // Suppress this specific error from react-remove-scroll
+        return;
+      }
+      originalError.apply(console, args);
+    };
+
+    return () => {
+      console.error = originalError;
+    };
+  }, []);
+
   // Fetch players (including CineVerse sources)
   useEffect(() => {
     getMoviePlayers(movie.id, startAt).then(setPlayers);

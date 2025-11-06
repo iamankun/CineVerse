@@ -93,12 +93,28 @@ const TvShowPlayer: React.FC<TvShowPlayerProps> = ({
     };
   }, []);
 
+  // Suppress react-remove-scroll error when modal/drawer closes
+  useEffect(() => {
+    const originalError = console.error;
+    console.error = (...args: any[]) => {
+      // Suppress specific react-remove-scroll library error
+      if (typeof args[0] === 'string' && args[0].includes("Failed to execute 'contains' on 'Node'")) {
+        return; // Ignore this specific error from react-remove-scroll
+      }
+      originalError.apply(console, args);
+    };
+
+    return () => {
+      console.error = originalError;
+    };
+  }, []);
+
   // Fetch players (including CineVerse sources)
   useEffect(() => {
     getTvShowPlayers(id, episode.season_number, episode.episode_number, startAt).then(setPlayers);
 
     // Fetch movie rating from CineVerse JSON
-    console.log(`🎬 Fetching TV rating for ID: ${id}`);
+    console.log(`🎬 Đang tải TV điểm của ID: ${id}`);
     fetch(`/sources/ChuongTrinhTV/${id}.json`)
       .then(res => {
         console.log(`📡 TV JSON fetch status:`, res.ok, res.status);

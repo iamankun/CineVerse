@@ -93,12 +93,24 @@ export const EpisodeListCard: React.FC<EpisodeCardProps> = ({
     ? `/tv/${id}/${episode.season_number}/${episode.episode_number}/player`
     : undefined;
 
+  // Debug logging
+  const handleClick = () => {
+    console.log('🎬 Episode clicked:', {
+      episodeName: episode.name,
+      episodeNumber: episode.episode_number,
+      seasonNumber: episode.season_number,
+      href,
+      isNotReleased,
+    });
+  };
+
   return (
     <Card
       isPressable={!isNotReleased}
       as={(isNotReleased ? "div" : Link) as "a"}
       href={href}
       shadow="none"
+      onPress={handleClick}
       className={cn(
         "group motion-preset-blur-right border-foreground-200 bg-foreground-100 motion-duration-300 grid grid-cols-[auto_1fr] gap-3 border-2 transition-colors",
         {

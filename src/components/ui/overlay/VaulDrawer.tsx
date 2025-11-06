@@ -70,6 +70,7 @@ export default function VaulDrawer({
               "w-full": fullWidth,
             },
           )}
+          style={{ pointerEvents: 'auto' }}
         >
           <div
             className={cn(
