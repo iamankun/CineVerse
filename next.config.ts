@@ -14,13 +14,10 @@ const withPWA = withPWAInit({
 });
 
 const nextConfig: NextConfig = {
-  eslint: {
-    ignoreDuringBuilds: false,
-  },
   images: {
     remotePatterns: [
       {
-        protocol: "http",
+        protocol: "https",
         hostname: "image.tmdb.org",
       },
       {
