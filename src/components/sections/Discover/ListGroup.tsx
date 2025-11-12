@@ -9,7 +9,7 @@ const DiscoverListGroup = () => {
   const { content } = useDiscoverFilters();
 
   return (
-    <div className="flex flex-col gap-10">
+    <div className="flex flex-col gap-10 pt-20">
       <DiscoverFilters />
       {content === "movie" && <MovieDiscoverList />}
       {content === "tv" && <TvShowDiscoverList />}

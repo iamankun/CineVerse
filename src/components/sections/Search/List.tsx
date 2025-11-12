@@ -114,7 +114,7 @@ const SearchList = () => {
   };
 
   return (
-    <div className="flex flex-col items-center gap-8 pb-[800px] md:pb-[500px]">
+    <div className="flex flex-col items-center gap-8 pb-[800px] md:pb-[500px] pt-20">
       <SearchFilter
         content={content}
         isPending={isPending}

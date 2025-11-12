@@ -11,7 +11,7 @@ const FAQ = dynamic(() => import("@/components/sections/About/FAQ"));
 
 const AboutPage = () => {
   return (
-    <div className="flex w-full justify-center">
+    <div className="flex w-full justify-center pt-20">
       <div className="flex w-full max-w-2xl flex-col gap-5">
         <Suspense>
           <FAQ />

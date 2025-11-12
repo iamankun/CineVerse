@@ -10,6 +10,7 @@ import { IS_PRODUCTION, SpacingClasses } from "@/utils/constants";
 import { useManifestRefresh } from "@/utils/manifest";
 import dynamic from "next/dynamic";
 const Disclaimer = dynamic(() => import("@/components/ui/overlay/Disclaimer"));
+const FullscreenPrompt = dynamic(() => import("@/components/ui/overlay/FullscreenPrompt"));
 
 export default function RootLayoutContent({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -58,6 +59,7 @@ export default function RootLayoutContent({ children }: { children: React.ReactN
   return (
     <>
       {IS_PRODUCTION && <Disclaimer />}
+      <FullscreenPrompt />
       <TopNavbar />
       <main className={cn(
         "container mx-auto max-w-full flex-1 overflow-x-hidden",

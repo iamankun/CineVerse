@@ -132,7 +132,7 @@ const LibraryList = () => {
 
   return (
     <>
-      <div className="relative flex flex-col items-center justify-center gap-10 mt-8">
+      <div className="relative flex flex-col items-center justify-center gap-10 mt-8 pt-20">
         <div className="flex w-full flex-col items-center justify-center gap-2">
           <ContentTypeSelection className="justify-center" />
           <Select
