@@ -14,7 +14,7 @@ import { MovieDetails } from "tmdb-ts/dist/types/movies";
 import { useVidlinkPlayer } from "@/hooks/useVidlinkPlayer";
 import { useMovieLogo } from "@/hooks/useMovieLogo";
 import { PlayersProps } from "@/types";
-import { AdBlocker } from "@/utils/ad-blocker";
+import { playerAdBlocker } from "@/utils/player-ad-blocker";
 const AdsWarning = dynamic(() => import("@/components/ui/overlay/AdsWarning"));
 const AgeRating = dynamic(() => import("@/components/ui/overlay/AgeRating"));
 const WatchingWithBrand = dynamic(() => import("@/components/ui/overlay/WatchingWithBrand"));
@@ -38,9 +38,9 @@ const MoviePlayer: React.FC<MoviePlayerProps> = ({ movie, startAt }) => {
   const [videoCurrentTime, setVideoCurrentTime] = useState(0);
   const logoPath = useMovieLogo(movie.id, "movie", movie.original_language);
   
-  // Debug logging
+  // Sửa lỗi đăng nhập
   useEffect(() => {
-    console.log(`🎭 Movie Player Debug:`, {
+    console.log(`🎭 Sửa lỗi trình đa phương tiện:`, {
       id: movie.id,
       movieRating,
       logoPath,
@@ -63,13 +63,19 @@ const MoviePlayer: React.FC<MoviePlayerProps> = ({ movie, startAt }) => {
   useVidlinkPlayer({ saveHistory: true });
   useDocumentTitle(`Play ${title} | ${siteConfig.name}`);
 
-  // Initialize ad blocker
+  // Initialize ad blocker with iframe reference
   useEffect(() => {
-    const adBlocker = AdBlocker.getInstance();
-    adBlocker.init();
+    // Initialize immediately
+    playerAdBlocker.init();
+
+    // Attach to iframe when ready
+    const iframe = iframeRef.current;
+    if (iframe) {
+      playerAdBlocker.init(iframe);
+    }
 
     return () => {
-      adBlocker.destroy();
+      playerAdBlocker.destroy();
     };
   }, []);
 
@@ -92,19 +98,17 @@ const MoviePlayer: React.FC<MoviePlayerProps> = ({ movie, startAt }) => {
     };
   }, []);
 
-  // Fetch players (including CineVerse sources)
   useEffect(() => {
     getMoviePlayers(movie.id, startAt).then(setPlayers);
 
-    // Fetch movie rating from CineVerse JSON
-    console.log(`🎬 Fetching movie rating for ID: ${movie.id}`);
+    console.log(`🎬 Đang lấy đánh giá phim cho ID: ${movie.id}`);
     fetch(`/sources/Movie/${movie.id}.json`)
       .then(res => {
-        console.log(`📡 Movie JSON fetch status:`, res.ok, res.status);
+        console.log(`📡 Điện ảnh đang lấy tình trạng:`, res.ok, res.status);
         return res.ok ? res.json() : null;
       })
       .then(data => {
-        console.log(`📊 Movie JSON data:`, data?.metadata?.["movie-rating"]);
+        console.log(`📊 Dữ liệu JSON phim:`, data?.metadata?.["movie-rating"]);
         if (data?.metadata?.["movie-rating"]) {
           const rating = data.metadata["movie-rating"];
           // Fetch rating descriptions
@@ -112,18 +116,18 @@ const MoviePlayer: React.FC<MoviePlayerProps> = ({ movie, startAt }) => {
             .then(res => res.json())
             .then(ratingData => {
               const description = ratingData["Movie-Rating"][rating];
-              console.log(`✅ Movie Rating loaded:`, rating, description);
+              console.log(`✅ Đang tải đánh giá phim:`, rating, description);
               if (description) {
                 setMovieRating({ rating, description });
               }
             })
             .catch((err) => {
-              console.error(`❌ Failed to load rating descriptions:`, err);
+              console.error(`❌ Không tải được mô tả đánh giá phim:`, err);
             });
         }
       })
       .catch((err) => {
-        console.error(`❌ Failed to load Movie JSON:`, err);
+        console.error(`❌ Không tải được phim:`, err);
       });
   }, [movie.id, startAt]);
 
@@ -332,7 +336,7 @@ const MoviePlayer: React.FC<MoviePlayerProps> = ({ movie, startAt }) => {
             )}
           </Card>
           
-          {/* Top overlay: Age Rating + Logo */}
+          {/* Lớp trên bên trái và phải: Cảnh báo độ tuổi + Logo */}
           <div 
             className="flex items-start justify-between gap-4"
             style={{ 
@@ -340,7 +344,7 @@ const MoviePlayer: React.FC<MoviePlayerProps> = ({ movie, startAt }) => {
               top: '4rem',
               left: '1.5rem',
               right: '4rem',
-              zIndex: 2147483647,
+              zIndex: 50,
               pointerEvents: 'none'
             }}
           >
@@ -359,7 +363,7 @@ const MoviePlayer: React.FC<MoviePlayerProps> = ({ movie, startAt }) => {
           {seen && (
             <div 
               className="absolute bottom-18 left-4 md:bottom-20 md:left-8 transition-opacity duration-300 pointer-events-none"
-              style={{ zIndex: 2147483647 }}
+              style={{ zIndex: 50 }}
             >
               <WatchingWithBrand 
                 movieTitle={title} 

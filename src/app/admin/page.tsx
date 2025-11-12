@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { Card, CardBody, CardHeader } from "@heroui/react";
-import { IoStatsChart, IoNotifications, IoSettings, IoAnalytics } from "react-icons/io5";
+import { IoStatsChart, IoNotifications, IoSettings, IoAnalytics, IoShieldCheckmark } from "react-icons/io5";
 import AdminGuard from "@/components/AdminGuard";
 import { getVersionString } from "@/utils/version";
 
@@ -37,6 +37,13 @@ export default function AdminPage() {
       icon: <IoAnalytics className="text-6xl" />,
       path: "/admin/seo",
       color: "bg-gradient-to-br from-green-500 to-teal-500",
+    },
+    {
+      title: "Ad Blocker",
+      description: "Quản lý filters chặn quảng cáo",
+      icon: <IoShieldCheckmark className="text-6xl" />,
+      path: "/admin/filters",
+      color: "bg-gradient-to-br from-red-500 to-orange-500",
     },
   ];
 

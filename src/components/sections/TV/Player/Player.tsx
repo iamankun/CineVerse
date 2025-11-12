@@ -13,7 +13,7 @@ import { ADS_WARNING_STORAGE_KEY, SpacingClasses } from "@/utils/constants";
 import { useVidlinkPlayer } from "@/hooks/useVidlinkPlayer";
 import { useMovieLogo } from "@/hooks/useMovieLogo";
 import { PlayersProps } from "@/types";
-import { AdBlocker } from "@/utils/ad-blocker";
+import { playerAdBlocker } from "@/utils/player-ad-blocker";
 const AdsWarning = dynamic(() => import("@/components/ui/overlay/AdsWarning"));
 const AgeRating = dynamic(() => import("@/components/ui/overlay/AgeRating"));
 const WatchingWithBrand = dynamic(() => import("@/components/ui/overlay/WatchingWithBrand"));
@@ -83,13 +83,19 @@ const TvShowPlayer: React.FC<TvShowPlayerProps> = ({
     `Play ${props.seriesName} - ${props.seasonName} - ${episode.name} | ${siteConfig.name}`,
   );
 
-  // Initialize ad blocker
+  // Initialize ad blocker with iframe reference
   useEffect(() => {
-    const adBlocker = AdBlocker.getInstance();
-    adBlocker.init();
+    // Initialize immediately
+    playerAdBlocker.init();
+
+    // Attach to iframe when ready
+    const iframe = iframeRef.current;
+    if (iframe) {
+      playerAdBlocker.init(iframe);
+    }
 
     return () => {
-      adBlocker.destroy();
+      playerAdBlocker.destroy();
     };
   }, []);
 
@@ -361,7 +367,7 @@ const TvShowPlayer: React.FC<TvShowPlayerProps> = ({
               top: '4rem',
               left: '1.5rem',
               right: '4rem',
-              zIndex: 2147483647,
+              zIndex: 50,
               pointerEvents: 'none'
             }}
           >
@@ -383,7 +389,7 @@ const TvShowPlayer: React.FC<TvShowPlayerProps> = ({
           {seen && (
             <div 
               className="absolute bottom-18 left-4 md:bottom-20 md:left-8 transition-opacity duration-300 pointer-events-none"
-              style={{ zIndex: 2147483647 }}
+              style={{ zIndex: 50 }}
             >
               <WatchingWithBrand 
                 movieTitle={props.seriesName} 

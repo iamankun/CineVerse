@@ -6,7 +6,7 @@ export const dynamic = 'force-dynamic';
 
 export async function GET() {
   try {
-    const notificationsDir = path.join(process.cwd(), "public", "notifications");
+    const notificationsDir = path.join(process.cwd(), "src", "app", "admin", "notifications");
     
     // Check if directory exists
     try {
@@ -39,7 +39,7 @@ export async function GET() {
 export async function POST(request: NextRequest) {
   try {
     const data = await request.json();
-    const notificationsDir = path.join(process.cwd(), "public", "notifications");
+    const notificationsDir = path.join(process.cwd(), "src", "app", "admin", "notifications");
 
     // Ensure directory exists
     await fs.mkdir(notificationsDir, { recursive: true });
@@ -62,12 +62,53 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       success: true,
       notification,
-      filePath: `public/notifications/${nextId}.json`,
+      filePath: `src/app/admin/notifications/${nextId}.json`,
     });
   } catch (error) {
     console.error("Error creating notification:", error);
     return NextResponse.json(
       { success: false, message: "Failed to create notification" },
+      { status: 500 }
+    );
+  }
+}
+
+export async function DELETE(request: NextRequest) {
+  try {
+    const { searchParams } = new URL(request.url);
+    const id = searchParams.get('id');
+
+    if (!id) {
+      return NextResponse.json(
+        { success: false, message: "Missing notification ID" },
+        { status: 400 }
+      );
+    }
+
+    const notificationsDir = path.join(process.cwd(), "src", "app", "admin", "notifications");
+    const filePath = path.join(notificationsDir, `${id}.json`);
+
+    // Check if file exists
+    try {
+      await fs.access(filePath);
+    } catch {
+      return NextResponse.json(
+        { success: false, message: "Notification not found" },
+        { status: 404 }
+      );
+    }
+
+    // Delete the file
+    await fs.unlink(filePath);
+
+    return NextResponse.json({
+      success: true,
+      message: `Deleted notification ${id}`,
+    });
+  } catch (error) {
+    console.error("Error deleting notification:", error);
+    return NextResponse.json(
+      { success: false, message: "Failed to delete notification" },
       { status: 500 }
     );
   }

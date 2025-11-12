@@ -137,6 +137,30 @@ export default function NotificationAdminPage() {
     }
   };
 
+  const handleDelete = async (id: number) => {
+    if (!confirm(`Bạn có chắc muốn xóa thông báo #${id}?`)) {
+      return;
+    }
+
+    try {
+      const response = await fetch(`/api/admin/notifications?id=${id}`, {
+        method: "DELETE",
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        alert(`✅ Đã xóa thông báo #${id}`);
+        fetchNotifications();
+      } else {
+        alert(`❌ Lỗi: ${result.message}`);
+      }
+    } catch (error) {
+      console.error("Delete error:", error);
+      alert("❌ Có lỗi xảy ra khi xóa thông báo");
+    }
+  };
+
   if (loading) {
     return (
       <AdminGuard>
@@ -192,7 +216,7 @@ export default function NotificationAdminPage() {
                 {notifications.map((notification) => (
                   <Card key={notification.id} shadow="sm" className="border-2">
                     <CardBody className="gap-2">
-                      <div className="flex justify-between items-start">
+                      <div className="flex justify-between items-start gap-3">
                         <div className="flex-1">
                           <div className="flex items-center gap-2 mb-2">
                             <Chip
@@ -233,9 +257,20 @@ export default function NotificationAdminPage() {
                             </p>
                           )}
                         </div>
-                        <span className="text-xs text-foreground-400">
-                          #{notification.id}
-                        </span>
+                        <div className="flex flex-col gap-2 items-end">
+                          <span className="text-xs text-foreground-400">
+                            #{notification.id}
+                          </span>
+                          <Button
+                            isIconOnly
+                            color="danger"
+                            variant="flat"
+                            size="sm"
+                            onPress={() => handleDelete(notification.id)}
+                          >
+                            <IoTrash size={18} />
+                          </Button>
+                        </div>
                       </div>
                     </CardBody>
                   </Card>

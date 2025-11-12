@@ -39,14 +39,14 @@ const AdsWarning: React.FC = () => {
     >
       <ModalContent>
         <ModalHeader className="flex flex-col gap-1 text-center text-3xl uppercase">
-          Before you watch!
+          Trước khi xem!
         </ModalHeader>
         <ModalBody>
           <ScrollShadow hideScrollBar className="space-y-4">
             <p className="text-center">
-              As our content is hosted by various third party providers, you may encounter pop up
-              advertisements while streaming. To improve your viewing experience, we suggest using
-              an ad-blocker like{" "}
+              Vì nội dung được lưu trữ bởi nhiều nhà cung cấp bên thứ ba khác nhau, bạn có thể gặp
+              quảng cáo pop-up trong khi xem. Để cải thiện trải nghiệm, chúng tôi khuyên bạn sử dụng
+              trình chặn quảng cáo như{" "}
               <Link
                 showAnchorIcon
                 isExternal
@@ -57,7 +57,7 @@ const AdsWarning: React.FC = () => {
               >
                 uBlock Origin
               </Link>{" "}
-              or{" "}
+              hoặc{" "}
               <Link
                 showAnchorIcon
                 isExternal
@@ -68,14 +68,14 @@ const AdsWarning: React.FC = () => {
               >
                 AdGuard
               </Link>
-              . Please be aware that we don't have control over the ads displayed and cannot be held
-              responsible for their content or any issues they may cause.
+              . Xin lưu ý rằng chúng tôi không kiểm soát các quảng cáo được hiển thị và không chịu
+              trách nhiệm về nội dung hoặc bất kỳ vấn đề nào chúng có thể gây ra.
             </p>
           </ScrollShadow>
         </ModalBody>
         <ModalFooter className="justify-center">
           <Button color="primary" variant="shadow" onPress={handleSeen}>
-            Okay, I understand
+            Tôi đã hiểu
           </Button>
         </ModalFooter>
       </ModalContent>

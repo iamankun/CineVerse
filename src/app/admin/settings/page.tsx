@@ -74,6 +74,8 @@ export default function SettingsPage() {
     
     setSaving(true);
     try {
+      console.log('💾 Saving config:', config);
+      
       const response = await fetch('/api/admin/overlay-config', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -81,15 +83,17 @@ export default function SettingsPage() {
       });
 
       const result = await response.json();
+      console.log('📥 Server response:', result);
       
       if (result.success) {
         alert('✅ Đã lưu cấu hình! Vui lòng restart dev server để áp dụng.');
       } else {
-        alert('❌ Không thể lưu cấu hình');
+        alert(`❌ Không thể lưu cấu hình: ${result.message || 'Lỗi không xác định'}`);
+        console.error('Save failed:', result);
       }
     } catch (error) {
-      console.error('Lỗi khi lưu cấu hình:', error);
-      alert('❌ Lỗi khi lưu cấu hình');
+      console.error('❌ Lỗi khi lưu cấu hình:', error);
+      alert(`❌ Lỗi khi lưu cấu hình: ${error instanceof Error ? error.message : 'Lỗi không xác định'}`);
     } finally {
       setSaving(false);
     }
@@ -149,9 +153,33 @@ export default function SettingsPage() {
     }
   };
 
-  const handleRemoveLogo = () => {
-    if (confirm('Bạn có chắc muốn xóa logo tùy chỉnh và sử dụng logo mặc định?')) {
-      updateConfig('brandLogo', 'logoPath', null);
+  const handleRemoveLogo = async () => {
+    if (!config?.brandLogo.logoPath) return;
+    
+    if (!confirm('Bạn có chắc muốn xóa logo tùy chỉnh và sử dụng logo mặc định?')) {
+      return;
+    }
+
+    try {
+      // Call API to delete the logo file
+      const response = await fetch('/api/admin/delete-logo', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ logoPath: config.brandLogo.logoPath }),
+      });
+
+      const result = await response.json();
+      
+      if (result.success) {
+        // Update config to remove logo path
+        updateConfig('brandLogo', 'logoPath', null);
+        alert('✅ Xóa logo thành công!');
+      } else {
+        alert('❌ Không thể xóa logo: ' + result.message);
+      }
+    } catch (error) {
+      console.error('Lỗi khi xóa logo:', error);
+      alert('❌ Lỗi khi xóa logo');
     }
   };
 

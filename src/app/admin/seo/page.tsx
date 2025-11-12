@@ -46,9 +46,9 @@ export default function SEOPage() {
     queryFn: async () => {
       if (!selectedId) return null;
       if (selectedType === "movie") {
-        return await tmdb.movies.details(selectedId);
+        return await tmdb.movies.details(selectedId, undefined, "vi-VN");
       } else {
-        return await tmdb.tvShows.details(selectedId);
+        return await tmdb.tvShows.details(selectedId, undefined, "vi-VN");
       }
     },
     enabled: !!selectedId,
@@ -176,14 +176,14 @@ export default function SEOPage() {
               </CardHeader>
               <CardBody className="space-y-4">
                 <Input
-                  label="Focus Keyphrase (Từ khóa chính)"
+                  label="Từ khóa chính"
                   placeholder="ví dụ: xem phim avengers endgame"
                   value={config.focusKeyphrase || ""}
                   onChange={(e) => handleManualChange("focusKeyphrase", e.target.value)}
                 />
 
                 <Input
-                  label="SEO Title"
+                  label="Tiêu đề SEO"
                   placeholder="Tiêu đề SEO (50-60 ký tự)"
                   value={config.title}
                   onChange={(e) => handleManualChange("title", e.target.value)}
@@ -191,7 +191,7 @@ export default function SEOPage() {
                 />
 
                 <Textarea
-                  label="Meta Description"
+                  label="Mô tả Meta"
                   placeholder="Mô tả SEO (120-155 ký tự)"
                   value={config.description}
                   onChange={(e) => handleManualChange("description", e.target.value)}
@@ -200,7 +200,7 @@ export default function SEOPage() {
                 />
 
                 <Input
-                  label="URL Slug"
+                  label="Đường dẫn URL"
                   placeholder="/movie/id/slug"
                   value={config.url}
                   onChange={(e) => handleManualChange("url", e.target.value)}
@@ -208,7 +208,7 @@ export default function SEOPage() {
                 />
 
                 <Textarea
-                  label="Page Content (HTML)"
+                  label="Nội dung trang (HTML)"
                   placeholder="Nội dung trang với thẻ HTML"
                   value={config.content}
                   onChange={(e) => handleManualChange("content", e.target.value)}

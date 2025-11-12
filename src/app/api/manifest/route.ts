@@ -18,9 +18,11 @@ export async function GET(request: NextRequest) {
       manifest.icons = manifest.icons.map((icon: any) => {
         // Remove existing version param to avoid duplication
         const baseSrc = icon.src.split('?')[0];
+        // Ensure icon path starts with / to make it absolute
+        const absoluteSrc = baseSrc.startsWith('/') ? baseSrc : `/${baseSrc}`;
         return {
           ...icon,
-          src: `${baseSrc}?v=${version}`,
+          src: `${absoluteSrc}?v=${version}`,
         };
       });
     }

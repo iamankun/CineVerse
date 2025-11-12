@@ -1,28 +1,28 @@
 {
   "ageRating": {
     "initialDelay": 0,
-    "expandDuration": 5000,
+    "expandDuration": 15000,
     "repeatInterval": 300000,
     "description": "Độ tuổi xem phim (milliseconds)"
   },
   "watchingWithBrand": {
     "initialDelay": 1000,
     "showDuration": 15000,
-    "repeatInterval": 0,
-    "animationDuration": 1000,
+    "repeatInterval": 300000,
+    "animationDuration": 800,
     "description": "Xem với logo phim (milliseconds)"
   },
   "brandLogo": {
     "alwaysVisible": true,
     "logoPath": null,
     "scale": 1.5,
-    "description": "CineVerse Logo - logoPath: null dùng logo mặc định, hoặc đường dẫn tùy chỉnh"
+    "description": "CineVerse Logo - logoPath: nếu không dùng logo mặc định, hoặc đường dẫn tùy chỉnh"
   },
   "descriptions": {
     "initialDelay": "Thời gian chờ trước khi hiển thị lần đầu (ms)",
     "showDuration": "Thời gian hiển thị (ms)",
     "expandDuration": "Thời gian hiển thị trạng thái mở rộng (ms)",
     "repeatInterval": "Khoảng thời gian giữa các lần hiển thị (ms) - Đặt 0 để hiển thị liên tục",
-    "animationDuration": "Thời gian chuyển đổi animation (ms)"
+    "animationDuration": "Thời gian chuyển đổi hiệu ứng động (ms)"
   }
 }

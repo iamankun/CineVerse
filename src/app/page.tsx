@@ -4,6 +4,7 @@ import LoadingWrapper from "@/components/LoadingWrapper";
 const ContinueWatching = dynamic(() => import("@/components/sections/Home/ContinueWatching"));
 const HomePageList = dynamic(() => import("@/components/sections/Home/List"));
 const CineVerseSources = dynamic(() => import("@/components/sections/Home/CineVerseSources"));
+const HomeNotification = dynamic(() => import("@/components/ui/notification/HomeNotification"));
 
 const HomePage: NextPage = () => {
     return (
@@ -17,6 +18,7 @@ const HomePage: NextPage = () => {
                     <HomePageList />
                 </div>
             </div>
+            <HomeNotification />
         </LoadingWrapper>
     );
 };

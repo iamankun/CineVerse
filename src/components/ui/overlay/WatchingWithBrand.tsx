@@ -85,10 +85,10 @@ const WatchingWithBrand: React.FC<WatchingWithBrandProps> = ({
   const imageUrl = `https://image.tmdb.org/t/p/w500/${cleanLogoPath}`;
 
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex flex-col items-center gap-1">
       {/* Text - Always visible */}
       <div
-        className="flex-shrink-0 text-xs md:text-sm font-semibold text-white"
+        className="text-xs md:text-sm font-semibold text-white"
         style={{
           textShadow: "0 0 12px rgba(255, 255, 255, 0.5), 0 2px 6px rgba(0, 0, 0, 0.9)",
         }}
@@ -99,10 +99,10 @@ const WatchingWithBrand: React.FC<WatchingWithBrandProps> = ({
       {/* Movie Logo - Slides in/out with animation */}
       <div 
         className={cn(
-          "overflow-hidden transition-all ease-in-out",
+          "overflow-visible transition-all ease-in-out",
           {
-            "max-w-0 opacity-0": !isExpanded,
-            "max-w-[120px] md:max-w-[160px] opacity-100": isExpanded,
+            "max-h-0 opacity-0": !isExpanded,
+            "max-h-[60px] md:max-h-[70px] opacity-100": isExpanded,
           }
         )}
         style={{
@@ -110,29 +110,37 @@ const WatchingWithBrand: React.FC<WatchingWithBrandProps> = ({
         }}
       >
         <div 
-          className="relative flex items-center justify-center rounded-lg" 
+          className="relative flex items-center justify-center" 
           style={{ 
-            width: "90px", 
-            height: "45px",
+            minWidth: "80px",
+            maxWidth: "160px",
+            minHeight: "40px",
+            maxHeight: "60px",
             background: "transparent",
           }}
         >
           <img
             src={imageUrl}
             alt={movieTitle}
-            className="h-full w-full md:hidden"
+            className="md:hidden"
             style={{
+              maxWidth: "100%",
+              maxHeight: "100%",
+              width: "auto",
+              height: "auto",
               objectFit: "contain",
             }}
           />
           <img
             src={imageUrl}
             alt={movieTitle}
-            className="hidden md:block h-full w-full"
+            className="hidden md:block"
             style={{
+              maxWidth: "180px",
+              maxHeight: "70px",
+              width: "auto",
+              height: "auto",
               objectFit: "contain",
-              width: "120px",
-              height: "60px",
             }}
           />
         </div>
