@@ -32,7 +32,7 @@ const TvShowPlayerEpisodeSelection: React.FC<TvShowPlayerEpisodeSelectionProps> 
       open={opened}
       onClose={onClose}
       backdrop="blur"
-      title="Select Episode"
+      title="Chọn Tập"
       direction="right"
       hiddenHandler
       withCloseButton
@@ -50,7 +50,7 @@ const TvShowPlayerEpisodeSelection: React.FC<TvShowPlayerEpisodeSelectionProps> 
           ))
         ) : (
           <div className="text-center py-8 text-foreground/60">
-            No episodes available
+            Không có tập nào
           </div>
         )}
       </div>

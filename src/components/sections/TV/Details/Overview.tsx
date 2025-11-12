@@ -76,14 +76,14 @@ export const TvShowOverviewSection: React.FC<TvShowOverviewSectionProps> = ({
               <div className="flex items-center gap-1">
                 <Season />
                 <span>
-                  {tv.number_of_seasons} Season{tv.number_of_seasons > 1 ? "s" : ""}
+                  {tv.number_of_seasons} Mùa
                 </span>
               </div>
               <p>&#8226;</p>
               <div className="flex items-center gap-1">
                 <List />
                 <span>
-                  {tv.number_of_episodes} Episode{tv.number_of_episodes > 1 ? "s" : ""}
+                  {tv.number_of_episodes} Tập
                 </span>
               </div>
               <p>&#8226;</p>

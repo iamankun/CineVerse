@@ -55,7 +55,7 @@ const TvShowEpisodesSelection: React.FC<TvShowEpisodesSelectionProps> = ({
   if (isEmpty(EPISODES)) {
     return (
       <div className="flex h-full items-center justify-center">
-        <p className="text-center">No episodes found.</p>
+        <p className="text-center">Không tìm thấy tập nào.</p>
       </div>
     );
   }
