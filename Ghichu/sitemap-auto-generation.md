@@ -7,6 +7,7 @@ File `src/app/sitemap.ts` tự động tạo sitemap.xml với nội dung độn
 ## Tính năng
 
 ### 📄 Các trang tĩnh (Static Pages)
+
 - `/` - Trang chủ (Priority: 1.0, Daily)
 - `/discover` - Khám phá (Priority: 0.9, Daily)
 - `/search` - Tìm kiếm (Priority: 0.8, Daily)
@@ -16,6 +17,7 @@ File `src/app/sitemap.ts` tự động tạo sitemap.xml với nội dung độn
 ### 🎬 Nội dung động (Dynamic Content)
 
 #### Phim (Movies)
+
 1. **Popular Movies** - 100 phim phổ biến (Priority: 0.7, Weekly)
 2. **Trending Movies** - 50 phim trending (Priority: 0.9, Daily)
 3. **Top Rated Movies** - 50 phim đánh giá cao (Priority: 0.8, Monthly)
@@ -23,6 +25,7 @@ File `src/app/sitemap.ts` tự động tạo sitemap.xml với nội dung độn
 5. **Now Playing Movies** - 30 phim đang chiếu (Priority: 0.85, Daily)
 
 #### TV Shows
+
 1. **Popular TV Shows** - 100 TV show phổ biến (Priority: 0.7, Weekly)
 2. **Trending TV Shows** - 50 TV show trending (Priority: 0.9, Daily)
 3. **Top Rated TV Shows** - 50 TV show đánh giá cao (Priority: 0.8, Monthly)
@@ -78,6 +81,7 @@ Khi build hoặc truy cập `/sitemap.xml`, console sẽ hiển thị:
 ## Fallback xử lý lỗi
 
 Nếu TMDB API gặp lỗi:
+
 - ❌ Không thể tải dữ liệu động
 - ✅ Vẫn trả về các trang tĩnh (5 trang)
 - 📝 Log lỗi chi tiết trong console
@@ -85,6 +89,7 @@ Nếu TMDB API gặp lỗi:
 ## Cách test
 
 ### Local Development
+
 ```bash
 # 1. Chạy dev server
 npm run dev
@@ -96,6 +101,7 @@ http://localhost:3000/sitemap.xml
 ```
 
 ### Production Build
+
 ```bash
 # 1. Build project
 npm run build
@@ -108,6 +114,7 @@ http://localhost:3000/sitemap.xml
 ```
 
 ### Test với curl
+
 ```bash
 curl http://localhost:3000/sitemap.xml
 ```
@@ -115,6 +122,7 @@ curl http://localhost:3000/sitemap.xml
 ## SEO Benefits
 
 ### ✅ Lợi ích
+
 1. **Google Search Console**: Dễ dàng index tất cả các trang
 2. **Dynamic Content**: Tự động cập nhật khi có phim/TV show mới
 3. **Priority-based**: Google biết trang nào quan trọng hơn
@@ -122,6 +130,7 @@ curl http://localhost:3000/sitemap.xml
 5. **Large Coverage**: ~500 URLs được index
 
 ### 📈 Tối ưu SEO
+
 - Trending pages có priority cao (0.9) → Google ưu tiên index
 - Popular pages cập nhật hàng tuần → Nội dung luôn fresh
 - Static pages có priority phù hợp → Cân bằng crawl budget
@@ -129,12 +138,14 @@ curl http://localhost:3000/sitemap.xml
 ## Submit to Search Engines
 
 ### Google Search Console
-1. Truy cập: https://search.google.com/search-console
+
+1. Truy cập: <https://search.google.com/search-console>
 2. Add property: `cineverse.vercel.app`
 3. Submit sitemap: `https://cineverse.vercel.app/sitemap.xml`
 
 ### Bing Webmaster Tools
-1. Truy cập: https://www.bing.com/webmasters
+
+1. Truy cập: <https://www.bing.com/webmasters>
 2. Add site: `cineverse.vercel.app`
 3. Submit sitemap: `https://cineverse.vercel.app/sitemap.xml`
 
@@ -152,6 +163,7 @@ Sitemap: https://cineverse.vercel.app/sitemap.xml
 ## Cập nhật định kỳ
 
 Sitemap tự động cập nhật khi:
+
 - ✅ Build mới (npm run build)
 - ✅ Request đến `/sitemap.xml` (ISR - Incremental Static Regeneration)
 - ✅ Next.js tự động regenerate theo cache rules
@@ -159,6 +171,7 @@ Sitemap tự động cập nhật khi:
 ## Monitoring
 
 Kiểm tra sitemap status:
+
 - Google Search Console → Sitemaps
 - Xem số URLs discovered
 - Xem số URLs indexed
@@ -167,16 +180,19 @@ Kiểm tra sitemap status:
 ## Troubleshooting
 
 ### Lỗi: Sitemap rỗng
+
 - Kiểm tra TMDB API key
 - Kiểm tra network connection
 - Xem console logs
 
 ### Lỗi: Không có log
+
 - Dev mode có thể cache
 - Clear `.next` folder
 - Restart dev server
 
 ### Lỗi: URLs không index
+
 - Kiểm tra robots.txt
 - Submit lại sitemap
 - Đợi 1-2 tuần cho Google crawl

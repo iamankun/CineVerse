@@ -7,6 +7,7 @@
 ## 📁 Files đã tạo
 
 ### 1. **`public/sitemap.xsl`** - XSLT Stylesheet
+
 - Định dạng XML thành HTML đẹp
 - Giao diện hiện đại với gradient, cards
 - Hiển thị thống kê: Tổng số trang, Priority cao, Cập nhật hàng ngày
@@ -15,12 +16,14 @@
 - Responsive design (mobile-friendly)
 
 ### 2. **`src/app/sitemap-styled.xml/route.ts`** - Route Handler
+
 - Tạo XML sitemap tùy chỉnh
 - Thêm processing instruction cho stylesheet
 - Cache 1 giờ, revalidate 24 giờ
 - Fallback khi API lỗi
 
 ### 3. **`public/robots.txt`** - Robots File
+
 - Cho phép crawl tất cả pages
 - Block admin pages
 - Link đến cả 2 sitemap
@@ -28,6 +31,7 @@
 ## 🌐 URLs
 
 ### Sitemap gốc (Next.js built-in)
+
 ```
 https://cineverse.ankun.dev/sitemap.xml
 ```
@@ -36,6 +40,7 @@ https://cineverse.ankun.dev/sitemap.xml
 - Auto-generated bởi Next.js
 
 ### Sitemap có giao diện
+
 ```
 https://cineverse.ankun.dev/sitemap-styled.xml
 ```
@@ -47,22 +52,26 @@ https://cineverse.ankun.dev/sitemap-styled.xml
 ## 🎨 Giao diện Sitemap
 
 ### Header
+
 - Gradient tím đẹp mắt
 - Tiêu đề: "🗺️ Sitemap XML"
 - Slogan: "Bản đồ trang web CineVerse"
 
 ### Stats Cards
+
 3 thẻ thống kê:
 - 📊 **Tổng số trang**: Tổng URLs
 - ⭐ **Trang ưu tiên cao**: Priority ≥ 0.8
 - 📅 **Cập nhật hàng ngày**: Tần suất daily
 
 ### Info Box
+
 - Màu vàng warning
 - Giải thích sitemap là gì
 - Tại sao cần sitemap
 
 ### Bảng URLs
+
 | URL | Ưu tiên | Tần suất | Cập nhật lần cuối |
 |-----|---------|----------|-------------------|
 | Link | 0.9 (xanh) | Hàng ngày (badge xanh) | 2025-01-12 |
@@ -78,6 +87,7 @@ https://cineverse.ankun.dev/sitemap-styled.xml
 - 🟡 Vàng: Hàng tháng
 
 ### Footer
+
 - Link về trang chủ
 - Credit TMDB
 - Ngày cập nhật
@@ -85,6 +95,7 @@ https://cineverse.ankun.dev/sitemap-styled.xml
 ## 🚀 Test
 
 ### Local
+
 ```bash
 # Chạy dev server
 npm run dev
@@ -94,6 +105,7 @@ http://localhost:3000/sitemap-styled.xml
 ```
 
 ### Production
+
 ```bash
 # Deploy lên Vercel
 npx vercel --prod
@@ -132,11 +144,13 @@ Sitemap: https://cineverse.ankun.dev/sitemap-styled.xml
 ## 💡 Lợi ích
 
 ### Cho Google Bots
+
 - ✅ Vẫn có sitemap.xml chuẩn
 - ✅ Crawl hiệu quả
 - ✅ Index nhanh
 
 ### Cho Users
+
 - ✅ Xem sitemap dễ hiểu
 - ✅ Giao diện đẹp
 - ✅ Tiếng Việt thân thiện
@@ -144,6 +158,7 @@ Sitemap: https://cineverse.ankun.dev/sitemap-styled.xml
 - ✅ Hiểu cấu trúc website
 
 ### Cho Developers
+
 - ✅ Debug sitemap trực quan
 - ✅ Kiểm tra priority
 - ✅ Verify URLs
@@ -152,26 +167,31 @@ Sitemap: https://cineverse.ankun.dev/sitemap-styled.xml
 ## 🎯 Use Cases
 
 ### 1. Submit to Google Search Console
+
 Dùng `sitemap.xml` (chuẩn):
 ```
 https://cineverse.ankun.dev/sitemap.xml
 ```
 
 ### 2. Show to clients/team
+
 Dùng `sitemap-styled.xml` (đẹp):
 ```
 https://cineverse.ankun.dev/sitemap-styled.xml
 ```
 
 ### 3. Documentation
+
 Link trong README → sitemap-styled.xml
 
 ### 4. Debug/QA
+
 Mở sitemap-styled.xml để kiểm tra visually
 
 ## 📝 Customization
 
 ### Thay đổi màu sắc
+
 Edit `public/sitemap.xsl`:
 ```css
 .header {
@@ -180,6 +200,7 @@ Edit `public/sitemap.xsl`:
 ```
 
 ### Thay đổi thông tin
+
 Edit phần footer trong XSL:
 ```xml
 <p>
@@ -188,22 +209,26 @@ Edit phần footer trong XSL:
 ```
 
 ### Thêm/bớt stats
+
 Edit phần `.stats` trong XSL template
 
 ## 🔧 Troubleshooting
 
 ### Sitemap không hiển thị style
+
 - ✅ Kiểm tra file `sitemap.xsl` trong `public/`
 - ✅ Verify processing instruction trong XML
 - ✅ Clear browser cache
 - ✅ Try incognito mode
 
 ### CSS không load
+
 - ✅ Đảm bảo `<style>` tag trong XSL file
 - ✅ Check console errors
 - ✅ Verify XSLT syntax
 
 ### Số liệu sai
+
 - ✅ Rebuild sitemap
 - ✅ Clear cache
 - ✅ Check XSLT selectors (XPath)
@@ -221,18 +246,23 @@ Edit phần `.stats` trong XSL template
 ## 🎁 Bonus Features
 
 ### Auto-sorting
+
 URLs tự động sắp xếp theo priority (cao → thấp)
 
 ### Color-coding
+
 Dễ nhận biết trang quan trọng bằng màu sắc
 
 ### Hover effects
+
 Table rows highlight khi hover
 
 ### Responsive
+
 Hoạt động tốt trên mobile
 
 ### Fast loading
+
 CSS inline, không cần external files
 
 ---
