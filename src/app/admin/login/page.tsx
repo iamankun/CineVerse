@@ -132,7 +132,9 @@ export default function AdminLoginPage() {
                 autoComplete="current-password"
               />
               {error && (
-                <p className="text-sm text-danger">{error}</p>
+                <div className="rounded-lg bg-danger-50 dark:bg-danger-900/20 border border-danger-200 dark:border-danger-800 p-3">
+                  <p className="text-sm text-danger font-medium">{error}</p>
+                </div>
               )}
               <Button
                 type="submit"
