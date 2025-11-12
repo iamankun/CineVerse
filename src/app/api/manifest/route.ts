@@ -15,10 +15,14 @@ export async function GET(request: NextRequest) {
 
     // Add version query parameter to all icon URLs for cache busting
     if (manifest.icons && Array.isArray(manifest.icons)) {
-      manifest.icons = manifest.icons.map((icon: any) => ({
-        ...icon,
-        src: `${icon.src}?v=${version}`,
-      }));
+      manifest.icons = manifest.icons.map((icon: any) => {
+        // Remove existing version param to avoid duplication
+        const baseSrc = icon.src.split('?')[0];
+        return {
+          ...icon,
+          src: `${baseSrc}?v=${version}`,
+        };
+      });
     }
 
     // Add version to manifest for tracking
