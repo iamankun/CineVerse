@@ -69,10 +69,20 @@ export default function AdminLoginPage() {
           router.refresh();
         }, 1000);
       } else {
-        setError(data.message || "Đăng nhập thất bại");
+        setError("Bạn không phải quản trị viên thì phải? Vui lòng đăng nhập lại nếu chỉ nhầm lẫn.");
+        addToast({
+          title: "Đăng nhập thất bại",
+          description: "Bạn không phải quản trị viên thì phải? Vui lòng đăng nhập lại nếu chỉ nhầm lẫn.",
+          color: "danger",
+        });
       }
     } catch (err) {
-      setError("Đã xảy ra lỗi. Vui lòng thử lại.");
+      setError("Đã xảy ra lỗi kết nối. Vui lòng thử lại.");
+      addToast({
+        title: "Lỗi kết nối",
+        description: "Đã xảy ra lỗi kết nối. Vui lòng thử lại.",
+        color: "danger",
+      });
     } finally {
       setLoading(false);
     }
