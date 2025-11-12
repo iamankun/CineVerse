@@ -13,7 +13,7 @@ const RelatedSection: React.FC<{
 
   return (
     <section id="related" className="z-3">
-      <SectionTitle className="mb-2 sm:mb-0 sm:translate-y-10">You may like</SectionTitle>
+      <SectionTitle className="mb-2 sm:mb-0 sm:translate-y-10">Có lẽ bạn thích</SectionTitle>
       <Tabs
         aria-label="Related Section"
         variant="underlined"

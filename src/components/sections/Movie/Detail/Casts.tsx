@@ -13,7 +13,7 @@ interface CastCardProps {
 const CastsSection: React.FC<CastCardProps> = ({ casts }) => {
   return (
     <section id="casts" className="z-3 flex flex-col gap-2">
-      <SectionTitle>Top Casts</SectionTitle>
+      <SectionTitle>Diễn viên</SectionTitle>
       <Carousel classNames={{ container: "gap-5" }}>
         {casts.map((cast, index) => {
           const avatar = getImageUrl(cast.profile_path, "avatar");

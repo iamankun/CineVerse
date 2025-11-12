@@ -16,7 +16,7 @@ const TvShowRelatedSection: React.FC<TvShowRelatedSectionProps> = ({ tv }) => {
   return (
     <section id="related" className="z-3">
       <SectionTitle color="warning" className="mb-2 sm:mb-0 sm:translate-y-10">
-        You may like
+        Có lẽ bạn thích
       </SectionTitle>
       <Tabs
         aria-label="Related Section"

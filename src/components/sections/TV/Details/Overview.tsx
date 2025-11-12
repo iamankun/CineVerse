@@ -116,7 +116,7 @@ export const TvShowOverviewSection: React.FC<TvShowOverviewSectionProps> = ({
           </div>
 
           <div id="story" className="flex flex-col gap-2">
-            <SectionTitle color="warning">Story Line</SectionTitle>
+            <SectionTitle color="warning">Câu chuyện</SectionTitle>
             <p className="text-sm">{tv.overview}</p>
           </div>
         </div>

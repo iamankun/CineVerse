@@ -28,7 +28,7 @@ const PhotosSection: React.FC<PhotosSectionProps> = ({ images, type = "movie" })
 
   return (
     <section id="gallery" className="z-3 flex flex-col gap-2">
-      <SectionTitle color={type === "movie" ? "primary" : "warning"}>Photos</SectionTitle>
+      <SectionTitle color={type === "movie" ? "primary" : "warning"}>Ảnh</SectionTitle>
       <div className="grid grid-cols-2 place-items-center gap-3 sm:grid-cols-4">
         {sortedImages.slice(0, 4).map(({ file_path }, index) => (
           <div key={file_path} className="group relative">

@@ -108,7 +108,7 @@ const OverviewSection: React.FC<OverviewSectionProps> = ({ movie }) => {
           </div>
 
           <div id="story" className="flex flex-col gap-2">
-            <SectionTitle>Story Line</SectionTitle>
+            <SectionTitle>Câu chuyện</SectionTitle>
             <p className="text-sm">{movie.overview}</p>
           </div>
         </div>
