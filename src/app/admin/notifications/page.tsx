@@ -156,7 +156,7 @@ export default function NotificationAdminPage() {
               <Button
                 isIconOnly
                 variant="light"
-                onPress={() => router.push("/admin/dash")}
+                onPress={() => router.push("/admin")}
               >
                 <IoArrowBack size={24} />
               </Button>
