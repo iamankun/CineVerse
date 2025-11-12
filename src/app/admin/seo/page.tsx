@@ -1,19 +1,21 @@
 ﻿"use client";
 
 import { useState, useEffect } from "react";
-import { Card, CardBody, CardHeader, Input, Textarea, Autocomplete, AutocompleteItem, Spinner, Tabs, Tab } from "@heroui/react";
+import { Card, CardBody, CardHeader, Input, Textarea, Autocomplete, AutocompleteItem, Spinner, Tabs, Tab, Button } from "@heroui/react";
 import SEOAnalyzer from "@/components/ui/seo/SEOAnalyzer";
 import { type SEOConfig } from "@/utils/seo/yoast-algorithm";
 import { generateCompleteSEO } from "@/utils/seo/content-generator";
-import { IoAnalytics, IoSearch } from "react-icons/io5";
+import { IoAnalytics, IoSearch, IoArrowBack } from "react-icons/io5";
 import { useQuery } from "@tanstack/react-query";
 import { tmdb } from "@/api/tmdb";
 import { Movie, TV } from "tmdb-ts";
 import { getImageUrl } from "@/utils/movies";
+import { useRouter } from "next/navigation";
 
 type MediaType = "movie" | "tv";
 
 export default function SEOPage() {
+  const router = useRouter();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedId, setSelectedId] = useState<number | null>(null);
   const [selectedType, setSelectedType] = useState<MediaType>("movie");
@@ -66,18 +68,22 @@ export default function SEOPage() {
   const results = searchResults?.results || [];
 
   return (
-    <div className="container mx-auto max-w-7xl px-4 py-8">
-      <Card className="mb-6">
-        <CardHeader className="flex-col items-start gap-2">
-          <div className="flex items-center gap-2">
-            <IoAnalytics size={32} className="text-primary" />
-            <h1 className="text-3xl font-bold">SEO Analyzer - Phân tích SEO thực tế</h1>
-          </div>
+    <div className="container mx-auto space-y-4 p-4">
+      <div className="flex items-center gap-3 mb-4">
+        <Button
+          isIconOnly
+          variant="light"
+          onPress={() => router.push("/admin")}
+        >
+          <IoArrowBack size={24} />
+        </Button>
+        <div>
+          <h1 className="text-3xl font-bold">SEO Analyzer - Phân tích SEO thực tế</h1>
           <p className="text-foreground-600">
             Tìm kiếm phim/TV show và phân tích SEO tự động dựa trên thuật toán Yoast.
           </p>
-        </CardHeader>
-      </Card>
+        </div>
+      </div>
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         <div className="space-y-4">

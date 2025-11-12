@@ -5,6 +5,8 @@ import { Button } from "@heroui/react";
 import { Input } from "@heroui/react";
 import { Tabs, Tab } from "@heroui/react";
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { IoArrowBack } from "react-icons/io5";
 
 interface OverlayConfig {
   ageRating: {
@@ -36,6 +38,7 @@ interface OverlayConfig {
 }
 
 export default function SettingsPage() {
+  const router = useRouter();
   const [config, setConfig] = useState<OverlayConfig | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -170,11 +173,20 @@ export default function SettingsPage() {
 
   return (
     <div className="container mx-auto max-w-6xl p-4">
-      <div className="mb-6">
-        <h1 className="text-3xl font-bold">Cài đặt Hệ thống</h1>
-        <p className="mt-2 text-foreground/60">
-          Quản lý cấu hình overlay và các thiết lập khác
-        </p>
+      <div className="flex items-center gap-3 mb-6">
+        <Button
+          isIconOnly
+          variant="light"
+          onPress={() => router.push("/admin")}
+        >
+          <IoArrowBack size={24} />
+        </Button>
+        <div>
+          <h1 className="text-3xl font-bold">Cài đặt Hệ thống</h1>
+          <p className="mt-2 text-foreground/60">
+            Quản lý cấu hình overlay và các thiết lập khác
+          </p>
+        </div>
       </div>
 
       <Tabs

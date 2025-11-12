@@ -20,7 +20,7 @@ import {
   TableRow,
   TableCell,
 } from "@heroui/react";
-import { IoSearch, IoSave, IoRefresh, IoAdd, IoTrash, IoList, IoCreate, IoLogOut, IoClipboard } from "react-icons/io5";
+import { IoSearch, IoSave, IoRefresh, IoAdd, IoTrash, IoList, IoCreate, IoLogOut, IoClipboard, IoArrowBack } from "react-icons/io5";
 import { searchMovies, searchTV, getMovieDetails, getTvShowDetails } from "@/api/tmdb";
 import Image from "next/image";
 import AdminGuard from "@/components/AdminGuard";
@@ -781,11 +781,21 @@ export default function DashboardPage() {
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center justify-between">
-            <div>
-              <h1 className="mb-2 text-4xl font-bold text-white">
-                Hệ thống quản lý CineVerse
-              </h1>
-              <p className="text-gray-400">Quản lý nguồn phim và chương trình TV</p>
+            <div className="flex items-center gap-3">
+              <Button
+                isIconOnly
+                variant="light"
+                onPress={() => router.push("/admin")}
+                className="text-white"
+              >
+                <IoArrowBack size={24} />
+              </Button>
+              <div>
+                <h1 className="mb-2 text-4xl font-bold text-white">
+                  Hệ thống quản lý CineVerse
+                </h1>
+                <p className="text-gray-400">Quản lý nguồn phim và chương trình TV</p>
+              </div>
             </div>
             <div className="flex gap-2">
               <Button
