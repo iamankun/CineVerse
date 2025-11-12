@@ -10,6 +10,7 @@ import { FaFacebook, FaYoutube, FaGithub } from "react-icons/fa";
 import { IoMail } from "react-icons/io5";
 import { clearAllCache, reloadAfterCacheClear } from "@/utils/cache";
 import { useState } from "react";
+import { getVersionString } from "@/utils/version";
 
 interface FooterProps {
   className?: string;
@@ -172,7 +173,7 @@ const Footer: React.FC<FooterProps> = ({ className }) => {
               Điều khoản
             </Link>
             <span>•</span>
-            <p>v1.3.0</p>
+            <p>{getVersionString()}</p>
           </div>
         </div>
 

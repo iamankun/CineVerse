@@ -7,6 +7,7 @@ import Footer from "@/components/ui/layout/Footer";
 import { FloatingNavBar } from "@/components/ui/layout/FloatingNavBar";
 import { cn } from "@/utils/helpers";
 import { IS_PRODUCTION, SpacingClasses } from "@/utils/constants";
+import { useManifestRefresh } from "@/utils/manifest";
 import dynamic from "next/dynamic";
 const Disclaimer = dynamic(() => import("@/components/ui/overlay/Disclaimer"));
 
@@ -18,6 +19,9 @@ export default function RootLayoutContent({ children }: { children: React.ReactN
   const isAuthRoute = pathname?.startsWith("/auth");
   const isPlayerRoute = pathname?.includes("/movie/") || pathname?.includes("/tv/");
   const isPlayerPage = pathname?.includes("/player");
+
+  // Ensure manifest and icons are refreshed on version change
+  useManifestRefresh();
 
   useEffect(() => {
     // Check if body has not-found marker

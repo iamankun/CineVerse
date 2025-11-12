@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { Card, CardBody, CardHeader } from "@heroui/react";
 import { IoStatsChart, IoNotifications, IoSettings } from "react-icons/io5";
 import AdminGuard from "@/components/AdminGuard";
+import { getVersionString } from "@/utils/version";
 
 export default function AdminPage() {
   const router = useRouter();
@@ -79,6 +80,9 @@ export default function AdminPage() {
         <div className="mt-12 text-center">
           <p className="text-sm text-gray-500">
             Bản quyền CineVerse thuộc An Kun Studio tại Việt Nam
+          </p>
+          <p className="mt-2 text-xs text-gray-600">
+            Phiên bản {getVersionString()}
           </p>
         </div>
         </div>

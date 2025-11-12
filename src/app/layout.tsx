@@ -5,6 +5,7 @@ import "../styles/globals.css";
 import "../styles/lightbox.css";
 import Providers from "./providers";
 import RootLayoutContent from "@/components/RootLayoutContent";
+import PWAUpdatePrompt from "@/components/PWAUpdatePrompt";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Analytics } from "@vercel/analytics/next";
 import { cn } from "@/utils/helpers";
@@ -15,7 +16,7 @@ export const metadata: Metadata = {
   title: siteConfig.name,
   applicationName: siteConfig.name,
   description: siteConfig.description,
-  manifest: "/manifest.json",
+  manifest: "/api/manifest",
   icons: {
     icon: siteConfig.favicon,
   },
@@ -60,6 +61,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
             </Providers>
           </NuqsAdapter>
         </Suspense>
+        <PWAUpdatePrompt />
         <SpeedInsights debug={true} />
         <Analytics debug={true} />
       </body>
