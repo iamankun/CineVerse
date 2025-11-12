@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import { cn } from "@/utils/helpers";
+import { watchingWithBrandConfig } from "@/utils/overlay-config";
 
 interface WatchingWithBrandProps {
   movieTitle: string;
@@ -16,43 +18,50 @@ const WatchingWithBrand: React.FC<WatchingWithBrandProps> = ({
   videoCurrentTime = 0
 }) => {
   const [showMessage, setShowMessage] = useState(false);
-  const [lastVideoTimeShown, setLastVideoTimeShown] = useState(0);
+  const [isExpanded, setIsExpanded] = useState(false);
 
   useEffect(() => {
-    // Show immediately on mount after 1 second
-    const initialTimer = setTimeout(() => {
+    // Special case: repeatInterval = 0 means always show (no animation, no hide)
+    if (watchingWithBrandConfig.repeatInterval === 0) {
+      console.log('🎬 WatchingWithBrand: Always visible mode (repeatInterval = 0)');
       setShowMessage(true);
-      setLastVideoTimeShown(0);
+      setIsExpanded(true);
+      return; // Don't set any timers
+    }
 
-      // Hide after 15 seconds
+    // Normal mode: Show with animation based on config
+    const showWithAnimation = () => {
+      console.log('🎬 WatchingWithBrand: Showing with animation');
+      setShowMessage(true);
+      
+      // Expand animation after a brief delay
       setTimeout(() => {
-        setShowMessage(false);
-      }, 15000);
-    }, 1000);
+        setIsExpanded(true);
+      }, 100);
 
-    return () => clearTimeout(initialTimer);
+      // After configured show duration, collapse and hide
+      setTimeout(() => {
+        setIsExpanded(false);
+        setTimeout(() => {
+          setShowMessage(false);
+        }, watchingWithBrandConfig.animationDuration);
+      }, watchingWithBrandConfig.showDuration);
+    };
+
+    // Show after initial delay
+    const initialTimer = setTimeout(showWithAnimation, watchingWithBrandConfig.initialDelay);
+
+    // Show at configured interval
+    const recurringTimer = setInterval(showWithAnimation, watchingWithBrandConfig.repeatInterval);
+
+    return () => {
+      clearTimeout(initialTimer);
+      clearInterval(recurringTimer);
+    };
   }, []);
 
-  useEffect(() => {
-    if (!videoCurrentTime) return;
-
-    // Calculate elapsed video minutes since last show
-    const videoMinutesElapsed = Math.floor((videoCurrentTime - lastVideoTimeShown) / 60);
-
-    // Show every 6 minutes of VIDEO time (not real time)
-    // This tracks actual playback time, so seeking/pausing doesn't affect it
-    if (videoMinutesElapsed >= 6 && !showMessage) {
-      setShowMessage(true);
-      setLastVideoTimeShown(videoCurrentTime);
-
-      setTimeout(() => {
-        setShowMessage(false);
-      }, 15000); // Show for 15 seconds
-    }
-  }, [videoCurrentTime, showMessage, lastVideoTimeShown]);
-
-  // Don't show if parent says not visible or if not time to show message
-  if (!isVisible || !showMessage) return null;
+  // Don't render if not showing
+  if (!showMessage) return null;
 
   // Debug: Log to see what we're getting
   console.log('WatchingWithBrand:', { logoPath, posterPath, movieTitle });
@@ -63,7 +72,7 @@ const WatchingWithBrand: React.FC<WatchingWithBrandProps> = ({
       <div
         className="text-base font-semibold text-white"
         style={{
-          textShadow: "0 2px 12px rgba(0, 0, 0, 0.9), 0 0 20px rgba(0, 0, 0, 0.8)",
+          textShadow: "0 0 12px rgba(255, 255, 255, 0.5), 0 2px 6px rgba(0, 0, 0, 0.9)",
         }}
       >
         Bạn đang xem <span className="font-bold">{movieTitle}</span>
@@ -76,35 +85,57 @@ const WatchingWithBrand: React.FC<WatchingWithBrandProps> = ({
   const imageUrl = `https://image.tmdb.org/t/p/w500/${cleanLogoPath}`;
 
   return (
-    <div className="flex items-center gap-4">
-      {/* Text */}
+    <div className="flex items-center gap-2">
+      {/* Text - Always visible */}
       <div
-        className="text-base font-semibold text-white"
+        className="flex-shrink-0 text-xs md:text-sm font-semibold text-white"
         style={{
-          textShadow: "0 2px 12px rgba(0, 0, 0, 0.9), 0 0 20px rgba(0, 0, 0, 0.8)",
+          textShadow: "0 0 12px rgba(255, 255, 255, 0.5), 0 2px 6px rgba(0, 0, 0, 0.9)",
         }}
       >
         Bạn đang xem
       </div>
 
-      {/* Movie Logo - Wide format for title logo */}
+      {/* Movie Logo - Slides in/out with animation */}
       <div 
-        className="relative flex items-center justify-center overflow-hidden rounded-lg shadow-2xl" 
-        style={{ 
-          width: "150px", 
-          height: "80px",
-          background: "transparent"
+        className={cn(
+          "overflow-hidden transition-all ease-in-out",
+          {
+            "max-w-0 opacity-0": !isExpanded,
+            "max-w-[120px] md:max-w-[160px] opacity-100": isExpanded,
+          }
+        )}
+        style={{
+          transitionDuration: `${watchingWithBrandConfig.animationDuration}ms`,
         }}
       >
-        <img
-          src={imageUrl}
-          alt={movieTitle}
-          className="h-full w-full"
-          style={{
-            filter: "drop-shadow(0 4px 12px rgba(0, 0, 0, 0.8))",
-            objectFit: "contain",
+        <div 
+          className="relative flex items-center justify-center rounded-lg" 
+          style={{ 
+            width: "90px", 
+            height: "45px",
+            background: "transparent",
           }}
-        />
+        >
+          <img
+            src={imageUrl}
+            alt={movieTitle}
+            className="h-full w-full md:hidden"
+            style={{
+              objectFit: "contain",
+            }}
+          />
+          <img
+            src={imageUrl}
+            alt={movieTitle}
+            className="hidden md:block h-full w-full"
+            style={{
+              objectFit: "contain",
+              width: "120px",
+              height: "60px",
+            }}
+          />
+        </div>
       </div>
     </div>
   );

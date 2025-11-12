@@ -1,5 +1,6 @@
 import { cn } from "@/utils/helpers";
 import { useEffect, useState } from "react";
+import { ageRatingConfig } from "@/utils/overlay-config";
 
 interface AgeRatingProps {
   rating: string;
@@ -10,23 +11,33 @@ const AgeRating: React.FC<AgeRatingProps> = ({ rating, ratingDescription }) => {
   const [isExpanded, setIsExpanded] = useState(false);
 
   useEffect(() => {
-    // Show expanded rating notification every 5 minutes
+    // Special case: repeatInterval = 0 means always show expanded
+    if (ageRatingConfig.repeatInterval === 0) {
+      console.log('ℹ️ AgeRating: Always visible mode (repeatInterval = 0)');
+      setIsExpanded(true);
+      return; // Don't set any timers
+    }
+
+    // Normal mode: Show expanded rating notification based on config
     const showRating = () => {
       setIsExpanded(true);
 
-      // After 5 seconds, collapse to icon only (but stay visible)
+      // After configured duration, collapse to icon only (but stay visible)
       setTimeout(() => {
         setIsExpanded(false);
-      }, 5000);
+      }, ageRatingConfig.expandDuration);
     };
 
-    // Show immediately on mount
-    showRating();
+    // Show after initial delay
+    const initialTimer = setTimeout(showRating, ageRatingConfig.initialDelay);
 
-    // Then repeat every 5 minutes (300000ms)
-    const interval = setInterval(showRating, 300000);
+    // Then repeat at configured interval
+    const interval = setInterval(showRating, ageRatingConfig.repeatInterval);
 
-    return () => clearInterval(interval);
+    return () => {
+      clearTimeout(initialTimer);
+      clearInterval(interval);
+    };
   }, []);
 
   return (

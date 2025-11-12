@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { Card, CardBody, CardHeader } from "@heroui/react";
-import { IoStatsChart, IoNotifications } from "react-icons/io5";
+import { IoStatsChart, IoNotifications, IoSettings } from "react-icons/io5";
 import AdminGuard from "@/components/AdminGuard";
 
 export default function AdminPage() {
@@ -23,6 +23,13 @@ export default function AdminPage() {
       path: "/admin/notifications",
       color: "bg-gradient-to-br from-orange-500 to-red-500",
     },
+    {
+      title: "Cài đặt Overlay",
+      description: "Quản lý cài đặt hiển thị trong trình phát",
+      icon: <IoSettings className="text-6xl" />,
+      path: "/admin/settings",
+      color: "bg-gradient-to-br from-purple-500 to-pink-500",
+    },
   ];
 
   return (
@@ -40,7 +47,7 @@ export default function AdminPage() {
         </div>
 
         {/* Options Grid */}
-        <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
+        <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
           {adminOptions.map((option) => (
             <Card
               key={option.path}

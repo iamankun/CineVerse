@@ -16,7 +16,7 @@ function convertYouTubeUrl(url: string): string {
     if ((urlObj.hostname.includes('youtube.com') || urlObj.hostname.includes('m.youtube.com')) && urlObj.pathname === '/watch') {
       const videoId = urlObj.searchParams.get('v');
       if (videoId) {
-        return `https://www.youtube.com/embed/${videoId}?autoplay=1&modestbranding=1&rel=0`;
+        return `https://www.youtube.com/embed/${videoId}?autoplay=1&modestbranding=1&rel=0&enablejsapi=1`;
       }
     }
     
@@ -24,7 +24,7 @@ function convertYouTubeUrl(url: string): string {
     if (urlObj.hostname === 'youtu.be') {
       const videoId = urlObj.pathname.slice(1); // Remove leading /
       if (videoId) {
-        return `https://www.youtube.com/embed/${videoId}?autoplay=1&modestbranding=1&rel=0`;
+        return `https://www.youtube.com/embed/${videoId}?autoplay=1&modestbranding=1&rel=0&enablejsapi=1`;
       }
     }
     
@@ -32,7 +32,7 @@ function convertYouTubeUrl(url: string): string {
     if ((urlObj.hostname.includes('youtube.com') || urlObj.hostname.includes('m.youtube.com')) && urlObj.pathname.startsWith('/v/')) {
       const videoId = urlObj.pathname.split('/v/')[1];
       if (videoId) {
-        return `https://www.youtube.com/embed/${videoId}?autoplay=1&modestbranding=1&rel=0`;
+        return `https://www.youtube.com/embed/${videoId}?autoplay=1&modestbranding=1&rel=0&enablejsapi=1`;
       }
     }
     
@@ -45,11 +45,48 @@ function convertYouTubeUrl(url: string): string {
 }
 
 /**
+ * Converts Dailymotion URLs to embed URLs with API enabled
+ * Supports formats:
+ * - dailymotion.com/video/VIDEO_ID
+ * - dai.ly/VIDEO_ID
+ */
+function convertDailymotionUrl(url: string): string {
+  try {
+    const urlObj = new URL(url);
+    
+    // Handle dailymotion.com/video/...
+    if (urlObj.hostname.includes('dailymotion.com') && urlObj.pathname.startsWith('/video/')) {
+      const videoId = urlObj.pathname.split('/video/')[1]?.split('?')[0];
+      if (videoId) {
+        return `https://www.dailymotion.com/embed/video/${videoId}?autoplay=1&api=postMessage`;
+      }
+    }
+    
+    // Handle dai.ly/...
+    if (urlObj.hostname === 'dai.ly') {
+      const videoId = urlObj.pathname.slice(1); // Remove leading /
+      if (videoId) {
+        return `https://www.dailymotion.com/embed/video/${videoId}?autoplay=1&api=postMessage`;
+      }
+    }
+    
+    // Already an embed URL or not a Dailymotion URL
+    return url;
+  } catch (error) {
+    console.warn('Failed to parse Dailymotion URL:', url, error);
+    return url;
+  }
+}
+
+/**
  * Processes source URL based on provider type
  */
 function processSourceUrl(provider: string, url: string): string {
   if (provider.toLowerCase() === 'youtube') {
     return convertYouTubeUrl(url);
+  }
+  if (provider.toLowerCase() === 'dailymotion') {
+    return convertDailymotionUrl(url);
   }
   return url;
 }

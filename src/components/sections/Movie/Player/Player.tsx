@@ -132,12 +132,34 @@ const MoviePlayer: React.FC<MoviePlayerProps> = ({ movie, startAt }) => {
     const handleMessage = (event: MessageEvent) => {
       // Accept messages from player domains
       if (event.data && typeof event.data === 'object') {
+        // Custom videoTime format
         if (event.data.type === 'videoTime' && typeof event.data.time === 'number') {
           setVideoCurrentTime(event.data.time);
+          return;
         }
-        // Also handle standard video player postMessage formats
+        
+        // Standard video player postMessage formats
         if (event.data.currentTime !== undefined) {
           setVideoCurrentTime(event.data.currentTime);
+          return;
+        }
+
+        // YouTube iframe API format
+        if (event.data.event === 'infoDelivery' && event.data.info?.currentTime !== undefined) {
+          setVideoCurrentTime(Math.floor(event.data.info.currentTime));
+          return;
+        }
+
+        // Dailymotion iframe API format
+        if (event.data.event === 'timeupdate' && event.data.time !== undefined) {
+          setVideoCurrentTime(Math.floor(event.data.time));
+          return;
+        }
+
+        // VidLink player format
+        if (event.data.type === 'PLAYER_EVENT' && event.data.data?.currentTime !== undefined) {
+          setVideoCurrentTime(Math.floor(event.data.data.currentTime));
+          return;
         }
       }
     };
@@ -315,9 +337,9 @@ const MoviePlayer: React.FC<MoviePlayerProps> = ({ movie, startAt }) => {
             className="flex items-start justify-between gap-4"
             style={{ 
               position: 'fixed',
-              top: '1.5rem',
+              top: '4rem',
               left: '1.5rem',
-              right: '1.5rem',
+              right: '4rem',
               zIndex: 2147483647,
               pointerEvents: 'none'
             }}
@@ -336,10 +358,7 @@ const MoviePlayer: React.FC<MoviePlayerProps> = ({ movie, startAt }) => {
           {/* Bottom overlay: Watching With Brand */}
           {seen && (
             <div 
-              className={cn(
-                "absolute bottom-8 left-8 transition-opacity duration-300 pointer-events-none",
-                { "opacity-0": idle && !mobile && !isFullscreen, "opacity-100": !idle || mobile || isFullscreen }
-              )}
+              className="absolute bottom-16 left-4 md:bottom-20 md:left-8 transition-opacity duration-300 pointer-events-none"
               style={{ zIndex: 2147483647 }}
             >
               <WatchingWithBrand 

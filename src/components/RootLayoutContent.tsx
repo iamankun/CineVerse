@@ -17,6 +17,7 @@ export default function RootLayoutContent({ children }: { children: React.ReactN
   const isAdminRoute = pathname?.startsWith("/admin");
   const isAuthRoute = pathname?.startsWith("/auth");
   const isPlayerRoute = pathname?.includes("/movie/") || pathname?.includes("/tv/");
+  const isPlayerPage = pathname?.includes("/player");
 
   useEffect(() => {
     // Check if body has not-found marker
@@ -62,7 +63,7 @@ export default function RootLayoutContent({ children }: { children: React.ReactN
         {children}
       </main>
       {!isLoading && !isPlayerRoute && <Footer />}
-      <FloatingNavBar />
+      {!isPlayerPage && <FloatingNavBar />}
     </>
   );
 }
