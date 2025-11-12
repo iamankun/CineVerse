@@ -351,8 +351,9 @@ const CineVerseHero = () => {
           {/* Rating Badge */}
           <div className="flex items-center gap-2 flex-wrap">
             {"vote_average" in item && item.vote_average > 0 && (
-              <Chip color="success" variant="flat" size="sm">
-                TMDB {item.vote_average.toFixed(1)}
+              <Chip color="success" variant="flat" size="sm" className="font-semibold">
+                <span className="text-cyan-500">TMDB</span>{" "}
+                <span className="text-warning-500">{item.vote_average.toFixed(1)}</span>
               </Chip>
             )}
             {releaseYear && (
