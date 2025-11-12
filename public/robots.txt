@@ -1,0 +1,21 @@
+# Robots.txt cho CineVerse
+# https://cineverse.ankun.dev/robots.txt
+
+# Cho phép tất cả các bot
+User-agent: *
+Allow: /
+
+# Không cho index trang admin
+Disallow: /admin/
+Disallow: /api/admin/
+
+# Không cho index trang player (tránh duplicate content)
+# Uncomment dòng dưới nếu muốn chặn player pages
+# Disallow: /*/player
+
+# Sitemap
+Sitemap: https://cineverse.ankun.dev/sitemap.xml
+Sitemap: https://cineverse.ankun.dev/sitemap-styled.xml
+
+# Crawl-delay (optional, tùy bot)
+# Crawl-delay: 1

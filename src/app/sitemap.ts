@@ -233,12 +233,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       ...mediaTypePages,
     ];
 
-    // Loại bỏ trùng lặp theo URL, giữ lại priority cao nhất
+    // Loại bỏ trùng lặp theo URL, giữ lại trang ưu tiên nhất
     const uniquePages = Array.from(
       new Map(
         allPages.map((page) => [
           page.url,
-          // Nếu trùng URL, giữ page có priority cao hơn
+          // Nếu trùng URL, giữ lại trang có ưu tiên nhất
           allPages
             .filter((p) => p.url === page.url)
             .reduce((prev, current) => 
