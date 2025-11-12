@@ -1,7 +1,7 @@
 import { MetadataRoute } from "next";
 import { tmdb } from "@/api/tmdb";
 
-const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://cineverse.vercel.app";
+const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://cineverse.ankun.dev";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const currentDate = new Date();
@@ -89,7 +89,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     console.log(`✅ Đã thêm ${trendingTvPages.length} TV show trending`);
 
     // 5. Fetch phim top rated (Top Rated Movies)
-    console.log("⭐ Đang tải phim top rated...");
+    console.log("⭐ Đang tải phim đánh giá cao...");
     const topRatedMovies = await tmdb.movies.topRated({ language: "vi-VN" });
     const topRatedMoviePages: MetadataRoute.Sitemap = topRatedMovies.results.slice(0, 50).map((movie) => ({
       url: `${BASE_URL}/movie/${movie.id}`,
@@ -100,7 +100,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     console.log(`✅ Đã thêm ${topRatedMoviePages.length} phim top rated`);
 
     // 6. Fetch TV show top rated (Top Rated TV Shows)
-    console.log("⭐ Đang tải TV show top rated...");
+    console.log("⭐ Đang tải Chương trình TV được đánh giá cao...");
     const topRatedTvShows = await tmdb.tvShows.topRated({ language: "vi-VN" });
     const topRatedTvPages: MetadataRoute.Sitemap = topRatedTvShows.results.slice(0, 50).map((tv) => ({
       url: `${BASE_URL}/tv/${tv.id}`,
@@ -132,6 +132,89 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }));
     console.log(`✅ Đã thêm ${nowPlayingMoviePages.length} phim đang chiếu`);
 
+    // 9. Tạo trang player cho phim trending (chỉ những phim hot)
+    console.log("🎮 Đang tạo trang player cho phim trending...");
+    const trendingMoviePlayerPages: MetadataRoute.Sitemap = trendingMovies.results
+      .slice(0, 20) // Chỉ lấy top 20 phim hot nhất
+      .map((movie) => ({
+        url: `${BASE_URL}/movie/${movie.id}/player`,
+        lastModified: currentDate,
+        changeFrequency: "weekly" as const,
+        priority: 0.6, // Thấp hơn trang chi tiết
+      }));
+    console.log(`✅ Đã thêm ${trendingMoviePlayerPages.length} trang player phim`);
+
+    // 10. Tạo trang player cho TV show trending
+    console.log("🎮 Đang tạo trang player cho TV show trending...");
+    const trendingTvPlayerPages: MetadataRoute.Sitemap = trendingTvShows.results
+      .slice(0, 20) // Chỉ lấy top 20 TV show hot nhất
+      .map((tv) => ({
+        url: `${BASE_URL}/tv/${tv.id}/player`,
+        lastModified: currentDate,
+        changeFrequency: "weekly" as const,
+        priority: 0.6,
+      }));
+    console.log(`✅ Đã thêm ${trendingTvPlayerPages.length} trang player TV show`);
+
+    // 11. Thêm các trang discover theo thể loại (genre pages)
+    console.log("🎭 Đang tạo trang discover theo thể loại...");
+    const genrePages: MetadataRoute.Sitemap = [
+      { name: "action", id: 28 },
+      { name: "adventure", id: 12 },
+      { name: "animation", id: 16 },
+      { name: "comedy", id: 35 },
+      { name: "crime", id: 80 },
+      { name: "documentary", id: 99 },
+      { name: "drama", id: 18 },
+      { name: "family", id: 10751 },
+      { name: "fantasy", id: 14 },
+      { name: "history", id: 36 },
+      { name: "horror", id: 27 },
+      { name: "music", id: 10402 },
+      { name: "mystery", id: 9648 },
+      { name: "romance", id: 10749 },
+      { name: "science-fiction", id: 878 },
+      { name: "thriller", id: 53 },
+      { name: "war", id: 10752 },
+      { name: "western", id: 37 },
+    ].map((genre) => ({
+      url: `${BASE_URL}/discover?genre=${genre.id}`,
+      lastModified: currentDate,
+      changeFrequency: "weekly" as const,
+      priority: 0.75,
+    }));
+    console.log(`✅ Đã thêm ${genrePages.length} trang thể loại`);
+
+    // 12. Thêm trang discover theo năm (recent years)
+    console.log("📅 Đang tạo trang discover theo năm...");
+    const currentYear = new Date().getFullYear();
+    const yearPages: MetadataRoute.Sitemap = Array.from({ length: 5 }, (_, i) => currentYear - i)
+      .map((year) => ({
+        url: `${BASE_URL}/discover?year=${year}`,
+        lastModified: currentDate,
+        changeFrequency: "monthly" as const,
+        priority: 0.7,
+      }));
+    console.log(`✅ Đã thêm ${yearPages.length} trang năm phát hành`);
+
+    // 13. Thêm trang discover theo media type
+    console.log("🎯 Đang tạo trang discover theo loại...");
+    const mediaTypePages: MetadataRoute.Sitemap = [
+      {
+        url: `${BASE_URL}/discover?type=movie`,
+        lastModified: currentDate,
+        changeFrequency: "daily" as const,
+        priority: 0.85,
+      },
+      {
+        url: `${BASE_URL}/discover?type=tv`,
+        lastModified: currentDate,
+        changeFrequency: "daily" as const,
+        priority: 0.85,
+      },
+    ];
+    console.log(`✅ Đã thêm ${mediaTypePages.length} trang media type`);
+
     // Gộp tất cả các trang lại
     const allPages = [
       ...staticPages,
@@ -143,6 +226,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       ...topRatedTvPages,
       ...upcomingMoviePages,
       ...nowPlayingMoviePages,
+      ...trendingMoviePlayerPages,
+      ...trendingTvPlayerPages,
+      ...genrePages,
+      ...yearPages,
+      ...mediaTypePages,
     ];
 
     // Loại bỏ trùng lặp theo URL, giữ lại priority cao nhất
