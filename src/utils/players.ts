@@ -19,88 +19,37 @@ export const getMoviePlayers = async (
 
   const externalSources: PlayersProps[] = [
     {
-      title: "VidLink",
-      source: `https://vidlink.pro/movie/${id}?player=jw&primaryColor=006fee&secondaryColor=a2a2a2&iconColor=eefdec&autoplay=false&startAt=${startAt || ""}`,
-      recommended: !cineVerseSources, // Only recommended if no CineVerse sources
+      title: "VidSrc (Phụ đề VI)",
+      source: `https://vidsrc-embed.ru/embed/movie?tmdb=${id}&ds_lang=vi&autoplay=0`,
+      recommended: true,
       fast: true,
-      ads: false,
-      resumable: true,
-    },
-    {
-      title: "VidLink 2",
-      source: `https://vidlink.pro/movie/${id}?primaryColor=006fee&autoplay=false&startAt=${startAt}`,
-      recommended: false,
-      fast: true,
-      ads: false,
-      resumable: true,
-    },
-    {
-      title: "<Embed>",
-      source: `https://embed.su/embed/movie/${id}`,
-      ads: false,
-    },
-    {
-      title: "SuperEmbed",
-      source: `https://multiembed.mov/directstream.php?video_id=${id}&tmdb=1`,
-      fast: true,
-      ads: false,
-    },
-    {
-      title: "FilmKu",
-      source: `https://filmku.stream/embed/${id}`,
-      ads: false,
-    },
-    {
-      title: "NontonGo",
-      source: `https://www.nontongo.win/embed/movie/${id}`,
-      ads: false,
-    },
-    {
-      title: "AutoEmbed 1",
-      source: `https://autoembed.co/movie/tmdb/${id}`,
-      fast: true,
-      ads: false,
-    },
-    {
-      title: "AutoEmbed 2",
-      source: `https://player.autoembed.cc/embed/movie/${id}`,
-      ads: false,
-    },
-    {
-      title: "2Embed",
-      source: `https://www.2embed.cc/embed/${id}`,
       ads: false,
     },
     {
       title: "VidSrc 1",
-      source: `https://vidsrc.xyz/embed/movie/${id}`,
+      source: `https://vidsrc.xyz/embed/movie/${id}?ds_lang=vi`,
       ads: false,
     },
     {
       title: "VidSrc 2",
-      source: `https://vidsrc.to/embed/movie/${id}`,
+      source: `https://vidsrc.to/embed/movie/${id}?ds_lang=vi`,
       ads: false,
     },
     {
       title: "VidSrc 3",
-      source: `https://vidsrc.icu/embed/movie/${id}`,
+      source: `https://vidsrc.icu/embed/movie/${id}?ds_lang=vi`,
       ads: false,
     },
     {
       title: "VidSrc 4",
-      source: `https://vidsrc.cc/v2/embed/movie/${id}?autoPlay=false`,
+      source: `https://vidsrc.cc/v2/embed/movie/${id}?autoPlay=false&ds_lang=vi`,
       ads: false,
     },
     {
       title: "VidSrc 5",
-      source: `https://vidsrc.cc/v3/embed/movie/${id}?autoPlay=false`,
+      source: `https://vidsrc.cc/v3/embed/movie/${id}?autoPlay=false&ds_lang=vi`,
       recommended: false,
       fast: true,
-      ads: false,
-    },
-    {
-      title: "MoviesAPI",
-      source: `https://moviesapi.club/movie/${id}`,
       ads: false,
     },
   ];
@@ -131,88 +80,37 @@ export const getTvShowPlayers = async (
 
   const externalSources: PlayersProps[] = [
     {
-      title: "VidLink",
-      source: `https://vidlink.pro/tv/${id}/${season}/${episode}?player=jw&primaryColor=f5a524&secondaryColor=a2a2a2&iconColor=eefdec&autoplay=false&startAt=${startAt || ""}`,
-      recommended: !cineVerseSources, // Only recommended if no CineVerse sources
+      title: "VidSrc (Phụ đề VI)",
+      source: `https://vidsrc-embed.ru/embed/tv?tmdb=${id}&season=${season}&episode=${episode}&ds_lang=vi&autoplay=0`,
+      recommended: true,
       fast: true,
-      ads: false,
-      resumable: true,
-    },
-    {
-      title: "VidLink 2",
-      source: `https://vidlink.pro/tv/${id}/${season}/${episode}?primaryColor=f5a524&autoplay=false&startAt=${startAt}`,
-      recommended: false,
-      fast: true,
-      ads: false,
-      resumable: true,
-    },
-    {
-      title: "<Embed>",
-      source: `https://embed.su/embed/tv/${id}/${season}/${episode}`,
-      ads: false,
-    },
-    {
-      title: "SuperEmbed",
-      source: `https://multiembed.mov/directstream.php?video_id=${id}&tmdb=1&s=${season}&e=${episode}`,
-      fast: true,
-      ads: false,
-    },
-    {
-      title: "FilmKu",
-      source: `https://filmku.stream/embed/series?tmdb=${id}&sea=${season}&epi=${episode}`,
-      ads: false,
-    },
-    {
-      title: "NontonGo",
-      source: `https://www.NontonGo.win/embed/tv/${id}/${season}/${episode}`,
-      ads: false,
-    },
-    {
-      title: "AutoEmbed 1",
-      source: `https://autoembed.co/tv/tmdb/${id}-${season}-${episode}`,
-      fast: true,
-      ads: false,
-    },
-    {
-      title: "AutoEmbed 2",
-      source: `https://player.autoembed.cc/embed/tv/${id}/${season}/${episode}`,
-      ads: false,
-    },
-    {
-      title: "2Embed",
-      source: `https://www.2embed.cc/embedtv/${id}&s=${season}&e=${episode}`,
       ads: false,
     },
     {
       title: "VidSrc 1",
-      source: `https://vidsrc.xyz/embed/tv/${id}/${season}/${episode}`,
+      source: `https://vidsrc.xyz/embed/tv/${id}/${season}/${episode}?ds_lang=vi`,
       ads: false,
     },
     {
       title: "VidSrc 2",
-      source: `https://vidsrc.to/embed/tv/${id}/${season}/${episode}`,
+      source: `https://vidsrc.to/embed/tv/${id}/${season}/${episode}?ds_lang=vi`,
       ads: false,
     },
     {
       title: "VidSrc 3",
-      source: `https://vidsrc.icu/embed/tv/${id}/${season}/${episode}`,
+      source: `https://vidsrc.icu/embed/tv/${id}/${season}/${episode}?ds_lang=vi`,
       ads: false,
     },
     {
       title: "VidSrc 4",
-      source: `https://vidsrc.cc/v2/embed/tv/${id}/${season}/${episode}?autoPlay=true`,
+      source: `https://vidsrc.cc/v2/embed/tv/${id}/${season}/${episode}?autoPlay=true&ds_lang=vi`,
       ads: false,
     },
     {
       title: "VidSrc 5",
-      source: `https://vidsrc.cc/v3/embed/tv/${id}/${season}/${episode}?autoPlay=true`,
+      source: `https://vidsrc.cc/v3/embed/tv/${id}/${season}/${episode}?autoPlay=true&ds_lang=vi`,
       recommended: false,
       fast: true,
-      ads: false,
-    },
-    {
-      title: "MoviesAPI",
-      source: `https://moviesapi.club/tv/${id}-${season}-${episode}`,
       ads: false,
     },
   ];
