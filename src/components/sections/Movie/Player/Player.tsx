@@ -85,9 +85,10 @@ const MoviePlayer: React.FC<MoviePlayerProps> = ({ movie, startAt }) => {
     console.error = (...args: any[]) => {
       if (
         typeof args[0] === 'string' &&
-        args[0].includes("Failed to execute 'contains' on 'Node'")
+        (args[0].includes("Failed to execute 'contains' on 'Node'") ||
+         args[0].includes("[@mantine/hooks] use-fullscreen"))
       ) {
-        // Suppress this specific error from react-remove-scroll
+        // Suppress these specific errors from libraries
         return;
       }
       originalError.apply(console, args);
@@ -99,7 +100,13 @@ const MoviePlayer: React.FC<MoviePlayerProps> = ({ movie, startAt }) => {
   }, []);
 
   useEffect(() => {
-    getMoviePlayers(movie.id, startAt).then(setPlayers);
+    console.log(`🎬 Fetching players for movie ID: ${movie.id}`);
+    getMoviePlayers(movie.id, startAt).then((fetchedPlayers) => {
+      console.log(`✅ Players fetched:`, fetchedPlayers.length, fetchedPlayers);
+      setPlayers(fetchedPlayers);
+    }).catch((err) => {
+      console.error(`❌ Error fetching players:`, err);
+    });
 
     console.log(`🎬 Đang lấy đánh giá phim cho ID: ${movie.id}`);
     fetch(`/sources/Movie/${movie.id}.json`)
@@ -294,8 +301,14 @@ const MoviePlayer: React.FC<MoviePlayerProps> = ({ movie, startAt }) => {
 
   const PLAYER = useMemo(() => players[selectedSource] || players[0], [players, selectedSource]);
 
+  // Debug log
+  useEffect(() => {
+    console.log(`🎯 Current PLAYER:`, PLAYER, `| Players count: ${players.length} | Selected: ${selectedSource}`);
+  }, [PLAYER, players, selectedSource]);
+
   // Show loading while fetching players
   if (!PLAYER) {
+    console.log(`⏳ No PLAYER found, showing loading...`);
     return (
       <div className={cn("relative", SpacingClasses.reset)}>
         <Card shadow="md" radius="none" className="relative h-screen">

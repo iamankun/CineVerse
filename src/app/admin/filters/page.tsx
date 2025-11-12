@@ -409,12 +409,12 @@ function CreateFilterModal({
                     selectedKeys={[formData.scriptletName]}
                     onChange={(e) => setFormData({ ...formData, scriptletName: e.target.value })}
                   >
-                    <SelectItem key="prevent-fetch" value="prevent-fetch">prevent-fetch</SelectItem>
-                    <SelectItem key="prevent-xhr" value="prevent-xhr">prevent-xhr</SelectItem>
-                    <SelectItem key="prevent-setTimeout" value="prevent-setTimeout">prevent-setTimeout</SelectItem>
-                    <SelectItem key="abort-on-property-read" value="abort-on-property-read">abort-on-property-read</SelectItem>
-                    <SelectItem key="set-constant" value="set-constant">set-constant</SelectItem>
-                    <SelectItem key="google-ima3" value="google-ima3">google-ima3</SelectItem>
+                    <SelectItem key="prevent-fetch">prevent-fetch</SelectItem>
+                    <SelectItem key="prevent-xhr">prevent-xhr</SelectItem>
+                    <SelectItem key="prevent-setTimeout">prevent-setTimeout</SelectItem>
+                    <SelectItem key="abort-on-property-read">abort-on-property-read</SelectItem>
+                    <SelectItem key="set-constant">set-constant</SelectItem>
+                    <SelectItem key="google-ima3">google-ima3</SelectItem>
                   </Select>
                   <Input
                     label="Arguments (phân cách bởi dấu phẩy)"
@@ -438,9 +438,9 @@ function CreateFilterModal({
                   selectedKeys={[formData.priority]}
                   onChange={(e) => setFormData({ ...formData, priority: e.target.value })}
                 >
-                  <SelectItem key="high" value="high">High</SelectItem>
-                  <SelectItem key="medium" value="medium">Medium</SelectItem>
-                  <SelectItem key="low" value="low">Low</SelectItem>
+                  <SelectItem key="high">High</SelectItem>
+                  <SelectItem key="medium">Medium</SelectItem>
+                  <SelectItem key="low">Low</SelectItem>
                 </Select>
 
                 <Select
@@ -448,8 +448,8 @@ function CreateFilterModal({
                   selectedKeys={[formData.action]}
                   onChange={(e) => setFormData({ ...formData, action: e.target.value })}
                 >
-                  <SelectItem key="block" value="block">Block</SelectItem>
-                  <SelectItem key="allow" value="allow">Allow</SelectItem>
+                  <SelectItem key="block">Block</SelectItem>
+                  <SelectItem key="allow">Allow</SelectItem>
                 </Select>
               </div>
 

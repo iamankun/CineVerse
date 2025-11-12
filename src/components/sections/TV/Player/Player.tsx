@@ -103,9 +103,13 @@ const TvShowPlayer: React.FC<TvShowPlayerProps> = ({
   useEffect(() => {
     const originalError = console.error;
     console.error = (...args: any[]) => {
-      // Suppress specific react-remove-scroll library error
-      if (typeof args[0] === 'string' && args[0].includes("Failed to execute 'contains' on 'Node'")) {
-        return; // Ignore this specific error from react-remove-scroll
+      // Suppress specific library errors
+      if (
+        typeof args[0] === 'string' &&
+        (args[0].includes("Failed to execute 'contains' on 'Node'") ||
+         args[0].includes("[@mantine/hooks] use-fullscreen"))
+      ) {
+        return; // Ignore these specific errors from libraries
       }
       originalError.apply(console, args);
     };
