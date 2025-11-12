@@ -11,7 +11,7 @@ export async function POST(request: NextRequest) {
 
     if (!ADMIN_ACCOUNT || !ADMIN_PASSWORD) {
       return NextResponse.json(
-        { success: false, message: "Admin credentials not configured" },
+        { success: false, message: "Thông tin quản trị viên chưa được cấu hình" },
         { status: 500 }
       );
     }
@@ -22,7 +22,7 @@ export async function POST(request: NextRequest) {
       
       const response = NextResponse.json({
         success: true,
-        message: "Login successful",
+        message: "Đăng nhập thành công",
       });
 
       // Set cookie
@@ -38,13 +38,13 @@ export async function POST(request: NextRequest) {
     }
 
     return NextResponse.json(
-      { success: false, message: "Invalid credentials" },
+      { success: false, message: "Bạn không phải quản trị viên thì phải? Vui lòng đăng nhập lại nếu chỉ nhầm lẫn." },
       { status: 401 }
     );
   } catch (error) {
     console.error("Login error:", error);
     return NextResponse.json(
-      { success: false, message: "Login failed" },
+      { success: false, message: "Đăng nhập thất bại" },
       { status: 500 }
     );
   }
