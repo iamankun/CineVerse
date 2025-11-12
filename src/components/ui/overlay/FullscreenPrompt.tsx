@@ -2,13 +2,14 @@
 
 import { useEffect, useState } from "react";
 import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button } from "@heroui/react";
-import { useFullscreen } from "@mantine/hooks";
+import { useFullscreen, useMediaQuery } from "@mantine/hooks";
 import { MdFullscreen } from "react-icons/md";
 
 const FullscreenPrompt = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
   const { toggle, fullscreen } = useFullscreen();
+  const isMobile = useMediaQuery("(max-width: 768px)");
 
   // Ensure component is mounted before showing modal
   useEffect(() => {
@@ -16,8 +17,8 @@ const FullscreenPrompt = () => {
   }, []);
 
   useEffect(() => {
-    // Chỉ hiển thị nếu component đã mount và không ở fullscreen
-    if (isMounted && !fullscreen) {
+    // Chỉ hiển thị nếu component đã mount, không ở fullscreen, và KHÔNG phải mobile
+    if (isMounted && !fullscreen && !isMobile) {
       // Delay 2 giây để người dùng có thời gian nhìn trang
       const timer = setTimeout(() => {
         setIsOpen(true);
@@ -25,7 +26,7 @@ const FullscreenPrompt = () => {
 
       return () => clearTimeout(timer);
     }
-  }, [isMounted, fullscreen]);
+  }, [isMounted, fullscreen, isMobile]);
 
   const handleEnterFullscreen = () => {
     toggle();
