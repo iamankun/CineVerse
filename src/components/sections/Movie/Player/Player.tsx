@@ -358,7 +358,7 @@ const MoviePlayer: React.FC<MoviePlayerProps> = ({ movie, startAt }) => {
           {/* Bottom overlay: Watching With Brand */}
           {seen && (
             <div 
-              className="absolute bottom-16 left-4 md:bottom-20 md:left-8 transition-opacity duration-300 pointer-events-none"
+              className="absolute bottom-18 left-4 md:bottom-20 md:left-8 transition-opacity duration-300 pointer-events-none"
               style={{ zIndex: 2147483647 }}
             >
               <WatchingWithBrand 

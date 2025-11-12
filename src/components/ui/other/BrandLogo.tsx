@@ -20,9 +20,9 @@ const BrandLogo: React.FC<BrandLogoProps> = ({ animate = true, className }) => {
   const logoWebp = brandLogoConfig.logoPath ? null : "/logo-80.webp";
   const scale = brandLogoConfig.scale || 1;
 
-  // Base size is 32px (h-8 w-8), scaled by config
-  const baseSize = 32;
-  const mdSize = 40;
+  // Base size: 24px for mobile, 32px for desktop
+  const mobileSize = 24;
+  const desktopSize = 32;
 
   return (
     <Link href="/" className="group">
@@ -39,30 +39,48 @@ const BrandLogo: React.FC<BrandLogoProps> = ({ animate = true, className }) => {
               className
             )}
             style={{
-              width: `${baseSize * scale}px`,
-              height: `${baseSize * scale}px`,
+              width: `${mobileSize * scale}px`,
+              height: `${mobileSize * scale}px`,
             }}
             priority
             unoptimized
           />
+          <style jsx>{`
+            @media (min-width: 768px) {
+              img {
+                width: ${desktopSize * scale}px !important;
+                height: ${desktopSize * scale}px !important;
+              }
+            }
+          `}</style>
         </picture>
       ) : (
-        <Image
-          src={logoSrc}
-          alt="CineVerse Logo"
-          width={80}
-          height={80}
-          className={cn(
-            "object-contain transition-opacity group-hover:opacity-80",
-            className
-          )}
-          style={{
-            width: `${baseSize * scale}px`,
-            height: `${baseSize * scale}px`,
-          }}
-          priority
-          unoptimized
-        />
+        <>
+          <Image
+            src={logoSrc}
+            alt="CineVerse Logo"
+            width={80}
+            height={80}
+            className={cn(
+              "object-contain transition-opacity group-hover:opacity-80",
+              className
+            )}
+            style={{
+              width: `${mobileSize * scale}px`,
+              height: `${mobileSize * scale}px`,
+            }}
+            priority
+            unoptimized
+          />
+          <style jsx>{`
+            @media (min-width: 768px) {
+              img {
+                width: ${desktopSize * scale}px !important;
+                height: ${desktopSize * scale}px !important;
+              }
+            }
+          `}</style>
+        </>
       )}
     </Link>
   );

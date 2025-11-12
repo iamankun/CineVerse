@@ -12,6 +12,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
+    "generate-icons": "node scripts/generate-app-icons.mjs",
     "sb-start": "supabase start --debug --ignore-health-check",
     "sb-stop": "supabase stop --debug --all",
     "sb-restart": "supabase stop --debug --all && supabase start --debug --ignore-health-check",
@@ -69,6 +70,7 @@
     "postcss": "^8.5.6",
     "prettier": "^3.6.2",
     "prettier-plugin-tailwindcss": "^0.6.14",
+    "sharp": "^0.34.5",
     "tailwindcss": "^4.1.12",
     "typescript": "^5",
     "webpack": "^5.101.2"
