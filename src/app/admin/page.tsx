@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { Card, CardBody, CardHeader } from "@heroui/react";
-import { IoStatsChart, IoNotifications, IoSettings } from "react-icons/io5";
+import { IoStatsChart, IoNotifications, IoSettings, IoAnalytics } from "react-icons/io5";
 import AdminGuard from "@/components/AdminGuard";
 import { getVersionString } from "@/utils/version";
 
@@ -31,6 +31,13 @@ export default function AdminPage() {
       path: "/admin/settings",
       color: "bg-gradient-to-br from-purple-500 to-pink-500",
     },
+    {
+      title: "SEO Analyzer",
+      description: "Phân tích và tối ưu hóa SEO với Yoast Algorithm",
+      icon: <IoAnalytics className="text-6xl" />,
+      path: "/admin/seo",
+      color: "bg-gradient-to-br from-green-500 to-teal-500",
+    },
   ];
 
   return (
@@ -40,7 +47,7 @@ export default function AdminPage() {
         {/* Header */}
         <div className="mb-12 text-center">
           <h1 className="mb-4 text-5xl font-bold text-white">
-            CineVerse Vietnam
+            CineVerse by An Kun Studio
           </h1>
           <p className="text-xl text-gray-400">
             Lựa chọn tính năng
