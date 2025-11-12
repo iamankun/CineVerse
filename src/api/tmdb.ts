@@ -1,5 +1,3 @@
-"use client";
-
 import { env } from "@/utils/env";
 import { isEmpty } from "@/utils/helpers";
 import { TMDB } from "tmdb-ts";
