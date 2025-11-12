@@ -21,12 +21,12 @@ const RelatedSection: React.FC<{
         classNames={{ cursor: "bg-primary h-1 rounded-full" }}
       >
         {recommendations.length > 0 && (
-          <Tab key="recommendations" title="Recommendations">
+          <Tab key="recommendations" title="Xem thêm">
             <RelatedMovieList movies={recommendations} />
           </Tab>
         )}
         {similar.length > 0 && (
-          <Tab key="similar" title="Similar">
+          <Tab key="similar" title="Tương tự">
             <RelatedMovieList movies={similar} />
           </Tab>
         )}

@@ -22,7 +22,7 @@ const TvShowPlayerSourceSelection: React.FC<TvShowPlayerSourceSelectionProps> = 
       open={opened}
       onClose={onClose}
       backdrop="blur"
-      title="Select Source"
+      title="Chọn nguồn phát"
       direction="right"
       hiddenHandler
       withCloseButton
@@ -31,19 +31,19 @@ const TvShowPlayerSourceSelection: React.FC<TvShowPlayerSourceSelectionProps> = 
         <div className="space-y-2 px-1 py-2">
           <div className="flex items-center gap-2">
             <Star className="text-warning-500" />
-            <span>Recommended</span>
+            <span>Được đề xuất</span>
           </div>
           <div className="flex items-center gap-2">
             <Rocket className="text-danger-500" />
-            <span>Fast hosting</span>
+            <span>Tốc độ nhanh</span>
           </div>
           <div className="flex items-center gap-2">
             <Clock className="text-success-500" />
-            <span>Watch Progress Support</span>
+            <span>Hỗ trợ tiếp tục xem</span>
           </div>
           <div className="flex items-center gap-2">
             <Ads className="text-primary-500" />
-            <span>May contain popup ads</span>
+            <span>Có thể có quảng cáo popup</span>
           </div>
         </div>
         <SelectButton

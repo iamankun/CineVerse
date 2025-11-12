@@ -25,12 +25,12 @@ const TvShowRelatedSection: React.FC<TvShowRelatedSectionProps> = ({ tv }) => {
         classNames={{ cursor: "bg-warning h-1 rounded-full" }}
       >
         {!isEmpty(recommendations) && (
-          <Tab key="recommendations" title="Recommendations">
+          <Tab key="recommendations" title="Xem thêm">
             <TvShowRelatedList tvs={recommendations} />
           </Tab>
         )}
         {!isEmpty(similar) && (
-          <Tab key="similar" title="Similar">
+          <Tab key="similar" title="Tương tự">
             <TvShowRelatedList tvs={similar} />
           </Tab>
         )}
