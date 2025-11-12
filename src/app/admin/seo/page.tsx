@@ -8,7 +8,7 @@ import { generateCompleteSEO } from "@/utils/seo/content-generator";
 import { IoAnalytics, IoSearch } from "react-icons/io5";
 import { useQuery } from "@tanstack/react-query";
 import { tmdb } from "@/api/tmdb";
-import { Movie, TvShow } from "@/types";
+import { Movie, TV } from "tmdb-ts";
 import { getImageUrl } from "@/utils/movies";
 
 type MediaType = "movie" | "tv";
@@ -44,9 +44,9 @@ export default function SEOPage() {
     queryFn: async () => {
       if (!selectedId) return null;
       if (selectedType === "movie") {
-        return await tmdb.movie.details(selectedId, { language: "vi-VN" });
+        return await tmdb.movies.details(selectedId);
       } else {
-        return await tmdb.tv.details(selectedId, { language: "vi-VN" });
+        return await tmdb.tvShows.details(selectedId);
       }
     },
     enabled: !!selectedId,
@@ -54,7 +54,7 @@ export default function SEOPage() {
 
   useEffect(() => {
     if (itemDetails && selectedId) {
-      const seoData = generateCompleteSEO(itemDetails as Movie | TvShow, selectedType);
+      const seoData = generateCompleteSEO(itemDetails as any, selectedType);
       setConfig(seoData);
     }
   }, [itemDetails, selectedId, selectedType]);
@@ -181,7 +181,7 @@ export default function SEOPage() {
                   placeholder="Tiêu đề SEO (50-60 ký tự)"
                   value={config.title}
                   onChange={(e) => handleManualChange("title", e.target.value)}
-                  description={'$' + '{config.title.length} ký tự'}
+                  description={`${config.title.length} ký tự`}
                 />
 
                 <Textarea
@@ -189,7 +189,7 @@ export default function SEOPage() {
                   placeholder="Mô tả SEO (120-155 ký tự)"
                   value={config.description}
                   onChange={(e) => handleManualChange("description", e.target.value)}
-                  description={'$' + '{config.description.length} ký tự'}
+                  description={`${config.description.length} ký tự`}
                   minRows={3}
                 />
 
@@ -198,7 +198,7 @@ export default function SEOPage() {
                   placeholder="/movie/id/slug"
                   value={config.url}
                   onChange={(e) => handleManualChange("url", e.target.value)}
-                  description={'$' + '{config.url.length} ký tự'}
+                  description={`${config.url.length} ký tự`}
                 />
 
                 <Textarea
@@ -207,7 +207,7 @@ export default function SEOPage() {
                   value={config.content}
                   onChange={(e) => handleManualChange("content", e.target.value)}
                   minRows={8}
-                  description={'$' + '{config.content.split(/\\s+/).filter((w) => w.length > 0).length} từ'}
+                  description={`${config.content.split(/\s+/).filter((w) => w.length > 0).length} từ`}
                 />
               </CardBody>
             </Card>
