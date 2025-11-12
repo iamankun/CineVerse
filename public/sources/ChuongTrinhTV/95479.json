@@ -15,7 +15,12 @@
             "subtitles": [
               "vi"
             ]
-          },
+          }
+        ]
+      },
+      "2": {
+        "title": "Tập 2",
+        "sources": [
           {
             "provider": "youtube",
             "title": "Chú Thuật Hồi Chiến",
@@ -24,7 +29,12 @@
             "subtitles": [
               "vi"
             ]
-          },
+          }
+        ]
+      },
+      "3": {
+        "title": "Tập 3",
+        "sources": [
           {
             "provider": "youtube",
             "title": "Chú Thuật Hồi Chiến",
@@ -33,7 +43,12 @@
             "subtitles": [
               "vi"
             ]
-          },
+          }
+        ]
+      },
+      "4": {
+        "title": "Tập 4",
+        "sources": [
           {
             "provider": "youtube",
             "title": "Chú Thuật Hồi Chiến",
@@ -42,7 +57,12 @@
             "subtitles": [
               "vi"
             ]
-          },
+          }
+        ]
+      },
+      "5": {
+        "title": "Tập 5",
+        "sources": [
           {
             "provider": "youtube",
             "title": "Chú Thuật Hồi Chiến",
@@ -51,7 +71,12 @@
             "subtitles": [
               "vi"
             ]
-          },
+          }
+        ]
+      },
+      "6": {
+        "title": "Tập 6",
+        "sources": [
           {
             "provider": "youtube",
             "title": "Chú Thuật Hồi Chiến",
@@ -60,7 +85,12 @@
             "subtitles": [
               "vi"
             ]
-          },
+          }
+        ]
+      },
+      "7": {
+        "title": "Tập 7",
+        "sources": [
           {
             "provider": "youtube",
             "title": "Chú Thuật Hồi Chiến",
@@ -69,7 +99,12 @@
             "subtitles": [
               "vi"
             ]
-          },
+          }
+        ]
+      },
+      "8": {
+        "title": "Tập 8",
+        "sources": [
           {
             "provider": "youtube",
             "title": "Chú Thuật Hồi Chiến",
@@ -78,7 +113,12 @@
             "subtitles": [
               "vi"
             ]
-          },
+          }
+        ]
+      },
+      "9": {
+        "title": "Tập 9",
+        "sources": [
           {
             "provider": "youtube",
             "title": "Chú Thuật Hồi Chiến",
@@ -87,7 +127,12 @@
             "subtitles": [
               "vi"
             ]
-          },
+          }
+        ]
+      },
+      "10": {
+        "title": "Tập 10",
+        "sources": [
           {
             "provider": "youtube",
             "title": "Chú Thuật Hồi Chiến",
@@ -96,7 +141,12 @@
             "subtitles": [
               "vi"
             ]
-          },
+          }
+        ]
+      },
+      "11": {
+        "title": "Tập 11",
+        "sources": [
           {
             "provider": "youtube",
             "title": "Chú Thuật Hồi Chiến",
@@ -105,7 +155,12 @@
             "subtitles": [
               "vi"
             ]
-          },
+          }
+        ]
+      },
+      "12": {
+        "title": "Tập 12",
+        "sources": [
           {
             "provider": "youtube",
             "title": "Chú Thuật Hồi Chiến",
@@ -114,7 +169,12 @@
             "subtitles": [
               "vi"
             ]
-          },
+          }
+        ]
+      },
+      "13": {
+        "title": "Tập 13",
+        "sources": [
           {
             "provider": "youtube",
             "title": "Chú Thuật Hồi Chiến",
@@ -123,7 +183,12 @@
             "subtitles": [
               "vi"
             ]
-          },
+          }
+        ]
+      },
+      "14": {
+        "title": "Tập 14",
+        "sources": [
           {
             "provider": "youtube",
             "title": "Chú Thuật Hồi Chiến",
@@ -132,7 +197,12 @@
             "subtitles": [
               "vi"
             ]
-          },
+          }
+        ]
+      },
+      "15": {
+        "title": "Tập 15",
+        "sources": [
           {
             "provider": "youtube",
             "title": "Chú Thuật Hồi Chiến",
@@ -149,7 +219,7 @@
   "metadata": {
     "movie-rating": "K",
     "audioVersion": "LongTieng",
-    "lastUpdate": "2025-11-12T07:54:34.298Z",
+    "lastUpdate": "2025-11-12T08:00:48.356Z",
     "genre": [
       "Phim Hoạt Hình",
       "Action & Adventure",
@@ -159,7 +229,7 @@
     "status": "Returning Series",
     "note": "",
     "studio": "MAPPA",
-    "totalEpisodes": 1,
+    "totalEpisodes": 15,
     "totalSeasons": 1
   }
 }
