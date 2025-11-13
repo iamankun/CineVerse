@@ -44,7 +44,7 @@ const MoviePlayerSourceSelection: React.FC<MoviePlayerSourceSelectionProps> = ({
           </div>
           <div className="flex items-center gap-2">
             <Ads className="text-primary-500" />
-            <span>Có thể có quảng cáo popup</span>
+            <span>Cài Ad Block hoặc Ad Guard để chặn quảng cáo (Nếu có, chúng tôi luôn nỗ lực loại bỏ quảng cáo bài bạc và cá cược...)</span>
           </div>
         </div>
         <SelectButton

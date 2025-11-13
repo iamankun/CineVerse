@@ -37,30 +37,30 @@ const TvShowPlayerHeader: React.FC<TvShowPlayerHeaderProps> = ({
       <div className="absolute left-1/2 hidden -translate-x-1/2 flex-col justify-center text-center sm:flex">
         <p className="text-sm text-white text-shadow-lg sm:text-lg lg:text-xl">{seriesName}</p>
         <p className="text-xs text-gray-200 text-shadow-lg sm:text-sm lg:text-base">
-          {seasonName} - {episode.name}
+          Mùa {episode.season_number} - Tập {episode.episode_number} - {episode.name}
         </p>
       </div>
       <div className="flex items-center gap-4">
         <ActionButton
           disabled={!prevEpisodeNumber}
-          label="Previous Episode"
-          tooltip="Previous Episode"
+          label="Tập trước"
+          tooltip="Tập trước"
           href={`/tv/${id}/${episode.season_number}/${prevEpisodeNumber}/player?src=${selectedSource}`}
         >
           <Prev size={42} />
         </ActionButton>
         <ActionButton
           disabled={!nextEpisodeNumber}
-          label="Next Episode"
-          tooltip="Next Episode"
+          label="Tập tiếp theo"
+          tooltip="Tập tiếp theo"
           href={`/tv/${id}/${episode.season_number}/${nextEpisodeNumber}/player?src=${selectedSource}`}
         >
           <Next size={42} />
         </ActionButton>
-        <ActionButton label="Sources" tooltip="Sources" onClick={onOpenSource}>
+        <ActionButton label="Nguồn phát" tooltip="Nguồn phát" onClick={onOpenSource}>
           <Server size={34} />
         </ActionButton>
-        <ActionButton label="Episodes" tooltip="Episodes" onClick={onOpenEpisode}>
+        <ActionButton label="Danh sách tập" tooltip="Danh sách tập" onClick={onOpenEpisode}>
           <List size={34} />
         </ActionButton>
       </div>

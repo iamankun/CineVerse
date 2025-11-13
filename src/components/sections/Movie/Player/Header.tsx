@@ -31,7 +31,7 @@ const MoviePlayerHeader: React.FC<MoviePlayerHeaderProps> = ({
         <p className="text-sm text-white text-shadow-lg sm:text-lg lg:text-xl">{movieName}</p>
       </div>
       <div className="flex items-center gap-4">
-        <ActionButton label="Sources" tooltip="Sources" onClick={onOpenSource}>
+        <ActionButton label="Nguồn phát" tooltip="Nguồn phát" onClick={onOpenSource}>
           <Server size={34} />
         </ActionButton>
       </div>

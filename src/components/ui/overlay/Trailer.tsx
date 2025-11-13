@@ -56,7 +56,7 @@ const Trailer: React.FC<TrailerProps> = ({ videos, color = "primary" }) => {
           startContent={<Youtube size={22} />}
           onPress={() => handlers.open()}
         >
-          Trailer
+          Xem giới thiệu
         </Button>
 
         <Modal backdrop="blur" size="5xl" isOpen={opened} onClose={handleClose} placement="center">

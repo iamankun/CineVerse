@@ -116,7 +116,7 @@ const TvShowHoverCard: React.FC<{ id: number; fullWidth?: boolean }> = ({ id, fu
               variant="shadow"
               startContent={<Play size={24} />}
             >
-              View Episodes
+              Xem các tập
             </Button>
             <BookmarkButton data={bookmarkData} isTooltipDisabled />
           </div>

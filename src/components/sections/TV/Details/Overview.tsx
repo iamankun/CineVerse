@@ -105,7 +105,7 @@ export const TvShowOverviewSection: React.FC<TvShowOverviewSectionProps> = ({
                 onPress={onViewEpisodesClick}
                 startContent={<FaCirclePlay size={22} />}
               >
-                View Episodes
+                Xem các tập
               </Button>
               <Trailer color="warning" videos={tv.videos.results} />
             </div>
