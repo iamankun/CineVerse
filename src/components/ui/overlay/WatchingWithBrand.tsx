@@ -85,7 +85,7 @@ const WatchingWithBrand: React.FC<WatchingWithBrandProps> = ({
   const imageUrl = `https://image.tmdb.org/t/p/w500/${cleanLogoPath}`;
 
   return (
-    <div className="flex flex-col items-center gap-1">
+    <div className="flex flex-col items-start gap-1">
       {/* Text - Always visible */}
       <div
         className="text-xs md:text-sm font-semibold text-white"
@@ -110,7 +110,7 @@ const WatchingWithBrand: React.FC<WatchingWithBrandProps> = ({
         }}
       >
         <div 
-          className="relative flex items-center justify-center" 
+          className="relative flex items-center justify-start" 
           style={{ 
             minWidth: "80px",
             maxWidth: "160px",
