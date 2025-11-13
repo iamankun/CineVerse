@@ -213,13 +213,27 @@
             ]
           }
         ]
+      },
+      "16": {
+        "title": "Tập 16",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Chú Thuật Hồi Chiến",
+            "url": "https://www.youtube.com/watch?v=aXw8ofVIzUo",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ]
+          }
+        ]
       }
     }
   },
   "metadata": {
     "movie-rating": "K",
     "audioVersion": "LongTieng",
-    "lastUpdate": "2025-11-12T08:00:48.356Z",
+    "lastUpdate": "2025-11-13T06:51:37.981Z",
     "genre": [
       "Phim Hoạt Hình",
       "Action & Adventure",
@@ -229,7 +243,7 @@
     "status": "Returning Series",
     "note": "",
     "studio": "MAPPA",
-    "totalEpisodes": 15,
+    "totalEpisodes": 16,
     "totalSeasons": 1
   }
 }
