@@ -51,6 +51,8 @@ const TvShowPlayer: React.FC<TvShowPlayerProps> = ({
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [movieRating, setMovieRating] = useState<{ rating: string; description: string } | null>(null);
   const [videoCurrentTime, setVideoCurrentTime] = useState(0);
+  const [videoEnded, setVideoEnded] = useState(false);
+  const [autoPlayCountdown, setAutoPlayCountdown] = useState<number | null>(null);
   const logoPath = useMovieLogo(id, "tv", tv.original_language);
   
   // Debug logging
@@ -356,6 +358,7 @@ const TvShowPlayer: React.FC<TvShowPlayerProps> = ({
               <iframe
                 ref={iframeRef}
                 allowFullScreen
+                allow="autoplay; fullscreen; encrypted-media; picture-in-picture"
                 key={PLAYER.title}
                 src={PLAYER.source}
                 className={cn("z-10 h-full w-full", { "pointer-events-none": idle && !mobile })}

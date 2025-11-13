@@ -20,34 +20,34 @@ export const getMoviePlayers = async (
   const externalSources: PlayersProps[] = [
     {
       title: "VidSrc (Phụ đề Tiếng Việt)",
-      source: `https://vidsrc-embed.ru/embed/movie?tmdb=${id}&ds_lang=vi&autoplay=0`,
+      source: `https://vidsrc-embed.ru/embed/movie?tmdb=${id}&ds_lang=vi&autoplay=1`,
       recommended: true,
       fast: true,
       ads: false,
     },
     {
       title: "VidSrc 1",
-      source: `https://vidsrc.xyz/embed/movie/${id}?ds_lang=vi`,
+      source: `https://vidsrc.xyz/embed/movie/${id}?ds_lang=vi&autoplay=1`,
       ads: false,
     },
     {
       title: "VidSrc 2",
-      source: `https://vidsrc.to/embed/movie/${id}?ds_lang=vi`,
+      source: `https://vidsrc.to/embed/movie/${id}?ds_lang=vi&autoplay=1`,
       ads: false,
     },
     {
       title: "VidSrc 3",
-      source: `https://vidsrc.icu/embed/movie/${id}?ds_lang=vi`,
+      source: `https://vidsrc.icu/embed/movie/${id}?ds_lang=vi&autoplay=1`,
       ads: false,
     },
     {
       title: "VidSrc 4",
-      source: `https://vidsrc.cc/v2/embed/movie/${id}?autoPlay=false&ds_lang=vi`,
+      source: `https://vidsrc.cc/v2/embed/movie/${id}?autoPlay=true&ds_lang=vi`,
       ads: false,
     },
     {
       title: "VidSrc 5",
-      source: `https://vidsrc.cc/v3/embed/movie/${id}?autoPlay=false&ds_lang=vi`,
+      source: `https://vidsrc.cc/v3/embed/movie/${id}?autoPlay=true&ds_lang=vi`,
       recommended: false,
       fast: true,
       ads: false,
@@ -81,24 +81,24 @@ export const getTvShowPlayers = async (
   const externalSources: PlayersProps[] = [
     {
       title: "VidSrc (Phụ đề Tiếng Việt)",
-      source: `https://vidsrc-embed.ru/embed/tv?tmdb=${id}&season=${season}&episode=${episode}&ds_lang=vi&autoplay=0`,
+      source: `https://vidsrc-embed.ru/embed/tv?tmdb=${id}&season=${season}&episode=${episode}&ds_lang=vi&autoplay=1`,
       recommended: true,
       fast: true,
       ads: false,
     },
     {
       title: "VidSrc 1",
-      source: `https://vidsrc.xyz/embed/tv/${id}/${season}/${episode}?ds_lang=vi`,
+      source: `https://vidsrc.xyz/embed/tv/${id}/${season}/${episode}?ds_lang=vi&autoplay=1`,
       ads: false,
     },
     {
       title: "VidSrc 2",
-      source: `https://vidsrc.to/embed/tv/${id}/${season}/${episode}?ds_lang=vi`,
+      source: `https://vidsrc.to/embed/tv/${id}/${season}/${episode}?ds_lang=vi&autoplay=1`,
       ads: false,
     },
     {
       title: "VidSrc 3",
-      source: `https://vidsrc.icu/embed/tv/${id}/${season}/${episode}?ds_lang=vi`,
+      source: `https://vidsrc.icu/embed/tv/${id}/${season}/${episode}?ds_lang=vi&autoplay=1`,
       ads: false,
     },
     {
