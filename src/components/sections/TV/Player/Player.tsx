@@ -51,11 +51,9 @@ const TvShowPlayer: React.FC<TvShowPlayerProps> = ({
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [movieRating, setMovieRating] = useState<{ rating: string; description: string } | null>(null);
   const [videoCurrentTime, setVideoCurrentTime] = useState(0);
-  const [videoEnded, setVideoEnded] = useState(false);
-  const [autoPlayCountdown, setAutoPlayCountdown] = useState<number | null>(null);
   const logoPath = useMovieLogo(id, "tv", tv.original_language);
   
-  // Debug logging
+  // Ghi nhật ký gỡ lỗi
   useEffect(() => {
     console.log(`🎭 TV Player Debug:`, {
       id,
@@ -85,12 +83,12 @@ const TvShowPlayer: React.FC<TvShowPlayerProps> = ({
     `Play ${props.seriesName} - ${props.seasonName} - ${episode.name} | ${siteConfig.name}`,
   );
 
-  // Initialize ad blocker with iframe reference
+  // Khởi tạo trình chặn quảng cáo với tham chiếu iframe
   useEffect(() => {
-    // Initialize immediately
+    // Khởi tạo ngay lập tức
     playerAdBlocker.init();
 
-    // Attach to iframe when ready
+    // Đính kèm vào khung hình khi sẵn sàng
     const iframe = iframeRef.current;
     if (iframe) {
       playerAdBlocker.init(iframe);
@@ -101,19 +99,19 @@ const TvShowPlayer: React.FC<TvShowPlayerProps> = ({
     };
   }, []);
 
-  // Suppress react-remove-scroll error when modal/drawer closes
+  // Ngăn chặn lỗi react-remove-scroll khi modal/drawer đóng
   useEffect(() => {
-    const originalError = console.error;
+    const originalError = console.error.bind(console);
     console.error = (...args: any[]) => {
-      // Suppress specific library errors
+      // Ngăn chặn lỗi cụ thể từ thư viện
       if (
         typeof args[0] === 'string' &&
         (args[0].includes("Failed to execute 'contains' on 'Node'") ||
          args[0].includes("[@mantine/hooks] use-fullscreen"))
       ) {
-        return; // Ignore these specific errors from libraries
+        return; // Chấp nhận những lỗi cụ thể này từ các thư viện
       }
-      originalError.apply(console, args);
+      originalError(...args);
     };
 
     return () => {
@@ -121,11 +119,11 @@ const TvShowPlayer: React.FC<TvShowPlayerProps> = ({
     };
   }, []);
 
-  // Fetch players (including CineVerse sources)
+  // Tải người chơi (bao gồm nguồn CineVerse)
   useEffect(() => {
     getTvShowPlayers(id, episode.season_number, episode.episode_number, startAt).then(setPlayers);
 
-    // Fetch movie rating from CineVerse JSON
+    // Tải điểm TV từ CineVerse
     console.log(`🎬 Đang tải TV điểm của ID: ${id}`);
     fetch(`/sources/ChuongTrinhTV/${id}.json`)
       .then(res => {
@@ -136,7 +134,7 @@ const TvShowPlayer: React.FC<TvShowPlayerProps> = ({
         console.log(`📊 TV JSON data:`, data?.metadata?.["movie-rating"]);
         if (data?.metadata?.["movie-rating"]) {
           const rating = data.metadata["movie-rating"];
-          // Fetch rating descriptions
+          // Tải mô tả đánh giá
           fetch("/sources/movie-rating.json")
             .then(res => res.json())
             .then(ratingData => {
@@ -147,21 +145,21 @@ const TvShowPlayer: React.FC<TvShowPlayerProps> = ({
               }
             })
             .catch((err) => {
-              console.error(`❌ Failed to load rating descriptions:`, err);
+              console.error(`❌ Không tải được mô tả đánh giá:`, err);
             });
         }
       })
       .catch((err) => {
-        console.error(`❌ Failed to load TV JSON:`, err);
+        console.error(`❌ Không tải được TV JSON:`, err);
       });
   }, [id, episode.season_number, episode.episode_number, startAt]);
 
-  // Listen for video time updates from iframe
+  // Nghe các cập nhật thời gian video và sự kiện kết thúc video từ khung hình
   useEffect(() => {
     const handleMessage = (event: MessageEvent) => {
-      // Accept messages from player domains
+      // Chấp nhận tin nhắn từ các miền trình phát
       if (event.data && typeof event.data === 'object') {
-        // Custom videoTime format
+        // Định dạng thời gian tùy chỉnh
         if (event.data.type === 'videoTime' && typeof event.data.time === 'number') {
           setVideoCurrentTime(event.data.time);
           return;
@@ -190,12 +188,43 @@ const TvShowPlayer: React.FC<TvShowPlayerProps> = ({
           setVideoCurrentTime(Math.floor(event.data.data.currentTime));
           return;
         }
+
+        // Video ended events - Auto play next episode
+        if (props.nextEpisodeNumber) {
+          // YouTube ended event
+          if (event.data.event === 'infoDelivery' && event.data.info?.playerState === 0) {
+            console.log('🎬 Video ended (YouTube), auto-playing next episode...');
+            window.location.href = `/tv/${id}/${episode.season_number}/${props.nextEpisodeNumber}/player?src=${selectedSource}`;
+            return;
+          }
+
+          // Dailymotion ended event
+          if (event.data.event === 'ended' || event.data.event === 'video_end') {
+            console.log('🎬 Video ended (Dailymotion), auto-playing next episode...');
+            window.location.href = `/tv/${id}/${episode.season_number}/${props.nextEpisodeNumber}/player?src=${selectedSource}`;
+            return;
+          }
+
+          // Standard video ended event
+          if (event.data.type === 'ended' || event.data.event === 'ended') {
+            console.log('🎬 Video ended, auto-playing next episode...');
+            window.location.href = `/tv/${id}/${episode.season_number}/${props.nextEpisodeNumber}/player?src=${selectedSource}`;
+            return;
+          }
+
+          // VidLink player ended format
+          if (event.data.type === 'PLAYER_EVENT' && event.data.data?.event === 'ended') {
+            console.log('🎬 Video ended (VidLink), auto-playing next episode...');
+            window.location.href = `/tv/${id}/${episode.season_number}/${props.nextEpisodeNumber}/player?src=${selectedSource}`;
+            return;
+          }
+        }
       }
     };
 
     window.addEventListener('message', handleMessage);
     return () => window.removeEventListener('message', handleMessage);
-  }, []);
+  }, [id, episode.season_number, props.nextEpisodeNumber, selectedSource]);
 
   // Fallback: estimate video time if no postMessage (tracks real playback time)
   useEffect(() => {
