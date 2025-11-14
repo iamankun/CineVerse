@@ -259,7 +259,7 @@ const CineVerseHero = () => {
               />
             </div>
             <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/50 to-transparent" />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-transparent to-black/90" />
           </>
         ) : (
           <>
@@ -272,7 +272,7 @@ const CineVerseHero = () => {
               quality={90}
             />
             <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/50 to-transparent" />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-transparent to-black/90" />
           </>
         )}
       </div>

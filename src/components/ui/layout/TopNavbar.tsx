@@ -38,16 +38,18 @@ const TopNavbar = () => {
       }}
       className={cn(
         "fixed top-0 left-0 right-0 w-full h-min z-[9999] transition-all duration-300",
-        "bg-black/10 backdrop-blur-md border-b border-white/5"
+        "before:absolute before:inset-0 before:-bottom-8 before:pointer-events-none",
+        "before:bg-gradient-to-b before:from-black/50 before:via-black/10 before:to-transparent",
+        "before:transition-opacity before:duration-300"
       )}
-      style={{ position: 'fixed', top: 0, left: 0, right: 0 }}
+      style={{ 
+        position: 'fixed', 
+        top: 0, 
+        left: 0, 
+        right: 0,
+        background: 'transparent'
+      }}
     >
-      {y > 100 && (
-        <div
-          className="absolute inset-0 h-full w-full bg-black/30 backdrop-blur-md transition-opacity duration-300"
-          style={{ opacity: Math.min(y / 300, 0.8) }}
-        />
-      )}
       <NavbarBrand className="relative z-10">
         {show ? <BrandLogo /> : <BackButton href={tv ? "/?content=tv" : "/"} />}
       </NavbarBrand>

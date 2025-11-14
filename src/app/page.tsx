@@ -13,7 +13,9 @@ const HomePage: NextPage = () => {
                 <div className="-mx-3 -mt-8 sm:-mx-5">
                     <CineVerseSources />
                 </div>
-                <div className="flex flex-col gap-3 mt-3 md:gap-8 md:mt-8">
+                <div className="relative flex flex-col gap-3 mt-3 md:gap-8 md:mt-8">
+                    {/* Gradient fade overlay to blend with hero */}
+                    <div className="absolute -top-32 -left-8 -right-8 h-32 bg-gradient-to-b from-black/0 via-background/100 to-background pointer-events-none z-10" />
                     <ContinueWatching />
                     <HomePageList />
                 </div>

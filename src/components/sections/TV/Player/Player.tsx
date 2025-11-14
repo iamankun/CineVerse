@@ -165,31 +165,31 @@ const TvShowPlayer: React.FC<TvShowPlayerProps> = ({
           return;
         }
         
-        // Standard video player postMessage formats
+        // Tải tin nhắn thời gian chung
         if (event.data.currentTime !== undefined) {
           setVideoCurrentTime(event.data.currentTime);
           return;
         }
 
-        // YouTube iframe API format
+        // YouTube khung hình định dạng không API
         if (event.data.event === 'infoDelivery' && event.data.info?.currentTime !== undefined) {
           setVideoCurrentTime(Math.floor(event.data.info.currentTime));
           return;
         }
 
-        // Dailymotion iframe API format
+        // Dailymotion khung hình định dạng không API
         if (event.data.event === 'timeupdate' && event.data.time !== undefined) {
           setVideoCurrentTime(Math.floor(event.data.time));
           return;
         }
 
-        // VidLink player format
+        // VidLink định dạng đa phương tiện
         if (event.data.type === 'PLAYER_EVENT' && event.data.data?.currentTime !== undefined) {
           setVideoCurrentTime(Math.floor(event.data.data.currentTime));
           return;
         }
 
-        // Video ended events - Auto play next episode
+        // Kết thúc sự kiện video - Tự động phát tập tiếp theo nếu có
         if (props.nextEpisodeNumber) {
           // YouTube ended event
           if (event.data.event === 'infoDelivery' && event.data.info?.playerState === 0) {
@@ -198,21 +198,21 @@ const TvShowPlayer: React.FC<TvShowPlayerProps> = ({
             return;
           }
 
-          // Dailymotion ended event
+          // Dailymotion kết thúc sự kiện
           if (event.data.event === 'ended' || event.data.event === 'video_end') {
             console.log('🎬 Video ended (Dailymotion), auto-playing next episode...');
             window.location.href = `/tv/${id}/${episode.season_number}/${props.nextEpisodeNumber}/player?src=${selectedSource}`;
             return;
           }
 
-          // Standard video ended event
+          // Sự kiện kết thúc chung
           if (event.data.type === 'ended' || event.data.event === 'ended') {
             console.log('🎬 Video ended, auto-playing next episode...');
             window.location.href = `/tv/${id}/${episode.season_number}/${props.nextEpisodeNumber}/player?src=${selectedSource}`;
             return;
           }
 
-          // VidLink player ended format
+          // VidLink kết thúc sự kiện đa phương tiện
           if (event.data.type === 'PLAYER_EVENT' && event.data.data?.event === 'ended') {
             console.log('🎬 Video ended (VidLink), auto-playing next episode...');
             window.location.href = `/tv/${id}/${episode.season_number}/${props.nextEpisodeNumber}/player?src=${selectedSource}`;
