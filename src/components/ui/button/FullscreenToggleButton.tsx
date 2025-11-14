@@ -10,7 +10,7 @@ const FullscreenToggleButton: React.FC = () => {
   ) : (
     <MdFullscreen className="size-full" />
   );
-  const tooltip = fullscreen ? "Minimize" : "Fullscreen";
+  const tooltip = fullscreen ? "Thu nhỏ" : "Toàn màn hình";
 
   if (!pwaInstalled)
     return (
