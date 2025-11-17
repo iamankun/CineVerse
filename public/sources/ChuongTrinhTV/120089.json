@@ -1,0 +1,543 @@
+{
+  "tmdbId": 120089,
+  "title": "Gia Đình × Điệp Viên",
+  "year": 2022,
+  "seasons": {
+    "1": {
+      "1": {
+        "title": "Tập 1",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Gia Đình × Điệp Viên",
+            "url": "https://www.youtube.com/watch?v=rSKunCzOows",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ]
+          }
+        ]
+      },
+      "2": {
+        "title": "Tập 2",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Gia Đình × Điệp Viên",
+            "url": "https://www.youtube.com/watch?v=tw34XM-LGzo",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ]
+          }
+        ]
+      },
+      "3": {
+        "title": "Tập 3",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Gia Đình × Điệp Viên",
+            "url": "https://www.youtube.com/watch?v=BeSyI9PpQvc",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ]
+          }
+        ]
+      },
+      "4": {
+        "title": "Tập 4",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Gia Đình × Điệp Viên",
+            "url": "https://www.youtube.com/watch?v=4ruyZJHvV3E",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ]
+          }
+        ]
+      },
+      "5": {
+        "title": "Tập 5",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Gia Đình × Điệp Viên",
+            "url": "https://www.youtube.com/watch?v=lBiKKMF25OU",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ]
+          }
+        ]
+      },
+      "6": {
+        "title": "Tập 6",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Gia Đình × Điệp Viên",
+            "url": "https://www.youtube.com/watch?v=LDcF3pv8Hts",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ]
+          }
+        ]
+      },
+      "7": {
+        "title": "Tập 7",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Gia Đình × Điệp Viên",
+            "url": "https://www.youtube.com/watch?v=3vY8TaDrYrA",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ]
+          }
+        ]
+      },
+      "8": {
+        "title": "Tập 8",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Gia Đình × Điệp Viên",
+            "url": "https://www.youtube.com/watch?v=7RkPV7w5OzY",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ]
+          }
+        ]
+      },
+      "9": {
+        "title": "Tập 9",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Gia Đình × Điệp Viên",
+            "url": "https://www.youtube.com/watch?v=DqQbOmqz7fQ",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ]
+          }
+        ]
+      },
+      "10": {
+        "title": "Tập 10",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Gia Đình × Điệp Viên",
+            "url": "https://www.youtube.com/watch?v=Gsq0HsYzC-E",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ]
+          }
+        ]
+      },
+      "11": {
+        "title": "Tập 11",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Gia Đình × Điệp Viên",
+            "url": "https://www.youtube.com/watch?v=wGgoxpx-sxk",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ]
+          }
+        ]
+      },
+      "12": {
+        "title": "Tập 12",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Gia Đình × Điệp Viên",
+            "url": "https://www.youtube.com/watch?v=2z1WgUH4OLs",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ]
+          }
+        ]
+      },
+      "13": {
+        "title": "Tập 13",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Gia Đình × Điệp Viên",
+            "url": "https://www.youtube.com/watch?v=Z1RpHAyh-wE",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ]
+          }
+        ]
+      },
+      "14": {
+        "title": "Tập 14",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Gia Đình × Điệp Viên",
+            "url": "https://www.youtube.com/watch?v=HGVnJWRLV6Q",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ]
+          }
+        ]
+      },
+      "15": {
+        "title": "Tập 15",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Gia Đình × Điệp Viên",
+            "url": "https://www.youtube.com/watch?v=nDcZUj7q_3s",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ]
+          }
+        ]
+      },
+      "16": {
+        "title": "Tập 16",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Gia Đình × Điệp Viên",
+            "url": "https://www.youtube.com/watch?v=MtE4oB2-LIg",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ]
+          }
+        ]
+      },
+      "17": {
+        "title": "Tập 17",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Gia Đình × Điệp Viên",
+            "url": "https://www.youtube.com/watch?v=77AIlL3EQG0",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ]
+          }
+        ]
+      },
+      "18": {
+        "title": "Tập 18",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Gia Đình × Điệp Viên",
+            "url": "https://www.youtube.com/watch?v=gxAJ0F0Dvs4",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ]
+          }
+        ]
+      },
+      "19": {
+        "title": "Tập 19",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Gia Đình × Điệp Viên",
+            "url": "https://www.youtube.com/watch?v=ILKOJdXQh7Q",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ]
+          }
+        ]
+      },
+      "20": {
+        "title": "Tập 20",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Gia Đình × Điệp Viên",
+            "url": "https://www.youtube.com/watch?v=tqL2YOXacIM",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ]
+          }
+        ]
+      },
+      "21": {
+        "title": "Tập 21",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Gia Đình × Điệp Viên",
+            "url": "https://www.youtube.com/watch?v=hR0SykO5h-c",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ]
+          }
+        ]
+      },
+      "22": {
+        "title": "Tập 22",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Gia Đình × Điệp Viên",
+            "url": "https://www.youtube.com/watch?v=yZVySlYY2CY",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ]
+          }
+        ]
+      },
+      "23": {
+        "title": "Tập 23",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Gia Đình × Điệp Viên",
+            "url": "https://www.youtube.com/watch?v=JMKFazr1NmU",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ]
+          }
+        ]
+      },
+      "24": {
+        "title": "Tập 24",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Gia Đình × Điệp Viên",
+            "url": "https://www.youtube.com/watch?v=Z6Sq7HkyuEw",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ]
+          }
+        ]
+      },
+      "25": {
+        "title": "Tập 25",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Gia Đình × Điệp Viên",
+            "url": "https://www.youtube.com/watch?v=8j21lXY9Bvs",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ]
+          }
+        ]
+      },
+      "26": {
+        "title": "Tập 26",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Gia Đình × Điệp Viên",
+            "url": "https://www.youtube.com/watch?v=32KI-9qqBkg",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ]
+          }
+        ]
+      },
+      "27": {
+        "title": "Tập 27",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Gia Đình × Điệp Viên",
+            "url": "https://www.youtube.com/watch?v=xOiISUmT2sw",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ]
+          }
+        ]
+      },
+      "28": {
+        "title": "Tập 28",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Gia Đình × Điệp Viên",
+            "url": "https://www.youtube.com/watch?v=gnv_cyugR7s",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ]
+          }
+        ]
+      },
+      "29": {
+        "title": "Tập 29",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Gia Đình × Điệp Viên",
+            "url": "https://www.youtube.com/watch?v=Je8N7M0R97s",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ]
+          }
+        ]
+      },
+      "30": {
+        "title": "Tập 30",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Gia Đình × Điệp Viên",
+            "url": "https://www.youtube.com/watch?v=RL1c1WjnfwI",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ]
+          }
+        ]
+      },
+      "31": {
+        "title": "Tập 31",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Gia Đình × Điệp Viên",
+            "url": "https://www.youtube.com/watch?v=TAkZW4EEVIw",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ]
+          }
+        ]
+      },
+      "32": {
+        "title": "Tập 32",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Gia Đình × Điệp Viên",
+            "url": "https://www.youtube.com/watch?v=wLgzavOKByw",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ]
+          }
+        ]
+      },
+      "33": {
+        "title": "Tập 33",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Gia Đình × Điệp Viên",
+            "url": "https://www.youtube.com/watch?v=LRdORGPoTB8",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ]
+          }
+        ]
+      },
+      "34": {
+        "title": "Tập 34",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Gia Đình × Điệp Viên",
+            "url": "https://www.youtube.com/watch?v=jb0caw-vlqo",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ]
+          }
+        ]
+      },
+      "35": {
+        "title": "Tập 35",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Gia Đình × Điệp Viên",
+            "url": "https://www.youtube.com/watch?v=VcZTBLdj9k0",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ]
+          }
+        ]
+      },
+      "36": {
+        "title": "Tập 36",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Gia Đình × Điệp Viên",
+            "url": "https://www.youtube.com/watch?v=Vgx7I_vWcoY",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ]
+          }
+        ]
+      },
+      "37": {
+        "title": "Tập 37",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Gia Đình × Điệp Viên",
+            "url": "https://www.youtube.com/watch?v=H4PO9pl20cA",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "metadata": {
+    "movie-rating": "K",
+    "audioVersion": "LongTieng",
+    "lastUpdate": "2025-11-17T13:59:03.592Z",
+    "genre": [
+      "Phim Hoạt Hình",
+      "Phim Hài",
+      "Action & Adventure"
+    ],
+    "duration": 24,
+    "status": "Returning Series",
+    "note": "",
+    "studio": "WIT STUDIO",
+    "totalEpisodes": 37,
+    "totalSeasons": 1
+  }
+}
