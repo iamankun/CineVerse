@@ -1,0 +1,39 @@
+{
+  "tmdbId": 123542,
+  "title": "Người Đại Diện Thời Gian",
+  "year": 2021,
+  "seasons": {
+    "1": {
+      "1": {
+        "title": "Tập 1",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Người Đại Diện Thời Gian",
+            "url": "https://www.youtube.com/watch?v=6vEwgDXPqwU",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "metadata": {
+    "movie-rating": "K",
+    "audioVersion": "LongTieng",
+    "lastUpdate": "2025-11-21T03:58:43.516Z",
+    "genre": [
+      "Phim Hoạt Hình",
+      "Sci-Fi & Fantasy",
+      "Phim Bí Ẩn"
+    ],
+    "duration": 23,
+    "status": "Returning Series",
+    "note": "",
+    "studio": "Haoliners Animation",
+    "totalEpisodes": 1,
+    "totalSeasons": 1
+  }
+}
