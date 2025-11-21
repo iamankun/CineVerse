@@ -17,13 +17,167 @@
             ]
           }
         ]
+      },
+      "2": {
+        "title": "Tập 2",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Người Đại Diện Thời Gian",
+            "url": "https://www.youtube.com/watch?v=XkYffoHgmQ0&list=PLrYKPj7wbjfgG46d6u-mOjbAWyC5uPlcK&index=2&pp=iAQB",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ]
+          }
+        ]
+      },
+      "3": {
+        "title": "Tập 3",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Người Đại Diện Thời Gian",
+            "url": "https://www.youtube.com/watch?v=vv0s9ZFn438&list=PLrYKPj7wbjfgG46d6u-mOjbAWyC5uPlcK&index=3&pp=iAQB",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ]
+          }
+        ]
+      },
+      "4": {
+        "title": "Tập 4",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Người Đại Diện Thời Gian",
+            "url": "https://www.youtube.com/watch?v=HfYYyiqOS0Q&list=PLrYKPj7wbjfgG46d6u-mOjbAWyC5uPlcK&index=4&pp=iAQB",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ]
+          }
+        ]
+      },
+      "5": {
+        "title": "Tập 5",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Người Đại Diện Thời Gian",
+            "url": "https://www.youtube.com/watch?v=Z1ONP49GypY&list=PLrYKPj7wbjfgG46d6u-mOjbAWyC5uPlcK&index=5&pp=iAQB",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ]
+          }
+        ]
+      },
+      "6": {
+        "title": "Tập 6",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Người Đại Diện Thời Gian",
+            "url": "https://www.youtube.com/watch?v=wBr2_dl9mSU&list=PLrYKPj7wbjfgG46d6u-mOjbAWyC5uPlcK&index=6&pp=iAQB",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ]
+          }
+        ]
+      },
+      "7": {
+        "title": "Tập 7",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Người Đại Diện Thời Gian",
+            "url": "https://www.youtube.com/watch?v=YJXXccOjBh8&list=PLrYKPj7wbjfgG46d6u-mOjbAWyC5uPlcK&index=7&pp=iAQB",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ]
+          }
+        ]
+      },
+      "8": {
+        "title": "Tập 8",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Người Đại Diện Thời Gian",
+            "url": "https://www.youtube.com/watch?v=FgCME1mRfcQ&list=PLrYKPj7wbjfgG46d6u-mOjbAWyC5uPlcK&index=8&pp=iAQB",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ]
+          }
+        ]
+      },
+      "9": {
+        "title": "Tập 9",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Người Đại Diện Thời Gian",
+            "url": "https://www.youtube.com/watch?v=jQDbxweKeGI&list=PLrYKPj7wbjfgG46d6u-mOjbAWyC5uPlcK&index=9&pp=iAQB",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ]
+          }
+        ]
+      },
+      "10": {
+        "title": "Tập 10",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Người Đại Diện Thời Gian",
+            "url": "https://www.youtube.com/watch?v=ygSCx6qElH0&list=PLrYKPj7wbjfgG46d6u-mOjbAWyC5uPlcK&index=10&pp=iAQB",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ]
+          }
+        ]
+      },
+      "11": {
+        "title": "Tập 11",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Người Đại Diện Thời Gian",
+            "url": "https://www.youtube.com/watch?v=jV85kIjtTw0&list=PLrYKPj7wbjfgG46d6u-mOjbAWyC5uPlcK&index=11&pp=iAQB",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ]
+          }
+        ]
+      },
+      "12": {
+        "title": "Tập 12",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Người Đại Diện Thời Gian",
+            "url": "https://www.youtube.com/watch?v=f2xWywSwbPk&list=PLrYKPj7wbjfgG46d6u-mOjbAWyC5uPlcK&index=12&pp=iAQB",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ]
+          }
+        ]
       }
     }
   },
   "metadata": {
     "movie-rating": "K",
     "audioVersion": "LongTieng",
-    "lastUpdate": "2025-11-21T03:58:43.516Z",
+    "lastUpdate": "2025-11-21T04:02:03.725Z",
     "genre": [
       "Phim Hoạt Hình",
       "Sci-Fi & Fantasy",
@@ -33,7 +187,7 @@
     "status": "Returning Series",
     "note": "",
     "studio": "Haoliners Animation",
-    "totalEpisodes": 1,
+    "totalEpisodes": 12,
     "totalSeasons": 1
   }
 }
