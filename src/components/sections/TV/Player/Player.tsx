@@ -14,6 +14,7 @@ import { useVidlinkPlayer } from "@/hooks/useVidlinkPlayer";
 import { useMovieLogo } from "@/hooks/useMovieLogo";
 import { PlayersProps } from "@/types";
 import { playerAdBlocker } from "@/utils/player-ad-blocker";
+import { usePinchToZoom } from "@/hooks/usePinchToZoom";
 const AdsWarning = dynamic(() => import("@/components/ui/overlay/AdsWarning"));
 const AgeRating = dynamic(() => import("@/components/ui/overlay/AgeRating"));
 const WatchingWithBrand = dynamic(() => import("@/components/ui/overlay/WatchingWithBrand"));
@@ -66,8 +67,10 @@ const TvShowPlayer: React.FC<TvShowPlayerProps> = ({
   }, [id, movieRating, logoPath, tv.original_language, seen]);
   
   const cardRef = useRef<HTMLDivElement>(null);
+  const playerContainerRef = useRef<HTMLDivElement>(null);
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const idle = useIdle(3000);
+  const zoom = usePinchToZoom(playerContainerRef, { enabled: mobile, minZoom: 1, maxZoom: 2 });
   const [sourceOpened, sourceHandlers] = useDisclosure(false);
   const [episodeOpened, episodeHandlers] = useDisclosure(false);
   const [selectedSource, setSelectedSource] = useQueryState<number>(
@@ -351,16 +354,13 @@ const TvShowPlayer: React.FC<TvShowPlayerProps> = ({
   // Show loading while fetching players
   if (!PLAYER) {
     return (
-      <div className={cn("relative", SpacingClasses.reset)}>
-        <Card shadow="md" radius="none" className="relative h-screen">
-          <Skeleton className="absolute h-full w-full" />
-          <div className="absolute-center">
-            <div className="text-center">
-              <div className="mb-4 text-lg">Đang tải nguồn phim...</div>
-              <div className="text-sm text-foreground/60">Vui lòng đợi</div>
-            </div>
+      <div className={cn("relative w-full h-screen bg-black", SpacingClasses.reset)}>
+        <div className="absolute-center">
+          <div className="text-center">
+            <div className="mb-4 text-lg" style={{ textShadow: '0 2px 8px rgba(0, 0, 0, 0.8)' }}>Đang tải nguồn phim...</div>
+            <div className="text-sm text-foreground/60" style={{ textShadow: '0 1px 4px rgba(0, 0, 0, 0.6)' }}>Vui lòng đợi</div>
           </div>
-        </Card>
+        </div>
       </div>
     );
   }
@@ -381,17 +381,33 @@ const TvShowPlayer: React.FC<TvShowPlayerProps> = ({
         />
 
         <div className="relative h-screen overflow-hidden" ref={cardRef}>
-          <Card shadow="md" radius="none" className="absolute inset-0 bg-black">
+          <Card shadow="none" radius="none" className="absolute inset-0 bg-black flex items-center justify-center">
             <Skeleton className="absolute h-full w-full" />
             {seen && (
-              <iframe
-                ref={iframeRef}
-                allowFullScreen
-                allow="autoplay; fullscreen; encrypted-media; picture-in-picture"
-                key={PLAYER.title}
-                src={PLAYER.source}
-                className={cn("z-10 h-full w-full", { "pointer-events-none": idle && !mobile })}
-              />
+              <div
+                ref={playerContainerRef}
+                style={{
+                  width: '100%',
+                  height: '100%',
+                  aspectRatio: '16/9',
+                  transform: `scale(${zoom})`,
+                  transformOrigin: 'center',
+                  transition: 'transform 0.2s ease-out',
+                  overflow: 'hidden',
+                }}
+              >
+                <iframe
+                  ref={iframeRef}
+                  allowFullScreen
+                  allow="autoplay; fullscreen; encrypted-media; picture-in-picture"
+                  key={PLAYER.title}
+                  src={PLAYER.source}
+                  className={cn("z-10 h-full w-full", { "pointer-events-none": idle && !mobile })}
+                  style={{
+                    border: 'none',
+                  }}
+                />
+              </div>
             )}
           </Card>
           
@@ -415,7 +431,8 @@ const TvShowPlayer: React.FC<TvShowPlayerProps> = ({
             {/* CineVerse Logo on the right */}
             <div style={{ 
               flexShrink: 0,
-              transform: 'scale(1.5)'
+              transform: 'scale(1.5)',
+              filter: 'drop-shadow(0 2px 4px rgba(0, 0, 0, 0.6)) drop-shadow(0 1px 2px rgba(255, 255, 255, 0.4))'
             }}>
               <BrandLogo animate={true} />
             </div>
