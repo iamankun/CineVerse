@@ -172,12 +172,132 @@
           }
         ]
       }
+    },
+    "2": {
+      "1": {
+        "title": "Tập 1",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Ẩm thực dã ngoại tại dị giới với kỹ năng không tưởng",
+            "url": "https://www.youtube.com/watch?v=oepr0jkWv4Y&pp=ygUy4bqpbSB0aOG7sWMgZMOjIG5nb-G6oWkgdOG6oWkgZOG7iyBnaeG7m2kgdOG6rXAgMTM%3D",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ]
+          }
+        ]
+      },
+      "2": {
+        "title": "Tập 2",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Ẩm thực dã ngoại tại dị giới với kỹ năng không tưởng",
+            "url": "https://www.youtube.com/watch?v=Hzk5tNMBxuk&pp=ygUy4bqpbSB0aOG7sWMgZMOjIG5nb-G6oWkgdOG6oWkgZOG7iyBnaeG7m2kgdOG6rXAgMTQ%3D",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ]
+          }
+        ]
+      },
+      "3": {
+        "title": "Tập 3",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Ẩm thực dã ngoại tại dị giới với kỹ năng không tưởng",
+            "url": "https://www.youtube.com/watch?v=utoGoEO90Oo&pp=ygUy4bqpbSB0aOG7sWMgZMOjIG5nb-G6oWkgdOG6oWkgZOG7iyBnaeG7m2kgdOG6rXAgMTQ%3D",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ]
+          }
+        ]
+      },
+      "4": {
+        "title": "Tập 4",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Ẩm thực dã ngoại tại dị giới với kỹ năng không tưởng",
+            "url": "https://www.youtube.com/watch?v=InnseSymzos&pp=ygUy4bqpbSB0aOG7sWMgZMOjIG5nb-G6oWkgdOG6oWkgZOG7iyBnaeG7m2kgdOG6rXAgMTQ%3D",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ]
+          }
+        ]
+      },
+      "5": {
+        "title": "Tập 5",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Ẩm thực dã ngoại tại dị giới với kỹ năng không tưởng",
+            "url": "https://www.youtube.com/watch?v=NS2XgmPeI0Y&pp=ygUy4bqpbSB0aOG7sWMgZMOjIG5nb-G6oWkgdOG6oWkgZOG7iyBnaeG7m2kgdOG6rXAgMTc%3D",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ]
+          }
+        ]
+      },
+      "6": {
+        "title": "Tập 6",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Ẩm thực dã ngoại tại dị giới với kỹ năng không tưởng",
+            "url": "https://www.youtube.com/watch?v=Ds0n15qD-e0&pp=ygUy4bqpbSB0aOG7sWMgZMOjIG5nb-G6oWkgdOG6oWkgZOG7iyBnaeG7m2kgdOG6rXAgMTc%3D",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ]
+          }
+        ]
+      },
+      "7": {
+        "title": "Tập 7",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Ẩm thực dã ngoại tại dị giới với kỹ năng không tưởng",
+            "url": "https://www.youtube.com/watch?v=XFbIQhI5924&pp=ygUy4bqpbSB0aOG7sWMgZMOjIG5nb-G6oWkgdOG6oWkgZOG7iyBnaeG7m2kgdOG6rXAgMTc%3D",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ]
+          }
+        ]
+      },
+      "8": {
+        "title": "Tập 8",
+        "sources": []
+      },
+      "9": {
+        "title": "Tập 9",
+        "sources": []
+      },
+      "10": {
+        "title": "Tập 10",
+        "sources": []
+      },
+      "11": {
+        "title": "Tập 11",
+        "sources": []
+      },
+      "12": {
+        "title": "Tập 12",
+        "sources": []
+      }
     }
   },
   "metadata": {
     "movie-rating": "P",
     "audioVersion": "LongTieng",
-    "lastUpdate": "2025-11-12T15:46:12.221Z",
+    "lastUpdate": "2025-11-21T02:55:09.502Z",
     "genre": [
       "Phim Hoạt Hình",
       "Action & Adventure",
@@ -187,7 +307,7 @@
     "status": "Returning Series",
     "note": "",
     "studio": "MAPPA",
-    "totalEpisodes": 12,
-    "totalSeasons": 1
+    "totalEpisodes": 24,
+    "totalSeasons": 2
   }
 }
