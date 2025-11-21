@@ -1,0 +1,627 @@
+{
+  "tmdbId": 81769,
+  "title": "Hậu Cung Như Ý Truyện",
+  "year": 2018,
+  "seasons": {
+    "1": {
+      "1": {
+        "title": "Tập 1",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Hậu Cung Như Ý Truyện",
+            "url": "https://www.youtube.com/watch?v=EpYldAVlcg8&list=PLh4trvZExvP2kuCLuj6GZNcrn_eNp5svN&index=1&pp=iAQB",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ]
+          }
+        ]
+      },
+      "2": {
+        "title": "Tập 2",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Hậu Cung Như Ý Truyện",
+            "url": "https://www.youtube.com/watch?v=k4OE9Iz6L_w&list=PLh4trvZExvP2kuCLuj6GZNcrn_eNp5svN&index=2&pp=iAQB",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ]
+          }
+        ]
+      },
+      "3": {
+        "title": "Tập 3",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Hậu Cung Như Ý Truyện",
+            "url": "https://www.youtube.com/watch?v=N6s_ECzuCVk&list=PLh4trvZExvP2kuCLuj6GZNcrn_eNp5svN&index=3&pp=iAQB",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ]
+          }
+        ]
+      },
+      "4": {
+        "title": "Tập 4",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Hậu Cung Như Ý Truyện",
+            "url": "https://www.youtube.com/watch?v=O_Q7mHxIq_A&list=PLh4trvZExvP2kuCLuj6GZNcrn_eNp5svN&index=4&pp=iAQB",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ]
+          }
+        ]
+      },
+      "5": {
+        "title": "Tập 5",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Hậu Cung Như Ý Truyện",
+            "url": "https://www.youtube.com/watch?v=xQ1gK_uxVg8&list=PLh4trvZExvP2kuCLuj6GZNcrn_eNp5svN&index=5&pp=iAQB",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ]
+          }
+        ]
+      },
+      "6": {
+        "title": "Tập 6",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Hậu Cung Như Ý Truyện",
+            "url": "https://www.youtube.com/watch?v=tOfvyiTORAo&list=PLh4trvZExvP2kuCLuj6GZNcrn_eNp5svN&index=6&pp=iAQB",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ]
+          }
+        ]
+      },
+      "7": {
+        "title": "Tập 7",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Hậu Cung Như Ý Truyện",
+            "url": "https://www.youtube.com/watch?v=A9cpE4nHfTc&list=PLh4trvZExvP2kuCLuj6GZNcrn_eNp5svN&index=7&pp=iAQB",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ]
+          }
+        ]
+      },
+      "8": {
+        "title": "Tập 8",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Hậu Cung Như Ý Truyện",
+            "url": "https://www.youtube.com/watch?v=0RJYwMNOZwA&list=PLh4trvZExvP2kuCLuj6GZNcrn_eNp5svN&index=8&pp=iAQB",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ]
+          }
+        ]
+      },
+      "9": {
+        "title": "Tập 9",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Hậu Cung Như Ý Truyện",
+            "url": "https://www.youtube.com/watch?v=ExFwtHkBV0k&list=PLh4trvZExvP2kuCLuj6GZNcrn_eNp5svN&index=9&pp=iAQB",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ]
+          }
+        ]
+      },
+      "10": {
+        "title": "Tập 10",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Hậu Cung Như Ý Truyện",
+            "url": "https://www.youtube.com/watch?v=aFQn_fyEl0E&list=PLh4trvZExvP2kuCLuj6GZNcrn_eNp5svN&index=10&pp=iAQB",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ]
+          }
+        ]
+      },
+      "11": {
+        "title": "Tập 11",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Hậu Cung Như Ý Truyện",
+            "url": "https://www.youtube.com/watch?v=TXExyU_aKYM&list=PLh4trvZExvP2kuCLuj6GZNcrn_eNp5svN&index=11&pp=iAQB",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ]
+          }
+        ]
+      },
+      "12": {
+        "title": "Tập 12",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Hậu Cung Như Ý Truyện",
+            "url": "https://www.youtube.com/watch?v=o7xYDJkaUZ8&list=PLh4trvZExvP2kuCLuj6GZNcrn_eNp5svN&index=12&pp=iAQB0gcJCQsKAYcqIYzv",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ]
+          }
+        ]
+      },
+      "13": {
+        "title": "Tập 13",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Hậu Cung Như Ý Truyện",
+            "url": "https://www.youtube.com/watch?v=h64cp_YB554&list=PLh4trvZExvP2kuCLuj6GZNcrn_eNp5svN&index=13&pp=iAQB",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ]
+          }
+        ]
+      },
+      "14": {
+        "title": "Tập 14",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Hậu Cung Như Ý Truyện",
+            "url": "https://www.youtube.com/watch?v=HiQz6D1THR4&list=PLh4trvZExvP2kuCLuj6GZNcrn_eNp5svN&index=14&pp=iAQB",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ]
+          }
+        ]
+      },
+      "15": {
+        "title": "Tập 15",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Hậu Cung Như Ý Truyện",
+            "url": "https://www.youtube.com/watch?v=ogZInQbkzR0&list=PLh4trvZExvP2kuCLuj6GZNcrn_eNp5svN&index=15&pp=iAQB0gcJCQsKAYcqIYzv",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ]
+          }
+        ]
+      },
+      "16": {
+        "title": "Tập 16",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Hậu Cung Như Ý Truyện",
+            "url": "https://www.youtube.com/watch?v=B8ki5VraChs&list=PLh4trvZExvP2kuCLuj6GZNcrn_eNp5svN&index=16&pp=iAQB",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ]
+          }
+        ]
+      },
+      "17": {
+        "title": "Tập 17",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Hậu Cung Như Ý Truyện",
+            "url": "https://www.youtube.com/watch?v=-1iGa_0wFRk&list=PLh4trvZExvP2kuCLuj6GZNcrn_eNp5svN&index=17&pp=iAQB",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ]
+          }
+        ]
+      },
+      "18": {
+        "title": "Tập 18",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Hậu Cung Như Ý Truyện",
+            "url": "https://www.youtube.com/watch?v=RRmW4pXkyn8&list=PLh4trvZExvP2kuCLuj6GZNcrn_eNp5svN&index=18&pp=iAQB",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ]
+          }
+        ]
+      },
+      "19": {
+        "title": "Tập 19",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Hậu Cung Như Ý Truyện",
+            "url": "https://www.youtube.com/watch?v=WrHRNOCDl-E&list=PLh4trvZExvP2kuCLuj6GZNcrn_eNp5svN&index=19&pp=iAQB",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ]
+          }
+        ]
+      },
+      "20": {
+        "title": "Tập 20",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Hậu Cung Như Ý Truyện",
+            "url": "https://www.youtube.com/watch?v=ijkNX8HUMvQ&list=PLh4trvZExvP2kuCLuj6GZNcrn_eNp5svN&index=20&pp=iAQB",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ]
+          }
+        ]
+      },
+      "21": {
+        "title": "Tập 21",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Hậu Cung Như Ý Truyện",
+            "url": "https://www.youtube.com/watch?v=2MtC0AOWEjg&list=PLh4trvZExvP2kuCLuj6GZNcrn_eNp5svN&index=21&pp=iAQB",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ]
+          }
+        ]
+      },
+      "22": {
+        "title": "Tập 22",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Hậu Cung Như Ý Truyện",
+            "url": "https://www.youtube.com/watch?v=CHgSYbSV85o&list=PLh4trvZExvP2kuCLuj6GZNcrn_eNp5svN&index=22&pp=iAQB",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ]
+          }
+        ]
+      },
+      "23": {
+        "title": "Tập 23",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Hậu Cung Như Ý Truyện",
+            "url": "https://www.youtube.com/watch?v=jC5yPlYJ0_0&list=PLh4trvZExvP2kuCLuj6GZNcrn_eNp5svN&index=23&pp=iAQB",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ]
+          }
+        ]
+      },
+      "24": {
+        "title": "Tập 24",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Hậu Cung Như Ý Truyện",
+            "url": "https://www.youtube.com/watch?v=JsRLGNcJFic&list=PLh4trvZExvP2kuCLuj6GZNcrn_eNp5svN&index=24&pp=iAQB",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ]
+          }
+        ]
+      },
+      "25": {
+        "title": "Tập 25",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Hậu Cung Như Ý Truyện",
+            "url": "https://www.youtube.com/watch?v=JQr7oz6pWJI&list=PLh4trvZExvP2kuCLuj6GZNcrn_eNp5svN&index=25&pp=iAQB",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ]
+          }
+        ]
+      },
+      "26": {
+        "title": "Tập 26",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Hậu Cung Như Ý Truyện",
+            "url": "https://www.youtube.com/watch?v=3VizhUBbPnM&list=PLh4trvZExvP2kuCLuj6GZNcrn_eNp5svN&index=26&pp=iAQB",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ]
+          }
+        ]
+      },
+      "27": {
+        "title": "Tập 27",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Hậu Cung Như Ý Truyện",
+            "url": "https://www.youtube.com/watch?v=jhAwbNb1uqw&list=PLh4trvZExvP2kuCLuj6GZNcrn_eNp5svN&index=27&pp=iAQB",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ]
+          }
+        ]
+      },
+      "28": {
+        "title": "Tập 28",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Hậu Cung Như Ý Truyện",
+            "url": "https://www.youtube.com/watch?v=CbIqF9DlXmM&list=PLh4trvZExvP2kuCLuj6GZNcrn_eNp5svN&index=28&pp=iAQB",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ]
+          }
+        ]
+      },
+      "29": {
+        "title": "Tập 29",
+        "sources": []
+      },
+      "30": {
+        "title": "Tập 30",
+        "sources": []
+      },
+      "31": {
+        "title": "Tập 31",
+        "sources": []
+      },
+      "32": {
+        "title": "Tập 32",
+        "sources": []
+      },
+      "33": {
+        "title": "Tập 33",
+        "sources": []
+      },
+      "34": {
+        "title": "Tập 34",
+        "sources": []
+      },
+      "35": {
+        "title": "Tập 35",
+        "sources": []
+      },
+      "36": {
+        "title": "Tập 36",
+        "sources": []
+      },
+      "37": {
+        "title": "Tập 37",
+        "sources": []
+      },
+      "38": {
+        "title": "Tập 38",
+        "sources": []
+      },
+      "39": {
+        "title": "Tập 39",
+        "sources": []
+      },
+      "40": {
+        "title": "Tập 40",
+        "sources": []
+      },
+      "41": {
+        "title": "Tập 41",
+        "sources": []
+      },
+      "42": {
+        "title": "Tập 42",
+        "sources": []
+      },
+      "43": {
+        "title": "Tập 43",
+        "sources": []
+      },
+      "44": {
+        "title": "Tập 44",
+        "sources": []
+      },
+      "45": {
+        "title": "Tập 45",
+        "sources": []
+      },
+      "46": {
+        "title": "Tập 46",
+        "sources": []
+      },
+      "47": {
+        "title": "Tập 47",
+        "sources": []
+      },
+      "48": {
+        "title": "Tập 48",
+        "sources": []
+      },
+      "49": {
+        "title": "Tập 49",
+        "sources": []
+      },
+      "50": {
+        "title": "Tập 50",
+        "sources": []
+      },
+      "51": {
+        "title": "Tập 51",
+        "sources": []
+      },
+      "52": {
+        "title": "Tập 52",
+        "sources": []
+      },
+      "53": {
+        "title": "Tập 53",
+        "sources": []
+      },
+      "54": {
+        "title": "Tập 54",
+        "sources": []
+      },
+      "55": {
+        "title": "Tập 55",
+        "sources": []
+      },
+      "56": {
+        "title": "Tập 56",
+        "sources": []
+      },
+      "57": {
+        "title": "Tập 57",
+        "sources": []
+      },
+      "58": {
+        "title": "Tập 58",
+        "sources": []
+      },
+      "59": {
+        "title": "Tập 59",
+        "sources": []
+      },
+      "60": {
+        "title": "Tập 60",
+        "sources": []
+      },
+      "61": {
+        "title": "Tập 61",
+        "sources": []
+      },
+      "62": {
+        "title": "Tập 62",
+        "sources": []
+      },
+      "63": {
+        "title": "Tập 63",
+        "sources": []
+      },
+      "64": {
+        "title": "Tập 64",
+        "sources": []
+      },
+      "65": {
+        "title": "Tập 65",
+        "sources": []
+      },
+      "66": {
+        "title": "Tập 66",
+        "sources": []
+      },
+      "67": {
+        "title": "Tập 67",
+        "sources": []
+      },
+      "68": {
+        "title": "Tập 68",
+        "sources": []
+      },
+      "69": {
+        "title": "Tập 69",
+        "sources": []
+      },
+      "70": {
+        "title": "Tập 70",
+        "sources": []
+      },
+      "71": {
+        "title": "Tập 71",
+        "sources": []
+      },
+      "72": {
+        "title": "Tập 72",
+        "sources": []
+      },
+      "73": {
+        "title": "Tập 73",
+        "sources": []
+      },
+      "74": {
+        "title": "Tập 74",
+        "sources": []
+      },
+      "75": {
+        "title": "Tập 75",
+        "sources": []
+      },
+      "76": {
+        "title": "Tập 76",
+        "sources": []
+      },
+      "77": {
+        "title": "Tập 77",
+        "sources": []
+      },
+      "78": {
+        "title": "Tập 78",
+        "sources": []
+      },
+      "79": {
+        "title": "Tập 79",
+        "sources": []
+      },
+      "80": {
+        "title": "Tập 80",
+        "sources": []
+      },
+      "81": {
+        "title": "Tập 81",
+        "sources": []
+      }
+    }
+  },
+  "metadata": {
+    "movie-rating": "T16",
+    "audioVersion": "Goc",
+    "lastUpdate": "2025-11-21T01:58:43.813Z",
+    "genre": [
+      "Phim Chính Kịch"
+    ],
+    "duration": 0,
+    "status": "Ended",
+    "note": "",
+    "studio": "",
+    "totalEpisodes": 81,
+    "totalSeasons": 1
+  }
+}
