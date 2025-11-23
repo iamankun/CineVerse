@@ -45,7 +45,7 @@ const createAuthAction = <T extends { captchaToken?: string }>(
     }
 
     if (!result.data.captchaToken) {
-      return { success: false, message: "Captcha is required." };
+      return { success: false, message: "Yêu cầu Captcha" };
     }
 
     try {
@@ -56,7 +56,7 @@ const createAuthAction = <T extends { captchaToken?: string }>(
       if (error instanceof Error) {
         return { success: false, message: error.message };
       }
-      return { success: false, message: "An unexpected error occurred." };
+      return { success: false, message: "Đã xảy ra lỗi không mong muốn." };
     }
   };
 };
@@ -79,14 +79,14 @@ const signInWithEmailAction: AuthAction<LoginFormInput> = async (data, supabase)
     .maybeSingle();
 
   if (!username) {
-    console.error("Username check error:", usernameError);
+    console.error("Kiểm tra lỗi tài khoản:", usernameError);
     return {
       success: false,
       message: `CineVerse báo lỗi. Không thể tọa tài khoản với Email: ${user.user.email}.`,
     };
   }
 
-  return { success: true, message: `Welcome back, ${username.username}` };
+  return { success: true, message: `Chào mừng trở lại, ${username.username}` };
 };
 
 const signUpAction: AuthAction<RegisterFormInput> = async (data, supabase) => {
@@ -98,15 +98,15 @@ const signUpAction: AuthAction<RegisterFormInput> = async (data, supabase) => {
     .maybeSingle();
 
   if (usernameError) {
-    console.error("Username check error:", usernameError);
+    console.error("Kiểm tra lỗi tài khoản:", usernameError);
     return { success: false, message: "CineVerse báo lỗi. Tài khoản không khớp." };
   }
 
   if (usernameExists) {
-    return { success: false, message: "Username already taken." };
+    return { success: false, message: "Tên người dùng đã được sử dụng." };
   }
 
-  // Create user
+  // Tạo tài khoản mới
   const { data: authData, error: signUpError } = await supabase.auth.signUp({
     email: data.email,
     password: data.password,
@@ -128,7 +128,7 @@ const signUpAction: AuthAction<RegisterFormInput> = async (data, supabase) => {
     .insert({ id: authData.user.id, username: data.username });
 
   if (profileError) {
-    console.error("Profile creation error:", profileError);
+    console.error("Lỗi tạo hồ sơ:", profileError);
     // This is a critical error. The user exists in auth but not in profiles.
     // It's better to return a generic error and log it for investigation.
     return { success: false, message: "Không thể tạo hồ sơ người dùng. Vui lòng liên hệ hỗ trợ." };

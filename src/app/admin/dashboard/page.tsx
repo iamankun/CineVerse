@@ -555,7 +555,7 @@ export default function DashboardPage() {
       
       // Validate required fields
       if (!parsedData.tmdbId || !parsedData.title) {
-        alert("JSON phải chứa ít nhất tmdbId và title");
+        alert("JSON phải chứa ít nhất TMDB ID và tiêu đề");
         return;
       }
       
@@ -564,7 +564,7 @@ export default function DashboardPage() {
       const isTv = parsedData.seasons && typeof parsedData.seasons === "object";
       
       if (!isMovie && !isTv) {
-        alert("JSON phải chứa 'sources' (phim) hoặc 'seasons' (TV show)");
+        alert("JSON phải chứa nguồn (Phim) hoặc mùa (Chương Trình TV)");
         return;
       }
       
@@ -662,7 +662,7 @@ export default function DashboardPage() {
       
       alert("✅ Đã tải và tự động sửa JSON thành công!\n- Loại: " + (isMovie ? "Phim" : "TV Show") + "\n- Rating: " + metadata["movie-rating"] + "\n- Âm thanh: " + audioVersion);
     } catch (error: any) {
-      console.error("JSON parse error:", error);
+      console.error("Lỗi phân tích Json:", error);
       
       // Provide more helpful error message
       let errorMsg = "⚠️ Không thể tự động sửa JSON này:\n\n";
@@ -673,7 +673,7 @@ export default function DashboardPage() {
       errorMsg += "- Có đóng mở ngoặc {} [] đúng không?\n";
       errorMsg += "- Các chuỗi text có nằm trong dấu \" không?\n";
       errorMsg += "- Có dấu phẩy , giữa các trường không?\n";
-      errorMsg += "- Dùng JSON validator online để kiểm tra";
+      errorMsg += "- Dùng JSON trình xác thực trực tuyến để kiểm tra";
       
       alert(errorMsg);
     }
@@ -683,7 +683,7 @@ export default function DashboardPage() {
   const handleSave = async () => {
     // Validation based on content type
     if (!formData.tmdbId) {
-      alert("Vui lòng chọn phim/TV show");
+      alert("Vui lòng chọn Điện Ảnh hoặc Chương Trình TV");
       return;
     }
 
@@ -748,7 +748,7 @@ export default function DashboardPage() {
         body: JSON.stringify(dataToSave),
       });
 
-      console.log("📡 Response status:", response.status, response.statusText);
+      console.log("📡 Trạng thái phản hồi:", response.status, response.statusText);
 
       if (response.ok) {
         const result = await response.json();
@@ -760,17 +760,17 @@ export default function DashboardPage() {
         setFormData(dataToSave);
       } else {
         const error = await response.text();
-        console.error("❌ Lỗi từ server:", error);
+        console.error("❌ Lỗi từ máy chủ:", error);
         alert(`Lỗi khi lưu dữ liệu: ${error}`);
       }
     } catch (error: any) {
-      console.error("💥 Save error:", error);
-      console.error("Error details:", {
+      console.error("💥 Lỗi lưu trữ:", error);
+      console.error("Chi tiết lỗi:", {
         message: error.message,
         stack: error.stack,
         name: error.name,
       });
-      alert(`Lỗi khi lưu dữ liệu: ${error.message || "Không thể kết nối đến server"}`);
+      alert(`Lỗi khi lưu dữ liệu: ${error.message || "Không thể kết nối đến máy chủ"}`);
     }
   };
 
@@ -794,7 +794,7 @@ export default function DashboardPage() {
                 <h1 className="mb-2 text-4xl font-bold text-white">
                   Hệ thống quản lý CineVerse
                 </h1>
-                <p className="text-gray-400">Quản lý nguồn phim và chương trình TV</p>
+                <p className="text-gray-400">Quản lý nguồn Điện Ảnh và Chương Trình TV</p>
               </div>
             </div>
             <div className="flex gap-2">
@@ -804,7 +804,7 @@ export default function DashboardPage() {
                 startContent={<IoList />}
                 onPress={() => setViewMode("table")}
               >
-                Xem bảng
+                Xem
               </Button>
               <Button
                 color={viewMode === "form" ? "primary" : "default"}
@@ -879,11 +879,11 @@ export default function DashboardPage() {
               <div className="text-sm text-gray-400">
                 <p className="mb-2">💡 <strong>Hướng dẫn:</strong></p>
                 <ul className="list-disc space-y-1 pl-5">
-                  <li>Dán toàn bộ JSON từ file hoặc nguồn khác</li>
+                  <li>Dán toàn bộ JSON từ tệp hoặc nguồn khác</li>
                   <li>JSON phải chứa: <code className="text-purple-300">tmdbId</code>, <code className="text-purple-300">title</code></li>
-                  <li>Phim cần có: <code className="text-purple-300">sources</code> (array)</li>
-                  <li>TV show cần có: <code className="text-purple-300">seasons</code> (object)</li>
-                  <li>Metadata sẽ được tự động điền với giá trị mặc định nếu thiếu</li>
+                  <li>Điện Ảnh cần có: <code className="text-purple-300">sources</code> (array)</li>
+                  <li>Chương trình TV cần có: <code className="text-purple-300">seasons</code> (object)</li>
+                  <li>Siêu dữ liệu sẽ được tự động điền với giá trị mặc định nếu thiếu</li>
                 </ul>
               </div>
             </CardBody>
@@ -908,22 +908,22 @@ export default function DashboardPage() {
             </CardHeader>
             <CardBody>
               <Table
-                aria-label="Bảng nguồn phim"
+                aria-label="Nguồn phim"
                 classNames={{
                   base: "max-h-[600px] overflow-auto",
                   table: "min-h-[400px]",
                 }}
               >
                 <TableHeader>
-                  <TableColumn>LOẠI</TableColumn>
+                  <TableColumn>Loại</TableColumn>
                   <TableColumn>TMDB ID</TableColumn>
-                  <TableColumn>TIÊU ĐỀ</TableColumn>
-                  <TableColumn>NĂM</TableColumn>
-                  <TableColumn>RATING</TableColumn>
-                  <TableColumn>ÂM THANH</TableColumn>
-                  <TableColumn>CHI TIẾT</TableColumn>
-                  <TableColumn>NGÀY CẬP NHẬT</TableColumn>
-                  <TableColumn>HÀNH ĐỘNG</TableColumn>
+                  <TableColumn>Tiêu đề</TableColumn>
+                  <TableColumn>Năm</TableColumn>
+                  <TableColumn>Rating</TableColumn>
+                  <TableColumn>Âm thanh</TableColumn>
+                  <TableColumn>Chi tiết</TableColumn>
+                  <TableColumn>Ngày cập nhật</TableColumn>
+                  <TableColumn>Hành động</TableColumn>
                 </TableHeader>
                 <TableBody>
                   {allSources.map((source) => (
@@ -1077,7 +1077,7 @@ export default function DashboardPage() {
             <Card className="mb-6 bg-gray-800/50 backdrop-blur-sm">
               <CardHeader>
                 <h3 className="text-xl font-semibold text-white">
-                  Tìm kiếm TMDB
+                  Tìm kiếm Điện Ảnh hoặc Chương Trình TV
                 </h3>
               </CardHeader>
               <CardBody>

@@ -57,7 +57,7 @@ export async function addToWatchlist(item: WatchlistItem): Promise<ActionRespons
     if (userError || !user) {
       return {
         success: false,
-        error: "You must be logged in to add items to watchlist",
+        error: "Bạn phải đăng nhập để thêm mục vào danh sách theo dõi",
       };
     }
 
@@ -65,7 +65,7 @@ export async function addToWatchlist(item: WatchlistItem): Promise<ActionRespons
     if (!item.id || !item.type || !item.title) {
       return {
         success: false,
-        error: "Missing required fields",
+        error: "Thiếu trường bắt buộc",
       };
     }
 
@@ -73,7 +73,7 @@ export async function addToWatchlist(item: WatchlistItem): Promise<ActionRespons
     if (!["movie", "tv"].includes(item.type)) {
       return {
         success: false,
-        error: 'Invalid content type. Must be "movie" or "tv"',
+        error: 'Loại nội dung không hợp lệ. Phải là "Điện Ảnh" hoặc "Chương Trình TV"',
       };
     }
 
@@ -99,14 +99,14 @@ export async function addToWatchlist(item: WatchlistItem): Promise<ActionRespons
       if (error.code === "23505") {
         return {
           success: false,
-          error: "This item is already in your watchlist",
+          error: "Mục này đã có trong danh sách theo dõi của bạn",
         };
       }
 
-      console.error("Watchlist add error:", error);
+      console.error("Lỗi thêm vào danh sách theo dõi:", error);
       return {
         success: false,
-        error: "Failed to add item to watchlist",
+        error: "Không thể thêm mục vào danh sách theo dõi",
       };
     }
 
@@ -116,13 +116,13 @@ export async function addToWatchlist(item: WatchlistItem): Promise<ActionRespons
     return {
       success: true,
       data,
-      message: "Added to watchlist successfully",
+      message: "Đã thêm vào danh sách theo dõi thành công",
     };
   } catch (error) {
-    console.error("Unexpected error:", error);
+    console.error("Lỗi không mong muốn:", error);
     return {
       success: false,
-      error: "An unexpected error occurred",
+      error: "Đã xảy ra lỗi không mong muốn",
     };
   }
 }
@@ -143,7 +143,7 @@ export async function removeFromWatchlist(id: number, type: ContentType): Promis
     if (userError || !user) {
       return {
         success: false,
-        error: "You must be logged in to remove items from watchlist",
+        error: "Bạn phải đăng nhập để xóa mục khỏi danh sách theo dõi",
       };
     }
 
@@ -151,7 +151,7 @@ export async function removeFromWatchlist(id: number, type: ContentType): Promis
     if (!id || !type) {
       return {
         success: false,
-        error: "Missing required parameters",
+        error: "Thiếu tham số bắt buộc",
       };
     }
 
@@ -159,7 +159,7 @@ export async function removeFromWatchlist(id: number, type: ContentType): Promis
     if (!["movie", "tv"].includes(type)) {
       return {
         success: false,
-        error: "Invalid content type",
+        error: 'Loại nội dung không hợp lệ. Phải là "Điện Ảnh" hoặc "Chương Trình TV"',
       };
     }
 
@@ -172,10 +172,10 @@ export async function removeFromWatchlist(id: number, type: ContentType): Promis
       .eq("type", type);
 
     if (error) {
-      console.error("Watchlist remove error:", error);
+      console.error("Lỗi xóa khỏi danh sách theo dõi:", error);
       return {
         success: false,
-        error: "Failed to remove item from watchlist",
+        error: "Không thể xóa mục khỏi danh sách theo dõi",
       };
     }
 
@@ -184,13 +184,13 @@ export async function removeFromWatchlist(id: number, type: ContentType): Promis
 
     return {
       success: true,
-      message: "Removed from watchlist successfully",
+      message: "Đã xóa khỏi danh sách theo dõi thành công",
     };
   } catch (error) {
-    console.error("Unexpected error:", error);
+    console.error("Lỗi không mong muốn:", error);
     return {
       success: false,
-      error: "An unexpected error occurred",
+      error: "Đã xảy ra lỗi không mong muốn",
     };
   }
 }
@@ -211,7 +211,7 @@ export const removeAllWatchlist = async (type: ContentType): Promise<ActionRespo
     if (userError || !user) {
       return {
         success: false,
-        error: "You must be logged in to remove items from watchlist",
+        error: "Bạn phải đăng nhập để xóa mục khỏi danh sách theo dõi",
       };
     }
 
@@ -219,7 +219,7 @@ export const removeAllWatchlist = async (type: ContentType): Promise<ActionRespo
     if (!["movie", "tv"].includes(type)) {
       return {
         success: false,
-        error: "Invalid content type",
+        error: 'Loại nội dung không hợp lệ. Phải là "Điện Ảnh" hoặc "Chương Trình TV"',
       };
     }
 
@@ -231,10 +231,10 @@ export const removeAllWatchlist = async (type: ContentType): Promise<ActionRespo
       .eq("type", type);
 
     if (error) {
-      console.error("Watchlist remove error:", error);
+      console.error("Lỗi xóa khỏi danh sách theo dõi:", error);
       return {
         success: false,
-        error: "Failed to remove items from watchlist",
+        error: "Không thể xóa mục khỏi danh sách theo dõi",
       };
     }
 
@@ -243,13 +243,13 @@ export const removeAllWatchlist = async (type: ContentType): Promise<ActionRespo
 
     return {
       success: true,
-      message: "Removed items from watchlist successfully",
+      message: "Đã xóa khỏi danh sách theo dõi thành công",
     };
   } catch (error) {
-    console.error("Unexpected error:", error);
+    console.error("Lỗi không mong muốn:", error);
     return {
       success: false,
-      error: "An unexpected error occurred",
+      error: "Đã xảy ra lỗi không mong muốn",
     };
   }
 };
@@ -274,7 +274,7 @@ export async function checkInWatchlist(
       return {
         success: false,
         isInWatchlist: false,
-        error: "User not authenticated",
+        error: "Người dùng chưa xác thực",
       };
     }
 
@@ -289,11 +289,11 @@ export async function checkInWatchlist(
 
     if (error && error.code !== "PGRST116") {
       // PGRST116 = no rows returned
-      console.error("Watchlist check error:", error);
+      console.error("Lỗi kiểm tra danh sách theo dõi:", error);
       return {
         success: false,
         isInWatchlist: false,
-        error: "Failed to check watchlist status",
+        error: "Không thể kiểm tra trạng thái danh sách theo dõi",
       };
     }
 
@@ -302,11 +302,11 @@ export async function checkInWatchlist(
       isInWatchlist: !!data,
     };
   } catch (error) {
-    console.error("Unexpected error:", error);
+    console.error("Lỗi không mong muốn:", error);
     return {
       success: false,
       isInWatchlist: false,
-      error: "An unexpected error occurred",
+      error: "Đã xảy ra lỗi không mong muốn",
     };
   }
 }
@@ -332,7 +332,7 @@ export async function getWatchlist(
       return {
         success: false,
         data: [],
-        error: "User not authenticated",
+        error: "Người dùng chưa xác thực",
       };
     }
 
@@ -355,11 +355,11 @@ export async function getWatchlist(
     const { data, count, error } = await query;
 
     if (error) {
-      console.error("Watchlist fetch error:", error);
+      console.error("Lỗi lấy danh sách theo dõi:", error);
       return {
         success: false,
         data: [],
-        error: "Failed to fetch watchlist",
+        error: "Không thể lấy danh sách theo dõi",
       };
     }
 
@@ -374,11 +374,11 @@ export async function getWatchlist(
       hasNextPage: page < totalPages,
     };
   } catch (error) {
-    console.error("Unexpected error:", error);
+    console.error("Lỗi không mong muốn:", error);
     return {
       success: false,
       data: [],
-      error: "An unexpected error occurred",
+      error: "Đã xảy ra lỗi không mong muốn",
     };
   }
 }

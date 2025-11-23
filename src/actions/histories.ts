@@ -11,12 +11,12 @@ export const syncHistory = async (
   data: VidlinkEventData["data"],
   completed?: boolean,
 ): ActionResponse => {
-  console.info("Saving history:", data);
+  console.info("Lưu lịch sử:", data);
 
-  if (!data) return { success: false, message: "No data to save" };
+  if (!data) return { success: false, message: "Không có dữ liệu để lưu" };
 
   if (data.mediaType === "tv" && (!data.season || !data.episode)) {
-    return { success: false, message: "Missing season or episode" };
+    return { success: false, message: "Thiếu mùa hoặc tập" };
   }
 
   try {
@@ -31,7 +31,7 @@ export const syncHistory = async (
     if (userError || !user) {
       return {
         success: false,
-        message: "You must be logged in to save history",
+        message: "Bạn phải đăng nhập để lưu lịch sử",
       };
     }
 
@@ -39,7 +39,7 @@ export const syncHistory = async (
     if (!data.mtmdbId || !data.mediaType) {
       return {
         success: false,
-        message: "Missing required fields",
+        message: "Thiếu trường bắt buộc trong dữ liệu lịch sử",
       };
     }
 
@@ -47,7 +47,7 @@ export const syncHistory = async (
     if (!["movie", "tv"].includes(data.mediaType)) {
       return {
         success: false,
-        message: 'Invalid content type. Must be "movie" or "tv"',
+        message: 'Loại nội dung không hợp lệ. Phải là "Điện Ảnh" hoặc "Chương Trình TV"',
       };
     }
 
@@ -83,24 +83,23 @@ export const syncHistory = async (
       .select();
 
     if (error) {
-      console.info("History save error:", error);
+      console.info("Lỗi lưu lịch sử:", error);
       return {
         success: false,
-        message: "Failed to save history",
+        message: "Không thể lưu lịch sử",
       };
     }
 
-    console.info("History saved:", history);
-
+    console.info("Lịch sử đã lưu:", history);
     return {
       success: true,
-      message: "History saved",
+      message: "Lịch sử đã được lưu thành công",
     };
   } catch (error) {
-    console.info("Unexpected error:", error);
+    console.info("Lỗi không mong muốn:", error);
     return {
       success: false,
-      message: "An unexpected error occurred",
+      message: "Đã xảy ra lỗi không mong muốn",
     };
   }
 };
@@ -118,7 +117,7 @@ export const getUserHistories = async (limit: number = 20): ActionResponse<Histo
     if (userError || !user) {
       return {
         success: false,
-        message: "User not authenticated",
+        message: "Người dùng chưa xác thực",
       };
     }
 
@@ -130,10 +129,10 @@ export const getUserHistories = async (limit: number = 20): ActionResponse<Histo
       .limit(limit);
 
     if (error) {
-      console.info("History fetch error:", error);
+      console.info("Lỗi lấy lịch sử:", error);
       return {
         success: false,
-        message: "Failed to fetch history",
+        message: "Không thể lấy lịch sử",
       };
     }
 
@@ -142,10 +141,10 @@ export const getUserHistories = async (limit: number = 20): ActionResponse<Histo
       data,
     };
   } catch (error) {
-    console.info("Unexpected error:", error);
+    console.info("Lỗi không mong muốn:", error);
     return {
       success: false,
-      message: "An unexpected error occurred",
+      message: "Đã xảy ra lỗi không mong muốn",
     };
   }
 };
@@ -172,13 +171,13 @@ export const getMovieLastPosition = async (id: number): Promise<number> => {
       .eq("type", "movie");
 
     if (error) {
-      console.info("History fetch error:", error);
+      console.info("Lỗi lấy vị trí cuối cùng của phim:", error);
       return 0;
     }
 
     return data?.[0]?.last_position || 0;
   } catch (error) {
-    console.info("Unexpected error:", error);
+    console.info("Lỗi không mong muốn:", error);
     return 0;
   }
 };
@@ -211,13 +210,13 @@ export const getTvShowLastPosition = async (
       .eq("episode", episode);
 
     if (error) {
-      console.info("History fetch error:", error);
+      console.info("Lỗi lấy vị trí cuối cùng của chương trình TV:", error);
       return 0;
     }
 
     return data?.[0]?.last_position || 0;
   } catch (error) {
-    console.info("Unexpected error:", error);
+    console.info("Lỗi không mong muốn:", error);
     return 0;
   }
 };
