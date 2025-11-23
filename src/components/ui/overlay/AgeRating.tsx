@@ -46,20 +46,25 @@ const AgeRating: React.FC<AgeRatingProps> = ({ rating, ratingDescription }) => {
       <div
         className="flex h-8 w-8 flex-shrink-0 items-center justify-center text-xl font-black text-green-500"
         style={{
-          textShadow: "0 0 15px rgba(34, 197, 94, 0.8), 0 2px 6px rgba(0, 0, 0, 0.9)",
+          textShadow: "0 2px 4px rgba(0, 0, 0, 0.8)",
         }}
       >
         I
       </div>
 
       {/* Rating (K/T13/T16/T18) */}
-      <div
-        className="flex-shrink-0 text-xl font-black text-white"
-        style={{
-          textShadow: "0 0 12px rgba(255, 255, 255, 0.5), 0 2px 6px rgba(0, 0, 0, 0.9)",
-        }}
-      >
-        {rating}
+      <div className="flex-shrink-0 text-xl font-black text-white">
+        {rating.split('').map((char, idx) => (
+          <span
+            key={idx}
+            style={{
+              textShadow: "0 2px 4px rgba(0, 0, 0, 0.8)",
+              display: 'inline-block',
+            }}
+          >
+            {char}
+          </span>
+        ))}
       </div>
 
       {/* Rating Description - Slides in/out */}
@@ -71,11 +76,19 @@ const AgeRating: React.FC<AgeRatingProps> = ({ rating, ratingDescription }) => {
             "max-w-[400px] opacity-100": isExpanded,
           }
         )}
-        style={{
-          textShadow: "0 2px 10px rgba(0, 0, 0, 0.9)",
-        }}
       >
-        <span className="inline-block pl-2">{ratingDescription}</span>
+        <span className="inline-block pl-2">
+          {ratingDescription.split('').map((char, idx) => (
+            <span
+              key={idx}
+              style={{
+                textShadow: "0 2px 4px rgba(0, 0, 0, 0.8)",
+              }}
+            >
+              {char}
+            </span>
+          ))}
+        </span>
       </div>
     </div>
   );

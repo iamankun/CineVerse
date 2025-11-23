@@ -124,7 +124,13 @@ const TvShowPlayer: React.FC<TvShowPlayerProps> = ({
 
   // Tải người chơi (bao gồm nguồn CineVerse)
   useEffect(() => {
-    getTvShowPlayers(id, episode.season_number, episode.episode_number, startAt).then(setPlayers);
+    let isMounted = true;
+
+    getTvShowPlayers(id, episode.season_number, episode.episode_number, startAt).then((fetchedPlayers) => {
+      if (isMounted) {
+        setPlayers(fetchedPlayers);
+      }
+    });
 
     // Tải điểm TV từ CineVerse
     console.log(`🎬 Đang tải TV điểm của ID: ${id}`);
@@ -155,6 +161,10 @@ const TvShowPlayer: React.FC<TvShowPlayerProps> = ({
       .catch((err) => {
         console.error(`❌ Không tải được TV JSON:`, err);
       });
+
+    return () => {
+      isMounted = false;
+    };
   }, [id, episode.season_number, episode.episode_number, startAt]);
 
   // Nghe các cập nhật thời gian video và sự kiện kết thúc video từ khung hình
@@ -354,7 +364,7 @@ const TvShowPlayer: React.FC<TvShowPlayerProps> = ({
   // Show loading while fetching players
   if (!PLAYER) {
     return (
-      <div className={cn("relative w-full h-screen bg-black", SpacingClasses.reset)}>
+      <div className="relative w-full h-screen bg-black overflow-hidden">
         <div className="absolute-center">
           <div className="text-center">
             <div className="mb-4 text-lg" style={{ textShadow: '0 2px 8px rgba(0, 0, 0, 0.8)' }}>Đang tải nguồn phim...</div>
@@ -431,8 +441,7 @@ const TvShowPlayer: React.FC<TvShowPlayerProps> = ({
             {/* CineVerse Logo on the right */}
             <div style={{ 
               flexShrink: 0,
-              transform: 'scale(1.5)',
-              filter: 'drop-shadow(0 2px 4px rgba(0, 0, 0, 0.6)) drop-shadow(0 1px 2px rgba(255, 255, 255, 0.4))'
+              transform: 'scale(1.5)'
             }}>
               <BrandLogo animate={true} />
             </div>

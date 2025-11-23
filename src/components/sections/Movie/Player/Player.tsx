@@ -104,11 +104,17 @@ const MoviePlayer: React.FC<MoviePlayerProps> = ({ movie, startAt }) => {
 
   useEffect(() => {
     console.log(`🎬 Fetching players for movie ID: ${movie.id}`);
+    let isMounted = true;
+
     getMoviePlayers(movie.id, startAt).then((fetchedPlayers) => {
-      console.log(`✅ Players fetched:`, fetchedPlayers.length, fetchedPlayers);
-      setPlayers(fetchedPlayers);
+      if (isMounted) {
+        console.log(`✅ Players fetched:`, fetchedPlayers.length, fetchedPlayers);
+        setPlayers(fetchedPlayers);
+      }
     }).catch((err) => {
-      console.error(`❌ Error fetching players:`, err);
+      if (isMounted) {
+        console.error(`❌ Error fetching players:`, err);
+      }
     });
 
     console.log(`🎬 Đang lấy đánh giá phim cho ID: ${movie.id}`);
@@ -139,6 +145,10 @@ const MoviePlayer: React.FC<MoviePlayerProps> = ({ movie, startAt }) => {
       .catch((err) => {
         console.error(`❌ Không tải được phim:`, err);
       });
+
+    return () => {
+      isMounted = false;
+    };
   }, [movie.id, startAt]);
 
   // Listen for video time updates from iframe
@@ -313,7 +323,7 @@ const MoviePlayer: React.FC<MoviePlayerProps> = ({ movie, startAt }) => {
   if (!PLAYER) {
     console.log(`⏳ No PLAYER found, showing loading...`);
     return (
-      <div className={cn("relative w-full h-screen bg-black", SpacingClasses.reset)}>
+      <div className="relative w-full h-screen bg-black overflow-hidden">
         <div className="absolute-center">
           <div className="text-center">
             <div className="mb-4 text-lg" style={{ textShadow: '0 2px 8px rgba(0, 0, 0, 0.8)' }}>Đang tải nguồn phim...</div>
@@ -384,9 +394,7 @@ const MoviePlayer: React.FC<MoviePlayerProps> = ({ movie, startAt }) => {
             )}
 
             {/* CineVerse Logo on the right */}
-            <div className="flex-shrink-0 scale-[1.5]" style={{
-              filter: 'drop-shadow(0 2px 4px rgba(0, 0, 0, 0.6)) drop-shadow(0 1px 2px rgba(255, 255, 255, 0.4))'
-            }}>
+            <div className="flex-shrink-0 scale-[1.5]">
               <BrandLogo animate={true} />
             </div>
           </div>
