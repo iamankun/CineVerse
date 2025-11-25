@@ -200,12 +200,168 @@
           }
         ]
       }
+    },
+    "2": {
+      "1": {
+        "title": "Tập 1",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Anh Trai \"Say Hi\"",
+            "url": "https://www.youtube.com/watch?v=5X8_IxZo8w8&t=16161s&pp=ygUWYW5oIHRyYWkgc2F5IGhpIG3DuWEgMg%3D%3D",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ]
+          }
+        ]
+      },
+      "2": {
+        "title": "Tập 2",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Anh Trai \"Say Hi\"",
+            "url": "https://www.youtube.com/watch?v=v8WCvNSPSa0&t=11112s&pp=ygUWYW5oIHRyYWkgc2F5IGhpIG3DuWEgMg%3D%3D",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ]
+          }
+        ]
+      },
+      "3": {
+        "title": "Tập 3",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Anh Trai \"Say Hi\"",
+            "url": "https://www.youtube.com/watch?v=alsFPwMJGOI&t=19260s&pp=ygUWYW5oIHRyYWkgc2F5IGhpIG3DuWEgMg%3D%3D",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ]
+          }
+        ]
+      },
+      "4": {
+        "title": "Tập 4",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Anh Trai \"Say Hi\"",
+            "url": "https://www.youtube.com/watch?v=U_KeF48W4qE&t=5867s&pp=ygUWYW5oIHRyYWkgc2F5IGhpIG3DuWEgMg%3D%3D",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ]
+          }
+        ]
+      },
+      "5": {
+        "title": "Tập 5",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Anh Trai \"Say Hi\"",
+            "url": "https://www.youtube.com/watch?v=DXNSmHHkARY&list=PLxKLMN7WdG5BScv1MASDarMh12mB8tIU2&index=7&pp=iAQB",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ]
+          }
+        ]
+      },
+      "6": {
+        "title": "Tập 6",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Anh Trai \"Say Hi\"",
+            "url": "https://www.youtube.com/watch?v=piOfzIT7sQ0&list=PLxKLMN7WdG5BScv1MASDarMh12mB8tIU2&index=6&t=17823s&pp=iAQB0gcJCRUKAYcqIYzv",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ]
+          }
+        ]
+      },
+      "7": {
+        "title": "Tập 7",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Anh Trai \"Say Hi\"",
+            "url": "https://www.youtube.com/watch?v=TH_z2nHyct4&list=PLxKLMN7WdG5BScv1MASDarMh12mB8tIU2&index=5&pp=iAQB",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ]
+          }
+        ]
+      },
+      "8": {
+        "title": "Tập 8",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Anh Trai \"Say Hi\"",
+            "url": "https://www.youtube.com/watch?v=Xdqdt6eobbk&list=PLxKLMN7WdG5BScv1MASDarMh12mB8tIU2&index=4&t=3090s&pp=iAQB",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ]
+          }
+        ]
+      },
+      "9": {
+        "title": "Tập 9",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Anh Trai \"Say Hi\"",
+            "url": "https://www.youtube.com/watch?v=zjYcqzWbNJE&list=PLxKLMN7WdG5BScv1MASDarMh12mB8tIU2&index=3&pp=iAQB",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ]
+          }
+        ]
+      },
+      "10": {
+        "title": "Tập 10",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Anh Trai \"Say Hi\"",
+            "url": "https://www.youtube.com/watch?v=DkPgUmAKEgY&list=PLxKLMN7WdG5BScv1MASDarMh12mB8tIU2&index=2&pp=iAQB0gcJCRUKAYcqIYzv",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ]
+          }
+        ]
+      },
+      "11": {
+        "title": "Tập 11",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Anh Trai \"Say Hi\"",
+            "url": "https://www.youtube.com/watch?v=JLE79Jh5e2U&list=PLxKLMN7WdG5BScv1MASDarMh12mB8tIU2&index=1&pp=iAQB",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ]
+          }
+        ]
+      }
     }
   },
   "metadata": {
     "movie-rating": "P",
     "audioVersion": "Goc",
-    "lastUpdate": "2025-11-25T04:18:05.356Z",
+    "lastUpdate": "2025-11-25T04:22:32.745Z",
     "genre": [
       "Reality"
     ],
@@ -213,7 +369,7 @@
     "status": "Returning Series",
     "note": "",
     "studio": "VieOn Network",
-    "totalEpisodes": 14,
-    "totalSeasons": 1
+    "totalEpisodes": 25,
+    "totalSeasons": 2
   }
 }
