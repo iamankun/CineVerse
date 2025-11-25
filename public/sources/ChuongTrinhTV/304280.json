@@ -1,0 +1,91 @@
+{
+  "tmdbId": 304280,
+  "title": "A.I LÀ AI?",
+  "year": 2025,
+  "seasons": {
+    "1": {
+      "1": {
+        "title": "Tập 1",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "A.I LÀ AI?",
+            "url": "https://www.youtube.com/watch?v=ReMJIchBi2M&list=PLDsntjE0oo9kr24PSQGkq9cM7BszpaFQg&index=5&pp=iAQB",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ]
+          }
+        ]
+      },
+      "2": {
+        "title": "Tập 2",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "A.I LÀ AI?",
+            "url": "https://www.youtube.com/watch?v=QV9-O0YoJis&list=PLDsntjE0oo9kr24PSQGkq9cM7BszpaFQg&index=4&pp=iAQB",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ]
+          }
+        ]
+      },
+      "3": {
+        "title": "Tập 3",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "A.I LÀ AI?",
+            "url": "https://www.youtube.com/watch?v=7miSDIwuHsM&list=PLDsntjE0oo9kr24PSQGkq9cM7BszpaFQg&index=3&t=3249s&pp=iAQB",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ]
+          }
+        ]
+      },
+      "4": {
+        "title": "Tập 4",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "A.I LÀ AI?",
+            "url": "https://www.youtube.com/watch?v=y-C2588H6rI&list=PLDsntjE0oo9kr24PSQGkq9cM7BszpaFQg&index=2&pp=iAQB",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ]
+          }
+        ]
+      },
+      "5": {
+        "title": "Tập 5",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "A.I LÀ AI?",
+            "url": "https://www.youtube.com/watch?v=8_O585ScVVc&list=PLDsntjE0oo9kr24PSQGkq9cM7BszpaFQg&index=1&pp=iAQB",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "metadata": {
+    "movie-rating": "P",
+    "audioVersion": "Goc",
+    "lastUpdate": "2025-11-25T04:14:13.909Z",
+    "genre": [],
+    "duration": 75,
+    "status": "Returning Series",
+    "note": "",
+    "studio": "",
+    "totalEpisodes": 5,
+    "totalSeasons": 1
+  }
+}
