@@ -503,7 +503,175 @@
           {
             "provider": "youtube",
             "title": "Muse Vietnam - Vietsub",
-            "url": "",
+            "url": "https://www.youtube.com/watch?v=bfq9ILEr9e4",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ]
+          }
+        ]
+      },
+      "13": {
+        "title": "Tập 37",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Lúc đó tôi chuyển sinh thành slime",
+            "url": "https://www.youtube.com/watch?v=8OSyZo5cj5M",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ]
+          }
+        ]
+      },
+      "14": {
+        "title": "Tập 38",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Lúc đó tôi chuyển sinh thành slime",
+            "url": "https://www.youtube.com/watch?v=S95guLrL9b4",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ]
+          }
+        ]
+      },
+      "15": {
+        "title": "Tập 39",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Lúc đó tôi chuyển sinh thành slime",
+            "url": "https://www.youtube.com/watch?v=00sKhjgFeYY",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ]
+          }
+        ]
+      },
+      "16": {
+        "title": "Tập 40",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Lúc đó tôi chuyển sinh thành slime",
+            "url": "https://www.youtube.com/watch?v=LBmtwU02Shs",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ]
+          }
+        ]
+      },
+      "17": {
+        "title": "Tập 41",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Lúc đó tôi chuyển sinh thành slime",
+            "url": "https://www.youtube.com/watch?v=cVgwONcOIsQ",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ]
+          }
+        ]
+      },
+      "18": {
+        "title": "Tập 42",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Lúc đó tôi chuyển sinh thành slime",
+            "url": "https://www.youtube.com/watch?v=42eqM5NFCS0",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ]
+          }
+        ]
+      },
+      "19": {
+        "title": "Tập 43",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Lúc đó tôi chuyển sinh thành slime",
+            "url": "https://www.youtube.com/watch?v=tK2x-4kkh2w",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ]
+          }
+        ]
+      },
+      "20": {
+        "title": "Tập 44",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Lúc đó tôi chuyển sinh thành slime",
+            "url": "https://www.youtube.com/watch?v=X-eJCxjZBxg",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ]
+          }
+        ]
+      },
+      "21": {
+        "title": "Tập 45",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Lúc đó tôi chuyển sinh thành slime",
+            "url": "https://www.youtube.com/watch?v=Yrd6YT0jgRs",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ]
+          }
+        ]
+      },
+      "22": {
+        "title": "Tập 46",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Lúc đó tôi chuyển sinh thành slime",
+            "url": "https://www.youtube.com/watch?v=i64YdQxv7-c",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ]
+          }
+        ]
+      },
+      "23": {
+        "title": "Tập 47",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Lúc đó tôi chuyển sinh thành slime",
+            "url": "https://www.youtube.com/watch?v=UH9WiK2Vftg",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ]
+          }
+        ]
+      },
+      "24": {
+        "title": "Tập 48",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Lúc đó tôi chuyển sinh thành slime",
+            "url": "https://www.youtube.com/watch?v=hifdN74KfTY",
             "language": "vi",
             "subtitles": [
               "vi"
@@ -574,7 +742,7 @@
   "metadata": {
     "movie-rating": "T13",
     "audioVersion": "lồng tiếng",
-    "lastUpdate": "2025-10-30T14:12:38.237Z",
+    "lastUpdate": "2025-11-30T16:45:06.254Z",
     "studio": "8bit",
     "genre": [
       "Fantasy",
@@ -582,7 +750,7 @@
       "Comedy",
       "Action"
     ],
-    "totalEpisodes": 33,
+    "totalEpisodes": 52,
     "totalSeasons": 3,
     "status": "Returning Series",
     "note": "Phiên bản lồng tiếng & vietsub từ Muse Vietnam. Ưu tiên lồng tiếng, bổ sung vietsub nếu thiếu. Một số tập đang thiếu và cần được bổ sung."
