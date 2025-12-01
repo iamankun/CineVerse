@@ -355,13 +355,27 @@
             ]
           }
         ]
+      },
+      "12": {
+        "title": "Tập 12",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Anh Trai \"Say Hi\"",
+            "url": "https://www.youtube.com/watch?v=bk-lKnwLztc&t=7154s",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ]
+          }
+        ]
       }
     }
   },
   "metadata": {
     "movie-rating": "P",
     "audioVersion": "Goc",
-    "lastUpdate": "2025-11-25T04:22:32.745Z",
+    "lastUpdate": "2025-12-01T02:24:50.116Z",
     "genre": [
       "Reality"
     ],
@@ -369,7 +383,7 @@
     "status": "Returning Series",
     "note": "",
     "studio": "VieOn Network",
-    "totalEpisodes": 25,
+    "totalEpisodes": 26,
     "totalSeasons": 2
   }
 }
