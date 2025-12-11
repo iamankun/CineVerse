@@ -15,7 +15,7 @@ export const POST = async (request: Request) => {
     return NextResponse.json(
       {
         success: false,
-        message: error instanceof Error ? error.message : "An unexpected error occurred",
+        message: error instanceof Error ? error.message : "Đã xảy ra lỗi không mong muốn",
       },
       { status: 500 },
     );

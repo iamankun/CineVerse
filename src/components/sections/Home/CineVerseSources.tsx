@@ -15,8 +15,10 @@ import { env } from "@/utils/env";
 
 type ContentItem = (Movie | TV) & { contentType: "movie" | "tv" };
 
-// Đọc tự động tất cả IDs từ API
-const getSourceIds = async (): Promise<{ movieIds: number[], tvIds: number[] }> => {
+// Đọc tự động IDs từ API - đã được sắp xếp theo năm phát hành
+type HeroItem = { id: number; type: "movie" | "tv"; year: number };
+
+const getSourceIds = async (): Promise<{ heroIds: HeroItem[] }> => {
   try {
     const response = await fetch('/api/sources/list');
     if (!response.ok) {
@@ -24,23 +26,23 @@ const getSourceIds = async (): Promise<{ movieIds: number[], tvIds: number[] }> 
     }
     const data = await response.json();
     return {
-      movieIds: data.movieIds || [],
-      tvIds: data.tvIds || []
+      heroIds: data.heroIds || [] // 20 mục mới nhất theo năm phát hành
     };
   } catch (error) {
     console.error('Error fetching source IDs:', error);
-    return { movieIds: [], tvIds: [] };
+    return { heroIds: [] };
   }
 };
 
 const fetchCineVerseContent = async () => {
-  const { movieIds, tvIds } = await getSourceIds();
+  const { heroIds } = await getSourceIds();
   
   // Nếu không có sources nào, return empty
-  if (movieIds.length === 0 && tvIds.length === 0) {
+  if (heroIds.length === 0) {
     return [];
   }
 
+  // heroIds đã được sắp xếp theo năm phát hành mới nhất và giới hạn 20 mục
   const token = env.NEXT_PUBLIC_TMDB_ACCESS_TOKEN;
 
   // Helper function để fetch với fallback languages
@@ -83,25 +85,18 @@ const fetchCineVerseContent = async () => {
     return null;
   };
 
-  // Fetch movies với language fallback
-  const moviePromises = movieIds.map((id) =>
-    fetchWithLanguageFallback(`https://api.themoviedb.org/3/movie/${id}`, 'movie')
+  // Fetch tất cả items từ heroIds (đã sắp xếp theo năm phát hành)
+  const contentPromises = heroIds.map((item) =>
+    fetchWithLanguageFallback(
+      `https://api.themoviedb.org/3/${item.type === "movie" ? "movie" : "tv"}/${item.id}`,
+      item.type
+    ).then(data => data ? { ...data, contentType: item.type } : null)
   );
 
-  // Fetch TV shows với language fallback
-  const tvPromises = tvIds.map((id) =>
-    fetchWithLanguageFallback(`https://api.themoviedb.org/3/tv/${id}`, 'tv')
-  );
+  const results = await Promise.all(contentPromises);
 
-  const [movies, tvShows] = await Promise.all([
-    Promise.all(moviePromises),
-    Promise.all(tvPromises),
-  ]);
-
-  const allContent: ContentItem[] = [
-    ...movies.filter((m): m is Movie => m !== null).map(m => ({ ...m, contentType: "movie" as const })),
-    ...tvShows.filter((tv): tv is TV => tv !== null).map(tv => ({ ...tv, contentType: "tv" as const })),
-  ];
+  // Lọc bỏ null và giữ nguyên thứ tự (đã sắp xếp theo năm)
+  const allContent: ContentItem[] = results.filter((item): item is ContentItem => item !== null);
 
   return allContent;
 };

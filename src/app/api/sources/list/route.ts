@@ -130,18 +130,29 @@ export async function GET(request: Request) {
       }
     }
     
-    // Sắp xếp theo thời gian mới nhất
-    const sortedSources = allSources.sort((a, b) => b.mtime.getTime() - a.mtime.getTime());
+    // Sắp xếp theo năm phát hành (year) mới nhất, nếu cùng năm thì theo mtime
+    const sortedSources = allSources.sort((a, b) => {
+      // Ưu tiên sắp xếp theo năm phát hành
+      if (b.year !== a.year) {
+        return b.year - a.year;
+      }
+      // Nếu cùng năm, sắp xếp theo thời gian file mới nhất
+      return b.mtime.getTime() - a.mtime.getTime();
+    });
     
     // Tách ra movieIds và tvIds để hỗ trợ CineVerseSources component
     const movieIds = sortedSources.filter(s => s.type === "movie").map(s => s.tmdbId);
     const tvIds = sortedSources.filter(s => s.type === "tv").map(s => s.tmdbId);
     
+    // Lấy 20 mục mới nhất theo năm cho Hero section (kết hợp cả movie và tv)
+    const heroIds = sortedSources.slice(0, 20).map(s => ({ id: s.tmdbId, type: s.type, year: s.year }));
+    
     return NextResponse.json({
       sources: sortedSources,
       total: sortedSources.length,
       movieIds: movieIds,
-      tvIds: tvIds
+      tvIds: tvIds,
+      heroIds: heroIds // 20 mục mới nhất theo năm phát hành
     });
   } catch (error) {
     console.error('Error listing sources:', error);
