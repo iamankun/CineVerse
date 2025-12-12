@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { Card, CardBody, CardHeader } from "@heroui/react";
-import { IoStatsChart, IoNotifications, IoSettings, IoAnalytics, IoShieldCheckmark } from "react-icons/io5";
+import { IoStatsChart, IoNotifications, IoSettings, IoAnalytics, IoShieldCheckmark, IoVideocam } from "react-icons/io5";
 import AdminGuard from "@/components/AdminGuard";
 import { getVersionString } from "@/utils/version";
 
@@ -16,6 +16,13 @@ export default function AdminPage() {
       icon: <IoStatsChart className="text-6xl" />,
       path: "/admin/dashboard",
       color: "bg-gradient-to-br from-blue-500 to-cyan-500",
+    },
+    {
+      title: "Live Stream",
+      description: "Quản lý luồng phát trực tiếp",
+      icon: <IoVideocam className="text-6xl" />,
+      path: "/admin/live",
+      color: "bg-gradient-to-br from-red-500 to-pink-500",
     },
     {
       title: "Thông báo",

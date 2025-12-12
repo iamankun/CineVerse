@@ -44,7 +44,9 @@ const createAuthAction = <T extends { captchaToken?: string }>(
       return { success: false, message };
     }
 
-    if (!result.data.captchaToken) {
+    // Captcha is optional - only required if NEXT_PUBLIC_CAPTCHA_SITE_KEY is set
+    // If captcha site key is configured but no token provided, return error
+    if (process.env.NEXT_PUBLIC_CAPTCHA_SITE_KEY && !result.data.captchaToken) {
       return { success: false, message: "Yêu cầu Captcha" };
     }
 

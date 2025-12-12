@@ -74,7 +74,8 @@ const useSupabaseUser = () => {
     return () => {
       subscription.unsubscribe();
     };
-  }, [supabase, queryClient]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [supabase]);
 
   return query;
 };

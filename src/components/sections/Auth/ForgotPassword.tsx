@@ -27,7 +27,8 @@ const AuthForgotPasswordForm: React.FC<AuthFormProps> = ({ setForm }) => {
   });
 
   const onSubmit = handleSubmit(async (data) => {
-    if (isEmpty(data.captchaToken)) {
+    // Only require captcha verification if site key is configured
+    if (env.NEXT_PUBLIC_CAPTCHA_SITE_KEY && isEmpty(data.captchaToken)) {
       setIsVerifying(true);
       return;
     }
