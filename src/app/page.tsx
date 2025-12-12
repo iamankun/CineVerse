@@ -4,6 +4,7 @@ import LoadingWrapper from "@/components/LoadingWrapper";
 const ContinueWatching = dynamic(() => import("@/components/sections/Home/ContinueWatching"));
 const HomePageList = dynamic(() => import("@/components/sections/Home/List"));
 const CineVerseSources = dynamic(() => import("@/components/sections/Home/CineVerseSources"));
+const CineVerseList = dynamic(() => import("@/components/sections/Home/CineVerseList"));
 const HomeNotification = dynamic(() => import("@/components/ui/notification/HomeNotification"));
 
 const HomePage: NextPage = () => {
@@ -17,6 +18,7 @@ const HomePage: NextPage = () => {
                     {/* Gradient fade overlay to blend with hero */}
                     <div className="absolute -top-32 -left-8 -right-8 h-32 bg-gradient-to-b from-black/0 via-background/100 to-background pointer-events-none z-10" />
                     <ContinueWatching />
+                    <CineVerseList />
                     <HomePageList />
                 </div>
             </div>

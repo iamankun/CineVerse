@@ -237,7 +237,7 @@ const CineVerseHero = () => {
   }
 
   return (
-    <div className="relative h-[600px] w-screen overflow-hidden md:h-[700px]">
+    <div className="relative h-[600px] w-screen overflow-hidden md:h-[800px]">
       {/* Background - Trailer Video hoặc Backdrop Image */}
       <div className="absolute inset-0 z-0">
         {trailerUrl ? (
@@ -253,8 +253,8 @@ const CineVerseHero = () => {
                 style={{ border: 'none', pointerEvents: 'none' }}
               />
             </div>
-            <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/50 to-transparent" />
-            <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-transparent to-black/90" />
+            <div className="absolute inset-0 bg-gradient-to-r from-white/95 via-white/60 to-transparent dark:from-black/90 dark:via-black/50 dark:to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-b from-white/80 via-transparent to-white/95 dark:from-black/70 dark:via-transparent dark:to-black/90" />
           </>
         ) : (
           <>
@@ -266,23 +266,19 @@ const CineVerseHero = () => {
               priority
               quality={90}
             />
-            <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/50 to-transparent" />
-            <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-transparent to-black/90" />
+            <div className="absolute inset-0 bg-gradient-to-r from-white/95 via-white/60 to-transparent dark:from-black/90 dark:via-black/50 dark:to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-b from-white/80 via-transparent to-white/95 dark:from-black/70 dark:via-transparent dark:to-black/90" />
           </>
         )}
       </div>
 
       {/* Content */}
-      <div className="relative z-10 flex h-full flex-col justify-end pb-12 px-6 md:px-12 lg:px-16 md:pb-16 lg:pb-20">
+      <div className="relative z-10 flex h-full flex-col justify-end pb-24 px-6 md:px-12 lg:px-16 md:pb-28 lg:pb-32">
         <div className="max-w-2xl space-y-2 md:space-y-3 lg:space-y-4">
-          {/* Badge */}
+          {/* Audio Version Logo */}
           <div className="flex items-center gap-2 flex-wrap">
-            <Chip color="warning" variant="flat" size="sm" className="text-xs uppercase">
-              CineVerse Original
-            </Chip>
-            {/* Audio Version Logo */}
             {(sourceMetadata?.audioVersion === "Lồng tiếng" || sourceMetadata?.metadata?.audioVersion === "LongTieng") && (
-              <div className="relative h-20 w-20 md:h-12 md:w-24 shrink-0">
+              <div className="relative h-10 w-10 md:h-12 md:w-24 shrink-0 ml-[100px]">
                 <Image
                   src="/longtieng.png"
                   alt="Lồng tiếng"
@@ -294,7 +290,7 @@ const CineVerseHero = () => {
           </div>
 
           {/* Title - Logo or Text */}
-          <div className="flex items-center gap-2 md:gap-3">
+          <div className="flex items-center gap-2 md:gap-3 ml-12 md:ml-0">
             {logoPath ? (
               <div className="relative h-16 w-full max-w-xs md:h-20 lg:h-24">
                 <Image
@@ -306,16 +302,36 @@ const CineVerseHero = () => {
                 />
               </div>
             ) : (
-              <h1 className="text-2xl font-bold text-white md:text-4xl lg:text-5xl">
+              <h1 className="text-2xl font-bold text-gray-900 dark:text-white md:text-4xl lg:text-5xl">
                 {title}
               </h1>
             )}
           </div>
 
           {/* Description */}
-          <p className="line-clamp-2 text-sm text-gray-200 md:text-base">
+          <p className="line-clamp-2 text-sm text-gray-700 dark:text-gray-200 md:text-base">
             {item.overview || "Nội dung đang được cập nhật..."}
           </p>
+
+          {/* Rating Badge - TMDB, Year, AgeRating */}
+          <div className="flex items-center gap-2 flex-wrap">
+            {"vote_average" in item && item.vote_average > 0 && (
+              <Chip color="success" variant="flat" size="sm" className="font-semibold">
+                <span className="text-cyan-500">TMDB</span>{" "}
+                <span className="text-warning-500">{item.vote_average.toFixed(1)}</span>
+              </Chip>
+            )}
+            {releaseYear && (
+              <Chip variant="flat" size="sm">
+                {releaseYear}
+              </Chip>
+            )}
+            {ratingDisplay && (
+              <Chip color="warning" variant="flat" size="sm" className="max-w-fit">
+                {ratingDisplay}
+              </Chip>
+            )}
+          </div>
 
           {/* Buttons */}
           <div className="flex flex-wrap gap-2">
@@ -337,30 +353,10 @@ const CineVerseHero = () => {
               color="default"
               variant="flat"
               startContent={<IoInformationCircleOutline className="text-xl" />}
-              className="bg-white/20 font-semibold text-white backdrop-blur-sm hover:bg-white/30"
+              className="bg-black/20 font-semibold text-gray-900 backdrop-blur-sm hover:bg-black/30 dark:bg-white/20 dark:text-white dark:hover:bg-white/30"
             >
               Chi tiết
             </Button>
-          </div>
-
-          {/* Rating Badge */}
-          <div className="flex items-center gap-2 flex-wrap">
-            {"vote_average" in item && item.vote_average > 0 && (
-              <Chip color="success" variant="flat" size="sm" className="font-semibold">
-                <span className="text-cyan-500">TMDB</span>{" "}
-                <span className="text-warning-500">{item.vote_average.toFixed(1)}</span>
-              </Chip>
-            )}
-            {releaseYear && (
-              <Chip variant="flat" size="sm">
-                {releaseYear}
-              </Chip>
-            )}
-            {ratingDisplay && (
-              <Chip color="warning" variant="flat" size="sm" className="max-w-fit">
-                {ratingDisplay}
-              </Chip>
-            )}
           </div>
         </div>
       </div>
@@ -371,7 +367,7 @@ const CineVerseHero = () => {
           {/* Mute Toggle */}
           <button
             onClick={() => setIsMuted(!isMuted)}
-            className="flex h-10 w-10 items-center justify-center rounded-full border-2 border-white/50 bg-black/30 text-white backdrop-blur-sm transition-all hover:bg-black/50"
+            className="flex h-10 w-10 items-center justify-center rounded-full border-2 border-gray-500/50 dark:border-white/50 bg-white/30 dark:bg-black/30 text-gray-900 dark:text-white backdrop-blur-sm transition-all hover:bg-white/50 dark:hover:bg-black/50"
           >
             {isMuted ? (
               <IoVolumeMuteOutline className="text-xl" />
@@ -387,13 +383,13 @@ const CineVerseHero = () => {
         <>
           <button
             onClick={handlePrevious}
-            className="absolute left-4 top-1/2 z-20 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full bg-black/30 text-white backdrop-blur-sm transition-all hover:bg-black/50"
+            className="absolute left-4 top-1/2 z-20 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full bg-white/30 dark:bg-black/30 text-gray-900 dark:text-white backdrop-blur-sm transition-all hover:bg-white/50 dark:hover:bg-black/50"
           >
             <IoIosArrowBack className="text-2xl" />
           </button>
           <button
             onClick={handleNext}
-            className="absolute right-4 top-1/2 z-20 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full bg-black/30 text-white backdrop-blur-sm transition-all hover:bg-black/50"
+            className="absolute right-4 top-1/2 z-20 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full bg-white/30 dark:bg-black/30 text-gray-900 dark:text-white backdrop-blur-sm transition-all hover:bg-white/50 dark:hover:bg-black/50"
           >
             <IoIosArrowForward className="text-2xl" />
           </button>
@@ -408,7 +404,7 @@ const CineVerseHero = () => {
               key={index}
               onClick={() => setCurrentIndex(index)}
               className={`h-1 rounded-full transition-all ${
-                index === currentIndex ? "w-8 bg-white" : "w-2 bg-white/50"
+                index === currentIndex ? "w-8 bg-gray-900 dark:bg-white" : "w-2 bg-gray-500/50 dark:bg-white/50"
               }`}
             />
           ))}

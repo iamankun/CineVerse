@@ -9,6 +9,7 @@ import { useInViewport } from "@mantine/hooks";
 import { useQuery } from "@tanstack/react-query";
 import { kebabCase } from "string-ts";
 import { TV } from "tmdb-ts/dist/types";
+import { IoChevronForward } from "react-icons/io5";
 
 const TvShowHomeList: React.FC<QueryList<TV>> = ({ query, name, param }) => {
   const key = kebabCase(name) + "-list";
@@ -38,9 +39,9 @@ const TvShowHomeList: React.FC<QueryList<TV>> = ({ query, name, param }) => {
               href={`/discover?type=${param}&content=tv`}
               isBlock
               color="foreground"
-              className="rounded-full"
+              className="rounded-full flex items-center gap-1"
             >
-              See All &gt;
+              Xem tất cả <IoChevronForward />
             </Link>
           </div>
           <Carousel>
