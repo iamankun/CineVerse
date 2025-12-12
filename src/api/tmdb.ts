@@ -283,3 +283,63 @@ export async function search(
   if (type === "person") return searchPeople(query, page);
   return [];
 }
+
+// =======================
+// Các hàm lấy Age Rating / Certification
+// =======================
+
+/**
+ * Lấy release_dates cho Movie (chứa certification/age rating)
+ * https://developer.themoviedb.org/reference/movie-release-dates
+ */
+export async function getMovieReleaseDates(movieId: number) {
+  const response = await fetch(
+    `https://api.themoviedb.org/3/movie/${movieId}/release_dates`,
+    {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'accept': 'application/json'
+      },
+      cache: 'force-cache',
+      next: { 
+        revalidate: 86400 * 7, // Cache 7 ngày (certification ít thay đổi)
+        tags: ['tmdb', 'movies', `movie-${movieId}`, 'release-dates', 'certification']
+      }
+    }
+  );
+
+  if (!response.ok) {
+    console.warn(`Failed to fetch movie release dates: ${response.statusText}`);
+    return null;
+  }
+
+  return response.json();
+}
+
+/**
+ * Lấy content_ratings cho TV Show (chứa age rating)
+ * https://developer.themoviedb.org/reference/tv-series-content-ratings
+ */
+export async function getTvContentRatings(tvId: number) {
+  const response = await fetch(
+    `https://api.themoviedb.org/3/tv/${tvId}/content_ratings`,
+    {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'accept': 'application/json'
+      },
+      cache: 'force-cache',
+      next: { 
+        revalidate: 86400 * 7, // Cache 7 ngày
+        tags: ['tmdb', 'tv-shows', `tv-${tvId}`, 'content-ratings', 'certification']
+      }
+    }
+  );
+
+  if (!response.ok) {
+    console.warn(`Failed to fetch TV content ratings: ${response.statusText}`);
+    return null;
+  }
+
+  return response.json();
+}

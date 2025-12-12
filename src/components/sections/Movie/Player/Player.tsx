@@ -16,6 +16,8 @@ import { useMovieLogo } from "@/hooks/useMovieLogo";
 import { PlayersProps } from "@/types";
 import { playerAdBlocker } from "@/utils/player-ad-blocker";
 import { usePinchToZoom } from "@/hooks/usePinchToZoom";
+import { getMovieReleaseDates } from "@/api/tmdb";
+import { getVietnamRatingFromReleaseDates } from "@/utils/rating-converter";
 const AdsWarning = dynamic(() => import("@/components/ui/overlay/AdsWarning"));
 const AgeRating = dynamic(() => import("@/components/ui/overlay/AgeRating"));
 const WatchingWithBrand = dynamic(() => import("@/components/ui/overlay/WatchingWithBrand"));
@@ -117,6 +119,24 @@ const MoviePlayer: React.FC<MoviePlayerProps> = ({ movie, startAt }) => {
       }
     });
 
+    // Hàm lấy rating từ TMDB và convert sang Việt Nam
+    const fetchTMDBRating = async () => {
+      try {
+        console.log(`🌐 Đang lấy rating từ TMDB cho movie ID: ${movie.id}`);
+        const releaseDates = await getMovieReleaseDates(movie.id);
+        const vietnamRating = getVietnamRatingFromReleaseDates(releaseDates);
+        
+        if (vietnamRating && isMounted) {
+          console.log(`✅ TMDB Rating converted:`, vietnamRating);
+          setMovieRating(vietnamRating);
+        } else {
+          console.log(`⚠️ Không tìm thấy rating phù hợp từ TMDB`);
+        }
+      } catch (err) {
+        console.error(`❌ Lỗi khi lấy rating từ TMDB:`, err);
+      }
+    };
+
     console.log(`🎬 Đang lấy đánh giá phim cho ID: ${movie.id}`);
     fetch(`/sources/Movie/${movie.id}.json`)
       .then(res => {
@@ -132,18 +152,26 @@ const MoviePlayer: React.FC<MoviePlayerProps> = ({ movie, startAt }) => {
             .then(res => res.json())
             .then(ratingData => {
               const description = ratingData["Movie-Rating"][rating];
-              console.log(`✅ Đang tải đánh giá phim:`, rating, description);
-              if (description) {
+              console.log(`✅ Đang tải đánh giá phim (local):`, rating, description);
+              if (description && isMounted) {
                 setMovieRating({ rating, description });
               }
             })
             .catch((err) => {
               console.error(`❌ Không tải được mô tả đánh giá phim:`, err);
+              // Fallback sang TMDB nếu local không có description
+              fetchTMDBRating();
             });
+        } else {
+          // Không có local rating → lấy từ TMDB
+          console.log(`📡 Không có local rating, fallback sang TMDB...`);
+          fetchTMDBRating();
         }
       })
       .catch((err) => {
-        console.error(`❌ Không tải được phim:`, err);
+        console.error(`❌ Không tải được phim từ local:`, err);
+        // Fallback sang TMDB nếu local file không tồn tại
+        fetchTMDBRating();
       });
 
     return () => {

@@ -15,6 +15,8 @@ import { useMovieLogo } from "@/hooks/useMovieLogo";
 import { PlayersProps } from "@/types";
 import { playerAdBlocker } from "@/utils/player-ad-blocker";
 import { usePinchToZoom } from "@/hooks/usePinchToZoom";
+import { getTvContentRatings } from "@/api/tmdb";
+import { getVietnamRatingFromContentRatings } from "@/utils/rating-converter";
 const AdsWarning = dynamic(() => import("@/components/ui/overlay/AdsWarning"));
 const AgeRating = dynamic(() => import("@/components/ui/overlay/AgeRating"));
 const WatchingWithBrand = dynamic(() => import("@/components/ui/overlay/WatchingWithBrand"));
@@ -132,6 +134,24 @@ const TvShowPlayer: React.FC<TvShowPlayerProps> = ({
       }
     });
 
+    // Hàm lấy rating từ TMDB và convert sang Việt Nam
+    const fetchTMDBRating = async () => {
+      try {
+        console.log(`🌐 Đang lấy rating từ TMDB cho TV ID: ${id}`);
+        const contentRatings = await getTvContentRatings(id);
+        const vietnamRating = getVietnamRatingFromContentRatings(contentRatings);
+        
+        if (vietnamRating && isMounted) {
+          console.log(`✅ TMDB TV Rating converted:`, vietnamRating);
+          setMovieRating(vietnamRating);
+        } else {
+          console.log(`⚠️ Không tìm thấy rating phù hợp từ TMDB`);
+        }
+      } catch (err) {
+        console.error(`❌ Lỗi khi lấy rating từ TMDB:`, err);
+      }
+    };
+
     // Tải điểm TV từ CineVerse
     console.log(`🎬 Đang tải TV điểm của ID: ${id}`);
     fetch(`/sources/ChuongTrinhTV/${id}.json`)
@@ -148,18 +168,26 @@ const TvShowPlayer: React.FC<TvShowPlayerProps> = ({
             .then(res => res.json())
             .then(ratingData => {
               const description = ratingData["Movie-Rating"][rating];
-              console.log(`✅ TV Rating loaded:`, rating, description);
-              if (description) {
+              console.log(`✅ TV Rating loaded (local):`, rating, description);
+              if (description && isMounted) {
                 setMovieRating({ rating, description });
               }
             })
             .catch((err) => {
               console.error(`❌ Không tải được mô tả đánh giá:`, err);
+              // Fallback sang TMDB nếu local không có description
+              fetchTMDBRating();
             });
+        } else {
+          // Không có local rating → lấy từ TMDB
+          console.log(`📡 Không có local rating, fallback sang TMDB...`);
+          fetchTMDBRating();
         }
       })
       .catch((err) => {
         console.error(`❌ Không tải được TV JSON:`, err);
+        // Fallback sang TMDB nếu local file không tồn tại
+        fetchTMDBRating();
       });
 
     return () => {
