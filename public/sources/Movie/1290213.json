@@ -1,0 +1,28 @@
+{
+  "tmdbId": 1290213,
+  "title": "404 Chạy Ngay Đi",
+  "year": 2024,
+  "sources": [
+    {
+      "provider": "dailymotion",
+      "title": "404 Chạy Ngay Đi",
+      "url": "https://www.dailymotion.com/video/x9h6roe",
+      "language": "vi",
+      "subtitles": [
+        "vi"
+      ]
+    }
+  ],
+  "metadata": {
+    "movie-rating": "K",
+    "audioVersion": "PhuDe",
+    "lastUpdate": "2025-12-13T12:00:16.661Z",
+    "genre": [
+      "Phim Hài",
+      "Phim Kinh Dị"
+    ],
+    "duration": 104,
+    "status": "Released",
+    "note": ""
+  }
+}
