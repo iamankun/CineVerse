@@ -439,15 +439,186 @@ export default function LiveStreamSettingsPage() {
                       />
                     </div>
 
+                    {/* Quick Server Templates */}
+                    <div className="bg-purple-500/10 border border-purple-500/30 rounded-lg p-4">
+                      <h4 className="text-purple-400 font-medium mb-3">🚀 Server Templates (Copy nhanh)</h4>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        {/* Local MediaMTX */}
+                        <div className="bg-black/30 rounded-lg p-3">
+                          <p className="text-white text-sm font-medium mb-2">MediaMTX (Local)</p>
+                          <div className="space-y-2">
+                            <div>
+                              <p className="text-gray-500 text-xs">Server URL:</p>
+                              <Snippet
+                                symbol=""
+                                variant="flat"
+                                size="sm"
+                                className="w-full bg-black/50"
+                                codeString="rtmp://localhost:1935/live"
+                              >
+                                rtmp://localhost:1935/live
+                              </Snippet>
+                            </div>
+                            <div>
+                              <p className="text-gray-500 text-xs">HLS URL:</p>
+                              <Snippet
+                                symbol=""
+                                variant="flat"
+                                size="sm"
+                                className="w-full bg-black/50"
+                                codeString={`http://localhost:8888/${config.rtmpConfig.streamKey}/index.m3u8`}
+                              >
+                                {`http://localhost:8888/${config.rtmpConfig.streamKey || "stream"}/index.m3u8`}
+                              </Snippet>
+                            </div>
+                            <Button
+                              size="sm"
+                              variant="flat"
+                              className="w-full bg-purple-500/20 text-purple-300"
+                              onClick={() => {
+                                setConfig({
+                                  ...config,
+                                  rtmpConfig: {
+                                    ...config.rtmpConfig,
+                                    serverUrl: "rtmp://localhost:1935/live",
+                                    hlsPlaybackUrl: `http://localhost:8888/${config.rtmpConfig.streamKey}/index.m3u8`,
+                                  },
+                                });
+                              }}
+                            >
+                              Áp dụng MediaMTX
+                            </Button>
+                          </div>
+                        </div>
+
+                        {/* Nginx-RTMP */}
+                        <div className="bg-black/30 rounded-lg p-3">
+                          <p className="text-white text-sm font-medium mb-2">Nginx-RTMP (Local)</p>
+                          <div className="space-y-2">
+                            <div>
+                              <p className="text-gray-500 text-xs">Server URL:</p>
+                              <Snippet
+                                symbol=""
+                                variant="flat"
+                                size="sm"
+                                className="w-full bg-black/50"
+                                codeString="rtmp://localhost:1935/live"
+                              >
+                                rtmp://localhost:1935/live
+                              </Snippet>
+                            </div>
+                            <div>
+                              <p className="text-gray-500 text-xs">HLS URL:</p>
+                              <Snippet
+                                symbol=""
+                                variant="flat"
+                                size="sm"
+                                className="w-full bg-black/50"
+                                codeString={`http://localhost:8080/hls/${config.rtmpConfig.streamKey}.m3u8`}
+                              >
+                                {`http://localhost:8080/hls/${config.rtmpConfig.streamKey || "stream"}.m3u8`}
+                              </Snippet>
+                            </div>
+                            <Button
+                              size="sm"
+                              variant="flat"
+                              className="w-full bg-purple-500/20 text-purple-300"
+                              onClick={() => {
+                                setConfig({
+                                  ...config,
+                                  rtmpConfig: {
+                                    ...config.rtmpConfig,
+                                    serverUrl: "rtmp://localhost:1935/live",
+                                    hlsPlaybackUrl: `http://localhost:8080/hls/${config.rtmpConfig.streamKey}.m3u8`,
+                                  },
+                                });
+                              }}
+                            >
+                              Áp dụng Nginx-RTMP
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* OBS Setup Guide */}
+                    <div className="bg-green-500/10 border border-green-500/30 rounded-lg p-4">
+                      <h4 className="text-green-400 font-medium mb-3">📺 Cách thêm vào OBS Studio</h4>
+                      <div className="space-y-3 text-sm text-gray-300">
+                        <div className="flex items-start gap-3">
+                          <span className="bg-green-500/20 text-green-400 rounded-full w-6 h-6 flex items-center justify-center flex-shrink-0 text-xs font-bold">1</span>
+                          <p>Mở OBS → <strong>Settings</strong> → <strong>Stream</strong></p>
+                        </div>
+                        <div className="flex items-start gap-3">
+                          <span className="bg-green-500/20 text-green-400 rounded-full w-6 h-6 flex items-center justify-center flex-shrink-0 text-xs font-bold">2</span>
+                          <p>Chọn <strong>Service: Custom...</strong></p>
+                        </div>
+                        <div className="flex items-start gap-3">
+                          <span className="bg-green-500/20 text-green-400 rounded-full w-6 h-6 flex items-center justify-center flex-shrink-0 text-xs font-bold">3</span>
+                          <div>
+                            <p className="mb-1">Dán vào ô <strong>Server</strong>:</p>
+                            {config.rtmpConfig.serverUrl ? (
+                              <Snippet
+                                symbol=""
+                                variant="flat"
+                                size="sm"
+                                className="bg-black/50"
+                                codeString={config.rtmpConfig.serverUrl}
+                              >
+                                {config.rtmpConfig.serverUrl}
+                              </Snippet>
+                            ) : (
+                              <span className="text-yellow-400">⚠️ Chưa có Server URL - Hãy nhập ở trên hoặc chọn template</span>
+                            )}
+                          </div>
+                        </div>
+                        <div className="flex items-start gap-3">
+                          <span className="bg-green-500/20 text-green-400 rounded-full w-6 h-6 flex items-center justify-center flex-shrink-0 text-xs font-bold">4</span>
+                          <div>
+                            <p className="mb-1">Dán vào ô <strong>Stream Key</strong>:</p>
+                            <Snippet
+                              symbol=""
+                              variant="flat"
+                              size="sm"
+                              className="bg-black/50"
+                              codeString={config.rtmpConfig.streamKey}
+                            >
+                              {config.rtmpConfig.streamKey}
+                            </Snippet>
+                          </div>
+                        </div>
+                        <div className="flex items-start gap-3">
+                          <span className="bg-green-500/20 text-green-400 rounded-full w-6 h-6 flex items-center justify-center flex-shrink-0 text-xs font-bold">5</span>
+                          <p>Nhấn <strong>Apply</strong> → <strong>OK</strong> → <strong>Start Streaming</strong></p>
+                        </div>
+                      </div>
+                    </div>
+
                     {/* Server Setup Info */}
                     <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-4">
-                      <h4 className="text-yellow-400 font-medium mb-2">💡 Hướng dẫn cài đặt</h4>
-                      <ul className="text-sm text-gray-400 space-y-1">
-                        <li>1. Cài đặt RTMP server (Nginx-RTMP, MediaMTX, Node Media Server...)</li>
-                        <li>2. Nhập URL RTMP server vào ô trên</li>
-                        <li>3. Copy Server URL và Stream Key vào OBS/vMix</li>
-                        <li>4. Nhập URL HLS để phát lại trên trình duyệt</li>
-                        <li>5. Bắt đầu stream từ OBS/vMix</li>
+                      <h4 className="text-yellow-400 font-medium mb-2">💡 Cài đặt RTMP Server</h4>
+                      <ul className="text-sm text-gray-400 space-y-2">
+                        <li className="flex items-start gap-2">
+                          <span className="text-yellow-400">•</span>
+                          <div>
+                            <strong className="text-white">MediaMTX (Khuyên dùng):</strong>
+                            <br />Download tại: <a href="https://github.com/bluenviron/mediamtx/releases" target="_blank" className="text-blue-400 hover:underline">github.com/bluenviron/mediamtx</a>
+                            <br />Chỉ cần chạy file .exe, không cần cấu hình
+                          </div>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="text-yellow-400">•</span>
+                          <div>
+                            <strong className="text-white">Node Media Server:</strong>
+                            <br /><code className="bg-black/30 px-1 rounded">npm install node-media-server</code>
+                          </div>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="text-yellow-400">•</span>
+                          <div>
+                            <strong className="text-white">Nginx-RTMP:</strong> Cần cài Nginx với module RTMP
+                          </div>
+                        </li>
                       </ul>
                     </div>
                   </div>
