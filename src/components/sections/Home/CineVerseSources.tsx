@@ -237,7 +237,7 @@ const CineVerseHero = () => {
   }
 
   return (
-    <div className="relative h-[600px] w-screen overflow-hidden md:h-[800px]">
+    <div className="relative h-[600px] w-screen overflow-hidden md:h-[800px] [@media(max-width:500px)_and_(orientation:landscape)]:h-[60vw]">
       {/* Background - Trailer Video hoặc Backdrop Image */}
       <div className="absolute inset-0 z-0">
         {trailerUrl ? (
@@ -247,7 +247,7 @@ const CineVerseHero = () => {
                 ref={iframeRef}
                 key={`trailer-${currentIndex}`}
                 src={trailerUrl}
-                className="absolute left-1/2 top-1/2 h-[56.25vw] min-h-full w-[177.77vh] min-w-full -translate-x-1/2 -translate-y-1/2"
+                className="absolute left-1/2 top-1/2 h-[56.25vw] min-h-full w-[177.77vh] min-w-full -translate-x-1/2 -translate-y-1/2 scale-120"
                 allow="autoplay; encrypted-media"
                 allowFullScreen
                 style={{ border: 'none', pointerEvents: 'none' }}
@@ -275,31 +275,32 @@ const CineVerseHero = () => {
       {/* Content */}
       <div className="relative z-10 flex h-full flex-col justify-end pb-24 px-6 md:px-12 lg:px-16 md:pb-28 lg:pb-32">
         <div className="max-w-2xl space-y-2 md:space-y-3 lg:space-y-4">
-          {/* Audio Version Logo */}
-          <div className="flex items-center gap-2 flex-wrap">
-            {(sourceMetadata?.audioVersion === "Lồng tiếng" || sourceMetadata?.metadata?.audioVersion === "LongTieng") && (
-              <div className="relative h-10 w-10 md:h-12 md:w-24 shrink-0 ml-[100px]">
-                <Image
-                  src="/longtieng.png"
-                  alt="Lồng tiếng"
-                  fill
-                  className="object-contain"
-                />
-              </div>
-            )}
-          </div>
+          {/* Audio Version Logo (đã chuyển vào logo movie) */}
 
           {/* Title - Logo or Text */}
-          <div className="flex items-center gap-2 md:gap-3 ml-12 md:ml-0">
+          <div className="flex items-center gap-2 md:gap-3 md:ml-0 ml-0">
             {logoPath ? (
-              <div className="relative h-16 w-full max-w-xs md:h-20 lg:h-24 group">
-                <Image
-                  src={getImageUrl(logoPath, "title", true)}
-                  alt={title}
-                  fill
-                  className="object-contain object-left transition-transform duration-500 group-hover:scale-125 group-hover:translate-x-8 group-hover:-translate-y-4"
-                  priority
-                />
+              <div className="inline-flex items-start relative group">
+                <div className="relative flex-shrink-0 h-16 w-32 md:h-20 md:w-40 lg:h-24 lg:w-48">
+                  <Image
+                    src={getImageUrl(logoPath, "title", true)}
+                    alt={title}
+                    fill
+                    className="object-contain object-left transition-transform duration-500 group-hover:scale-125 group-hover:translate-x-8 group-hover:-translate-y-4"
+                    priority
+                  />
+                </div>
+                {(sourceMetadata?.audioVersion === "Lồng tiếng" || sourceMetadata?.metadata?.audioVersion === "LongTieng") && (
+                  <span className="ml-1 mt-1 inline-block align-top transition-transform duration-500 group-hover:translate-x-4">
+                    <Image
+                      src="/longtieng.png"
+                      alt="Lồng tiếng"
+                      width={32}
+                      height={32}
+                      className="object-contain"
+                    />
+                  </span>
+                )}
               </div>
             ) : (
               <h1 className="text-2xl font-bold text-gray-900 dark:text-white md:text-4xl lg:text-5xl">
