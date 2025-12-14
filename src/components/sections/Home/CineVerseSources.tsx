@@ -86,7 +86,9 @@ const fetchCineVerseContent = async () => {
   };
 
   // Fetch tất cả items từ heroIds (đã sắp xếp theo năm phát hành)
-  const contentPromises = heroIds.map((item) =>
+  // Giới hạn số lượng hiển thị hero section là 15 thay vì 20
+  const limitedHeroIds = heroIds.slice(0, 15);
+  const contentPromises = limitedHeroIds.map((item) =>
     fetchWithLanguageFallback(
       `https://api.themoviedb.org/3/${item.type === "movie" ? "movie" : "tv"}/${item.id}`,
       item.type
@@ -280,7 +282,7 @@ const CineVerseHero = () => {
           {/* Title - Logo or Text */}
           <div className="flex items-center gap-2 md:gap-3 md:ml-0 ml-0">
             {logoPath ? (
-              <div className="inline-flex items-start relative group">
+              <div className="inline-flex flex-col items-center relative group">
                 <div className="relative flex-shrink-0 h-16 w-32 md:h-20 md:w-40 lg:h-24 lg:w-48">
                   <Image
                     src={getImageUrl(logoPath, "title", true)}
@@ -291,15 +293,18 @@ const CineVerseHero = () => {
                   />
                 </div>
                 {(sourceMetadata?.audioVersion === "Lồng tiếng" || sourceMetadata?.metadata?.audioVersion === "LongTieng") && (
-                  <span className="ml-1 mt-1 inline-block align-top transition-transform duration-500 group-hover:translate-x-4">
-                    <Image
-                      src="/longtieng.png"
-                      alt="Lồng tiếng"
-                      width={32}
-                      height={32}
-                      className="object-contain"
-                    />
-                  </span>
+                  <div className="w-full flex justify-start mt-2">
+                    <span className="inline-flex items-center gap-2 align-top">
+                      <span className="text-xs md:text-sm bg-white text-black rounded-full px-3 py-1 shadow border border-gray-200" style={{fontFamily: 'sans-serif', fontWeight: 400}}>Phiên bản</span>
+                      <Image
+                        src="/longtieng.png"
+                        alt="Lồng tiếng"
+                        width={40}
+                        height={40}
+                        className="object-contain"
+                      />
+                    </span>
+                  </div>
                 )}
               </div>
             ) : (
@@ -357,27 +362,25 @@ const CineVerseHero = () => {
               className="bg-black/20 font-semibold text-gray-900 backdrop-blur-sm hover:bg-black/30 dark:bg-white/20 dark:text-white dark:hover:bg-white/30"
             >
               Chi tiết
+
             </Button>
+            {/* Nút mute chuyển lên cùng hàng */}
+            {trailerUrl && (
+              <button
+                onClick={() => setIsMuted(!isMuted)}
+                className="ml-2 flex h-10 w-10 items-center justify-center rounded-full border-2 border-gray-500/50 dark:border-white/50 bg-white/30 dark:bg-black/30 text-gray-900 dark:text-white backdrop-blur-sm transition-all hover:bg-white/50 dark:hover:bg-black/50"
+                title={isMuted ? 'Bật tiếng' : 'Tắt tiếng'}
+              >
+                {isMuted ? (
+                  <IoVolumeMuteOutline className="text-xl" />
+                ) : (
+                  <IoVolumeHighOutline className="text-xl" />
+                )}
+              </button>
+            )}
           </div>
         </div>
       </div>
-
-      {/* Controls - Chỉ hiển thị nút mute khi có trailer */}
-      {trailerUrl && (
-        <div className="absolute bottom-6 right-6 z-20 flex items-center gap-3">
-          {/* Mute Toggle */}
-          <button
-            onClick={() => setIsMuted(!isMuted)}
-            className="flex h-10 w-10 items-center justify-center rounded-full border-2 border-gray-500/50 dark:border-white/50 bg-white/30 dark:bg-black/30 text-gray-900 dark:text-white backdrop-blur-sm transition-all hover:bg-white/50 dark:hover:bg-black/50"
-          >
-            {isMuted ? (
-              <IoVolumeMuteOutline className="text-xl" />
-            ) : (
-              <IoVolumeHighOutline className="text-xl" />
-            )}
-          </button>
-        </div>
-      )}
 
       {/* Carousel Dots + Navigation Arrows cùng dòng */}
       {content.length > 1 && (
