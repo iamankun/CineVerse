@@ -292,12 +292,12 @@ const CineVerseHero = () => {
           {/* Title - Logo or Text */}
           <div className="flex items-center gap-2 md:gap-3 ml-12 md:ml-0">
             {logoPath ? (
-              <div className="relative h-16 w-full max-w-xs md:h-20 lg:h-24">
+              <div className="relative h-16 w-full max-w-xs md:h-20 lg:h-24 group">
                 <Image
                   src={getImageUrl(logoPath, "title", true)}
                   alt={title}
                   fill
-                  className="object-contain object-left"
+                  className="object-contain object-left transition-transform duration-300 group-hover:scale-125 group-hover:translate-x-8"
                   priority
                 />
               </div>
@@ -378,36 +378,32 @@ const CineVerseHero = () => {
         </div>
       )}
 
-      {/* Navigation Arrows */}
+      {/* Carousel Dots + Navigation Arrows cùng dòng */}
       {content.length > 1 && (
-        <>
+        <div className="absolute bottom-6 left-1/2 z-20 flex -translate-x-1/2 items-center gap-3">
           <button
             onClick={handlePrevious}
-            className="absolute left-4 top-1/2 z-20 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full bg-white/30 dark:bg-black/30 text-gray-900 dark:text-white backdrop-blur-sm transition-all hover:bg-white/50 dark:hover:bg-black/50"
+            className="flex h-10 w-10 items-center justify-center rounded-full border-2 border-gray-500/50 dark:border-white/50 bg-white/30 dark:bg-black/30 text-gray-900 dark:text-white backdrop-blur-sm transition-all hover:bg-white/50 dark:hover:bg-black/50"
           >
             <IoIosArrowBack className="text-2xl" />
           </button>
+          <div className="flex gap-2">
+            {content.map((_, index) => (
+              <button
+                key={index}
+                onClick={() => setCurrentIndex(index)}
+                className={`h-1 rounded-full transition-all ${
+                  index === currentIndex ? "w-8 bg-gray-900 dark:bg-white" : "w-2 bg-gray-500/50 dark:bg-white/50"
+                }`}
+              />
+            ))}
+          </div>
           <button
             onClick={handleNext}
-            className="absolute right-4 top-1/2 z-20 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full bg-white/30 dark:bg-black/30 text-gray-900 dark:text-white backdrop-blur-sm transition-all hover:bg-white/50 dark:hover:bg-black/50"
+            className="flex h-10 w-10 items-center justify-center rounded-full border-2 border-gray-500/50 dark:border-white/50 bg-white/30 dark:bg-black/30 text-gray-900 dark:text-white backdrop-blur-sm transition-all hover:bg-white/50 dark:hover:bg-black/50"
           >
             <IoIosArrowForward className="text-2xl" />
           </button>
-        </>
-      )}
-
-      {/* Carousel Dots */}
-      {content.length > 1 && (
-        <div className="absolute bottom-6 left-1/2 z-20 flex -translate-x-1/2 gap-2">
-          {content.map((_, index) => (
-            <button
-              key={index}
-              onClick={() => setCurrentIndex(index)}
-              className={`h-1 rounded-full transition-all ${
-                index === currentIndex ? "w-8 bg-gray-900 dark:bg-white" : "w-2 bg-gray-500/50 dark:bg-white/50"
-              }`}
-            />
-          ))}
         </div>
       )}
     </div>

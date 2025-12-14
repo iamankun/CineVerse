@@ -58,10 +58,14 @@ const MoviePlayer: React.FC<MoviePlayerProps> = ({ movie, startAt }) => {
   const title = mutateMovieTitle(movie);
   const idle = useIdle(3000);
   const { mobile } = useBreakpoints();
-  const [zoom, setZoom] = usePinchToZoom(iframeRef, { enabled: mobile, minZoom: 1, maxZoom: 2 });
-    // Reset zoom về 1 khi orientation hoặc fullscreen thay đổi
+  const zoom = usePinchToZoom(iframeRef, { enabled: mobile, minZoom: 1, maxZoom: 2 });
+  const zoomRef = useRef<any>(null);
+    // Reset zoom về 1 khi orientation hoặc fullscreen thay đổi (nếu hook hỗ trợ setZoom)
     useEffect(() => {
-      const handleResetZoom = () => setZoom(1);
+      if (!zoomRef.current) return;
+      const handleResetZoom = () => {
+        if (typeof zoomRef.current === 'function') zoomRef.current(1);
+      };
       window.addEventListener('orientationchange', handleResetZoom);
       document.addEventListener('fullscreenchange', handleResetZoom);
       return () => {
