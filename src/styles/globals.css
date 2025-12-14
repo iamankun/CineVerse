@@ -1,3 +1,17 @@
+/* Player fullscreen fill fix for YouTube/Dailymotion */
+.cineverse-player-fullscreen, .cineverse-player-fullscreen iframe {
+  position: fixed !important;
+  top: 0; left: 0;
+  width: 100vw !important;
+  height: 100vh !important;
+  min-width: 100vw;
+  min-height: 100vh;
+  max-width: 100vw;
+  max-height: 100vh;
+  border: none;
+  background: black;
+  z-index: 9999;
+}
 @import "tailwindcss";
 @import "./lightbox.css";
 @import "./ad-blocker.css";

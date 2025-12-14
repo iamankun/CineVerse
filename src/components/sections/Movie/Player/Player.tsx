@@ -58,7 +58,7 @@ const MoviePlayer: React.FC<MoviePlayerProps> = ({ movie, startAt }) => {
   const title = mutateMovieTitle(movie);
   const idle = useIdle(3000);
   const { mobile } = useBreakpoints();
-  const zoom = usePinchToZoom(playerContainerRef, { enabled: mobile, minZoom: 1, maxZoom: 2 });
+  const zoom = usePinchToZoom(iframeRef, { enabled: mobile, minZoom: 1, maxZoom: 2 });
   const [opened, handlers] = useDisclosure(false);
   const [selectedSource, setSelectedSource] = useQueryState<number>(
     "src",
@@ -379,13 +379,13 @@ const MoviePlayer: React.FC<MoviePlayerProps> = ({ movie, startAt }) => {
             {seen && (
               <div
                 ref={playerContainerRef}
+                className={cn({
+                  'cineverse-player-fullscreen': isFullscreen,
+                })}
                 style={{
                   width: '100%',
                   height: '100%',
-                  aspectRatio: '16/9',
-                  transform: `scale(${zoom})`,
-                  transformOrigin: 'center',
-                  transition: 'transform 0.2s ease-out',
+                  /* aspectRatio: '16/9', */
                   overflow: 'hidden',
                 }}
               >
@@ -395,9 +395,15 @@ const MoviePlayer: React.FC<MoviePlayerProps> = ({ movie, startAt }) => {
                   allow="autoplay; fullscreen; encrypted-media; picture-in-picture"
                   key={PLAYER.title}
                   src={PLAYER.source}
-                  className={cn("z-10 h-full w-full", { "pointer-events-none": idle && !mobile })}
+                  className={cn("z-10 h-full w-full", {
+                    'pointer-events-none': idle && !mobile,
+                  })}
                   style={{
                     border: 'none',
+                    objectFit: 'cover',
+                    transform: `scale(${zoom})`,
+                    transformOrigin: 'center',
+                    transition: 'transform 0.2s ease-out',
                   }}
                 />
               </div>
