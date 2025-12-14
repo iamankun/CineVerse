@@ -58,7 +58,17 @@ const MoviePlayer: React.FC<MoviePlayerProps> = ({ movie, startAt }) => {
   const title = mutateMovieTitle(movie);
   const idle = useIdle(3000);
   const { mobile } = useBreakpoints();
-  const zoom = usePinchToZoom(iframeRef, { enabled: mobile, minZoom: 1, maxZoom: 2 });
+  const [zoom, setZoom] = usePinchToZoom(iframeRef, { enabled: mobile, minZoom: 1, maxZoom: 2 });
+    // Reset zoom về 1 khi orientation hoặc fullscreen thay đổi
+    useEffect(() => {
+      const handleResetZoom = () => setZoom(1);
+      window.addEventListener('orientationchange', handleResetZoom);
+      document.addEventListener('fullscreenchange', handleResetZoom);
+      return () => {
+        window.removeEventListener('orientationchange', handleResetZoom);
+        document.removeEventListener('fullscreenchange', handleResetZoom);
+      };
+    }, []);
   const [opened, handlers] = useDisclosure(false);
   const [selectedSource, setSelectedSource] = useQueryState<number>(
     "src",
