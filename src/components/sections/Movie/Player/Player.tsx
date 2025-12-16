@@ -80,7 +80,7 @@ const MoviePlayer: React.FC<MoviePlayerProps> = ({ movie, startAt }) => {
   );
 
   useVidlinkPlayer({ saveHistory: true });
-  useDocumentTitle(`Play ${title} | ${siteConfig.name}`);
+  useDocumentTitle(`Bạn đang xem ${title} | ${siteConfig.name}`);
 
   // Initialize ad blocker with iframe reference
   useEffect(() => {
@@ -128,7 +128,7 @@ const MoviePlayer: React.FC<MoviePlayerProps> = ({ movie, startAt }) => {
         // Nếu chỉ có 1 nguồn và provider là vidsrc (và url rỗng), tự động chuyển sang nguồn VidSrc Phụ đề Tiếng Việt (nguồn ngoài)
         if (
           fetchedPlayers.length === 1 &&
-          fetchedPlayers[0].source === "" &&
+          !fetchedPlayers[0].source &&
           fetchedPlayers[0].title.toLowerCase().includes("vidsrc")
         ) {
           // Tạo nguồn VidSrc phụ đề tiếng Việt (vidsrc-embed.ru)
