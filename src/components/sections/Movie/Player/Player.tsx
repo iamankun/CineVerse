@@ -411,7 +411,7 @@ const MoviePlayer: React.FC<MoviePlayerProps> = ({ movie, startAt }) => {
         <div className="relative h-screen overflow-hidden" ref={cardRef}>
           <Card shadow="none" radius="none" className="absolute inset-0 bg-black flex items-center justify-center">
             <Skeleton className="absolute h-full w-full" />
-            {seen && (
+            {seen && PLAYER?.source && PLAYER.source !== "" && (
               <div
                 ref={playerContainerRef}
                 className={cn({

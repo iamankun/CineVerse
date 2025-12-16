@@ -1,5 +1,43 @@
 "use client";
 
+function normalizeYouTubeUrl(url: string): { id: string, url: string } | null {
+  try {
+    if (!url) return null;
+    let id = "";
+    let newUrl = "";
+    // https://www.youtube.com/watch?v=ID&...
+    const match = url.match(/[?&]v=([\w-]{11})/);
+    if (match) {
+      id = match[1];
+      newUrl = `https://www.youtube.com/watch?v=${id}`;
+      return { id, url: newUrl };
+    }
+    // https://youtu.be/ID
+    const match2 = url.match(/youtu\.be\/([\w-]{11})/);
+    if (match2) {
+      id = match2[1];
+      newUrl = `https://www.youtube.com/watch?v=${id}`;
+      return { id, url: newUrl };
+    }
+    // https://www.youtube.com/embed/ID
+    const match3 = url.match(/embed\/([\w-]{11})/);
+    if (match3) {
+      id = match3[1];
+      newUrl = `https://www.youtube.com/watch?v=${id}`;
+      return { id, url: newUrl };
+    }
+    // Nếu chỉ là ID
+    if (/^[\w-]{11}$/.test(url)) {
+      id = url;
+      newUrl = `https://www.youtube.com/watch?v=${id}`;
+      return { id, url: newUrl };
+    }
+    return null;
+  } catch {
+    return null;
+  }
+}
+
 import { useState, useEffect } from "react";
 import {
   Button,
@@ -38,7 +76,7 @@ interface TMDBResult {
 }
 
 interface SourceItem {
-  provider: "youtube" | "dailymotion";
+  provider: "youtube" | "dailymotion" | "vidsrc";
   title: string;
   url: string;
   quality?: string;
@@ -306,7 +344,7 @@ export default function DashboardPage() {
       sources: [
         ...prev.sources,
         {
-          provider: "dailymotion",
+          provider: "youtube",
           title: prev.title,
           url: "",
           language: "vi",
@@ -326,12 +364,41 @@ export default function DashboardPage() {
 
   // Update source (for Movie)
   const updateSource = (index: number, field: keyof SourceItem, value: any) => {
-    setFormData((prev: any) => ({
-      ...prev,
-      sources: prev.sources.map((src: any, i: number) => 
-        i === index ? { ...src, [field]: value } : src
-      ),
-    }));
+    setFormData((prev: any) => {
+      let newSources = prev.sources.map((src: any, i: number) => {
+        if (i !== index) return src;
+        // Nếu chọn vidsrc, url luôn là ""
+        if (field === "provider" && value === "vidsrc") {
+          return { ...src, provider: value, url: "" };
+        }
+        // Nếu đang là vidsrc, không cho sửa url
+        if (src.provider === "vidsrc" && field === "url") {
+          return src;
+        }
+        // Nếu là youtube và sửa url, tự động chuẩn hóa
+        if (src.provider === "youtube" && field === "url") {
+          const norm = normalizeYouTubeUrl(value);
+          if (norm) {
+            value = norm.url;
+          }
+        }
+        return { ...src, [field]: value };
+      });
+
+      // Kiểm tra trùng link YouTube
+      if (field === "url" && value && prev.sources[index]?.provider === "youtube") {
+        const norm = normalizeYouTubeUrl(value);
+        if (norm) {
+          const duplicate = prev.sources.find((src: any, i: number) =>
+            i !== index && src.provider === "youtube" && normalizeYouTubeUrl(src.url)?.id === norm.id
+          );
+          if (duplicate) {
+            alert(`⚠️ Link YouTube đã tồn tại ở vị trí #${prev.sources.indexOf(duplicate) + 1}!`);
+          }
+        }
+      }
+      return { ...prev, sources: newSources };
+    });
   };
 
   // === TV Show Functions ===
@@ -440,9 +507,16 @@ export default function DashboardPage() {
           ...prev.seasons[seasonNum],
           [episodeNum]: {
             ...prev.seasons[seasonNum][episodeNum],
-            sources: prev.seasons[seasonNum][episodeNum].sources.map((src: any, i: number) =>
-              i === sourceIndex ? { ...src, [field]: value } : src
-            ),
+            sources: prev.seasons[seasonNum][episodeNum].sources.map((src: any, i: number) => {
+              if (i !== sourceIndex) return src;
+              if (field === "provider" && value === "vidsrc") {
+                return { ...src, provider: value, url: "" };
+              }
+              if (src.provider === "vidsrc" && field === "url") {
+                return src;
+              }
+              return { ...src, [field]: value };
+            }),
           },
         },
       },
@@ -1375,6 +1449,7 @@ export default function DashboardPage() {
                                 >
                                   <SelectItem key="dailymotion">DailyMotion</SelectItem>
                                   <SelectItem key="youtube">YouTube</SelectItem>
+                                  <SelectItem key="vidsrc">VidSrc</SelectItem>
                                 </Select>
 
                                 <Input
@@ -1550,6 +1625,7 @@ export default function DashboardPage() {
                                                 >
                                                   <SelectItem key="youtube">YouTube</SelectItem>
                                                   <SelectItem key="dailymotion">DailyMotion</SelectItem>
+                                                  <SelectItem key="vidsrc">VidSrc</SelectItem>
                                                 </Select>
 
                                                 <Input
