@@ -260,7 +260,7 @@ const MoviePlayer: React.FC<MoviePlayerProps> = ({ movie, startAt }) => {
     return () => clearInterval(interval);
   }, [idle]);
 
-  // Detect fullscreen changes and sync Card fullscreen when iframe goes fullscreen
+  // Detect fullscreen changes and sync Card or iframe fullscreen
   useEffect(() => {
     const handleFullscreenChange = () => {
       const fullscreenElement = document.fullscreenElement ||
@@ -268,7 +268,28 @@ const MoviePlayer: React.FC<MoviePlayerProps> = ({ movie, startAt }) => {
         (document as any).mozFullScreenElement ||
         (document as any).msFullscreenElement;
 
-      setIsFullscreen(!!fullscreenElement);
+      // Helper: check if node is or is descendant of target
+      const isOrContains = (target: Element | null, node: Element | null) => {
+        if (!target || !node) return false;
+        return target === node || target.contains(node);
+      };
+
+      if (!fullscreenElement) {
+        setIsFullscreen(false);
+        return;
+      }
+      // Card or any child
+      if (isOrContains(cardRef.current, fullscreenElement)) {
+        setIsFullscreen(true);
+        return;
+      }
+      // iframe or any child
+      if (isOrContains(iframeRef.current, fullscreenElement)) {
+        setIsFullscreen(true);
+        return;
+      }
+      // fallback: still in fullscreen, but not our elements
+      setIsFullscreen(false);
     };
 
     document.addEventListener('fullscreenchange', handleFullscreenChange);
