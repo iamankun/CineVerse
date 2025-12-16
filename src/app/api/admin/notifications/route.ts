@@ -44,11 +44,14 @@ export async function POST(request: NextRequest) {
     // Ensure directory exists
     await fs.mkdir(notificationsDir, { recursive: true });
 
-    // Get next ID
+    // Get next ID robustly (không phụ thuộc file 1.json, luôn lấy max + 1)
     const files = await fs.readdir(notificationsDir);
     const jsonFiles = files.filter(file => file.endsWith('.json'));
-    const ids = jsonFiles.map(file => parseInt(file.replace('.json', ''))).filter(id => !isNaN(id));
+    const ids = jsonFiles
+      .map(file => parseInt(file.replace('.json', '')))
+      .filter(id => Number.isInteger(id) && id > 0);
     const nextId = ids.length > 0 ? Math.max(...ids) + 1 : 1;
+    console.log(`[Notification] Existing IDs:`, ids, '| Next ID:', nextId);
 
     const notification = {
       id: nextId,
