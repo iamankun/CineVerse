@@ -132,11 +132,12 @@ const MoviePlayer: React.FC<MoviePlayerProps> = ({ movie, startAt }) => {
           fetchedPlayers[0].title.toLowerCase().includes("vidsrc")
         ) {
           // Tạo nguồn VidSrc phụ đề tiếng Việt (vidsrc-embed.ru)
-          const vidSrcVi = {
+          const vidSrcVi: PlayersProps = {
             title: "VidSrc (Phụ đề Tiếng Việt)",
-            source: `https://vidsrc-embed.ru/embed/movie?tmdb=${movie.id}&ds_lang=vi&autoplay=1`,
+            source: `https://vidsrc-embed.ru/embed/movie?tmdb=${movie.id}&ds_lang=vi&autoplay=1` as `https://${string}`,
             recommended: true,
             fast: true,
+            // 'ads' chỉ nhận false hoặc undefined
             ads: false,
           };
           setPlayers([vidSrcVi]);
