@@ -235,7 +235,7 @@
           {
             "provider": "youtube",
             "title": "Muse Vietnam - Lồng tiếng",
-            "url": "https://www.youtube.com/embed/oV8K0-0sQ-Q",
+            "url": "https://www.youtube.com/watch?v=0mScAsDtfto",
             "language": "vi",
             "subtitles": [
               "vi"
@@ -357,7 +357,7 @@
     "status": "Returning Series",
     "note": "Phiên bản lồng tiếng chỉnh chu từ Muse Vietnam - Đầy đủ 24 tập trong 1 mùa",
     "audioVersion": "LongTieng",
-    "lastUpdate": "2025-10-30T15:19:33.899Z"
+    "lastUpdate": "2025-12-19T08:27:15.087Z"
   },
   "lastUpdated": "2025-10-24T00:00:00Z"
 }
