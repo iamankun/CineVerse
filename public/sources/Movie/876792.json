@@ -1,0 +1,29 @@
+{
+  "tmdbId": 876792,
+  "title": "Movie - Lúc Đó Tôi Đã Chuyển Sinh Thành Slime: Mối Liên Kết Đỏ Thẫm",
+  "year": 2022,
+  "sources": [
+    {
+      "provider": "youtube",
+      "title": "That Time I Got Reincarnated as a Slime the Movie: Scarlet Bond",
+      "url": "https://www.youtube.com/watch?v=YvAV6R8QW_A",
+      "language": "vi",
+      "subtitles": [
+        "vi"
+      ]
+    }
+  ],
+  "metadata": {
+    "movie-rating": "K",
+    "audioVersion": "PhuDe",
+    "lastUpdate": "2025-12-19T15:01:59.406Z",
+    "genre": [
+      "Phim Hoạt Hình",
+      "Phim Giả Tượng",
+      "Phim Phiêu Lưu"
+    ],
+    "duration": 108,
+    "status": "Released",
+    "note": ""
+  }
+}
