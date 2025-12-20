@@ -1,0 +1,28 @@
+{
+  "tmdbId": 536554,
+  "title": "M3GAN",
+  "year": 2022,
+  "sources": [
+    {
+      "provider": "vidsrc",
+      "title": "M3GAN",
+      "url": "",
+      "language": "vi",
+      "subtitles": [
+        "vi"
+      ]
+    }
+  ],
+  "metadata": {
+    "movie-rating": "K",
+    "audioVersion": "PhuDe",
+    "lastUpdate": "2025-12-20T14:02:12.693Z",
+    "genre": [
+      "Phim Khoa Học Viễn Tưởng",
+      "Phim Kinh Dị"
+    ],
+    "duration": 102,
+    "status": "Released",
+    "note": ""
+  }
+}
