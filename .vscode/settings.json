@@ -210,5 +210,10 @@
     "Việt",
     "Watchlist",
     "xuất"
-  ]
+  ],
+  "chat.mcp.serverSampling": {
+    "CineVerse/.vscode/mcp.json: io.github.github/github-mcp-server": {
+      "allowedModels": []
+    }
+  }
 }
