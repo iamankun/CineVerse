@@ -204,21 +204,10 @@ export const drawHandLandmarks = (
  */
 export const loadMediaPipeHands = async (): Promise<any> => {
   return new Promise((resolve, reject) => {
-    // Tải tiện ích vẽ
-    const script1 = document.createElement("script");
-    script1.src =
-      "https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js";
-    script1.async = true;
-
-    // Tải Hands
-    const script2 = document.createElement("script");
-    script2.src =
-      "https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js";
-    script2.async = true;
-
-    script2.onload = async () => {
-      try {
-        const { Hands } = window as any;
+    try {
+      // Kiểm tra xem Hands đã được tải chưa
+      const { Hands } = window as any;
+      if (Hands) {
         const hands = new Hands({
           locateFile: (file: string) => {
             return `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`;
@@ -233,17 +222,80 @@ export const loadMediaPipeHands = async (): Promise<any> => {
         });
 
         resolve(hands);
-      } catch (err) {
-        reject(err);
+        return;
       }
-    };
 
-    script2.onerror = () => {
-      reject(new Error("Không thể tải MediaPipe Hands"));
-    };
+      // Tải tiện ích vẽ trước
+      const script1 = document.createElement("script");
+      script1.src =
+        "https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js";
+      script1.async = true;
 
-    document.body.appendChild(script1);
-    document.body.appendChild(script2);
+      script1.onload = () => {
+        // Sau khi vẽ utils được tải, tải Hands
+        const script2 = document.createElement("script");
+        script2.src =
+          "https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js";
+        script2.async = true;
+
+        script2.onload = () => {
+          try {
+            const { Hands } = window as any;
+            if (!Hands) {
+              reject(new Error("Không tìm thấy đối tượng Hands sau khi tải script"));
+              return;
+            }
+
+            const hands = new Hands({
+              locateFile: (file: string) => {
+                return `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`;
+              },
+            });
+
+            hands.setOptions({
+              maxNumHands: 2,
+              modelComplexity: 1,
+              minDetectionConfidence: 0.5,
+              minTrackingConfidence: 0.5,
+            });
+
+            resolve(hands);
+          } catch (err) {
+            reject(
+              new Error(
+                `Lỗi khởi tạo Hands: ${err instanceof Error ? err.message : String(err)}`
+              )
+            );
+          }
+        };
+
+        script2.onerror = () => {
+          reject(
+            new Error(
+              "Không thể tải MediaPipe Hands từ CDN (https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js)"
+            )
+          );
+        };
+
+        document.body.appendChild(script2);
+      };
+
+      script1.onerror = () => {
+        reject(
+          new Error(
+            "Không thể tải MediaPipe Drawing Utils từ CDN (https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js)"
+          )
+        );
+      };
+
+      document.body.appendChild(script1);
+    } catch (err) {
+      reject(
+        new Error(
+          `Lỗi không mong muốn khi tải MediaPipe: ${err instanceof Error ? err.message : String(err)}`
+        )
+      );
+    }
   });
 };
 

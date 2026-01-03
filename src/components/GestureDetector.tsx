@@ -46,7 +46,10 @@ export default function GestureDetector() {
         setIsLoading(false);
         setError(null);
       } catch (err: any) {
-        setError(`Lỗi tải MediaPipe: ${err.message}`);
+        console.error("Lỗi tải MediaPipe:", err);
+        setError(
+          `Lỗi tải MediaPipe: ${err.message || "Không xác định được lỗi"}`
+        );
         setIsLoading(false);
       }
     };
@@ -56,7 +59,11 @@ export default function GestureDetector() {
     return () => {
       // Dọn dẹp
       if (handDetectorRef.current) {
-        handDetectorRef.current.close();
+        try {
+          handDetectorRef.current.close();
+        } catch (err) {
+          console.warn("Lỗi khi đóng Hands detector:", err);
+        }
       }
     };
   }, []);
@@ -195,8 +202,17 @@ export default function GestureDetector() {
     <div ref={containerRef} className="w-full space-y-4">
       {/* Thông báo lỗi */}
       {error && (
-        <div className="rounded-lg bg-red-900/20 p-4 text-red-400">
-          {error}
+        <div className="space-y-3 rounded-lg bg-red-900/30 p-4 text-red-300 border border-red-700">
+          <p className="font-semibold">❌ Lỗi: {error}</p>
+          <div className="text-sm space-y-1">
+            <p>💡 Kiểm tra:</p>
+            <ul className="list-disc list-inside">
+              <li>Kết nối internet có bình thường không?</li>
+              <li>CDN jsdelivr.net có thể truy cập không?</li>
+              <li>Thử làm mới trang (F5)</li>
+              <li>Xóa cache trình duyệt và thử lại</li>
+            </ul>
+          </div>
         </div>
       )}
 
