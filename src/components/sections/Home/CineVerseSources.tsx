@@ -235,7 +235,7 @@ const CineVerseHero = () => {
 
   const playerUrl = item && item.contentType === "movie"
     ? `/movie/${item.id}/player`
-    : item && "seasons" in item && item.seasons && item.seasons.length > 0
+    : item && "seasons" in item && item.seasons && Array.isArray(item.seasons) && item.seasons.length > 0
     ? `/tv/${item.id}/${item.seasons[0].season_number}/${item.seasons[0].episode_count > 0 ? 1 : 0}/player`
     : detailUrl;
 

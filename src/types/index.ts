@@ -69,7 +69,7 @@ export type PlayersProps = {
   source: `https://${string}`;
   recommended?: boolean;
   fast?: boolean;
-  ads?: false;
+  ads?: boolean;
   resumable?: boolean;
   isCineVerseSource?: boolean;
   provider?: string;

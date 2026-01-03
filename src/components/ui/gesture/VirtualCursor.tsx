@@ -15,10 +15,10 @@ interface VirtualCursorProps {
  * Displays a custom cursor controlled by hand gestures
  */
 export function VirtualCursor({ x, y, isClicking, visible }: VirtualCursorProps) {
-  const [ripples, setRipples] = useState<{ id: number; x: number; y: number }[]>();
+  const [ripples, setRipples] = useState<{ id: number; x: number; y: number }[]>([]);
   const [smoothPos, setSmoothPos] = useState({ x, y });
   const rippleIdRef = useRef(0);
-  const animationRef = useRef<number | undefined>();
+  const animationRef = useRef<number | undefined>(undefined);
 
   // Smooth cursor movement with interpolation
   useEffect(() => {
