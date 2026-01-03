@@ -6,6 +6,7 @@ import { EpisodeListCard } from "../Details/Episodes";
 interface TvShowPlayerEpisodeSelectionProps extends HandlerType {
   id: number;
   episodes: Episode[];
+  currentEpisodeNumber: number;
 }
 
 const TvShowPlayerEpisodeSelection: React.FC<TvShowPlayerEpisodeSelectionProps> = ({
@@ -13,6 +14,7 @@ const TvShowPlayerEpisodeSelection: React.FC<TvShowPlayerEpisodeSelectionProps> 
   onClose,
   id,
   episodes,
+  currentEpisodeNumber,
 }) => {
   // Debug logging
   console.log('📺 Episode Selection Debug:', {
@@ -37,7 +39,7 @@ const TvShowPlayerEpisodeSelection: React.FC<TvShowPlayerEpisodeSelectionProps> 
       hiddenHandler
       withCloseButton
     >
-      <div className="grid grid-cols-1 gap-2 p-2 sm:gap-4 sm:p-4">
+      <div className="grid grid-cols-1 gap-2 p-2 sm:gap-4 sm:p-4 rounded-xl">
         {Array.isArray(episodes) && episodes.length > 0 ? (
           episodes.map((episode, index) => (
             <EpisodeListCard
@@ -46,6 +48,7 @@ const TvShowPlayerEpisodeSelection: React.FC<TvShowPlayerEpisodeSelectionProps> 
               episode={episode}
               order={index + 1}
               withAnimation={false}
+              isCurrentEpisode={episode.episode_number === currentEpisodeNumber}
             />
           ))
         ) : (

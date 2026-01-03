@@ -24,6 +24,7 @@ interface EpisodeCardProps {
   episode: Episode;
   order?: number;
   withAnimation?: boolean;
+  isCurrentEpisode?: boolean;
 }
 
 const TvShowEpisodesSelection: React.FC<TvShowEpisodesSelectionProps> = ({
@@ -84,6 +85,7 @@ export const EpisodeListCard: React.FC<EpisodeCardProps> = ({
   order = 1,
   id,
   withAnimation = true,
+  isCurrentEpisode = false,
 }) => {
   const imageUrl = getImageUrl(episode.still_path);
   const { mobile } = useBreakpoints();
@@ -112,12 +114,13 @@ export const EpisodeListCard: React.FC<EpisodeCardProps> = ({
       shadow="none"
       onPress={handleClick}
       className={cn(
-        "group motion-preset-blur-right border-foreground-200 bg-foreground-100 motion-duration-300 grid grid-cols-[auto_1fr] gap-3 border-2 transition-colors",
+        "group motion-preset-blur-right backdrop-blur-md motion-duration-300 grid grid-cols-[auto_1fr] gap-3 border-2 transition-all",
         {
-          "hover:border-warning hover:bg-foreground-200": !isNotReleased,
-          "cursor-not-allowed opacity-50": isNotReleased,
+          "border-white/10 hover:border-warning": !isNotReleased && !isCurrentEpisode,
+          "cursor-not-allowed opacity-50 border-white/10": isNotReleased,
           "motion-preset-slide-left": isOdd && withAnimation,
           "motion-preset-slide-right": !isOdd && withAnimation,
+          "border-warning ring-2 ring-warning/50": isCurrentEpisode,
         },
       )}
     >

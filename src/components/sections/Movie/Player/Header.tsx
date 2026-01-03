@@ -28,9 +28,6 @@ const MoviePlayerHeader: React.FC<MoviePlayerHeaderProps> = ({
           <ArrowLeft size={42} />
         </ActionButton>
       </div>
-      <div className="absolute left-1/2 -translate-x-1/2 flex-col justify-center text-center flex pointer-events-none">
-        <p className="text-sm text-white text-shadow-lg sm:text-lg lg:text-xl">{movieName}</p>
-      </div>
     </div>
   );
 };

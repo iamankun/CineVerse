@@ -79,40 +79,45 @@ const ControlMenu: React.FC<ControlMenuProps> = ({
               className="flex items-center gap-2"
             >
               {controls.map((control, index) => {
-                const Button = (
+                const buttonContent = (
+                  <motion.button
+                    initial={{ opacity: 0, x: 10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: index * 0.05 }}
+                    onClick={control.onClick}
+                    disabled={control.disabled}
+                    className={cn(
+                      "flex h-12 w-12 items-center justify-center rounded-full backdrop-blur-md",
+                      "bg-white/10 shadow-lg ring-1 ring-white/20 transition-all duration-200",
+                      {
+                        "hover:bg-white/25 hover:scale-110 hover:ring-white/40":
+                          !control.disabled,
+                        "opacity-40 cursor-not-allowed": control.disabled,
+                      }
+                    )}
+                  >
+                    <span className="text-white">{control.icon}</span>
+                  </motion.button>
+                );
+
+                const wrappedButton = control.href ? (
+                  <Link key={index} href={control.href} className="inline-block">
+                    {buttonContent}
+                  </Link>
+                ) : (
+                  <div key={index} className="inline-block">{buttonContent}</div>
+                );
+
+                return (
                   <Tooltip
+                    key={`tooltip-${index}`}
                     content={control.label}
                     placement="left"
                     showArrow
                     isDisabled={control.disabled}
                   >
-                    <motion.button
-                      initial={{ opacity: 0, x: 10 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: index * 0.05 }}
-                      onClick={control.onClick}
-                      disabled={control.disabled}
-                      className={cn(
-                        "flex h-12 w-12 items-center justify-center rounded-full backdrop-blur-md",
-                        "bg-black/40 shadow-lg ring-1 ring-white/20 transition-all duration-200",
-                        {
-                          "hover:bg-white/20 hover:scale-110 hover:ring-white/40":
-                            !control.disabled,
-                          "opacity-40 cursor-not-allowed": control.disabled,
-                        }
-                      )}
-                    >
-                      <span className="text-white">{control.icon}</span>
-                    </motion.button>
+                    {wrappedButton}
                   </Tooltip>
-                );
-
-                return control.href ? (
-                  <Link key={index} href={control.href}>
-                    {Button}
-                  </Link>
-                ) : (
-                  <div key={index}>{Button}</div>
                 );
               })}
             </motion.div>

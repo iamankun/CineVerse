@@ -56,8 +56,8 @@ const ControlMenu: React.FC<ControlMenuProps> = ({
                     onClick={control.onClick}
                     className={cn(
                       "flex h-12 w-12 items-center justify-center rounded-full backdrop-blur-md",
-                      "bg-black/40 shadow-lg ring-1 ring-white/20 transition-all duration-200",
-                      "hover:bg-white/20 hover:scale-110 hover:ring-white/40"
+                      "bg-white/10 shadow-lg ring-1 ring-white/20 transition-all duration-200",
+                      "hover:bg-white/25 hover:scale-110 hover:ring-white/40"
                     )}
                   >
                     <span className="text-white">{control.icon}</span>

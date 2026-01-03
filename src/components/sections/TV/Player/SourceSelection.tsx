@@ -28,22 +28,22 @@ const TvShowPlayerSourceSelection: React.FC<TvShowPlayerSourceSelectionProps> = 
       withCloseButton
     >
       <div className="flex flex-col gap-4 p-5">
-        <div className="space-y-2 px-1 py-2">
+        <div className="space-y-2 px-4 py-3 rounded-xl bg-black/20 backdrop-blur-sm border border-white/10">
           <div className="flex items-center gap-2">
             <Star className="text-warning-500" />
-            <span>Được đề xuất</span>
+            <span className="text-sm">Được đề xuất</span>
           </div>
           <div className="flex items-center gap-2">
             <Rocket className="text-danger-500" />
-            <span>Tốc độ nhanh</span>
+            <span className="text-sm">Tốc độ nhanh</span>
           </div>
           <div className="flex items-center gap-2">
             <Clock className="text-success-500" />
-            <span>Hỗ trợ tiếp tục xem</span>
+            <span className="text-sm">Hỗ trợ tiếp tục xem</span>
           </div>
           <div className="flex items-center gap-2">
             <Ads className="text-primary-500" />
-            <span>Cài Ad Block hoặc Ad Guard để chặn quảng cáo (Nếu có, chúng tôi luôn nỗ lực loại bỏ quảng cáo bài bạc và cá cược...)</span>
+            <span className="text-sm">Cài Ad Block hoặc Ad Guard để chặn quảng cáo (Nếu có, chúng tôi luôn nỗ lực loại bỏ quảng cáo bài bạc và cá cược...)</span>
           </div>
         </div>
         <SelectButton
