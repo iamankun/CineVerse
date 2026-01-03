@@ -74,7 +74,7 @@ export default function VaulDrawer({
         >
           <div
             className={cn(
-              "relative flex h-full flex-col space-y-5 pt-4 pb-6 bg-black/20 backdrop-blur-xl border-t border-white/20",
+              "relative flex h-full flex-col space-y-5 pt-4 pb-6",
               classNames?.content,
               {
                 "rounded-t-2xl": direction === "bottom",

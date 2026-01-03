@@ -49,13 +49,17 @@ const TvShowHoverCard: React.FC<{ id: number; fullWidth?: boolean }> = ({ id, fu
 
   return (
     <div
-      className={cn("w-80", {
+      className={cn("w-80 relative", {
         "w-full": fullWidth,
       })}
     >
+      {/* Gradient overlay kéo dài toàn bộ card */}
+      <div className="absolute inset-0 z-1 bg-linear-to-b from-black/60 from-0% via-black/80 via-20% via-black/50 via-50% to-transparent to-80% rounded-lg pointer-events-none"></div>
+      
       <div className="relative">
         <div className="absolute aspect-video h-fit w-full">
-          <div className="absolute z-2 h-full w-full bg-linear-to-t from-secondary-background from-1%"></div>
+          {/* Gradient tối ở cuối backdrop */}
+          <div className="absolute z-2 h-full w-full bg-linear-to-b from-transparent from-0% to-black/80 to-100%"></div>
           {!isEmpty(titleImage) && (
             <Image
               isBlurred
@@ -69,7 +73,7 @@ const TvShowHoverCard: React.FC<{ id: number; fullWidth?: boolean }> = ({ id, fu
           <Image
             radius="none"
             alt={fullTitle}
-            className="z-0 aspect-video rounded-t-lg object-cover object-center"
+            className="z-0 aspect-video rounded-t-lg object-cover object-center opacity-70"
             src={backdropImage}
           />
         </div>
@@ -113,8 +117,9 @@ const TvShowHoverCard: React.FC<{ id: number; fullWidth?: boolean }> = ({ id, fu
               href={`/tv/${tv.id}`}
               fullWidth
               color="warning"
-              variant="shadow"
+              variant="flat"
               startContent={<Play size={24} />}
+              className="bg-warning/20 backdrop-blur-md border border-warning/30 hover:bg-warning/30"
             >
               Xem các tập
             </Button>

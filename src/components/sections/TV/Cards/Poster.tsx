@@ -41,7 +41,7 @@ const TvShowPosterCard: React.FC<TvShowPosterCardProps> = ({ tv, variant = "full
       <Tooltip
         isDisabled={mobile}
         showArrow
-        className="bg-secondary-background p-0"
+        className="bg-black/40 backdrop-blur-xl border border-white/10 p-0"
         shadow="lg"
         delay={1000}
         placement="right-start"
@@ -68,8 +68,8 @@ const TvShowPosterCard: React.FC<TvShowPosterCardProps> = ({ tv, variant = "full
                   18+
                 </Chip>
               )}
-              <div className="absolute bottom-0 z-2 h-1/2 w-full bg-linear-to-t from-black/60 from-1%"></div>
-              <div className="absolute bottom-0 z-3 flex w-full flex-col gap-1 px-4 py-3 bg-black/20 backdrop-blur-md border-t border-white/10">
+              <div className="absolute bottom-0 z-2 h-1/2 w-full bg-linear-to-t from-black from-1%"></div>
+              <div className="absolute bottom-0 z-3 flex w-full flex-col gap-1 px-4 py-3">
                 <h6 className="truncate text-sm font-semibold">{title}</h6>
                 <div className="flex justify-between text-xs">
                   <p>{releaseYear}</p>
