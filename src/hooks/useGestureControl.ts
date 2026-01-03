@@ -20,6 +20,7 @@ interface GestureControlState {
   confidence: number;
   handDetected: boolean;
   cameraActive: boolean;
+  handPosition: { x: number; y: number } | null; // Hand position for cursor control
 }
 
 // Finger indices for hand landmarks (21 points)
@@ -172,6 +173,7 @@ export const useGestureControl = (options: UseGestureControlOptions = {}) => {
     confidence: 0,
     handDetected: false,
     cameraActive: false,
+    handPosition: null,
   });
 
   const videoRef = useRef<HTMLVideoElement | null>(null);
@@ -180,6 +182,8 @@ export const useGestureControl = (options: UseGestureControlOptions = {}) => {
   const animationFrameRef = useRef<number | null>(null);
   const lastGestureTimeRef = useRef<number>(0);
   const streamRef = useRef<MediaStream | null>(null);
+  const smoothedPositionRef = useRef<{ x: number; y: number } | null>(null);
+  const lastStatePositionRef = useRef<{ x: number; y: number } | null>(null);
 
   // Load config from API
   const loadConfig = useCallback(async () => {
@@ -279,11 +283,17 @@ export const useGestureControl = (options: UseGestureControlOptions = {}) => {
       landmarks: landmarks.map((l: any) => ({ x: l.x, y: l.y, z: l.z || 0 })),
     };
 
+    // Calculate hand position for cursor (use index finger tip)
+    const indexFingerTip = landmarks[8];
+    const screenX = indexFingerTip.x * window.innerWidth;
+    const screenY = indexFingerTip.y * window.innerHeight;
+
     setState(prev => ({
       ...prev,
       currentGesture: gestureName,
       confidence,
       handDetected: true,
+      handPosition: { x: screenX, y: screenY },
     }));
 
     callbacks?.onGestureDetected?.(result);
@@ -384,18 +394,16 @@ export const useGestureControl = (options: UseGestureControlOptions = {}) => {
 
     if (video.readyState === video.HAVE_ENOUGH_DATA) {
       try {
-        const predictions = await detectorRef.current.estimateHands(video);
+        // Use performance.now() for better timing
+        const predictions = await detectorRef.current.estimateHands(video, {
+          flipHorizontal: false,
+        });
 
         // Draw hand landmarks on canvas
         if (canvas && config.showDebugOverlay) {
           const ctx = canvas.getContext('2d');
           if (ctx) {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            
-            // Mirror the canvas horizontally
-            ctx.save();
-            ctx.scale(-1, 1);
-            ctx.translate(-canvas.width, 0);
             
             if (predictions && predictions.length > 0) {
               for (const prediction of predictions) {
@@ -424,17 +432,22 @@ export const useGestureControl = (options: UseGestureControlOptions = {}) => {
                   ctx.stroke();
                 }
                 
-                // Draw points
-                for (const point of landmarks) {
+                // Draw points with highlighting for index finger tip
+                for (let i = 0; i < landmarks.length; i++) {
+                  const point = landmarks[i];
                   ctx.beginPath();
-                  ctx.arc(point[0], point[1], 5, 0, 2 * Math.PI);
-                  ctx.fillStyle = '#FF0000';
+                  // Highlight index finger tip (landmark 8) in bigger yellow circle
+                  if (i === 8) {
+                    ctx.arc(point[0], point[1], 8, 0, 2 * Math.PI);
+                    ctx.fillStyle = '#FFFF00';
+                  } else {
+                    ctx.arc(point[0], point[1], 5, 0, 2 * Math.PI);
+                    ctx.fillStyle = '#FF0000';
+                  }
                   ctx.fill();
                 }
               }
             }
-            
-            ctx.restore();
           }
         }
 
@@ -443,12 +456,25 @@ export const useGestureControl = (options: UseGestureControlOptions = {}) => {
           const prediction = predictions[0];
           const landmarks = prediction.landmarks;
           
-          // Normalize landmarks to 0-1 range
+          // Normalize landmarks to 0-1 range and flip X for mirror effect
           const normalizedLandmarks = landmarks.map((point: number[]) => ({
-            x: point[0] / video.videoWidth,
+            x: 1 - (point[0] / video.videoWidth), // Flip horizontally
             y: point[1] / video.videoHeight,
             z: point[2] / video.videoWidth,
           }));
+
+          // Update hand position (use index finger tip - landmark 8)
+          const indexFingerTip = normalizedLandmarks[8];
+          let screenX = indexFingerTip.x * window.innerWidth;
+          let screenY = indexFingerTip.y * window.innerHeight;
+
+          // Apply smoothing to raw position
+          if (smoothedPositionRef.current) {
+            const alpha = 0.85; // Smoothing factor (0-1, higher = more responsive)
+            screenX = smoothedPositionRef.current.x + alpha * (screenX - smoothedPositionRef.current.x);
+            screenY = smoothedPositionRef.current.y + alpha * (screenY - smoothedPositionRef.current.y);
+          }
+          smoothedPositionRef.current = { x: screenX, y: screenY };
 
           const { gesture, confidence } = recognizeGesture(normalizedLandmarks);
           
@@ -460,24 +486,40 @@ export const useGestureControl = (options: UseGestureControlOptions = {}) => {
               normalizedLandmarks
             );
           } else {
-            // Only update state if it changed
+            // Only update state if it changed significantly (reduce jitter)
+            const lastPos = lastStatePositionRef.current;
+            const positionChanged = !lastPos || 
+              Math.abs(lastPos.x - screenX) > 1 ||
+              Math.abs(lastPos.y - screenY) > 1;
+              
             if (state.currentGesture !== 'None' || !state.handDetected) {
+              lastStatePositionRef.current = { x: screenX, y: screenY };
               setState(prev => ({
                 ...prev,
                 currentGesture: 'None',
                 confidence: 0,
                 handDetected: true,
+                handPosition: { x: screenX, y: screenY },
+              }));
+            } else if (positionChanged) {
+              // Update position only if moved more than threshold
+              lastStatePositionRef.current = { x: screenX, y: screenY };
+              setState(prev => ({
+                ...prev,
+                handPosition: { x: screenX, y: screenY },
               }));
             }
           }
         } else {
           // Only update state if it changed
           if (state.handDetected) {
+            lastStatePositionRef.current = null;
             setState(prev => ({
               ...prev,
               currentGesture: 'None',
               confidence: 0,
               handDetected: false,
+              handPosition: null,
             }));
           }
         }
@@ -490,6 +532,7 @@ export const useGestureControl = (options: UseGestureControlOptions = {}) => {
       }
     }
 
+    // Use requestAnimationFrame for smooth 60fps updates
     animationFrameRef.current = requestAnimationFrame(detectGestures);
   }, [state.cameraActive, state.handDetected, state.currentGesture, config.showDebugOverlay, processGesture]);
 

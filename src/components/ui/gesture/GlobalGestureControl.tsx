@@ -1,9 +1,10 @@
 'use client';
 
-import { useEffect, useState, useCallback, useMemo } from 'react';
+import { useEffect, useState, useCallback, useMemo, useRef } from 'react';
 import { useGestureControl } from '@/hooks/useGestureControl';
 import { GestureCallbacks, GestureResult } from '@/types/gesture';
 import { useGestureContext } from '@/contexts/GestureContext';
+import VirtualCursor from './VirtualCursor';
 import { Button } from '@heroui/react';
 import { Hand } from 'lucide-react';
 
@@ -14,6 +15,28 @@ import { Hand } from 'lucide-react';
 export function GlobalGestureControl() {
   const { enabled } = useGestureContext();
   const [miniView, setMiniView] = useState(false);
+  const [cursorPos, setCursorPos] = useState({ x: 0, y: 0 });
+  const [isClicking, setIsClicking] = useState(false);
+  const lastClickTimeRef = useRef(0);
+  const CLICK_COOLDOWN = 300; // ms between clicks
+
+  // Handle click at cursor position
+  const handleClickAtCursor = useCallback((x: number, y: number) => {
+    const now = Date.now();
+    if (now - lastClickTimeRef.current < CLICK_COOLDOWN) return;
+    
+    lastClickTimeRef.current = now;
+    setIsClicking(true);
+    
+    // Find element at cursor position and click it
+    const element = document.elementFromPoint(x, y);
+    if (element && element instanceof HTMLElement) {
+      console.log('🖱️ Clicking element:', element.tagName);
+      element.click();
+    }
+    
+    setTimeout(() => setIsClicking(false), 200);
+  }, []);
 
   // Gesture callbacks for global navigation
   const gestureCallbacks: GestureCallbacks = useMemo(() => ({
@@ -35,8 +58,13 @@ export function GlobalGestureControl() {
 
     onGestureDetected: (result: GestureResult) => {
       console.log('Gesture detected:', result.gesture, result.confidence);
+      
+      // Handle click gesture (Closed_Fist)
+      if (result.gesture === 'Closed_Fist') {
+        handleClickAtCursor(cursorPos.x, cursorPos.y);
+      }
     },
-  }), []);
+  }), [handleClickAtCursor, cursorPos]);
 
   const {
     isInitialized,
@@ -46,12 +74,20 @@ export function GlobalGestureControl() {
     confidence,
     handDetected,
     cameraActive,
+    handPosition,
     startDetection,
     stopDetection,
   } = useGestureControl({
     enabled,
     callbacks: gestureCallbacks,
   });
+
+  // Update cursor position from hand tracking
+  useEffect(() => {
+    if (handPosition) {
+      setCursorPos(handPosition);
+    }
+  }, [handPosition]);
 
   // Sync miniView with enabled state
   useEffect(() => {
@@ -137,6 +173,11 @@ export function GlobalGestureControl() {
                     </span>
                   )}
                 </div>
+                {handDetected && (
+                  <div className="text-[9px] text-green-300 mt-0.5">
+                    📍 Tracking ngón trỏ
+                  </div>
+                )}
               </div>
             </div>
 
@@ -149,12 +190,21 @@ export function GlobalGestureControl() {
 
             {/* Instructions */}
             <div className="text-[10px] text-white/40 space-y-0.5">
+              <p>• Di chuyển tay: Điều khiển con trỏ</p>
+              <p>• Nắm tay: Click chuột</p>
               <p>• Vuốt trái/phải: Lướt trang</p>
-              <p>• Ngón trỏ lên: Cuộn xuống</p>
             </div>
           </div>
         </div>
       )}
+
+      {/* Virtual Cursor */}
+      <VirtualCursor
+        x={cursorPos.x}
+        y={cursorPos.y}
+        isClicking={isClicking}
+        visible={enabled && handDetected}
+      />
     </>
   );
 }

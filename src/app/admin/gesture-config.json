@@ -2,7 +2,7 @@
   "enabled": true,
   "showDebugOverlay": true,
   "confidenceThreshold": 0.7,
-  "gestureDelay": 500,
+  "gestureDelay": 200,
   "gestures": {
     "Open_Palm": {
       "enabled": true,
