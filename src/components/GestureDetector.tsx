@@ -98,7 +98,7 @@ export default function GestureDetector() {
 
   // Xử lý kết quả phát hiện
   const onResults = (results: any) => {
-    if (!canvasRef.current) return;
+    if (!canvasRef.current || !videoRef.current) return;
 
     const ctx = canvasRef.current.getContext("2d");
     if (!ctx) return;
@@ -106,10 +106,13 @@ export default function GestureDetector() {
     const canvas = canvasRef.current;
     const video = videoRef.current;
 
-    if (!video) return;
+    // Đảm bảo canvas có kích thước đúng
+    if (video.videoWidth > 0 && video.videoHeight > 0) {
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+    }
 
-    // Xóa canvas
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    // Vẽ video frame vào canvas
     ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
     // Tính toán FPS
@@ -249,14 +252,14 @@ export default function GestureDetector() {
             autoPlay
             playsInline
             muted
-            className="hidden h-full w-full object-contain"
+            className="w-full h-auto object-contain"
           />
           <canvas
             ref={canvasRef}
             width={1280}
             height={720}
-            className="w-full"
-            style={{ background: "rgb(0,0,0)" }}
+            className="absolute top-0 left-0 w-full"
+            style={{ background: "transparent" }}
           />
 
           {/* Overlay trạng thái */}
