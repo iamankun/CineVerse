@@ -22,6 +22,7 @@ const AdsWarning = dynamic(() => import("@/components/ui/overlay/AdsWarning"));
 const AgeRating = dynamic(() => import("@/components/ui/overlay/AgeRating"));
 const WatchingWithBrand = dynamic(() => import("@/components/ui/overlay/WatchingWithBrand"));
 const TvShowPlayerHeader = dynamic(() => import("./Header"));
+const ControlMenu = dynamic(() => import("./ControlMenu"));
 const TvShowPlayerSourceSelection = dynamic(() => import("./SourceSelection"));
 const TvShowPlayerEpisodeSelection = dynamic(() => import("./EpisodeSelection"));
 const GestureDetector = dynamic(() => import("@/components/ui/gesture/GestureDetector"), { ssr: false });
@@ -506,6 +507,18 @@ const TvShowPlayer: React.FC<TvShowPlayerProps> = ({
           onOpenSource={sourceHandlers.open}
           onOpenEpisode={episodeHandlers.open}
           {...props}
+        />
+
+        <ControlMenu
+          id={id}
+          seasonNumber={episode.season_number}
+          episodeNumber={episode.episode_number}
+          selectedSource={selectedSource}
+          nextEpisodeNumber={props.nextEpisodeNumber}
+          prevEpisodeNumber={props.prevEpisodeNumber}
+          onOpenSource={sourceHandlers.open}
+          onOpenEpisode={episodeHandlers.open}
+          hidden={idle && !mobile}
         />
 
         <div className="relative h-screen overflow-hidden" ref={cardRef}>

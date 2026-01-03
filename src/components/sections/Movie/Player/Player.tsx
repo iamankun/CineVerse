@@ -23,6 +23,7 @@ const AdsWarning = dynamic(() => import("@/components/ui/overlay/AdsWarning"));
 const AgeRating = dynamic(() => import("@/components/ui/overlay/AgeRating"));
 const WatchingWithBrand = dynamic(() => import("@/components/ui/overlay/WatchingWithBrand"));
 const MoviePlayerHeader = dynamic(() => import("./Header"));
+const ControlMenu = dynamic(() => import("./ControlMenu"));
 const MoviePlayerSourceSelection = dynamic(() => import("./SourceSelection"));
 const GestureDetector = dynamic(() => import("@/components/ui/gesture/GestureDetector"), { ssr: false });
 
@@ -504,6 +505,12 @@ const MoviePlayer: React.FC<MoviePlayerProps> = ({ movie, startAt }) => {
           onOpenSource={handlers.open}
           hidden={idle && !mobile}
         />
+        
+        <ControlMenu
+          onOpenSource={handlers.open}
+          hidden={idle && !mobile}
+        />
+        
         <div className="relative h-screen overflow-hidden" ref={cardRef}>
           <Card shadow="none" radius="none" className="absolute inset-0 bg-black flex items-center justify-center">
             <Skeleton className="absolute h-full w-full" />
