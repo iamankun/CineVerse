@@ -329,9 +329,11 @@ export const useGestureControl = (options: UseGestureControlOptions = {}) => {
 
   // Start camera
   const startCamera = useCallback(async () => {
+    console.log('📹 startCamera called, videoRef:', !!videoRef.current);
     if (!videoRef.current) return;
 
     try {
+      console.log('🎥 Requesting camera access...');
       const stream = await navigator.mediaDevices.getUserMedia({
         video: {
           width: { ideal: 640 },
@@ -340,13 +342,15 @@ export const useGestureControl = (options: UseGestureControlOptions = {}) => {
         },
       });
 
+      console.log('✅ Camera access granted');
       streamRef.current = stream;
       videoRef.current.srcObject = stream;
       await videoRef.current.play();
+      console.log('▶️ Video playing');
 
       setState(prev => ({ ...prev, cameraActive: true }));
     } catch (err) {
-      console.error('Camera access denied');
+      console.error('❌ Camera access denied:', err);
       setState(prev => ({
         ...prev,
         error: 'Không thể truy cập camera. Vui lòng cấp quyền camera.',
@@ -491,8 +495,11 @@ export const useGestureControl = (options: UseGestureControlOptions = {}) => {
 
   // Start detection
   const startDetection = useCallback(async (video: HTMLVideoElement, canvas: HTMLCanvasElement) => {
+    console.log('🚀 startDetection called');
     await initialize(video, canvas);
+    console.log('✅ Initialize complete, starting camera...');
     await startCamera();
+    console.log('✅ Camera started');
   }, [initialize, startCamera]);
 
   // Stop detection

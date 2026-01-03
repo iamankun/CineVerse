@@ -3,6 +3,7 @@
 import { useEffect, useState, useCallback, useMemo } from 'react';
 import { useGestureControl } from '@/hooks/useGestureControl';
 import { GestureCallbacks, GestureResult } from '@/types/gesture';
+import { useGestureContext } from '@/contexts/GestureContext';
 import { Button } from '@heroui/react';
 import { Hand } from 'lucide-react';
 
@@ -11,7 +12,7 @@ import { Hand } from 'lucide-react';
  * Provides gesture control functionality across the entire site
  */
 export function GlobalGestureControl() {
-  const [enabled, setEnabled] = useState(false);
+  const { enabled } = useGestureContext();
   const [miniView, setMiniView] = useState(false);
 
   // Gesture callbacks for global navigation
@@ -52,29 +53,39 @@ export function GlobalGestureControl() {
     callbacks: gestureCallbacks,
   });
 
-  // Toggle gesture control
-  const handleToggle = useCallback(async () => {
+  // Sync miniView with enabled state
+  useEffect(() => {
+    console.log('🎯 Enabled state changed:', enabled);
     if (enabled) {
-      stopDetection();
-      setEnabled(false);
-      setMiniView(false);
-    } else {
-      setEnabled(true);
       setMiniView(true);
+    } else {
+      setMiniView(false);
+      stopDetection();
     }
   }, [enabled, stopDetection]);
 
   // Auto start detection when enabled
   useEffect(() => {
-    if (enabled && !isInitialized && !isLoading) {
-      const video = document.getElementById('global-gesture-video') as HTMLVideoElement;
-      const canvas = document.getElementById('global-gesture-canvas') as HTMLCanvasElement;
+    console.log('🔍 Check start detection:', { enabled, isInitialized, isLoading, miniView });
+    if (enabled && !isInitialized && !isLoading && miniView) {
+      // Wait for DOM to render
+      const timer = setTimeout(() => {
+        const video = document.getElementById('global-gesture-video') as HTMLVideoElement;
+        const canvas = document.getElementById('global-gesture-canvas') as HTMLCanvasElement;
+        
+        console.log('📹 Video/Canvas elements:', { video: !!video, canvas: !!canvas });
+        
+        if (video && canvas) {
+          console.log('▶️ Starting detection...');
+          startDetection(video, canvas);
+        } else {
+          console.warn('⚠️ Video or canvas not found');
+        }
+      }, 100);
       
-      if (video && canvas) {
-        startDetection(video, canvas);
-      }
+      return () => clearTimeout(timer);
     }
-  }, [enabled, isInitialized, isLoading, startDetection]);
+  }, [enabled, isInitialized, isLoading, miniView, startDetection]);
 
   if (!enabled) return null;
 
@@ -147,3 +158,5 @@ export function GlobalGestureControl() {
     </>
   );
 }
+
+export default GlobalGestureControl;
