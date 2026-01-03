@@ -136,8 +136,10 @@ const ControlMenu: React.FC<ControlMenuProps> = ({
                 <HiChevronLeft className="text-white" size={24} />
               )}
             </motion.div>
-          </motion.button>
-
+        </motion.button>
+      </div>
+    </div>
+  );
 };
 
 export default ControlMenu;

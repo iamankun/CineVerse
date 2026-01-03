@@ -2,6 +2,7 @@
 
 import React from "react";
 import { usePathname } from "next/navigation";
+import Link from "next/link";
 
 // --- Helper Component for Navigation Item ---
 interface NavItemProps {
@@ -11,10 +12,10 @@ interface NavItemProps {
 }
 
 const NavItem: React.FC<NavItemProps> = ({ path, label, children }) => (
-    <a href={path} className="nav-item" aria-label={label}>
+    <Link href={path} className="nav-item" aria-label={label} prefetch={true}>
         {children}
         <span>{label}</span>
-    </a>
+    </Link>
 );
 
 export const FloatingNavBar: React.FC = () => {

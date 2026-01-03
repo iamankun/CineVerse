@@ -2,11 +2,24 @@
 
 import useBreakpoints from "@/hooks/useBreakpoints";
 import { Accordion, AccordionItem, Link } from "@heroui/react";
+import { 
+  HiQuestionMarkCircle, 
+  HiLightBulb, 
+  HiXCircle, 
+  HiClock,
+  HiShieldCheck
+} from "react-icons/hi2";
+import { HiDownload } from "react-icons/hi";
 
 const FAQS = [
   {
     key: "CineVerseLaGi",
-    title: "🤔 CineVerse là gì?",
+    title: (
+      <div className="flex items-center gap-2">
+        <HiQuestionMarkCircle className="text-primary-500" size={20} />
+        <span>CineVerse là gì?</span>
+      </div>
+    ),
     description: (
       <p className="text-foreground-600">
         Giống như mọi trang web khác, CineVerse cũng là một trang web phát trực tuyến giúp bạn dễ dàng 
@@ -16,7 +29,12 @@ const FAQS = [
   },
   {
     key: "CineVerseDangLamGi",
-    title: "❓ Vậy CineVerse thực sự đang làm gì?",
+    title: (
+      <div className="flex items-center gap-2">
+        <HiLightBulb className="text-warning-500" size={20} />
+        <span>Vậy CineVerse thực sự đang làm gì?</span>
+      </div>
+    ),
     description: (
       <div className="space-y-2 text-foreground-600">
         <p>
@@ -34,7 +52,7 @@ const FAQS = [
           <li>Không cá độ</li>
           <li>Không chèn những nội dung đã cấm trong luật quảng cáo của Việt Nam</li>
         </ul>
-        <p className="italic">(Rất ghét quảng cáo và phomo 😡)</p>
+        <p className="italic">(Rất ghét quảng cáo và phomo)</p>
         <p>
           Chúng tôi không lưu trữ bất kỳ nội dung nào được bảo vệ bản quyền.
           Mọi nội dung đều thông qua các kênh phân phối có sẵn và công khai.
@@ -49,17 +67,22 @@ const FAQS = [
   },
   {
     key: "KhongQuangCao",
-    title: "🚫 Mình có thể xem video không quảng cáo được không?",
+    title: (
+      <div className="flex items-center gap-2">
+        <HiXCircle className="text-danger-500" size={20} />
+        <span>Mình có thể xem video không quảng cáo được không?</span>
+      </div>
+    ),
     description: (
       <div className="space-y-2 text-foreground-600">
         <p>
           Tớ rất tiếc vì không thể giúp bạn. Chúng tôi hoàn toàn kiểm soát quảng cáo được phát.
-          Nhưng vui lòng hiểu cho tớ ghét quảng cáo 😡 nên rất tiếc không giúp bạn được vì,
+          Nhưng vui lòng hiểu cho tớ ghét quảng cáo nên rất tiếc không giúp bạn được vì,
           nó đã bị ban ngay từ vòng gửi xe.
         </p>
         <p>
           Tuy nhiên không tắt quảng cáo bằng các nền tảng block ADs. Nếu bạn không muốn bị gián đoạn vì tốc độ và ti tỉ các vấn đề
-          đôi lúc do chặn quảng cáo gây ra. (Thấy nó phiền chưa 😡 cọc N)
+          đôi lúc do chặn quảng cáo gây ra. (Thấy nó phiền chưa? cọc N)
           Vậy nên bạn cứ yên tâm vì CineVerse không chèn quảng cáo vào.
         </p>
         <p>
@@ -76,7 +99,12 @@ const FAQS = [
   },
   {
     key: "TocDoStream",
-    title: "🐌 Tốc độ phát trực tuyến chậm hoặc tất cả video đều không phát",
+    title: (
+      <div className="flex items-center gap-2">
+        <HiClock className="text-secondary-500" size={20} />
+        <span>Tốc độ phát trực tuyến chậm hoặc tất cả video đều không phát</span>
+      </div>
+    ),
     description: (
       <p className="text-foreground-600">
         Khi bạn vào trang có tập phim, trong 99% trường hợp sẽ có trình phát video. Tất nhiên, bạn phải nhấp vào nút Phát. 
@@ -87,7 +115,12 @@ const FAQS = [
   },
   {
     key: "TaiXuong",
-    title: "😁 Tôi muốn tải xuống video",
+    title: (
+      <div className="flex items-center gap-2">
+        <HiDownload className="text-success-500" size={20} />
+        <span>Tôi muốn tải xuống video</span>
+      </div>
+    ),
     description: (
       <p className="text-foreground-600">
         Vì chúng tôi không lưu trữ bất kỳ tệp nào, nên chúng tôi không có tính năng tải xuống nào ở đây. 
@@ -97,7 +130,12 @@ const FAQS = [
   },
   {
     key: "AnToan",
-    title: "😟 Phát trực tuyến trên trang web này có an toàn không?",
+    title: (
+      <div className="flex items-center gap-2">
+        <HiShieldCheck className="text-success-500" size={20} />
+        <span>Phát trực tuyến trên trang web này có an toàn không?</span>
+      </div>
+    ),
     description: (
       <p className="text-foreground-600">
         Trang web này chắc chắn an toàn hơn để phát trực tuyến, tuy nhiên việc tải xuống, tải lên là bất hợp pháp. 
@@ -114,7 +152,7 @@ const FAQ = () => {
   return (
     <Accordion variant="splitted" isCompact={mobile}>
       {FAQS.map(({ key, title, description }) => (
-        <AccordionItem key={key} aria-label={title} title={title}>
+        <AccordionItem key={key} aria-label={typeof title === 'string' ? title : key} title={title}>
           {description}
         </AccordionItem>
       ))}
