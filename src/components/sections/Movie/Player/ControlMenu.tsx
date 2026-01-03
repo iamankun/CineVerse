@@ -68,9 +68,9 @@ const ControlMenu: React.FC<ControlMenuProps> = ({
           onClick={() => setIsExpanded(!isExpanded)}
           className={cn(
             "flex h-14 w-14 items-center justify-center rounded-full backdrop-blur-md",
-            "bg-gradient-to-br from-primary/80 to-secondary/80 shadow-xl",
-            "ring-2 ring-white/30 transition-all duration-300",
-            "hover:scale-110 hover:ring-white/50 hover:shadow-2xl",
+            "bg-primary/20 shadow-xl border border-primary/30",
+            "ring-2 ring-primary/30 transition-all duration-300",
+            "hover:scale-110 hover:bg-primary/30 hover:ring-primary/50 hover:shadow-2xl",
             "active:scale-95"
             )}
             whileTap={{ scale: 0.9 }}
