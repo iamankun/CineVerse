@@ -303,14 +303,14 @@ function initializeMockHandLandmarker(
         timestamp: number
       ) => {
         // Sinh dữ liệu giả lập landmarks (21 điểm trên tay)
-        // Mô phỏng tay được phát hiện
+        // Mô phỏng tay được phát hiện ở vị trí ngẫu nhiên
         const mockLandmarks = Array(21)
           .fill(0)
           .map((_, i) => ({
-            x: Math.random(),
-            y: Math.random(),
-            z: Math.random() * 0.1,
-            visibility: Math.random() > 0.1 ? 1 : 0,
+            x: 0.3 + Math.random() * 0.4, // Vị trí giữa 30-70% của màn hình
+            y: 0.2 + Math.random() * 0.6, // Vị trí giữa 20-80% của màn hình
+            z: Math.random() * 0.1 - 0.05, // Độ sâu từ -0.05 đến 0.05
+            visibility: Math.random() > 0.15 ? 1 : 0, // ~85% điểm visible
           }));
 
         return {
@@ -318,7 +318,7 @@ function initializeMockHandLandmarker(
           handedness: [
             {
               label: "Right",
-              score: 0.95,
+              score: 0.92,
               displayName: "Right",
             },
           ],

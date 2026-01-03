@@ -132,12 +132,16 @@ export default function GestureDetector() {
     }
 
     // Vẽ landmarks
-    if (results.multiHandLandmarks && results.multiHandLandmarks.length > 0) {
+    if (
+      results.multiHandLandmarks &&
+      Array.isArray(results.multiHandLandmarks) &&
+      results.multiHandLandmarks.length > 0
+    ) {
       const detectedGestures: string[] = [];
 
       results.multiHandLandmarks.forEach(
         (landmarks: HandLandmark[], handIndex: number) => {
-          const handedness = results.multiHandedness[handIndex];
+          const handedness = results.multiHandedness?.[handIndex];
 
           // Vẽ landmarks tay
           drawHandLandmarks(
@@ -196,6 +200,11 @@ export default function GestureDetector() {
         }
         lastTimestamp = timestamp;
 
+        if (!handDetectorRef.current) {
+          frameId = requestAnimationFrame(processFrame);
+          return;
+        }
+
         const result = await handDetectorRef.current.detectForVideo(
           videoRef.current,
           timestamp
@@ -203,11 +212,14 @@ export default function GestureDetector() {
 
         // Gọi onResults với format tương thích
         onResults({
-          multiHandLandmarks: result.landmarks,
-          multiHandedness: result.handedness || [],
+          multiHandLandmarks: result?.landmarks || [],
+          multiHandedness: result?.handedness || [],
         });
       } catch (err) {
         console.error("Lỗi xử lý khung hình:", err);
+        setError(
+          `Lỗi phát hiện cử chỉ: ${err instanceof Error ? err.message : String(err)}`
+        );
       }
 
       frameId = requestAnimationFrame(processFrame);
