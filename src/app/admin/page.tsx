@@ -60,6 +60,13 @@ export default function AdminPage() {
       path: "/admin/filters",
       color: "bg-gradient-to-br from-red-500 to-orange-500",
     },
+    {
+      title: "Cử chỉ Tay",
+      description: "Điều khiển video bằng cử chỉ tay",
+      icon: <IoHandRight className="text-6xl" />,
+      path: "/admin/gestures",
+      color: "bg-gradient-to-br from-indigo-500 to-purple-500",
+    },
   ];
 
   return (

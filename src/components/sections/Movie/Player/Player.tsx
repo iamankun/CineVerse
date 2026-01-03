@@ -5,11 +5,11 @@ import useBreakpoints from "@/hooks/useBreakpoints";
 import { cn } from "@/utils/helpers";
 import { mutateMovieTitle } from "@/utils/movies";
 import { getMoviePlayers } from "@/utils/players";
-import { Card, Skeleton } from "@heroui/react";
+import { Card, Skeleton, Tooltip, Button, addToast } from "@heroui/react";
 import { useDisclosure, useDocumentTitle, useIdle, useLocalStorage } from "@mantine/hooks";
 import dynamic from "next/dynamic";
 import { parseAsInteger, useQueryState } from "nuqs";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { MovieDetails } from "tmdb-ts/dist/types/movies";
 import { useVidlinkPlayer } from "@/hooks/useVidlinkPlayer";
 import { useMovieLogo } from "@/hooks/useMovieLogo";
@@ -18,11 +18,13 @@ import { playerAdBlocker } from "@/utils/player-ad-blocker";
 import { usePinchToZoom } from "@/hooks/usePinchToZoom";
 import { getMovieReleaseDates } from "@/api/tmdb";
 import { getVietnamRatingFromReleaseDates } from "@/utils/rating-converter";
+import { IoHandRight } from "react-icons/io5";
 const AdsWarning = dynamic(() => import("@/components/ui/overlay/AdsWarning"));
 const AgeRating = dynamic(() => import("@/components/ui/overlay/AgeRating"));
 const WatchingWithBrand = dynamic(() => import("@/components/ui/overlay/WatchingWithBrand"));
 const MoviePlayerHeader = dynamic(() => import("./Header"));
 const MoviePlayerSourceSelection = dynamic(() => import("./SourceSelection"));
+const GestureDetector = dynamic(() => import("@/components/ui/gesture/GestureDetector"), { ssr: false });
 
 interface MoviePlayerProps {
   movie: MovieDetails;
