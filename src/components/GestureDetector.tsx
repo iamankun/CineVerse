@@ -177,23 +177,40 @@ export default function GestureDetector() {
     }
   };
 
-  // Xử lý khung hình video
+  // Xử lý khung hình video (cho HandLandmarker)
   useEffect(() => {
     if (!isRunning || !handDetectorRef.current || !videoRef.current) return;
 
-    const processFrame = async () => {
+    let frameId: number;
+    let lastTimestamp = 0;
+
+    const processFrame = async (timestamp: number) => {
       try {
-        await handDetectorRef.current.send({
-          image: videoRef.current,
+        // Giới hạn FPS ở ~30fps để tránh quá tải
+        if (timestamp - lastTimestamp < 33) {
+          frameId = requestAnimationFrame(processFrame);
+          return;
+        }
+        lastTimestamp = timestamp;
+
+        const result = await handDetectorRef.current.detectForVideo(
+          videoRef.current,
+          timestamp
+        );
+
+        // Gọi onResults với format tương thích
+        onResults({
+          multiHandLandmarks: result.landmarks,
+          multiHandedness: result.handedness || [],
         });
       } catch (err) {
         console.error("Lỗi xử lý khung hình:", err);
       }
 
-      requestAnimationFrame(processFrame);
+      frameId = requestAnimationFrame(processFrame);
     };
 
-    const frameId = requestAnimationFrame(processFrame);
+    frameId = requestAnimationFrame(processFrame);
 
     return () => cancelAnimationFrame(frameId);
   }, [isRunning]);

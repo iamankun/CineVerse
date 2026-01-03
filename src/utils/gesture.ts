@@ -202,103 +202,49 @@ export const drawHandLandmarks = (
  * Tải mô hình MediaPipe Hand Landmarker (phiên bản mới)
  * @returns Promise giải quyết khi mô hình được tải
  */
+/**
+ * Tải mô hình MediaPipe HandLandmarker từ @mediapipe/tasks-genai
+ * @returns Promise giải quyết khi mô hình được tải
+ */
 export const loadMediaPipeHands = async (): Promise<any> => {
-  return new Promise((resolve, reject) => {
-    try {
-      console.log("📦 Bắt đầu tải MediaPipe Hands...");
+  try {
+    console.log("📦 Bắt đầu tải MediaPipe HandLandmarker...");
 
-      // Kiểm tra nếu Hands đã tồn tại
-      const existingHands = (window as any).Hands;
-      if (existingHands) {
-        console.log("✓ Hands đã tồn tại, khởi tạo...");
-        const hands = new existingHands({
-          locateFile: (file: string) => {
-            return `https://cdn.jsdelivr.net/npm/@mediapipe/hands@latest/${file}`;
-          },
-        });
+    // Import từ npm package @mediapipe/tasks-genai
+    const { HandLandmarker, FilesetResolver } = await import(
+      "@mediapipe/tasks-genai"
+    );
 
-        hands.setOptions({
-          maxNumHands: 2,
-          modelComplexity: 1,
-          minDetectionConfidence: 0.5,
-          minTrackingConfidence: 0.5,
-        });
+    console.log("✓ Imported HandLandmarker từ @mediapipe/tasks-genai");
 
-        console.log("✓ Hands khởi tạo thành công");
-        resolve(hands);
-        return;
-      }
+    // Khởi tạo FilesetResolver
+    const vision = await FilesetResolver.forVisionTasks(
+      "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest/wasm"
+    );
 
-      // Tải DrawingUtils trước
-      const drawingScript = document.createElement("script");
-      drawingScript.src = "https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils@latest/drawing_utils.js";
-      drawingScript.async = true;
-      drawingScript.crossOrigin = "anonymous";
+    console.log("✓ FilesetResolver khởi tạo thành công");
 
-      drawingScript.onload = () => {
-        console.log("✓ DrawingUtils tải thành công");
+    // Tạo HandLandmarker
+    const handLandmarker = await HandLandmarker.createFromOptions(vision, {
+      baseOptions: {
+        modelAssetPath:
+          "https://storage.googleapis.com/mediapipe-models/hand_landmarker.task",
+      },
+      runningMode: "LIVE_STREAM",
+      numHands: 2,
+      minHandDetectionConfidence: 0.5,
+      minHandPresenceConfidence: 0.5,
+      minTrackingConfidence: 0.5,
+    });
 
-        // Tải Hands script
-        const handsScript = document.createElement("script");
-        handsScript.src = "https://cdn.jsdelivr.net/npm/@mediapipe/hands@latest/hands.js";
-        handsScript.async = true;
-        handsScript.crossOrigin = "anonymous";
+    console.log("✓ HandLandmarker khởi tạo thành công");
 
-        handsScript.onload = () => {
-          console.log("✓ Hands tải thành công");
-
-          try {
-            const { Hands } = window as any;
-            if (!Hands) {
-              throw new Error("Không tìm thấy đối tượng Hands sau khi tải");
-            }
-
-            const hands = new Hands({
-              locateFile: (file: string) => {
-                return `https://cdn.jsdelivr.net/npm/@mediapipe/hands@latest/${file}`;
-              },
-            });
-
-            hands.setOptions({
-              maxNumHands: 2,
-              modelComplexity: 1,
-              minDetectionConfidence: 0.5,
-              minTrackingConfidence: 0.5,
-            });
-
-            console.log("✓ Hands khởi tạo thành công");
-            resolve(hands);
-          } catch (err) {
-            const errorMsg = `Lỗi khởi tạo Hands: ${err instanceof Error ? err.message : String(err)}`;
-            console.error(errorMsg);
-            reject(new Error(errorMsg));
-          }
-        };
-
-        handsScript.onerror = () => {
-          const errorMsg = "Lỗi tải Hands từ CDN - Kiểm tra kết nối mạng";
-          console.error(errorMsg);
-          reject(new Error(errorMsg));
-        };
-
-        document.body.appendChild(handsScript);
-      };
-
-      drawingScript.onerror = () => {
-        const errorMsg = "Lỗi tải DrawingUtils từ CDN - Kiểm tra kết nối mạng";
-        console.error(errorMsg);
-        reject(new Error(errorMsg));
-      };
-
-      console.log("📝 Tải DrawingUtils...");
-      document.body.appendChild(drawingScript);
-
-    } catch (err) {
-      const errorMsg = `Lỗi không mong muốn: ${err instanceof Error ? err.message : String(err)}`;
-      console.error(errorMsg);
-      reject(new Error(errorMsg));
-    }
-  });
+    return handLandmarker;
+  } catch (err) {
+    const errorMsg = `Lỗi tải MediaPipe HandLandmarker: ${err instanceof Error ? err.message : String(err)}`;
+    console.error(errorMsg, err);
+    throw new Error(errorMsg);
+  }
 };
 
 /**
