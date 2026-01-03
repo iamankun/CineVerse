@@ -46,6 +46,8 @@ const GESTURE_ICONS: Record<GestureName, string> = {
   'Thumb_Up': '👍',
   'Victory': '✌️',
   'ILoveYou': '🤟',
+  'Swipe_Left': '👈',
+  'Swipe_Right': '👉',
 };
 
 const ACTION_OPTIONS: { key: GestureAction; label: string; icon: React.ReactNode }[] = [

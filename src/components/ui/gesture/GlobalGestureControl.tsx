@@ -1,8 +1,8 @@
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useMemo } from 'react';
 import { useGestureControl } from '@/hooks/useGestureControl';
-import { GestureCallbacks } from '@/types/gesture';
+import { GestureCallbacks, GestureResult } from '@/types/gesture';
 import { Button } from '@heroui/react';
 import { Hand } from 'lucide-react';
 
@@ -15,7 +15,7 @@ export function GlobalGestureControl() {
   const [miniView, setMiniView] = useState(false);
 
   // Gesture callbacks for global navigation
-  const gestureCallbacks: GestureCallbacks = useCallback({
+  const gestureCallbacks: GestureCallbacks = useMemo(() => ({
     // Scroll gestures
     onScrollLeft: () => {
       window.scrollBy({ left: -400, behavior: 'smooth' });
@@ -32,10 +32,10 @@ export function GlobalGestureControl() {
       window.scrollBy({ top: -300, behavior: 'smooth' });
     },
 
-    onGestureDetected: (result) => {
+    onGestureDetected: (result: GestureResult) => {
       console.log('Gesture detected:', result.gesture, result.confidence);
     },
-  }, []);
+  }), []);
 
   const {
     isInitialized,

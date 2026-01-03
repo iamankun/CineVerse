@@ -31,6 +31,8 @@ const GESTURE_EMOJIS: Record<GestureName, string> = {
   'Thumb_Up': '👍',
   'Victory': '✌️',
   'ILoveYou': '🤟',
+  'Swipe_Left': '👈',
+  'Swipe_Right': '👉',
 };
 
 const GESTURE_ACTIONS: Record<string, string> = {
