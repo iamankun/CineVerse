@@ -38,6 +38,16 @@
       "enabled": true,
       "action": "favorite",
       "description": "ILoveYou 🤟 - Thêm vào yêu thích"
+    },
+    "Swipe_Left": {
+      "enabled": true,
+      "action": "scrollLeft",
+      "description": "Vuốt tay sang trái - Lướt trang sang trái"
+    },
+    "Swipe_Right": {
+      "enabled": true,
+      "action": "scrollRight",
+      "description": "Vuốt tay sang phải - Lướt trang sang phải"
     }
   },
   "descriptions": {

@@ -9,6 +9,9 @@ import { cn } from "@/utils/helpers";
 import { IS_PRODUCTION, SpacingClasses } from "@/utils/constants";
 import { useManifestRefresh } from "@/utils/manifest";
 import dynamic from "next/dynamic";
+import { GestureProvider } from "@/contexts/GestureContext";
+import GlobalGestureControl from "@/components/ui/gesture/GlobalGestureControl";
+
 const Disclaimer = dynamic(() => import("@/components/ui/overlay/Disclaimer"));
 const FullscreenPrompt = dynamic(() => import("@/components/ui/overlay/FullscreenPrompt"));
 
@@ -52,15 +55,16 @@ export default function RootLayoutContent({ children }: { children: React.ReactN
 
   // For admin, auth routes, and 404 page, render without navbar/footer
   if (isAdminRoute || isAuthRoute || isNotFound) {
-    return <>{children}</>;
+    return <GestureProvider>{children}</GestureProvider>;
   }
 
   // Normal layout with navbar/footer (hide footer during loading or on player pages)
   return (
-    <>
+    <GestureProvider>
       {IS_PRODUCTION && <Disclaimer />}
       <FullscreenPrompt />
       <TopNavbar />
+      <GlobalGestureControl />
       <main className={cn(
         "container mx-auto max-w-full flex-1 overflow-x-hidden",
         isPlayerRoute ? "" : "pb-safe-footer pt-20",
@@ -70,6 +74,6 @@ export default function RootLayoutContent({ children }: { children: React.ReactN
       </main>
       {!isLoading && !isPlayerRoute && <Footer />}
       {!isPlayerPage && <FloatingNavBar />}
-    </>
+    </GestureProvider>
   );
 }

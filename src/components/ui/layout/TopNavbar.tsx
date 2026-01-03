@@ -7,6 +7,7 @@ import BackButton from "@/components/ui/button/BackButton";
 import { useWindowScroll } from "@mantine/hooks";
 import ThemeSwitchDropdown from "../input/ThemeSwitchDropdown";
 import FullscreenToggleButton from "../button/FullscreenToggleButton";
+import GestureControlToggleButton from "../button/GestureControlToggleButton";
 import { cn } from "@/utils/helpers";
 import BrandLogo from "../other/BrandLogo";
 import UserProfileButton from "../button/UserProfileButton";
@@ -66,6 +67,7 @@ const TopNavbar = () => {
       <NavbarContent justify="end" className="relative z-10">
         <NavbarItem className="flex gap-1">
           <ThemeSwitchDropdown />
+          <GestureControlToggleButton />
           <FullscreenToggleButton />
           <UserProfileButton />
         </NavbarItem>

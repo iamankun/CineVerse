@@ -18,6 +18,8 @@ export type GestureAction =
   | 'like'
   | 'nextEpisode'
   | 'prevEpisode'
+  | 'scrollLeft'
+  | 'scrollRight'
   | 'none';
 
 export type GestureName = 
@@ -28,7 +30,9 @@ export type GestureName =
   | 'Thumb_Down'
   | 'Thumb_Up'
   | 'Victory'
-  | 'ILoveYou';
+  | 'ILoveYou'
+  | 'Swipe_Left'
+  | 'Swipe_Right';
 
 export interface GestureMapping {
   enabled: boolean;

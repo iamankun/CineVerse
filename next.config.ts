@@ -39,6 +39,18 @@ const nextConfig: NextConfig = {
   experimental: {
     optimizePackageImports: ["@heroui/react"],
   },
+  webpack: (config, { isServer }) => {
+    // Fix for @mediapipe/hands import issue
+    if (!isServer) {
+      config.resolve.fallback = {
+        ...config.resolve.fallback,
+        fs: false,
+        path: false,
+        crypto: false,
+      };
+    }
+    return config;
+  },
   // Allow unsafe-eval for development (required by some libraries like Vaul)
   async headers() {
     return [

@@ -22,8 +22,143 @@ interface GestureControlState {
   cameraActive: boolean;
 }
 
+// Finger indices for hand landmarks (21 points)
+const FINGER_TIPS = [4, 8, 12, 16, 20]; // Thumb, Index, Middle, Ring, Pinky tips
+const FINGER_PIPS = [3, 6, 10, 14, 18]; // Proximal interphalangeal joints
+
+// Hand position history for swipe detection
+interface HandPositionHistory {
+  x: number;
+  timestamp: number;
+}
+
+const handPositionHistory: HandPositionHistory[] = [];
+const SWIPE_THRESHOLD = 0.15; // Minimum horizontal movement (15% of screen width)
+const SWIPE_TIME_WINDOW = 500; // Time window for swipe detection (ms)
+
 /**
- * Hook để điều khiển video bằng cử chỉ tay sử dụng MediaPipe
+ * Detect swipe gesture based on hand movement
+ */
+function detectSwipe(currentX: number): GestureName | null {
+  const now = Date.now();
+  
+  // Add current position
+  handPositionHistory.push({ x: currentX, timestamp: now });
+  
+  // Remove old positions outside time window
+  while (handPositionHistory.length > 0 && now - handPositionHistory[0].timestamp > SWIPE_TIME_WINDOW) {
+    handPositionHistory.shift();
+  }
+  
+  // Need at least 2 positions to detect swipe
+  if (handPositionHistory.length < 2) return null;
+  
+  const firstPos = handPositionHistory[0];
+  const lastPos = handPositionHistory[handPositionHistory.length - 1];
+  const deltaX = lastPos.x - firstPos.x;
+  const deltaTime = lastPos.timestamp - firstPos.timestamp;
+  
+  // Check if movement is significant enough and fast enough
+  if (Math.abs(deltaX) > SWIPE_THRESHOLD && deltaTime < SWIPE_TIME_WINDOW) {
+    // Clear history after detecting swipe
+    handPositionHistory.length = 0;
+    
+    if (deltaX > 0) {
+      return 'Swipe_Right';
+    } else {
+      return 'Swipe_Left';
+    }
+  }
+  
+  return null;
+}
+
+/**
+ * Recognize gesture from hand landmarks using finger position analysis
+ */
+function recognizeGesture(landmarks: Array<{ x: number; y: number; z: number }>): { gesture: GestureName; confidence: number } {
+  if (!landmarks || landmarks.length < 21) {
+    return { gesture: 'None', confidence: 0 };
+  }
+
+  // First check for swipe gesture based on hand movement
+  const wrist = landmarks[0]; // Wrist is landmark 0
+  const swipeGesture = detectSwipe(wrist.x);
+  if (swipeGesture) {
+    return { gesture: swipeGesture, confidence: 0.9 };
+  }
+
+  // Check which fingers are extended
+  const fingersExtended = [false, false, false, false, false];
+  
+  // Thumb (special case - check horizontal distance)
+  const thumbTip = landmarks[4];
+  const thumbMcp = landmarks[2];
+  const isRightHand = landmarks[5].x < landmarks[17].x;
+  
+  if (isRightHand) {
+    fingersExtended[0] = thumbTip.x < thumbMcp.x;
+  } else {
+    fingersExtended[0] = thumbTip.x > thumbMcp.x;
+  }
+
+  // Other fingers - check if tip is above PIP joint (lower y = higher position)
+  for (let i = 1; i < 5; i++) {
+    const tipY = landmarks[FINGER_TIPS[i]].y;
+    const pipY = landmarks[FINGER_PIPS[i]].y;
+    fingersExtended[i] = tipY < pipY;
+  }
+
+  const extendedCount = fingersExtended.filter(Boolean).length;
+
+  // Open Palm: All 5 fingers extended
+  if (extendedCount === 5) {
+    return { gesture: 'Open_Palm', confidence: 0.9 };
+  }
+
+  // Closed Fist: No fingers extended
+  if (extendedCount === 0) {
+    return { gesture: 'Closed_Fist', confidence: 0.9 };
+  }
+
+  // Thumb Up: Only thumb extended, hand vertical
+  if (fingersExtended[0] && extendedCount === 1) {
+    const thumbTipY = landmarks[4].y;
+    const indexMcpY = landmarks[5].y;
+    if (thumbTipY < indexMcpY) {
+      return { gesture: 'Thumb_Up', confidence: 0.85 };
+    }
+  }
+
+  // Thumb Down: Only thumb extended, pointing down
+  if (fingersExtended[0] && extendedCount === 1) {
+    const thumbTipY = landmarks[4].y;
+    const indexMcpY = landmarks[5].y;
+    if (thumbTipY > indexMcpY) {
+      return { gesture: 'Thumb_Down', confidence: 0.85 };
+    }
+  }
+
+  // Victory (Peace sign): Index and Middle extended
+  if (fingersExtended[1] && fingersExtended[2] && !fingersExtended[3] && !fingersExtended[4]) {
+    return { gesture: 'Victory', confidence: 0.85 };
+  }
+
+  // Pointing Up: Only Index finger extended
+  if (fingersExtended[1] && extendedCount === 1) {
+    return { gesture: 'Pointing_Up', confidence: 0.85 };
+  }
+
+  // ILoveYou: Thumb, Index, and Pinky extended
+  if (fingersExtended[0] && fingersExtended[1] && !fingersExtended[2] && !fingersExtended[3] && fingersExtended[4]) {
+    return { gesture: 'ILoveYou', confidence: 0.85 };
+  }
+
+  return { gesture: 'None', confidence: 0 };
+}
+
+/**
+ * Hook để điều khiển video bằng cử chỉ tay sử dụng TensorFlow.js
  */
 export const useGestureControl = (options: UseGestureControlOptions = {}) => {
   const { enabled = true, callbacks } = options;
@@ -41,7 +176,7 @@ export const useGestureControl = (options: UseGestureControlOptions = {}) => {
 
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  const gestureRecognizerRef = useRef<any>(null);
+  const detectorRef = useRef<any>(null);
   const animationFrameRef = useRef<number | null>(null);
   const lastGestureTimeRef = useRef<number>(0);
   const streamRef = useRef<MediaStream | null>(null);
@@ -106,6 +241,12 @@ export const useGestureControl = (options: UseGestureControlOptions = {}) => {
       case 'prevEpisode':
         callbacks.onPrevEpisode?.();
         break;
+      case 'scrollLeft':
+        callbacks.onScrollLeft?.();
+        break;
+      case 'scrollRight':
+        callbacks.onScrollRight?.();
+        break;
     }
   }, [callbacks]);
 
@@ -135,7 +276,7 @@ export const useGestureControl = (options: UseGestureControlOptions = {}) => {
       gesture: gestureName,
       confidence,
       handedness,
-      landmarks: landmarks.map((l: any) => ({ x: l.x, y: l.y, z: l.z })),
+      landmarks: landmarks.map((l: any) => ({ x: l.x, y: l.y, z: l.z || 0 })),
     };
 
     setState(prev => ({
@@ -149,126 +290,22 @@ export const useGestureControl = (options: UseGestureControlOptions = {}) => {
     executeAction(gestureConfig.action);
   }, [config, callbacks, executeAction]);
 
-  // Initialize MediaPipe
+  // Initialize TensorFlow.js Hand Pose Detection
   const initialize = useCallback(async (video: HTMLVideoElement, canvas: HTMLCanvasElement) => {
     if (!enabled || !config.enabled) return;
 
     setState(prev => ({ ...prev, isLoading: true, error: null }));
 
     try {
-      // Check WebAssembly support
-      if (typeof WebAssembly === 'undefined') {
-        throw new Error('WebAssembly không được hỗ trợ trên trình duyệt này');
-      }
+      // Dynamically import TensorFlow.js
+      const tf = await import('@tensorflow/tfjs');
+      await tf.ready();
 
-      // Dynamically import MediaPipe
-      console.log('📦 Importing MediaPipe tasks-vision...');
-      const mediapipe = await import('@mediapipe/tasks-vision');
-      const { GestureRecognizer, FilesetResolver } = mediapipe;
+      const handpose = await import('@tensorflow-models/handpose');
       
-      console.log('📦 MediaPipe imported successfully');
-      console.log('📦 Loading MediaPipe Vision WASM...');
-      
-      let vision;
-      try {
-        vision = await FilesetResolver.forVisionTasks(
-          'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.18/wasm'
-        );
-        console.log('✅ WASM loaded successfully');
-      } catch (wasmError: any) {
-        console.error('❌ WASM loading failed:', wasmError);
-        throw new Error(`Không thể tải WASM: ${wasmError?.message || 'Unknown error'}`);
-      }
+      const model = await handpose.load();
 
-      console.log('🤖 Creating Gesture Recognizer...');
-      
-      // Fetch model as blob to avoid CORS issues
-      const modelUrl = 'https://storage.googleapis.com/mediapipe-models/gesture_recognizer/gesture_recognizer/float16/1/gesture_recognizer.task';
-      
-      console.log('📥 Fetching model from:', modelUrl);
-      let modelBlob: Blob;
-      try {
-        const modelResponse = await fetch(modelUrl);
-        if (!modelResponse.ok) {
-          throw new Error(`HTTP ${modelResponse.status}: ${modelResponse.statusText}`);
-        }
-        modelBlob = await modelResponse.blob();
-        console.log('✅ Model downloaded, size:', modelBlob.size, 'bytes');
-      } catch (fetchError: any) {
-        console.error('❌ Model fetch failed:', fetchError);
-        throw new Error(`Không thể tải model: ${fetchError?.message || 'Network error'}`);
-      }
-
-      // Convert blob to ArrayBuffer
-      const modelBuffer = await modelBlob.arrayBuffer();
-      console.log('📦 Model buffer size:', modelBuffer.byteLength);
-      
-      // Create gesture recognizer with different approaches
-      let gestureRecognizer;
-      
-      // Approach 1: Try createFromModelBuffer
-      console.log('🔄 Trying createFromModelBuffer...');
-      try {
-        gestureRecognizer = await GestureRecognizer.createFromModelBuffer(
-          vision,
-          modelBuffer
-        );
-        console.log('✅ Created with createFromModelBuffer');
-      } catch (bufferError: any) {
-        console.warn('⚠️ createFromModelBuffer failed:', bufferError?.message || bufferError);
-        
-        // Approach 2: Try with modelAssetPath directly (CDN)
-        console.log('🔄 Trying with modelAssetPath from jsdelivr CDN...');
-        try {
-          gestureRecognizer = await GestureRecognizer.createFromOptions(vision, {
-            baseOptions: {
-              modelAssetPath: 'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.18/wasm/gesture_recognizer.task',
-            },
-            runningMode: 'VIDEO',
-            numHands: 1,
-          });
-          console.log('✅ Created with jsdelivr CDN');
-        } catch (cdnError: any) {
-          console.warn('⚠️ jsdelivr CDN failed:', cdnError?.message || cdnError);
-          
-          // Approach 3: Try modelAssetBuffer with Uint8Array
-          console.log('🔄 Trying with modelAssetBuffer (Uint8Array)...');
-          try {
-            gestureRecognizer = await GestureRecognizer.createFromOptions(vision, {
-              baseOptions: {
-                modelAssetBuffer: new Uint8Array(modelBuffer),
-              },
-              runningMode: 'VIDEO',
-              numHands: 1,
-            });
-            console.log('✅ Created with modelAssetBuffer');
-          } catch (uint8Error: any) {
-            console.error('❌ All approaches failed');
-            console.error('Buffer error:', bufferError);
-            console.error('CDN error:', cdnError);
-            console.error('Uint8 error:', uint8Error);
-            throw new Error('Không thể tạo Gesture Recognizer với bất kỳ phương pháp nào');
-          }
-        }
-      }
-      
-      // Set running mode and options after creation
-      try {
-        gestureRecognizer.setOptions({
-          runningMode: 'VIDEO',
-          numHands: 1,
-          minHandDetectionConfidence: 0.5,
-          minHandPresenceConfidence: 0.5,
-          minTrackingConfidence: 0.5,
-        });
-        console.log('✅ Options set successfully');
-      } catch (optError: any) {
-        console.warn('⚠️ setOptions failed (may not be critical):', optError?.message);
-      }
-      
-      console.log('✅ Gesture Recognizer created successfully');
-
-      gestureRecognizerRef.current = gestureRecognizer;
+      detectorRef.current = model;
       videoRef.current = video;
       canvasRef.current = canvas;
 
@@ -278,11 +315,10 @@ export const useGestureControl = (options: UseGestureControlOptions = {}) => {
         isLoading: false,
       }));
 
-      console.log('✅ Gesture Recognizer initialized successfully');
+      console.log('✅ Gesture Control ready');
     } catch (err: any) {
-      console.error('❌ Failed to initialize Gesture Recognizer:', err);
-      console.error('Error details:', JSON.stringify(err, Object.getOwnPropertyNames(err)));
-      const errorMessage = err?.message || err?.toString() || 'Không thể khởi tạo nhận diện cử chỉ. Vui lòng thử lại.';
+      console.error('❌ Failed to initialize:', err);
+      const errorMessage = err?.message || 'Không thể khởi tạo nhận diện cử chỉ. Vui lòng thử lại.';
       setState(prev => ({
         ...prev,
         isLoading: false,
@@ -309,9 +345,8 @@ export const useGestureControl = (options: UseGestureControlOptions = {}) => {
       await videoRef.current.play();
 
       setState(prev => ({ ...prev, cameraActive: true }));
-      console.log('📷 Camera started');
     } catch (err) {
-      console.error('❌ Failed to start camera:', err);
+      console.error('Camera access denied');
       setState(prev => ({
         ...prev,
         error: 'Không thể truy cập camera. Vui lòng cấp quyền camera.',
@@ -332,12 +367,11 @@ export const useGestureControl = (options: UseGestureControlOptions = {}) => {
     }
 
     setState(prev => ({ ...prev, cameraActive: false, handDetected: false }));
-    console.log('📷 Camera stopped');
   }, []);
 
   // Detection loop
-  const detectGestures = useCallback(() => {
-    if (!gestureRecognizerRef.current || !videoRef.current || !state.cameraActive) {
+  const detectGestures = useCallback(async () => {
+    if (!detectorRef.current || !videoRef.current || !state.cameraActive) {
       return;
     }
 
@@ -345,69 +379,115 @@ export const useGestureControl = (options: UseGestureControlOptions = {}) => {
     const canvas = canvasRef.current;
 
     if (video.readyState === video.HAVE_ENOUGH_DATA) {
-      const results = gestureRecognizerRef.current.recognizeForVideo(video, performance.now());
+      try {
+        const predictions = await detectorRef.current.estimateHands(video);
 
-      // Draw hand landmarks on canvas
-      if (canvas && config.showDebugOverlay) {
-        const ctx = canvas.getContext('2d');
-        if (ctx) {
-          ctx.clearRect(0, 0, canvas.width, canvas.height);
-          
-          // Mirror the canvas horizontally
-          ctx.save();
-          ctx.scale(-1, 1);
-          ctx.translate(-canvas.width, 0);
-          
-          if (results.landmarks && results.landmarks.length > 0) {
-            for (const landmarks of results.landmarks) {
-              // Draw connections
-              ctx.strokeStyle = '#00FF00';
-              ctx.lineWidth = 2;
-              
-              // Draw points
-              for (const landmark of landmarks) {
-                ctx.beginPath();
-                ctx.arc(
-                  landmark.x * canvas.width,
-                  landmark.y * canvas.height,
-                  5,
-                  0,
-                  2 * Math.PI
-                );
-                ctx.fillStyle = '#FF0000';
-                ctx.fill();
+        // Draw hand landmarks on canvas
+        if (canvas && config.showDebugOverlay) {
+          const ctx = canvas.getContext('2d');
+          if (ctx) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Mirror the canvas horizontally
+            ctx.save();
+            ctx.scale(-1, 1);
+            ctx.translate(-canvas.width, 0);
+            
+            if (predictions && predictions.length > 0) {
+              for (const prediction of predictions) {
+                const landmarks = prediction.landmarks;
+                
+                // Draw connections
+                ctx.strokeStyle = '#00FF00';
+                ctx.lineWidth = 2;
+                
+                // Finger connections
+                const connections = [
+                  [0, 1], [1, 2], [2, 3], [3, 4], // Thumb
+                  [0, 5], [5, 6], [6, 7], [7, 8], // Index
+                  [0, 9], [9, 10], [10, 11], [11, 12], // Middle
+                  [0, 13], [13, 14], [14, 15], [15, 16], // Ring
+                  [0, 17], [17, 18], [18, 19], [19, 20], // Pinky
+                  [5, 9], [9, 13], [13, 17], // Palm
+                ];
+                
+                for (const [start, end] of connections) {
+                  const startPoint = landmarks[start];
+                  const endPoint = landmarks[end];
+                  ctx.beginPath();
+                  ctx.moveTo(startPoint[0], startPoint[1]);
+                  ctx.lineTo(endPoint[0], endPoint[1]);
+                  ctx.stroke();
+                }
+                
+                // Draw points
+                for (const point of landmarks) {
+                  ctx.beginPath();
+                  ctx.arc(point[0], point[1], 5, 0, 2 * Math.PI);
+                  ctx.fillStyle = '#FF0000';
+                  ctx.fill();
+                }
               }
             }
+            
+            ctx.restore();
           }
-          
-          ctx.restore();
         }
-      }
 
-      // Process gestures
-      if (results.gestures && results.gestures.length > 0) {
-        const gesture = results.gestures[0][0];
-        const handedness = results.handednesses[0][0];
-        const landmarks = results.landmarks[0];
+        // Process gestures
+        if (predictions && predictions.length > 0) {
+          const prediction = predictions[0];
+          const landmarks = prediction.landmarks;
+          
+          // Normalize landmarks to 0-1 range
+          const normalizedLandmarks = landmarks.map((point: number[]) => ({
+            x: point[0] / video.videoWidth,
+            y: point[1] / video.videoHeight,
+            z: point[2] / video.videoWidth,
+          }));
 
-        processGesture(
-          gesture.categoryName as GestureName,
-          gesture.score,
-          handedness.categoryName as 'Left' | 'Right',
-          landmarks
-        );
-      } else {
-        setState(prev => ({
-          ...prev,
-          currentGesture: 'None',
-          confidence: 0,
-          handDetected: false,
-        }));
+          const { gesture, confidence } = recognizeGesture(normalizedLandmarks);
+          
+          if (gesture !== 'None') {
+            processGesture(
+              gesture,
+              confidence,
+              'Right',
+              normalizedLandmarks
+            );
+          } else {
+            // Only update state if it changed
+            if (state.currentGesture !== 'None' || !state.handDetected) {
+              setState(prev => ({
+                ...prev,
+                currentGesture: 'None',
+                confidence: 0,
+                handDetected: true,
+              }));
+            }
+          }
+        } else {
+          // Only update state if it changed
+          if (state.handDetected) {
+            setState(prev => ({
+              ...prev,
+              currentGesture: 'None',
+              confidence: 0,
+              handDetected: false,
+            }));
+          }
+        }
+      } catch (err) {
+        // Silent error - only log once
+        if (!detectorRef.current.errorLogged) {
+          console.error('Detection error:', err);
+          detectorRef.current.errorLogged = true;
+        }
       }
     }
 
     animationFrameRef.current = requestAnimationFrame(detectGestures);
-  }, [state.cameraActive, config.showDebugOverlay, processGesture]);
+  }, [state.cameraActive, state.handDetected, state.currentGesture, config.showDebugOverlay, processGesture]);
 
   // Start detection
   const startDetection = useCallback(async (video: HTMLVideoElement, canvas: HTMLCanvasElement) => {
@@ -442,8 +522,8 @@ export const useGestureControl = (options: UseGestureControlOptions = {}) => {
   useEffect(() => {
     return () => {
       stopDetection();
-      if (gestureRecognizerRef.current) {
-        gestureRecognizerRef.current.close();
+      if (detectorRef.current) {
+        detectorRef.current.dispose?.();
       }
     };
   }, [stopDetection]);
