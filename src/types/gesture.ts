@@ -71,5 +71,7 @@ export interface GestureCallbacks {
   onLike?: () => void;
   onNextEpisode?: () => void;
   onPrevEpisode?: () => void;
+  onScrollLeft?: () => void;
+  onScrollRight?: () => void;
   onGestureDetected?: (result: GestureResult) => void;
 }
