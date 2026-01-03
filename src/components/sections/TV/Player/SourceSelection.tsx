@@ -3,6 +3,7 @@ import VaulDrawer from "@/components/ui/overlay/VaulDrawer";
 import { HandlerType } from "@/types/component";
 import SelectButton from "@/components/ui/input/SelectButton";
 import { Ads, Clock, Rocket, Star } from "@/utils/icons";
+import { motion } from "framer-motion";
 
 interface TvShowPlayerSourceSelectionProps extends HandlerType {
   players: PlayersProps[];
@@ -27,26 +28,54 @@ const TvShowPlayerSourceSelection: React.FC<TvShowPlayerSourceSelectionProps> = 
       hiddenHandler
       withCloseButton
     >
-      <div className="flex flex-col gap-4 p-5">
-        <div className="space-y-2 px-4 py-3 rounded-xl bg-black/20 backdrop-blur-sm border border-white/10">
-          <div className="flex items-center gap-2">
-            <Star className="text-warning-500" />
-            <span className="text-sm">Được đề xuất</span>
+      <div className="flex flex-col gap-5 p-6">
+        <motion.div 
+          className="space-y-3 px-5 py-4 rounded-2xl bg-gradient-to-br from-white/15 via-white/10 to-white/5 backdrop-blur-md border border-white/20 shadow-xl shadow-black/20"
+          initial={{ opacity: 0, scale: 0.9, filter: "blur(10px)" }}
+          animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
+          transition={{ 
+            type: "spring",
+            stiffness: 300,
+            damping: 25,
+            delay: 0.1
+          }}
+        >
+          <div className="flex items-center gap-3 group">
+            <div className="p-1.5 rounded-lg bg-warning-500/20 group-hover:bg-warning-500/30 transition-colors">
+              <Star className="text-warning-500 w-4 h-4" />
+            </div>
+            <span className="text-sm font-medium">Được đề xuất</span>
           </div>
-          <div className="flex items-center gap-2">
-            <Rocket className="text-danger-500" />
-            <span className="text-sm">Tốc độ nhanh</span>
+          <div className="flex items-center gap-3 group">
+            <div className="p-1.5 rounded-lg bg-danger-500/20 group-hover:bg-danger-500/30 transition-colors">
+              <Rocket className="text-danger-500 w-4 h-4" />
+            </div>
+            <span className="text-sm font-medium">Tốc độ nhanh</span>
           </div>
-          <div className="flex items-center gap-2">
-            <Clock className="text-success-500" />
-            <span className="text-sm">Hỗ trợ tiếp tục xem</span>
+          <div className="flex items-center gap-3 group">
+            <div className="p-1.5 rounded-lg bg-success-500/20 group-hover:bg-success-500/30 transition-colors">
+              <Clock className="text-success-500 w-4 h-4" />
+            </div>
+            <span className="text-sm font-medium">Hỗ trợ tiếp tục xem</span>
           </div>
-          <div className="flex items-center gap-2">
-            <Ads className="text-primary-500" />
-            <span className="text-sm">Cài Ad Block hoặc Ad Guard để chặn quảng cáo (Nếu có, chúng tôi luôn nỗ lực loại bỏ quảng cáo bài bạc và cá cược...)</span>
+          <div className="flex items-center gap-3 group">
+            <div className="p-1.5 rounded-lg bg-primary-500/20 group-hover:bg-primary-500/30 transition-colors">
+              <Ads className="text-primary-500 w-4 h-4" />
+            </div>
+            <span className="text-xs leading-relaxed opacity-90">Cài Ad Block hoặc Ad Guard để chặn quảng cáo (Nếu có, chúng tôi luôn nỗ lực loại bỏ quảng cáo bài bạc và cá cược...)</span>
           </div>
-        </div>
-        <SelectButton
+        </motion.div>
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95, y: 20 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          transition={{ 
+            type: "spring",
+            stiffness: 260,
+            damping: 20,
+            delay: 0.25
+          }}
+        >
+          <SelectButton
           color="warning"
           groupType="list"
           value={selectedSource.toString()}
@@ -69,6 +98,7 @@ const TvShowPlayerSourceSelection: React.FC<TvShowPlayerSourceSelectionProps> = 
             };
           })}
         />
+        </motion.div>
       </div>
     </VaulDrawer>
   );

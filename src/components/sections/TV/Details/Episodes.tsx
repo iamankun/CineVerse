@@ -116,11 +116,11 @@ export const EpisodeListCard: React.FC<EpisodeCardProps> = ({
       className={cn(
         "group motion-preset-blur-right backdrop-blur-md motion-duration-300 grid grid-cols-[auto_1fr] gap-3 border-2 transition-all",
         {
-          "border-white/10 hover:border-warning": !isNotReleased && !isCurrentEpisode,
-          "cursor-not-allowed opacity-50 border-white/10": isNotReleased,
+          "bg-white/5 border-white/10 hover:bg-white/10 hover:border-warning": !isNotReleased && !isCurrentEpisode,
+          "cursor-not-allowed opacity-50 bg-white/5 border-white/10": isNotReleased,
           "motion-preset-slide-left": isOdd && withAnimation,
           "motion-preset-slide-right": !isOdd && withAnimation,
-          "border-warning ring-2 ring-warning/50": isCurrentEpisode,
+          "bg-warning/10 border-warning ring-2 ring-warning/50": isCurrentEpisode,
         },
       )}
     >
@@ -166,10 +166,10 @@ export const EpisodeListCard: React.FC<EpisodeCardProps> = ({
             !isNotReleased && "group-hover:text-warning",
           )}
         >
-          {episode.name}
+          Tập {episode.episode_number}
         </p>
         <p className="text-content4-foreground line-clamp-1 text-xs">
-          {formatDate(episode.air_date, "en-US")}
+          {formatDate(episode.air_date, "vi-VN")}
         </p>
         <p className="text-foreground-500 line-clamp-2 text-sm" title={episode.overview}>
           {episode.overview}

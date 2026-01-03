@@ -2,6 +2,7 @@ import VaulDrawer from "@/components/ui/overlay/VaulDrawer";
 import { HandlerType } from "@/types/component";
 import { Episode } from "tmdb-ts/dist/types/tv-episode";
 import { EpisodeListCard } from "../Details/Episodes";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface TvShowPlayerEpisodeSelectionProps extends HandlerType {
   id: number;
@@ -42,14 +43,27 @@ const TvShowPlayerEpisodeSelection: React.FC<TvShowPlayerEpisodeSelectionProps> 
       <div className="grid grid-cols-1 gap-2 p-2 sm:gap-4 sm:p-4 rounded-xl">
         {Array.isArray(episodes) && episodes.length > 0 ? (
           episodes.map((episode, index) => (
-            <EpisodeListCard
-              id={id}
+            <motion.div
               key={episode.id}
-              episode={episode}
-              order={index + 1}
-              withAnimation={false}
-              isCurrentEpisode={episode.episode_number === currentEpisodeNumber}
-            />
+              initial={{ opacity: 0, scale: 0.8, y: 20, rotateX: -15 }}
+              animate={{ opacity: 1, scale: 1, y: 0, rotateX: 0 }}
+              transition={{ 
+                delay: index * 0.08,
+                type: "spring",
+                stiffness: 260,
+                damping: 20
+              }}
+              whileHover={{ scale: 1.02, transition: { duration: 0.2 } }}
+              whileTap={{ scale: 0.98 }}
+            >
+              <EpisodeListCard
+                id={id}
+                episode={episode}
+                order={index + 1}
+                withAnimation={false}
+                isCurrentEpisode={episode.episode_number === currentEpisodeNumber}
+              />
+            </motion.div>
           ))
         ) : (
           <div className="text-center py-8 text-foreground/60">
