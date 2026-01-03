@@ -200,30 +200,27 @@ const MoviePlayer: React.FC<MoviePlayerProps> = ({ movie, startAt }) => {
     getMoviePlayers(movie.id, startAt).then((fetchedPlayers) => {
       if (isMounted) {
         console.log(`✅ Players fetched:`, fetchedPlayers.length, fetchedPlayers);
-        // Nếu chỉ có 1 nguồn và provider là vidsrc (và url rỗng), tự động chuyển sang nguồn VidSrc Phụ đề Tiếng Việt (nguồn ngoài)
-        if (
-          fetchedPlayers.length === 1 &&
-          !fetchedPlayers[0].source &&
-          fetchedPlayers[0].title.toLowerCase().includes("vidsrc")
-        ) {
-          // Tạo nguồn VidSrc phụ đề tiếng Việt (vidsrc-embed.ru)
-          const vidSrcVi: PlayersProps = {
-            title: "VidSrc (Phụ đề Tiếng Việt)",
-            source: `https://vidsrc-embed.ru/embed/movie?tmdb=${movie.id}&ds_lang=vi&autoplay=1` as `https://${string}`,
-            recommended: true,
-            fast: true,
-            // 'ads' chỉ nhận false hoặc undefined
-            ads: false,
-          };
-          setPlayers([vidSrcVi]);
-          setSelectedSource(0);
-        } else {
-          setPlayers(fetchedPlayers);
-          if (fetchedPlayers.length === 1) {
-            setSelectedSource(0);
-          } else if (!selectedSource || selectedSource < 0 || selectedSource >= fetchedPlayers.length) {
-            setSelectedSource(0);
+        // Nếu có nguồn với provider vidsrc và url rỗng, tự động thay thế bằng VidSrc external
+        const processedPlayers = fetchedPlayers.map(player => {
+          if (player.provider?.toLowerCase() === 'vidsrc' && !player.source) {
+            console.log(`🔄 Chuyển đổi provider vidsrc sang VidSrc external`);
+            return {
+              title: "VidSrc (Phụ đề Tiếng Việt)",
+              source: `https://vidsrc-embed.ru/embed/movie?tmdb=${movie.id}&ds_lang=vi&autoplay=1` as `https://${string}`,
+              recommended: player.recommended,
+              fast: true,
+              ads: false,
+              provider: 'vidsrc-external',
+            };
           }
+          return player;
+        });
+        
+        setPlayers(processedPlayers);
+        if (processedPlayers.length === 1) {
+          setSelectedSource(0);
+        } else if (!selectedSource || selectedSource < 0 || selectedSource >= processedPlayers.length) {
+          setSelectedSource(0);
         }
       }
     }).catch((err) => {

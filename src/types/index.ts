@@ -72,6 +72,7 @@ export type PlayersProps = {
   ads?: false;
   resumable?: boolean;
   isCineVerseSource?: boolean;
+  provider?: string;
 };
 
 export type CineVerseSource = {

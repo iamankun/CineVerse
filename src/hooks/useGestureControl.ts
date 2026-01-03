@@ -6,6 +6,26 @@ import { GestureCallbacks, GestureConfig, GestureName, GestureResult, GestureAct
 // Import gesture config
 import gestureConfigData from '@/app/admin/gesture-config.json';
 
+// Preload TensorFlow.js and handpose model for faster initialization
+let tfPromise: Promise<any> | null = null;
+let handposePromise: Promise<any> | null = null;
+let modelPromise: Promise<any> | null = null;
+
+const preloadModels = () => {
+  if (!tfPromise) {
+    tfPromise = import('@tensorflow/tfjs').then(tf => tf.ready().then(() => tf));
+  }
+  if (!handposePromise) {
+    handposePromise = import('@tensorflow-models/handpose');
+  }
+  return { tfPromise, handposePromise };
+};
+
+// Start preloading immediately
+if (typeof window !== 'undefined') {
+  preloadModels();
+}
+
 interface UseGestureControlOptions {
   enabled?: boolean;
   videoRef?: React.RefObject<HTMLVideoElement | HTMLIFrameElement | null>;
@@ -307,13 +327,21 @@ export const useGestureControl = (options: UseGestureControlOptions = {}) => {
     setState(prev => ({ ...prev, isLoading: true, error: null }));
 
     try {
-      // Dynamically import TensorFlow.js
-      const tf = await import('@tensorflow/tfjs');
-      await tf.ready();
-
-      const handpose = await import('@tensorflow-models/handpose');
+      // Use preloaded modules or start loading
+      const { tfPromise, handposePromise } = preloadModels();
       
-      const model = await handpose.load();
+      // Wait for both TensorFlow and handpose to load
+      const [tf, handpose] = await Promise.all([tfPromise!, handposePromise!]);
+      
+      // Load model and start camera in parallel
+      if (!modelPromise) {
+        modelPromise = handpose.load();
+      }
+      
+      const [model] = await Promise.all([
+        modelPromise,
+        startCamera() // Start camera while model loads
+      ]);
 
       detectorRef.current = model;
       videoRef.current = video;
@@ -346,8 +374,8 @@ export const useGestureControl = (options: UseGestureControlOptions = {}) => {
       console.log('🎥 Requesting camera access...');
       const stream = await navigator.mediaDevices.getUserMedia({
         video: {
-          width: { ideal: 640 },
-          height: { ideal: 480 },
+          width: { ideal: 320 },
+          height: { ideal: 240 },
           facingMode: 'user',
         },
       });
@@ -470,7 +498,7 @@ export const useGestureControl = (options: UseGestureControlOptions = {}) => {
 
           // Apply smoothing to raw position
           if (smoothedPositionRef.current) {
-            const alpha = 0.85; // Smoothing factor (0-1, higher = more responsive)
+            const alpha = 0.75; // Smoothing factor (0-1, higher = more responsive)
             screenX = smoothedPositionRef.current.x + alpha * (screenX - smoothedPositionRef.current.x);
             screenY = smoothedPositionRef.current.y + alpha * (screenY - smoothedPositionRef.current.y);
           }

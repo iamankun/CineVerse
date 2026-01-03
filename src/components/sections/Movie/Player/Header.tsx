@@ -20,7 +20,7 @@ const MoviePlayerHeader: React.FC<MoviePlayerHeaderProps> = ({
       aria-hidden={hidden ? true : undefined}
       className={cn(
         "absolute top-0 z-40 flex h-28 w-full items-start justify-between gap-4",
-        "bg-linear-to-b from-black/80 to-transparent p-2 text-white transition-opacity md:p-4",
+        "p-2 text-white transition-opacity md:p-4",
         { "opacity-0": hidden },
       )}
     >

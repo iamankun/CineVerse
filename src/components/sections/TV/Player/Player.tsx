@@ -204,7 +204,23 @@ const TvShowPlayer: React.FC<TvShowPlayerProps> = ({
 
     getTvShowPlayers(id, episode.season_number, episode.episode_number, startAt).then((fetchedPlayers) => {
       if (isMounted) {
-        setPlayers(fetchedPlayers);
+        // Nếu có nguồn với provider vidsrc và url rỗng, tự động thay thế bằng VidSrc external
+        const processedPlayers = fetchedPlayers.map(player => {
+          if (player.provider?.toLowerCase() === 'vidsrc' && !player.source) {
+            console.log(`🔄 Chuyển đổi provider vidsrc sang VidSrc external`);
+            return {
+              title: "VidSrc (Phụ đề Tiếng Việt)",
+              source: `https://vidsrc-embed.ru/embed/tv?tmdb=${id}&season=${episode.season_number}&episode=${episode.episode_number}&ds_lang=vi&autoplay=1` as `https://${string}`,
+              recommended: player.recommended,
+              fast: true,
+              ads: false,
+              provider: 'vidsrc-external',
+            };
+          }
+          return player;
+        });
+        
+        setPlayers(processedPlayers);
       }
     });
 

@@ -36,7 +36,7 @@ export function VirtualCursor({ x, y, isClicking, visible }: VirtualCursorProps)
         const distance = Math.sqrt(dx * dx + dy * dy);
         
         // Dynamic lerp factor based on distance for faster response
-        const baseFactor = distance > 100 ? 0.8 : 0.6;
+        const baseFactor = distance > 100 ? 0.95 : 0.85;
         const factor = easeOutQuad(baseFactor);
         
         return {
@@ -116,13 +116,6 @@ export function VirtualCursor({ x, y, isClicking, visible }: VirtualCursorProps)
             ${isClicking ? 'bg-primary/30 scale-150' : 'bg-primary/20 scale-125'}
             blur-md
           `} />
-          
-          {/* Coordinates display */}
-          <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 whitespace-nowrap">
-            <div className="bg-black/70 text-white text-[10px] px-2 py-0.5 rounded">
-              {Math.round(smoothPos.x)}, {Math.round(smoothPos.y)}
-            </div>
-          </div>
         </div>
       </div>
 
