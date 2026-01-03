@@ -1,0 +1,49 @@
+{
+  "enabled": false,
+  "showDebugOverlay": true,
+  "confidenceThreshold": 0.7,
+  "gestureDelay": 500,
+  "gestures": {
+    "Open_Palm": {
+      "enabled": true,
+      "action": "play",
+      "description": "Mở bàn tay - Phát video"
+    },
+    "Closed_Fist": {
+      "enabled": true,
+      "action": "pause",
+      "description": "Nắm tay - Tạm dừng video"
+    },
+    "Thumb_Up": {
+      "enabled": true,
+      "action": "volumeUp",
+      "description": "Ngón cái lên - Tăng âm lượng"
+    },
+    "Thumb_Down": {
+      "enabled": true,
+      "action": "volumeDown",
+      "description": "Ngón cái xuống - Giảm âm lượng"
+    },
+    "Victory": {
+      "enabled": true,
+      "action": "toggleFullscreen",
+      "description": "Victory ✌️ - Bật/tắt toàn màn hình"
+    },
+    "Pointing_Up": {
+      "enabled": true,
+      "action": "forward",
+      "description": "Trỏ lên - Tua tiến 10 giây"
+    },
+    "ILoveYou": {
+      "enabled": true,
+      "action": "favorite",
+      "description": "ILoveYou 🤟 - Thêm vào yêu thích"
+    }
+  },
+  "descriptions": {
+    "enabled": "Bật/tắt điều khiển cử chỉ tay",
+    "showDebugOverlay": "Hiển thị overlay debug khi sử dụng",
+    "confidenceThreshold": "Ngưỡng độ tin cậy (0.0 - 1.0)",
+    "gestureDelay": "Độ trễ giữa các lần nhận diện cử chỉ (ms)"
+  }
+}
