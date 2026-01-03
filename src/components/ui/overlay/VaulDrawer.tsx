@@ -57,8 +57,7 @@ export default function VaulDrawer({
         />
         <Drawer.Content
           className={cn(
-            "bg-background/80 backdrop-blur-2xl text-foreground fixed z-9999 place-self-center outline-hidden",
-            "border-2 border-white/10 shadow-2xl",
+            "text-foreground fixed z-9999 place-self-center outline-hidden shadow-2xl",
             classNames?.contentWrapper,
             {
               "right-0 bottom-0 left-0 mt-24 max-h-[97%] w-full rounded-t-2xl":
