@@ -233,6 +233,12 @@ const CineVerseHero = () => {
     ? `/movie/${item.id}` 
     : item ? `/tv/${item.id}` : "/";
 
+  const playerUrl = item && item.contentType === "movie"
+    ? `/movie/${item.id}/player`
+    : item && "seasons" in item && item.seasons && item.seasons.length > 0
+    ? `/tv/${item.id}/${item.seasons[0].season_number}/${item.seasons[0].episode_count > 0 ? 1 : 0}/player`
+    : detailUrl;
+
   // Early return AFTER all hooks
   if (isPending || !content || content.length === 0 || !currentItem || !item) {
     return null;
@@ -295,7 +301,7 @@ const CineVerseHero = () => {
                 {(sourceMetadata?.audioVersion === "Lồng tiếng" || sourceMetadata?.metadata?.audioVersion === "LongTieng") && (
                   <div className="w-full flex justify-start mt-2">
                     <span className="inline-flex items-center gap-2 align-top">
-                      <span className="text-xs md:text-sm bg-white text-black rounded-full px-3 py-1 shadow border border-gray-200" style={{fontFamily: 'sans-serif', fontWeight: 400}}>Phiên bản</span>
+                      <span className="text-xs md:text-sm bg-white/20 text-white rounded-full px-3 py-1 shadow border border-white/30 backdrop-blur-md" style={{fontFamily: 'sans-serif', fontWeight: 400}}>Phiên bản</span>
                       <Image
                         src="/longtieng.png"
                         alt="Lồng tiếng"
@@ -343,12 +349,12 @@ const CineVerseHero = () => {
           <div className="flex flex-wrap gap-2">
             <Button
               as={Link}
-              href={detailUrl}
+              href={playerUrl}
               size="md"
               color="default"
-              variant="solid"
+              variant="flat"
               startContent={<IoPlayOutline className="text-xl" />}
-              className="bg-white font-semibold text-black hover:bg-white/90"
+              className="bg-white/20 font-semibold text-white backdrop-blur-md border border-white/30 hover:bg-white/30"
             >
               Xem ngay
             </Button>
@@ -359,7 +365,7 @@ const CineVerseHero = () => {
               color="default"
               variant="flat"
               startContent={<IoInformationCircleOutline className="text-xl" />}
-              className="bg-black/20 font-semibold text-gray-900 backdrop-blur-sm hover:bg-black/30 dark:bg-white/20 dark:text-white dark:hover:bg-white/30"
+              className="bg-white/20 font-semibold text-white backdrop-blur-md border border-white/30 hover:bg-white/30"
             >
               Chi tiết
 

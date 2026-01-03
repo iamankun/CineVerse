@@ -17,8 +17,11 @@ const FullscreenPrompt = () => {
   }, []);
 
   useEffect(() => {
-    // Chỉ hiển thị nếu component đã mount, không ở fullscreen, và KHÔNG phải mobile
-    if (isMounted && !fullscreen && !isMobile) {
+    // Kiểm tra xem user đã từng bật fullscreen hoặc dismiss modal chưa
+    const hasInteracted = sessionStorage.getItem('fullscreen-prompt-dismissed') === 'true';
+    
+    // Chỉ hiển thị nếu chưa tương tác, component đã mount, không ở fullscreen, và KHÔNG phải mobile
+    if (!hasInteracted && isMounted && !fullscreen && !isMobile) {
       // Delay 2 giây để người dùng có thời gian nhìn trang
       const timer = setTimeout(() => {
         setIsOpen(true);
@@ -31,10 +34,14 @@ const FullscreenPrompt = () => {
   const handleEnterFullscreen = () => {
     toggle();
     setIsOpen(false);
+    // Đánh dấu đã tương tác
+    sessionStorage.setItem('fullscreen-prompt-dismissed', 'true');
   };
 
   const handleDismiss = () => {
     setIsOpen(false);
+    // Đánh dấu đã tương tác
+    sessionStorage.setItem('fullscreen-prompt-dismissed', 'true');
   };
 
   // Don't render until mounted

@@ -68,8 +68,8 @@ const TvShowPosterCard: React.FC<TvShowPosterCardProps> = ({ tv, variant = "full
                   18+
                 </Chip>
               )}
-              <div className="absolute bottom-0 z-2 h-1/2 w-full bg-linear-to-t from-black from-1%"></div>
-              <div className="absolute bottom-0 z-3 flex w-full flex-col gap-1 px-4 py-3">
+              <div className="absolute bottom-0 z-2 h-1/2 w-full bg-linear-to-t from-black/60 from-1%"></div>
+              <div className="absolute bottom-0 z-3 flex w-full flex-col gap-1 px-4 py-3 bg-black/20 backdrop-blur-md border-t border-white/10">
                 <h6 className="truncate text-sm font-semibold">{title}</h6>
                 <div className="flex justify-between text-xs">
                   <p>{releaseYear}</p>
@@ -93,7 +93,7 @@ const TvShowPosterCard: React.FC<TvShowPosterCardProps> = ({ tv, variant = "full
               isHoverable
               fullWidth
               shadow="md"
-              className="group h-full bg-secondary-background"
+              className="group h-full bg-white/5 backdrop-blur-md border border-white/10"
             >
               <CardHeader className="flex items-center justify-center pb-0">
                 <div className="relative size-full">

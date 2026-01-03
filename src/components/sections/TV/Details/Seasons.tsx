@@ -53,8 +53,8 @@ const TvShowsSeasonsSelection = forwardRef<HTMLElement, Props>(({ id, seasons },
               setSeasonNumber(e.target.value);
             }}
           >
-            {FILTERED_SEASONS.map(({ season_number, name }) => (
-              <SelectItem key={season_number.toString()}>{name}</SelectItem>
+            {FILTERED_SEASONS.map(({ season_number }) => (
+              <SelectItem key={season_number.toString()}>Mùa {season_number}</SelectItem>
             ))}
           </Select>
           <Input

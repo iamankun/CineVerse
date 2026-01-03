@@ -52,15 +52,16 @@ const Trailer: React.FC<TrailerProps> = ({ videos, color = "primary" }) => {
       <>
         <Button
           color="danger"
-          variant="shadow"
+          variant="flat"
           startContent={<Youtube size={22} />}
           onPress={() => handlers.open()}
+          className="bg-danger/20 backdrop-blur-md border border-danger/30 hover:bg-danger/30"
         >
           Xem giới thiệu
         </Button>
 
         <Modal backdrop="blur" size="5xl" isOpen={opened} onClose={handleClose} placement="center">
-          <ModalContent>
+          <ModalContent className="bg-black/40 backdrop-blur-xl border border-white/20">
             <ModalBody className="p-3 md:p-8">
               <div className="embla flex flex-col justify-center gap-5">
                 {multiple && (

@@ -94,8 +94,9 @@ const OverviewSection: React.FC<OverviewSectionProps> = ({ movie }) => {
                 as={Link}
                 href={`/movie/${movie.id}/player`}
                 color="primary"
-                variant="shadow"
+                variant="flat"
                 startContent={<FaCirclePlay size={22} />}
+                className="bg-primary/20 backdrop-blur-md border border-primary/30 hover:bg-primary/30"
               >
                 Xem ngay
               </Button>

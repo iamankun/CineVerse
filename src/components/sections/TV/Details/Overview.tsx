@@ -101,9 +101,10 @@ export const TvShowOverviewSection: React.FC<TvShowOverviewSectionProps> = ({
             <div className="flex flex-wrap gap-2">
               <Button
                 color="warning"
-                variant="shadow"
+                variant="flat"
                 onPress={onViewEpisodesClick}
                 startContent={<FaCirclePlay size={22} />}
+                className="bg-warning/20 backdrop-blur-md border border-warning/30 hover:bg-warning/30"
               >
                 Xem các tập
               </Button>

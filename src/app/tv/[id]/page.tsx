@@ -43,7 +43,7 @@ const TVShowDetailPage: NextPage<Params<{ id: number }>> = ({ params }) => {
 
   if (isPending) {
     return (
-      <div className="mx-auto max-w-5xl">
+      <div className="mx-auto max-w-5xl px-3 sm:px-5">
         <Spinner size="lg" className="absolute-center" color="warning" variant="simple" />
       </div>
     );
@@ -52,7 +52,7 @@ const TVShowDetailPage: NextPage<Params<{ id: number }>> = ({ params }) => {
   if (error) notFound();
 
   return (
-    <div className="mx-auto max-w-5xl">
+    <div className="mx-auto max-w-5xl px-3 sm:px-5">
       <Suspense
         fallback={
           <Spinner size="lg" className="absolute-center" color="warning" variant="simple" />
