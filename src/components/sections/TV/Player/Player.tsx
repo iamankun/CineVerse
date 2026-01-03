@@ -2,7 +2,7 @@ import { siteConfig } from "@/config/site";
 import BrandLogo from "@/components/ui/other/BrandLogo";
 import { cn } from "@/utils/helpers";
 import { getTvShowPlayers } from "@/utils/players";
-import { Card, Skeleton } from "@heroui/react";
+import { Card, Skeleton, Tooltip, Button, addToast } from "@heroui/react";
 import { useDisclosure, useDocumentTitle, useIdle, useLocalStorage } from "@mantine/hooks";
 import dynamic from "next/dynamic";
 import { parseAsInteger, useQueryState } from "nuqs";
@@ -17,12 +17,14 @@ import { playerAdBlocker } from "@/utils/player-ad-blocker";
 import { usePinchToZoom } from "@/hooks/usePinchToZoom";
 import { getTvContentRatings } from "@/api/tmdb";
 import { getVietnamRatingFromContentRatings } from "@/utils/rating-converter";
+import { IoHandRight } from "react-icons/io5";
 const AdsWarning = dynamic(() => import("@/components/ui/overlay/AdsWarning"));
 const AgeRating = dynamic(() => import("@/components/ui/overlay/AgeRating"));
 const WatchingWithBrand = dynamic(() => import("@/components/ui/overlay/WatchingWithBrand"));
 const TvShowPlayerHeader = dynamic(() => import("./Header"));
 const TvShowPlayerSourceSelection = dynamic(() => import("./SourceSelection"));
 const TvShowPlayerEpisodeSelection = dynamic(() => import("./EpisodeSelection"));
+const GestureDetector = dynamic(() => import("@/components/ui/gesture/GestureDetector"), { ssr: false });
 
 export interface TvShowPlayerProps {
   tv: TvShowDetails;
@@ -54,6 +56,7 @@ const TvShowPlayer: React.FC<TvShowPlayerProps> = ({
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [movieRating, setMovieRating] = useState<{ rating: string; description: string } | null>(null);
   const [videoCurrentTime, setVideoCurrentTime] = useState(0);
+  const [gestureEnabled, setGestureEnabled] = useState(false);
   const logoPath = useMovieLogo(id, "tv", tv.original_language);
   
   // Ghi nhật ký gỡ lỗi
@@ -79,6 +82,77 @@ const TvShowPlayer: React.FC<TvShowPlayerProps> = ({
     "src",
     parseAsInteger.withDefault(0),
   );
+
+  // Gesture control callbacks
+  const gestureCallbacks = useMemo(() => ({
+    onTogglePlay: () => {
+      if (iframeRef.current?.contentWindow) {
+        iframeRef.current.contentWindow.postMessage({ action: 'togglePlay' }, '*');
+      }
+      addToast({ title: '⏯️ Play/Pause', description: 'Chuyển đổi phát/dừng', color: 'primary' });
+    },
+    onPlay: () => {
+      if (iframeRef.current?.contentWindow) {
+        iframeRef.current.contentWindow.postMessage({ action: 'play' }, '*');
+      }
+      addToast({ title: '▶️ Play', description: 'Phát video', color: 'success' });
+    },
+    onPause: () => {
+      if (iframeRef.current?.contentWindow) {
+        iframeRef.current.contentWindow.postMessage({ action: 'pause' }, '*');
+      }
+      addToast({ title: '⏸️ Pause', description: 'Tạm dừng video', color: 'warning' });
+    },
+    onVolumeUp: () => {
+      if (iframeRef.current?.contentWindow) {
+        iframeRef.current.contentWindow.postMessage({ action: 'volumeUp' }, '*');
+      }
+      addToast({ title: '🔊 Volume Up', description: 'Tăng âm lượng', color: 'primary' });
+    },
+    onVolumeDown: () => {
+      if (iframeRef.current?.contentWindow) {
+        iframeRef.current.contentWindow.postMessage({ action: 'volumeDown' }, '*');
+      }
+      addToast({ title: '🔉 Volume Down', description: 'Giảm âm lượng', color: 'primary' });
+    },
+    onForward: () => {
+      if (iframeRef.current?.contentWindow) {
+        iframeRef.current.contentWindow.postMessage({ action: 'forward', seconds: 10 }, '*');
+      }
+      addToast({ title: '⏩ Forward', description: 'Tua tiến 10 giây', color: 'primary' });
+    },
+    onRewind: () => {
+      if (iframeRef.current?.contentWindow) {
+        iframeRef.current.contentWindow.postMessage({ action: 'rewind', seconds: 10 }, '*');
+      }
+      addToast({ title: '⏪ Rewind', description: 'Tua lùi 10 giây', color: 'primary' });
+    },
+    onToggleFullscreen: () => {
+      if (cardRef.current) {
+        if (!isFullscreen) {
+          const requestFullscreen = cardRef.current.requestFullscreen ||
+            (cardRef.current as any).webkitRequestFullscreen ||
+            (cardRef.current as any).mozRequestFullScreen ||
+            (cardRef.current as any).msRequestFullscreen;
+          if (requestFullscreen) {
+            requestFullscreen.call(cardRef.current).catch(console.warn);
+          }
+        } else {
+          const exitFullscreen = document.exitFullscreen ||
+            (document as any).webkitExitFullscreen ||
+            (document as any).mozCancelFullScreen ||
+            (document as any).msExitFullscreen;
+          if (exitFullscreen) {
+            exitFullscreen.call(document).catch(console.warn);
+          }
+        }
+      }
+      addToast({ title: '🖥️ Fullscreen', description: 'Chuyển đổi toàn màn hình', color: 'secondary' });
+    },
+    onFavorite: () => {
+      addToast({ title: '❤️ Yêu thích', description: `Đã thêm ${props.seriesName} vào danh sách yêu thích`, color: 'danger' });
+    },
+  }), [isFullscreen, props.seriesName]);
 
   useVidlinkPlayer({
     saveHistory: true,
@@ -489,6 +563,37 @@ const TvShowPlayer: React.FC<TvShowPlayerProps> = ({
                 videoCurrentTime={videoCurrentTime}
               />
             </div>
+          )}
+
+          {/* Gesture Control Toggle Button */}
+          <div 
+            className="absolute bottom-4 right-4 md:bottom-8 md:right-8 transition-opacity duration-300"
+            style={{ zIndex: 51, pointerEvents: 'auto' }}
+          >
+            <Tooltip content={gestureEnabled ? "Tắt điều khiển cử chỉ" : "Bật điều khiển cử chỉ"}>
+              <Button
+                isIconOnly
+                size="sm"
+                variant={gestureEnabled ? "solid" : "flat"}
+                color={gestureEnabled ? "success" : "default"}
+                className="backdrop-blur-sm bg-black/50"
+                onPress={() => setGestureEnabled(!gestureEnabled)}
+              >
+                <IoHandRight className="text-lg" />
+              </Button>
+            </Tooltip>
+          </div>
+
+          {/* Gesture Detector (hidden camera feed) */}
+          {gestureEnabled && (
+            <GestureDetector
+              enabled={gestureEnabled}
+              showDebugPanel={false}
+              showMiniView={true}
+              className="absolute bottom-4 right-16 md:bottom-8 md:right-20"
+              callbacks={gestureCallbacks}
+              onEnabledChange={setGestureEnabled}
+            />
           )}
         </div>
       </div>
