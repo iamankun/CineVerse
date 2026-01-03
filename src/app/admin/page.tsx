@@ -2,7 +2,15 @@
 
 import { useRouter } from "next/navigation";
 import { Card, CardBody, CardHeader } from "@heroui/react";
-import { IoStatsChart, IoNotifications, IoSettings, IoAnalytics, IoShieldCheckmark, IoVideocam } from "react-icons/io5";
+import {
+  IoStatsChart,
+  IoNotifications,
+  IoSettings,
+  IoAnalytics,
+  IoShieldCheckmark,
+  IoVideocam,
+} from "react-icons/io5";
+import { MdGesture } from "react-icons/md";
 import AdminGuard from "@/components/AdminGuard";
 import { getVersionString } from "@/utils/version";
 
@@ -51,6 +59,13 @@ export default function AdminPage() {
       icon: <IoShieldCheckmark className="text-6xl" />,
       path: "/admin/filters",
       color: "bg-gradient-to-br from-red-500 to-orange-500",
+    },
+    {
+      title: "Trình Kiểm Tra Cử Chỉ",
+      description: "Phát hiện cử chỉ tay bằng MediaPipe Hands",
+      icon: <MdGesture className="text-6xl" />,
+      path: "/admin/gesture",
+      color: "bg-gradient-to-br from-indigo-500 to-cyan-500",
     },
   ];
 
