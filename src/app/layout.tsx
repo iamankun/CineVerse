@@ -53,6 +53,13 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html suppressHydrationWarning lang="vi">
+      <head>
+        <script
+          src="https://cdn.jsdelivr.net/npm/@mediapipe/tasks-genai/genai_bundle.cjs"
+          crossOrigin="anonymous"
+          async
+        ></script>
+      </head>
       <body className={cn("bg-background min-h-dvh antialiased select-none flex flex-col overflow-x-hidden", Mulish.className)}>
         <Suspense>
           <NuqsAdapter>

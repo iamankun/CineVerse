@@ -203,19 +203,59 @@ export const drawHandLandmarks = (
  * @returns Promise giải quyết khi mô hình được tải
  */
 /**
- * Tải mô hình MediaPipe HandLandmarker từ @mediapipe/tasks-genai
+ * Tải mô hình MediaPipe HandLandmarker từ CDN
+ * Script đã được tải qua tag trong layout.tsx
  * @returns Promise giải quyết khi mô hình được tải
  */
 export const loadMediaPipeHands = async (): Promise<any> => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      console.log("📦 Bắt đầu khởi tạo MediaPipe HandLandmarker...");
+
+      // Chờ script tải xong (tối đa 5 giây)
+      let attempts = 0;
+      const checkScript = setInterval(() => {
+        const { HandLandmarker, FilesetResolver } = (window as any)
+          .MediaPipeTasksGenAI || {};
+
+        if (HandLandmarker && FilesetResolver) {
+          clearInterval(checkScript);
+          console.log("✓ MediaPipe tasks tải từ CDN thành công");
+
+          initializeHandLandmarker(HandLandmarker, FilesetResolver, resolve, reject);
+        } else {
+          attempts++;
+          if (attempts > 50) {
+            // Timeout sau 5 giây
+            clearInterval(checkScript);
+            reject(
+              new Error(
+                "Timeout tải MediaPipe - CDN có thể bị chặn hoặc không khả dụng"
+              )
+            );
+          }
+        }
+      }, 100);
+
+    } catch (err) {
+      const errorMsg = `Lỗi: ${err instanceof Error ? err.message : String(err)}`;
+      console.error(errorMsg);
+      reject(new Error(errorMsg));
+    }
+  });
+};
+
+/**
+ * Khởi tạo HandLandmarker
+ */
+async function initializeHandLandmarker(
+  HandLandmarker: any,
+  FilesetResolver: any,
+  resolve: (value: any) => void,
+  reject: (reason?: any) => void
+) {
   try {
-    console.log("📦 Bắt đầu tải MediaPipe HandLandmarker...");
-
-    // Import từ npm package @mediapipe/tasks-genai
-    const { HandLandmarker, FilesetResolver } = await import(
-      "@mediapipe/tasks-genai"
-    );
-
-    console.log("✓ Imported HandLandmarker từ @mediapipe/tasks-genai");
+    console.log("✓ Khởi tạo HandLandmarker...");
 
     // Khởi tạo FilesetResolver
     const vision = await FilesetResolver.forVisionTasks(
@@ -238,14 +278,14 @@ export const loadMediaPipeHands = async (): Promise<any> => {
     });
 
     console.log("✓ HandLandmarker khởi tạo thành công");
+    resolve(handLandmarker);
 
-    return handLandmarker;
   } catch (err) {
-    const errorMsg = `Lỗi tải MediaPipe HandLandmarker: ${err instanceof Error ? err.message : String(err)}`;
+    const errorMsg = `Lỗi khởi tạo HandLandmarker: ${err instanceof Error ? err.message : String(err)}`;
     console.error(errorMsg, err);
-    throw new Error(errorMsg);
+    reject(new Error(errorMsg));
   }
-};
+}
 
 /**
  * Tính toán FPS từ số khung hình và thời gian
