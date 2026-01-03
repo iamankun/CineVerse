@@ -9,6 +9,7 @@ import {
   IoAnalytics,
   IoShieldCheckmark,
   IoVideocam,
+  IoHandRight,
 } from "react-icons/io5";
 import AdminGuard from "@/components/AdminGuard";
 import { getVersionString } from "@/utils/version";
