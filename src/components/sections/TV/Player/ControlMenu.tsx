@@ -2,9 +2,8 @@ import { cn } from "@/utils/helpers";
 import { List, Next, Prev, Server } from "@/utils/icons";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { HiChevronLeft, HiChevronRight } from "react-icons/hi2";
-import { Tooltip } from "@heroui/react";
 
 interface ControlMenuProps {
   id: number;
@@ -31,7 +30,7 @@ const ControlMenu: React.FC<ControlMenuProps> = ({
 }) => {
   const [isExpanded, setIsExpanded] = useState(false);
 
-  const controls = [
+  const controls = useMemo(() => [
     {
       icon: <Prev size={20} />,
       label: "Tập trước",
@@ -58,7 +57,7 @@ const ControlMenu: React.FC<ControlMenuProps> = ({
       label: "Danh sách tập",
       onClick: onOpenEpisode,
     },
-  ];
+  ], [id, seasonNumber, episodeNumber, selectedSource, nextEpisodeNumber, prevEpisodeNumber, onOpenSource, onOpenEpisode]);
 
   return (
     <div
@@ -69,9 +68,10 @@ const ControlMenu: React.FC<ControlMenuProps> = ({
     >
       <div className="relative flex items-center gap-2">
         {/* Expanded Menu */}
-        <AnimatePresence>
+        <AnimatePresence mode="wait">
           {isExpanded && (
             <motion.div
+              key="expanded-menu"
               initial={{ opacity: 0, x: 20, scale: 0.9 }}
               animate={{ opacity: 1, x: 0, scale: 1 }}
               exit={{ opacity: 0, x: 20, scale: 0.9 }}
@@ -81,9 +81,11 @@ const ControlMenu: React.FC<ControlMenuProps> = ({
               {controls.map((control, index) => {
                 const buttonContent = (
                   <motion.button
+                    key={`btn-${index}`}
+                    layoutId={`control-btn-${index}`}
                     initial={{ opacity: 0, x: 10 }}
                     animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: index * 0.05 }}
+                    transition={{ delay: index * 0.05, duration: 0.2 }}
                     onClick={control.onClick}
                     disabled={control.disabled}
                     className={cn(
@@ -100,24 +102,12 @@ const ControlMenu: React.FC<ControlMenuProps> = ({
                   </motion.button>
                 );
 
-                const wrappedButton = control.href ? (
+                return control.href ? (
                   <Link key={index} href={control.href} className="inline-block">
                     {buttonContent}
                   </Link>
                 ) : (
                   <div key={index} className="inline-block">{buttonContent}</div>
-                );
-
-                return (
-                  <Tooltip
-                    key={`tooltip-${index}`}
-                    content={control.label}
-                    placement="left"
-                    showArrow
-                    isDisabled={control.disabled}
-                  >
-                    {wrappedButton}
-                  </Tooltip>
                 );
               })}
             </motion.div>
@@ -125,18 +115,17 @@ const ControlMenu: React.FC<ControlMenuProps> = ({
         </AnimatePresence>
 
         {/* Toggle Button */}
-        <Tooltip content={isExpanded ? "Thu gọn" : "Mở rộng"} placement="left" showArrow>
-          <motion.button
-            onClick={() => setIsExpanded(!isExpanded)}
-            className={cn(
-              "flex h-14 w-14 items-center justify-center rounded-full backdrop-blur-md",
-              "bg-gradient-to-br from-warning/80 to-amber-500/80 shadow-xl",
-              "ring-2 ring-white/30 transition-all duration-300",
-              "hover:scale-110 hover:ring-white/50 hover:shadow-2xl",
-              "active:scale-95"
-            )}
-            whileTap={{ scale: 0.9 }}
-          >
+        <motion.button
+          onClick={() => setIsExpanded(!isExpanded)}
+          className={cn(
+            "flex h-14 w-14 items-center justify-center rounded-full backdrop-blur-md",
+            "bg-gradient-to-br from-warning/80 to-amber-500/80 shadow-xl",
+            "ring-2 ring-white/30 transition-all duration-300",
+            "hover:scale-110 hover:ring-white/50 hover:shadow-2xl",
+            "active:scale-95"
+          )}
+          whileTap={{ scale: 0.9 }}
+        >
             <motion.div
               animate={{ rotate: isExpanded ? 180 : 0 }}
               transition={{ duration: 0.3 }}
@@ -148,10 +137,7 @@ const ControlMenu: React.FC<ControlMenuProps> = ({
               )}
             </motion.div>
           </motion.button>
-        </Tooltip>
-      </div>
-    </div>
-  );
+
 };
 
 export default ControlMenu;

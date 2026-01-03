@@ -1,9 +1,8 @@
 import { cn } from "@/utils/helpers";
 import { Server } from "@/utils/icons";
 import { motion, AnimatePresence } from "framer-motion";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { HiChevronLeft, HiChevronRight } from "react-icons/hi2";
-import { Tooltip } from "@heroui/react";
 
 interface ControlMenuProps {
   onOpenSource: () => void;
@@ -16,13 +15,13 @@ const ControlMenu: React.FC<ControlMenuProps> = ({
 }) => {
   const [isExpanded, setIsExpanded] = useState(false);
 
-  const controls = [
+  const controls = useMemo(() => [
     {
       icon: <Server size={20} />,
       label: "Nguồn phát",
       onClick: onOpenSource,
     },
-  ];
+  ], [onOpenSource]);
 
   return (
     <div
@@ -33,9 +32,10 @@ const ControlMenu: React.FC<ControlMenuProps> = ({
     >
       <div className="relative flex items-center gap-2">
         {/* Expanded Menu */}
-        <AnimatePresence>
+        <AnimatePresence mode="wait">
           {isExpanded && (
             <motion.div
+              key="expanded-menu"
               initial={{ opacity: 0, x: 20, scale: 0.9 }}
               animate={{ opacity: 1, x: 0, scale: 1 }}
               exit={{ opacity: 0, x: 20, scale: 0.9 }}
@@ -43,41 +43,35 @@ const ControlMenu: React.FC<ControlMenuProps> = ({
               className="flex items-center gap-2"
             >
               {controls.map((control, index) => (
-                <Tooltip
+                <motion.button
                   key={index}
-                  content={control.label}
-                  placement="left"
-                  showArrow
+                  layoutId={`control-btn-${index}`}
+                  initial={{ opacity: 0, x: 10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: index * 0.05, duration: 0.2 }}
+                  onClick={control.onClick}
+                  className={cn(
+                    "flex h-12 w-12 items-center justify-center rounded-full backdrop-blur-md",
+                    "bg-white/10 shadow-lg ring-1 ring-white/20 transition-all duration-200",
+                    "hover:bg-white/25 hover:scale-110 hover:ring-white/40"
+                  )}
                 >
-                  <motion.button
-                    initial={{ opacity: 0, x: 10 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: index * 0.05 }}
-                    onClick={control.onClick}
-                    className={cn(
-                      "flex h-12 w-12 items-center justify-center rounded-full backdrop-blur-md",
-                      "bg-white/10 shadow-lg ring-1 ring-white/20 transition-all duration-200",
-                      "hover:bg-white/25 hover:scale-110 hover:ring-white/40"
-                    )}
-                  >
-                    <span className="text-white">{control.icon}</span>
-                  </motion.button>
-                </Tooltip>
+                  <span className="text-white">{control.icon}</span>
+                </motion.button>
               ))}
             </motion.div>
           )}
         </AnimatePresence>
 
         {/* Toggle Button */}
-        <Tooltip content={isExpanded ? "Thu gọn" : "Mở rộng"} placement="left" showArrow>
-          <motion.button
-            onClick={() => setIsExpanded(!isExpanded)}
-            className={cn(
-              "flex h-14 w-14 items-center justify-center rounded-full backdrop-blur-md",
-              "bg-gradient-to-br from-primary/80 to-secondary/80 shadow-xl",
-              "ring-2 ring-white/30 transition-all duration-300",
-              "hover:scale-110 hover:ring-white/50 hover:shadow-2xl",
-              "active:scale-95"
+        <motion.button
+          onClick={() => setIsExpanded(!isExpanded)}
+          className={cn(
+            "flex h-14 w-14 items-center justify-center rounded-full backdrop-blur-md",
+            "bg-gradient-to-br from-primary/80 to-secondary/80 shadow-xl",
+            "ring-2 ring-white/30 transition-all duration-300",
+            "hover:scale-110 hover:ring-white/50 hover:shadow-2xl",
+            "active:scale-95"
             )}
             whileTap={{ scale: 0.9 }}
           >
@@ -91,8 +85,7 @@ const ControlMenu: React.FC<ControlMenuProps> = ({
                 <HiChevronLeft className="text-white" size={24} />
               )}
             </motion.div>
-          </motion.button>
-        </Tooltip>
+        </motion.button>
       </div>
     </div>
   );

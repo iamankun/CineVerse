@@ -19,7 +19,7 @@ export const getMoviePlayers = async (
 
   const externalSources: PlayersProps[] = [
     {
-      title: "VidSrc (Phụ đề Tiếng Việt)",
+      title: "VidSrc",
       source: `https://vidsrc-embed.ru/embed/movie?tmdb=${id}&ds_lang=vi&autoplay=1`,
       recommended: true,
       fast: true,
@@ -80,7 +80,7 @@ export const getTvShowPlayers = async (
 
   const externalSources: PlayersProps[] = [
     {
-      title: "VidSrc (Phụ đề Tiếng Việt)",
+      title: "VidSrc",
       source: `https://vidsrc-embed.ru/embed/tv?tmdb=${id}&season=${season}&episode=${episode}&ds_lang=vi&autoplay=1`,
       recommended: true,
       fast: true,

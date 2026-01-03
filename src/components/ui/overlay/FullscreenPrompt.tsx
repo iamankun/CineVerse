@@ -49,34 +49,38 @@ const FullscreenPrompt = () => {
       placement="center"
       backdrop="blur"
       classNames={{
-        backdrop: "bg-gradient-to-t from-zinc-900 to-zinc-900/10 backdrop-opacity-20"
+        backdrop: "bg-black/30 backdrop-blur-md"
       }}
     >
-      <ModalContent>
-        <ModalHeader className="flex flex-col gap-1">
+      <ModalContent className="bg-white/10 backdrop-blur-xl border border-white/20 shadow-2xl">
+        <ModalHeader className="flex flex-col gap-1 border-b border-white/10">
           <div className="flex items-center gap-2">
-            <MdFullscreen className="text-2xl text-primary" />
-            <span>Trải nghiệm tốt nhất</span>
+            <div className="p-2 rounded-lg bg-primary-500/20">
+              <MdFullscreen className="text-2xl text-primary-500" />
+            </div>
+            <span className="font-semibold">Trải nghiệm tốt nhất</span>
           </div>
         </ModalHeader>
-        <ModalBody>
-          <p className="text-foreground-600">
-            Bật <span className="font-semibold text-primary">Toàn màn hình</span> để có trải nghiệm xem phim tuyệt vời nhất! 
+        <ModalBody className="py-6">
+          <p className="text-foreground leading-relaxed">
+            Bật <span className="font-semibold text-primary-400">Toàn màn hình</span> để có trải nghiệm xem phim tuyệt vời nhất! 
           </p>
-          <p className="text-sm text-foreground-500">
+          <p className="text-sm text-foreground/70 leading-relaxed">
             Bạn có thể bật/tắt fullscreen bất kỳ lúc nào bằng nút ở góc trên bên phải.
           </p>
         </ModalBody>
-        <ModalFooter>
+        <ModalFooter className="border-t border-white/10">
           <Button 
             color="default" 
-            variant="light" 
+            variant="flat"
+            className="bg-white/5 hover:bg-white/10"
             onPress={handleDismiss}
           >
             Để sau
           </Button>
           <Button 
             color="primary" 
+            className="bg-gradient-to-r from-primary-500 to-primary-600 shadow-lg shadow-primary-500/30"
             onPress={handleEnterFullscreen}
             startContent={<MdFullscreen />}
           >

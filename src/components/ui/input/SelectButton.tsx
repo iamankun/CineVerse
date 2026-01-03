@@ -96,7 +96,7 @@ const SelectButton = <T extends string = string>({
               key={`button-select-${kebabCase(item.value)}-${index}`}
               size={size}
               color={"default"}
-              radius={radius}
+              radius="full"
               disabled={item.disabled || disabled}
               startContent={item.startContent}
               endContent={item.endContent}
@@ -104,7 +104,15 @@ const SelectButton = <T extends string = string>({
               variant="faded"
               aria-checked={selected}
               role="radio"
-              className={cn(selected && `border-${color}`)}
+              className={cn(
+                "bg-white/5 backdrop-blur-sm border border-white/10 hover:bg-white/10 transition-all duration-300",
+                selected && `!bg-gradient-to-r border-2 shadow-lg`,
+                selected && color === "warning" && "from-warning-500/30 to-warning-600/30 !border-warning-500 shadow-warning-500/30",
+                selected && color === "primary" && "from-primary-500/30 to-primary-600/30 !border-primary-500 shadow-primary-500/30",
+                selected && color === "secondary" && "from-secondary-500/30 to-secondary-600/30 !border-secondary-500 shadow-secondary-500/30",
+                selected && color === "success" && "from-success-500/30 to-success-600/30 !border-success-500 shadow-success-500/30",
+                selected && color === "danger" && "from-danger-500/30 to-danger-600/30 !border-danger-500 shadow-danger-500/30",
+              )}
             >
               {item.label}
             </Button>
@@ -127,7 +135,7 @@ const GroupComponent: React.FC<GroupCopmponentProps> = ({ children, groupType, g
     <div
       className={cn("items-center", {
         "flex flex-wrap": groupType === "group",
-        grid: groupType === "list",
+        "grid grid-cols-2": groupType === "list",
       })}
       style={{ gap }}
     >

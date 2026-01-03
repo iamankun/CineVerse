@@ -206,7 +206,7 @@ const MoviePlayer: React.FC<MoviePlayerProps> = ({ movie, startAt }) => {
           if (player.provider?.toLowerCase() === 'vidsrc' && !player.source) {
             console.log(`🔄 Chuyển đổi provider vidsrc sang VidSrc external`);
             return {
-              title: "VidSrc (Phụ đề Tiếng Việt)",
+              title: "VidSrc",
               source: `https://vidsrc-embed.ru/embed/movie?tmdb=${movie.id}&ds_lang=vi&autoplay=1` as `https://${string}`,
               recommended: player.recommended,
               fast: true,
