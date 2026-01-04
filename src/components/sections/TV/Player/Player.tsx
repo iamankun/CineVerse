@@ -17,7 +17,7 @@ import { playerAdBlocker } from "@/utils/player-ad-blocker";
 import { usePinchToZoom } from "@/hooks/usePinchToZoom";
 import { getTvContentRatings } from "@/api/tmdb";
 import { getVietnamRatingFromContentRatings } from "@/utils/rating-converter";
-import { IoHandRight } from "react-icons/io5";
+import { useGestureContext } from "@/contexts/GestureContext";
 const AdsWarning = dynamic(() => import("@/components/ui/overlay/AdsWarning"));
 const AgeRating = dynamic(() => import("@/components/ui/overlay/AgeRating"));
 const WatchingWithBrand = dynamic(() => import("@/components/ui/overlay/WatchingWithBrand"));
@@ -57,7 +57,7 @@ const TvShowPlayer: React.FC<TvShowPlayerProps> = ({
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [movieRating, setMovieRating] = useState<{ rating: string; description: string } | null>(null);
   const [videoCurrentTime, setVideoCurrentTime] = useState(0);
-  const [gestureEnabled, setGestureEnabled] = useState(false);
+  const { enabled: gestureEnabled, toggle: toggleGesture } = useGestureContext();
   const logoPath = useMovieLogo(id, "tv", tv.original_language);
   
   // Ghi nhật ký gỡ lỗi
@@ -594,26 +594,7 @@ const TvShowPlayer: React.FC<TvShowPlayerProps> = ({
             </div>
           )}
 
-          {/* Gesture Control Toggle Button */}
-          <div 
-            className="absolute bottom-4 right-4 md:bottom-8 md:right-8 transition-opacity duration-300"
-            style={{ zIndex: 51, pointerEvents: 'auto' }}
-          >
-            <Tooltip content={gestureEnabled ? "Tắt điều khiển cử chỉ" : "Bật điều khiển cử chỉ"}>
-              <Button
-                isIconOnly
-                size="sm"
-                variant={gestureEnabled ? "solid" : "flat"}
-                color={gestureEnabled ? "success" : "default"}
-                className="backdrop-blur-sm bg-black/50"
-                onPress={() => setGestureEnabled(!gestureEnabled)}
-              >
-                <IoHandRight className="text-lg" />
-              </Button>
-            </Tooltip>
-          </div>
-
-          {/* Gesture Detector (hidden camera feed) */}
+          {/* Gesture Detector (hidden camera feed) */
           {gestureEnabled && (
             <GestureDetector
               enabled={gestureEnabled}
@@ -621,7 +602,7 @@ const TvShowPlayer: React.FC<TvShowPlayerProps> = ({
               showMiniView={true}
               className="absolute bottom-4 right-16 md:bottom-8 md:right-20"
               callbacks={gestureCallbacks}
-              onEnabledChange={setGestureEnabled}
+              onEnabledChange={() => toggleGesture()}
             />
           )}
         </div>

@@ -5,7 +5,7 @@ import useBreakpoints from "@/hooks/useBreakpoints";
 import { cn } from "@/utils/helpers";
 import { mutateMovieTitle } from "@/utils/movies";
 import { getMoviePlayers } from "@/utils/players";
-import { Card, Skeleton, Tooltip, Button, addToast } from "@heroui/react";
+import { Card, Skeleton, addToast } from "@heroui/react";
 import { useDisclosure, useDocumentTitle, useIdle, useLocalStorage } from "@mantine/hooks";
 import dynamic from "next/dynamic";
 import { parseAsInteger, useQueryState } from "nuqs";
@@ -18,7 +18,7 @@ import { playerAdBlocker } from "@/utils/player-ad-blocker";
 import { usePinchToZoom } from "@/hooks/usePinchToZoom";
 import { getMovieReleaseDates } from "@/api/tmdb";
 import { getVietnamRatingFromReleaseDates } from "@/utils/rating-converter";
-import { IoHandRight } from "react-icons/io5";
+import { useGestureContext } from "@/contexts/GestureContext";
 const AdsWarning = dynamic(() => import("@/components/ui/overlay/AdsWarning"));
 const AgeRating = dynamic(() => import("@/components/ui/overlay/AgeRating"));
 const WatchingWithBrand = dynamic(() => import("@/components/ui/overlay/WatchingWithBrand"));
@@ -42,7 +42,7 @@ const MoviePlayer: React.FC<MoviePlayerProps> = ({ movie, startAt }) => {
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [movieRating, setMovieRating] = useState<{ rating: string; description: string } | null>(null);
   const [videoCurrentTime, setVideoCurrentTime] = useState(0);
-  const [gestureEnabled, setGestureEnabled] = useState(false);
+  const { enabled: gestureEnabled, toggle: toggleGesture } = useGestureContext();
   const logoPath = useMovieLogo(movie.id, "movie", movie.original_language);
   
   // Sửa lỗi đăng nhập
@@ -587,25 +587,6 @@ const MoviePlayer: React.FC<MoviePlayerProps> = ({ movie, startAt }) => {
             </div>
           )}
 
-          {/* Gesture Control Toggle Button */}
-          <div 
-            className="absolute bottom-4 right-4 md:bottom-8 md:right-8 transition-opacity duration-300"
-            style={{ zIndex: 51, pointerEvents: 'auto' }}
-          >
-            <Tooltip content={gestureEnabled ? "Tắt điều khiển cử chỉ" : "Bật điều khiển cử chỉ"}>
-              <Button
-                isIconOnly
-                size="sm"
-                variant={gestureEnabled ? "solid" : "flat"}
-                color={gestureEnabled ? "success" : "default"}
-                className="backdrop-blur-sm bg-black/50"
-                onPress={() => setGestureEnabled(!gestureEnabled)}
-              >
-                <IoHandRight className="text-lg" />
-              </Button>
-            </Tooltip>
-          </div>
-
           {/* Gesture Detector (hidden camera feed) */}
           {gestureEnabled && (
             <GestureDetector
@@ -614,7 +595,7 @@ const MoviePlayer: React.FC<MoviePlayerProps> = ({ movie, startAt }) => {
               showMiniView={true}
               className="absolute bottom-4 right-16 md:bottom-8 md:right-20"
               callbacks={gestureCallbacks}
-              onEnabledChange={setGestureEnabled}
+              onEnabledChange={() => toggleGesture()}
             />
           )}
         </div>

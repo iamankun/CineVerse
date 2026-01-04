@@ -5,8 +5,6 @@ import { useGestureControl } from '@/hooks/useGestureControl';
 import { GestureCallbacks, GestureResult } from '@/types/gesture';
 import { useGestureContext } from '@/contexts/GestureContext';
 import VirtualCursor from './VirtualCursor';
-import { Button } from '@heroui/react';
-import { Hand } from 'lucide-react';
 
 /**
  * Global Gesture Control
@@ -48,7 +46,7 @@ export function GlobalGestureControl() {
       window.scrollBy({ left: 400, behavior: 'smooth' });
     },
 
-    // Navigation gestures (can be extended)
+    // Navigation gestures
     onForward: () => {
       window.scrollBy({ top: 300, behavior: 'smooth' });
     },
@@ -71,7 +69,6 @@ export function GlobalGestureControl() {
     isLoading,
     error,
     currentGesture,
-    confidence,
     handDetected,
     cameraActive,
     handPosition,
@@ -91,7 +88,6 @@ export function GlobalGestureControl() {
 
   // Sync miniView with enabled state
   useEffect(() => {
-    console.log('🎯 Enabled state changed:', enabled);
     if (enabled) {
       setMiniView(true);
     } else {
@@ -102,20 +98,21 @@ export function GlobalGestureControl() {
 
   // Auto start detection when enabled
   useEffect(() => {
-    console.log('🔍 Check start detection:', { enabled, isInitialized, isLoading, miniView });
     if (enabled && !isInitialized && !isLoading && miniView) {
-      // Wait for DOM to render
-      const timer = setTimeout(() => {
+      const timer = setTimeout(async () => {
         const video = document.getElementById('global-gesture-video') as HTMLVideoElement;
         const canvas = document.getElementById('global-gesture-canvas') as HTMLCanvasElement;
         
-        console.log('📹 Video/Canvas elements:', { video: !!video, canvas: !!canvas });
-        
         if (video && canvas) {
-          console.log('▶️ Starting detection...');
-          startDetection(video, canvas);
+          console.log('🎬 Starting gesture detection with video and canvas');
+          try {
+            await startDetection(video, canvas);
+            console.log('✅ Gesture detection started successfully');
+          } catch (error) {
+            console.error('❌ Failed to start detection:', error);
+          }
         } else {
-          console.warn('⚠️ Video or canvas not found');
+          console.warn('⚠️ Video or canvas element not found');
         }
       }, 100);
       
@@ -134,7 +131,6 @@ export function GlobalGestureControl() {
             {/* Header */}
             <div className="flex items-center justify-between gap-2">
               <div className="flex items-center gap-2">
-                <Hand className="w-4 h-4 text-primary" />
                 <span className="text-xs font-semibold">Điều khiển cử chỉ</span>
               </div>
               <button
@@ -173,11 +169,6 @@ export function GlobalGestureControl() {
                     </span>
                   )}
                 </div>
-                {handDetected && (
-                  <div className="text-[9px] text-green-300 mt-0.5">
-                    📍 Tracking ngón trỏ
-                  </div>
-                )}
               </div>
             </div>
 

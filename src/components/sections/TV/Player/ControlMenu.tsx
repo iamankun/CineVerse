@@ -4,6 +4,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { useState, useMemo } from "react";
 import { HiChevronLeft, HiChevronRight } from "react-icons/hi2";
+import { IoHandRight } from "react-icons/io5";
+import { useGestureContext } from "@/contexts/GestureContext";
 
 interface ControlMenuProps {
   id: number;
@@ -29,6 +31,7 @@ const ControlMenu: React.FC<ControlMenuProps> = ({
   hidden,
 }) => {
   const [isExpanded, setIsExpanded] = useState(false);
+  const { enabled: gestureEnabled, toggle: toggleGesture } = useGestureContext();
 
   const controls = useMemo(() => [
     {
@@ -57,7 +60,13 @@ const ControlMenu: React.FC<ControlMenuProps> = ({
       label: "Danh sách tập",
       onClick: onOpenEpisode,
     },
-  ], [id, seasonNumber, episodeNumber, selectedSource, nextEpisodeNumber, prevEpisodeNumber, onOpenSource, onOpenEpisode]);
+    {
+      icon: <IoHandRight size={20} />,
+      label: gestureEnabled ? "Tắt điều khiển cử chỉ" : "Bật điều khiển cử chỉ",
+      onClick: toggleGesture,
+      active: gestureEnabled,
+    },
+  ], [id, seasonNumber, episodeNumber, selectedSource, nextEpisodeNumber, prevEpisodeNumber, onOpenSource, onOpenEpisode, toggleGesture, gestureEnabled]);
 
   return (
     <div
@@ -95,6 +104,8 @@ const ControlMenu: React.FC<ControlMenuProps> = ({
                         "hover:bg-white/25 hover:scale-110 hover:ring-white/40":
                           !control.disabled,
                         "opacity-40 cursor-not-allowed": control.disabled,
+                        "bg-success/40 ring-success/60 shadow-success/20":
+                          control.active,
                       }
                     )}
                   >

@@ -3,6 +3,8 @@ import { Server } from "@/utils/icons";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState, useMemo } from "react";
 import { HiChevronLeft, HiChevronRight } from "react-icons/hi2";
+import { IoHandRight } from "react-icons/io5";
+import { useGestureContext } from "@/contexts/GestureContext";
 
 interface ControlMenuProps {
   onOpenSource: () => void;
@@ -14,6 +16,7 @@ const ControlMenu: React.FC<ControlMenuProps> = ({
   hidden,
 }) => {
   const [isExpanded, setIsExpanded] = useState(false);
+  const { enabled: gestureEnabled, toggle: toggleGesture } = useGestureContext();
 
   const controls = useMemo(() => [
     {
@@ -21,7 +24,13 @@ const ControlMenu: React.FC<ControlMenuProps> = ({
       label: "Nguồn phát",
       onClick: onOpenSource,
     },
-  ], [onOpenSource]);
+    {
+      icon: <IoHandRight size={20} />,
+      label: gestureEnabled ? "Tắt điều khiển cử chỉ" : "Bật điều khiển cử chỉ",
+      onClick: toggleGesture,
+      active: gestureEnabled,
+    },
+  ], [onOpenSource, toggleGesture, gestureEnabled]);
 
   return (
     <div
@@ -52,8 +61,13 @@ const ControlMenu: React.FC<ControlMenuProps> = ({
                   onClick={control.onClick}
                   className={cn(
                     "flex h-12 w-12 items-center justify-center rounded-full backdrop-blur-md",
-                    "bg-white/10 shadow-lg ring-1 ring-white/20 transition-all duration-200",
-                    "hover:bg-white/25 hover:scale-110 hover:ring-white/40"
+                    "shadow-lg ring-1 transition-all duration-200",
+                    "hover:scale-110",
+                    (control as any).active ? (
+                      "bg-success/30 ring-success/40 hover:bg-success/40 hover:ring-success/60"
+                    ) : (
+                      "bg-white/10 ring-white/20 hover:bg-white/25 hover:ring-white/40"
+                    )
                   )}
                 >
                   <span className="text-white">{control.icon}</span>

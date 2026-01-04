@@ -3,8 +3,38 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { GestureCallbacks, GestureConfig, GestureName, GestureResult, GestureAction } from '@/types/gesture';
 
-// Import gesture config
-import gestureConfigData from '@/app/admin/gesture-config.json';
+// Default gesture config
+const defaultGestureConfig: GestureConfig = {
+  enabled: true,
+  showDebugOverlay: false,
+  confidenceThreshold: 0.7,
+  minConfidence: 0.7,
+  gestureDelay: 500,
+  gestures: {
+    'Closed_Fist': { action: 'togglePlay', enabled: true },
+    'Open_Palm': { action: 'pause', enabled: true },
+    'Pointing_Up': { action: 'volumeUp', enabled: true },
+    'Thumb_Down': { action: 'volumeDown', enabled: true },
+    'Thumb_Up': { action: 'favorite', enabled: true },
+    'Victory': { action: 'toggleFullscreen', enabled: true },
+    'ILoveYou': { action: 'mute', enabled: false },
+    'Swipe_Left': { action: 'rewind', enabled: true },
+    'Swipe_Right': { action: 'forward', enabled: true },
+    'None': { action: 'pause', enabled: false },
+  },
+  descriptions: {
+    'Closed_Fist': 'Nắm tay - Phát/Dừng video',
+    'Open_Palm': 'Mở bàn tay - Tạm dừng',
+    'Pointing_Up': 'Chỉ ngón trỏ lên - Tăng âm lượng',
+    'Thumb_Down': 'Ngón cái xuống - Giảm âm lượng',
+    'Thumb_Up': 'Ngón cái lên - Yêu thích',
+    'Victory': 'Chiến thắng - Toàn màn hình',
+    'ILoveYou': 'ILoveYou - Tắt tiếng',
+    'Swipe_Left': 'Vuốt trái - Tua lùi 10s',
+    'Swipe_Right': 'Vuốt phải - Tua tiến 10s',
+    'None': 'Không có cử chỉ',
+  },
+};
 
 // Preload TensorFlow.js and handpose model for faster initialization
 let tfPromise: Promise<any> | null = null;
@@ -184,7 +214,7 @@ function recognizeGesture(landmarks: Array<{ x: number; y: number; z: number }>)
 export const useGestureControl = (options: UseGestureControlOptions = {}) => {
   const { enabled = true, callbacks } = options;
   
-  const [config, setConfig] = useState<GestureConfig>(gestureConfigData as GestureConfig);
+  const [config, setConfig] = useState<GestureConfig>(defaultGestureConfig);
   const [state, setState] = useState<GestureControlState>({
     isInitialized: false,
     isLoading: false,
@@ -204,19 +234,6 @@ export const useGestureControl = (options: UseGestureControlOptions = {}) => {
   const streamRef = useRef<MediaStream | null>(null);
   const smoothedPositionRef = useRef<{ x: number; y: number } | null>(null);
   const lastStatePositionRef = useRef<{ x: number; y: number } | null>(null);
-
-  // Load config from API
-  const loadConfig = useCallback(async () => {
-    try {
-      const res = await fetch('/api/admin/gesture-config');
-      if (res.ok) {
-        const data = await res.json();
-        setConfig(data);
-      }
-    } catch (err) {
-      console.error('Failed to load gesture config:', err);
-    }
-  }, []);
 
   // Execute action based on gesture
   const executeAction = useCallback((action: GestureAction) => {
@@ -320,51 +337,6 @@ export const useGestureControl = (options: UseGestureControlOptions = {}) => {
     executeAction(gestureConfig.action);
   }, [config, callbacks, executeAction]);
 
-  // Initialize TensorFlow.js Hand Pose Detection
-  const initialize = useCallback(async (video: HTMLVideoElement, canvas: HTMLCanvasElement) => {
-    if (!enabled || !config.enabled) return;
-
-    setState(prev => ({ ...prev, isLoading: true, error: null }));
-
-    try {
-      // Use preloaded modules or start loading
-      const { tfPromise, handposePromise } = preloadModels();
-      
-      // Wait for both TensorFlow and handpose to load
-      const [tf, handpose] = await Promise.all([tfPromise!, handposePromise!]);
-      
-      // Load model and start camera in parallel
-      if (!modelPromise) {
-        modelPromise = handpose.load();
-      }
-      
-      const [model] = await Promise.all([
-        modelPromise,
-        startCamera() // Start camera while model loads
-      ]);
-
-      detectorRef.current = model;
-      videoRef.current = video;
-      canvasRef.current = canvas;
-
-      setState(prev => ({
-        ...prev,
-        isInitialized: true,
-        isLoading: false,
-      }));
-
-      console.log('✅ Gesture Control ready');
-    } catch (err: any) {
-      console.error('❌ Failed to initialize:', err);
-      const errorMessage = err?.message || 'Không thể khởi tạo nhận diện cử chỉ. Vui lòng thử lại.';
-      setState(prev => ({
-        ...prev,
-        isLoading: false,
-        error: errorMessage,
-      }));
-    }
-  }, [enabled, config.enabled]);
-
   // Start camera
   const startCamera = useCallback(async () => {
     console.log('📹 startCamera called, videoRef:', !!videoRef.current);
@@ -395,6 +367,53 @@ export const useGestureControl = (options: UseGestureControlOptions = {}) => {
       }));
     }
   }, []);
+
+  // Initialize TensorFlow.js Hand Pose Detection
+  const initialize = useCallback(async (video: HTMLVideoElement, canvas: HTMLCanvasElement) => {
+    if (!enabled || !config.enabled) return;
+
+    setState(prev => ({ ...prev, isLoading: true, error: null }));
+
+    try {
+      // Set refs first before starting camera
+      videoRef.current = video;
+      canvasRef.current = canvas;
+
+      // Use preloaded modules or start loading
+      const { tfPromise, handposePromise } = preloadModels();
+      
+      // Wait for both TensorFlow and handpose to load
+      const [tf, handpose] = await Promise.all([tfPromise!, handposePromise!]);
+      
+      // Load model and start camera in parallel
+      if (!modelPromise) {
+        modelPromise = handpose.load();
+      }
+      
+      const [model] = await Promise.all([
+        modelPromise,
+        startCamera() // Start camera while model loads
+      ]);
+
+      detectorRef.current = model;
+
+      setState(prev => ({
+        ...prev,
+        isInitialized: true,
+        isLoading: false,
+      }));
+
+      console.log('✅ Gesture Control ready');
+    } catch (err: any) {
+      console.error('❌ Failed to initialize:', err);
+      const errorMessage = err?.message || 'Không thể khởi tạo nhận diện cử chỉ. Vui lòng thử lại.';
+      setState(prev => ({
+        ...prev,
+        isLoading: false,
+        error: errorMessage,
+      }));
+    }
+  }, [enabled, config.enabled, startCamera]);
 
   // Stop camera
   const stopCamera = useCallback(() => {
@@ -498,7 +517,7 @@ export const useGestureControl = (options: UseGestureControlOptions = {}) => {
 
           // Apply smoothing to raw position
           if (smoothedPositionRef.current) {
-            const alpha = 0.75; // Smoothing factor (0-1, higher = more responsive)
+            const alpha = 0.9; // Smoothing factor (0-1, higher = more responsive)
             screenX = smoothedPositionRef.current.x + alpha * (screenX - smoothedPositionRef.current.x);
             screenY = smoothedPositionRef.current.y + alpha * (screenY - smoothedPositionRef.current.y);
           }
@@ -514,29 +533,15 @@ export const useGestureControl = (options: UseGestureControlOptions = {}) => {
               normalizedLandmarks
             );
           } else {
-            // Only update state if it changed significantly (reduce jitter)
-            const lastPos = lastStatePositionRef.current;
-            const positionChanged = !lastPos || 
-              Math.abs(lastPos.x - screenX) > 1 ||
-              Math.abs(lastPos.y - screenY) > 1;
-              
-            if (state.currentGesture !== 'None' || !state.handDetected) {
-              lastStatePositionRef.current = { x: screenX, y: screenY };
-              setState(prev => ({
-                ...prev,
-                currentGesture: 'None',
-                confidence: 0,
-                handDetected: true,
-                handPosition: { x: screenX, y: screenY },
-              }));
-            } else if (positionChanged) {
-              // Update position only if moved more than threshold
-              lastStatePositionRef.current = { x: screenX, y: screenY };
-              setState(prev => ({
-                ...prev,
-                handPosition: { x: screenX, y: screenY },
-              }));
-            }
+            // Always update hand position for smooth tracking
+            lastStatePositionRef.current = { x: screenX, y: screenY };
+            setState(prev => ({
+              ...prev,
+              currentGesture: 'None',
+              confidence: 0,
+              handDetected: true,
+              handPosition: { x: screenX, y: screenY },
+            }));
           }
         } else {
           // Only update state if it changed
@@ -591,11 +596,6 @@ export const useGestureControl = (options: UseGestureControlOptions = {}) => {
     };
   }, [state.isInitialized, state.cameraActive, detectGestures]);
 
-  // Load config on mount
-  useEffect(() => {
-    loadConfig();
-  }, [loadConfig]);
-
   // Cleanup on unmount
   useEffect(() => {
     return () => {
@@ -613,7 +613,6 @@ export const useGestureControl = (options: UseGestureControlOptions = {}) => {
     stopDetection,
     startCamera,
     stopCamera,
-    loadConfig,
     setConfig,
   };
 };

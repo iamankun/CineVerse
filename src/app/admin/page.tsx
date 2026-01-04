@@ -9,7 +9,6 @@ import {
   IoAnalytics,
   IoShieldCheckmark,
   IoVideocam,
-  IoHandRight,
 } from "react-icons/io5";
 import AdminGuard from "@/components/AdminGuard";
 import { getVersionString } from "@/utils/version";
@@ -59,13 +58,6 @@ export default function AdminPage() {
       icon: <IoShieldCheckmark className="text-6xl" />,
       path: "/admin/filters",
       color: "bg-gradient-to-br from-red-500 to-orange-500",
-    },
-    {
-      title: "Cử chỉ Tay",
-      description: "Điều khiển video bằng cử chỉ tay",
-      icon: <IoHandRight className="text-6xl" />,
-      path: "/admin/gestures",
-      color: "bg-gradient-to-br from-indigo-500 to-purple-500",
     },
   ];
 

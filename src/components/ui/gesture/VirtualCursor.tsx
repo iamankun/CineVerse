@@ -36,8 +36,8 @@ export function VirtualCursor({ x, y, isClicking, visible }: VirtualCursorProps)
         const distance = Math.sqrt(dx * dx + dy * dy);
         
         // Dynamic lerp factor based on distance for faster response
-        const baseFactor = distance > 100 ? 0.95 : 0.85;
-        const factor = easeOutQuad(baseFactor);
+        const baseFactor = distance > 50 ? 0.3 : 0.25;
+        const factor = baseFactor;
         
         return {
           x: lerp(prev.x, x, factor),
