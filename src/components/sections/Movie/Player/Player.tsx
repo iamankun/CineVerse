@@ -92,6 +92,7 @@ const MoviePlayer: React.FC<MoviePlayerProps> = ({ movie, startAt }) => {
     "src",
     parseAsInteger.withDefault(0),
   );
+  const [reloadKey, setReloadKey] = useState<number>(0);
 
   // Gesture control callbacks
   const gestureCallbacks = useMemo(() => ({
@@ -145,15 +146,20 @@ const MoviePlayer: React.FC<MoviePlayerProps> = ({ movie, startAt }) => {
         document.documentElement.requestFullscreen();
       }
       addToast({ 
-        title: 'Fullscreen', 
+        title: 'Toàn màn hình', 
         description: 'Chuyển đổi toàn màn hình', 
         color: 'secondary',
         icon: document.fullscreenElement ? 'MdFullscreenExit' : 'MdFullscreen'
       });
     },
     onReload: () => {
-      // Reload toàn trang như nút xem ngay
-      window.location.reload();
+      // Force reload iframe bằng cách tăng reloadKey
+      setReloadKey(prev => prev + 1);
+      addToast({ 
+        title: 'Tải lại trình phát', 
+        description: 'Đã làm mới trình phát', 
+        color: 'primary' 
+      });
     },
     onFavorite: () => {
       addToast({ title: '❤️ Yêu thích', description: `Đã thêm ${title} vào danh sách yêu thích`, color: 'danger' });
@@ -504,9 +510,11 @@ const MoviePlayer: React.FC<MoviePlayerProps> = ({ movie, startAt }) => {
     return (
       <div className="relative w-full h-screen bg-black overflow-hidden">
         <div className="absolute-center">
-          <div className="text-center">
-            <div className="mb-4 text-lg" style={{ textShadow: '0 2px 8px rgba(0, 0, 0, 0.8)' }}>Đang tải nguồn phim...</div>
-            <div className="text-sm text-foreground/60" style={{ textShadow: '0 1px 4px rgba(0, 0, 0, 0.6)' }}>Vui lòng đợi</div>
+          <div className="text-center flex flex-col items-center gap-4">
+            {movieRating && (
+              <AgeRating rating={movieRating.rating} ratingDescription={movieRating.description} />
+            )}
+            <div className="text-sm text-foreground/60" style={{ textShadow: '0 1px 4px rgba(0, 0, 0, 0.6)' }}>CineVerse - Vũ Trụ Điện Ảnh</div>
           </div>
         </div>
       </div>
@@ -553,7 +561,7 @@ const MoviePlayer: React.FC<MoviePlayerProps> = ({ movie, startAt }) => {
                   ref={iframeRef}
                   allowFullScreen
                   allow="autoplay; fullscreen; encrypted-media; picture-in-picture"
-                  key={PLAYER.title}
+                  key={`${PLAYER.title}-${reloadKey}`}
                   src={PLAYER.source}
                   className={cn("z-10 h-full w-full", {
                     'pointer-events-none': idle && !mobile,
