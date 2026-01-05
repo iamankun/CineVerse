@@ -1,36 +1,88 @@
 import { cn } from "@/utils/helpers";
 import { Server } from "@/utils/icons";
 import { motion, AnimatePresence } from "framer-motion";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { HiChevronLeft, HiChevronRight } from "react-icons/hi2";
 import { IoHandRight } from "react-icons/io5";
+import { MdFullscreen, MdFullscreenExit } from "react-icons/md";
+import { IoReload } from "react-icons/io5";
 import { useGestureContext } from "@/contexts/GestureContext";
 
 interface ControlMenuProps {
   onOpenSource: () => void;
+  onToggleFullscreen?: () => void;
+  onReload?: () => void;
+  isFullscreen?: boolean;
   hidden?: boolean;
 }
 
 const ControlMenu: React.FC<ControlMenuProps> = ({
   onOpenSource,
+  onToggleFullscreen,
+  onReload,
+  isFullscreen = false,
   hidden,
 }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const { enabled: gestureEnabled, toggle: toggleGesture } = useGestureContext();
 
-  const controls = useMemo(() => [
-    {
-      icon: <Server size={20} />,
-      label: "Nguồn phát",
-      onClick: onOpenSource,
-    },
-    {
-      icon: <IoHandRight size={20} />,
-      label: gestureEnabled ? "Tắt điều khiển cử chỉ" : "Bật điều khiển cử chỉ",
-      onClick: toggleGesture,
-      active: gestureEnabled,
-    },
-  ], [onOpenSource, toggleGesture, gestureEnabled]);
+  // Debug log
+  useEffect(() => {
+    console.log('🎛️ ControlMenu props:', { 
+      hasFullscreenHandler: !!onToggleFullscreen, 
+      isFullscreen 
+    });
+  }, [onToggleFullscreen, isFullscreen]);
+
+  const handleReload = () => {
+    if (onReload) {
+      // Dùng callback để reload iframe thay vì reload toàn trang
+      onReload();
+    } else {
+      // Fallback: reload toàn trang
+      if (document.fullscreenElement) {
+        sessionStorage.setItem('restoreFullscreen', 'true');
+      }
+      window.location.reload();
+    }
+  };
+
+  const controls = useMemo(() => {
+    const baseControls = [
+      {
+        icon: <Server size={20} />,
+        label: "Nguồn phát",
+        onClick: onOpenSource,
+      },
+    ];
+
+    if (onToggleFullscreen) {
+      baseControls.push({
+        icon: isFullscreen ? <MdFullscreenExit size={20} /> : <MdFullscreen size={20} />,
+        label: isFullscreen ? "Thoát toàn màn hình" : "Toàn màn hình",
+        onClick: () => {
+          console.log('🖥️ Fullscreen button clicked');
+          onToggleFullscreen();
+        },
+      });
+    }
+
+    baseControls.push(
+      {
+        icon: <IoReload size={20} />,
+        label: "Làm mới",
+        onClick: handleReload,
+      },
+      {
+        icon: <IoHandRight size={20} />,
+        label: gestureEnabled ? "Tắt điều khiển cử chỉ" : "Bật điều khiển cử chỉ",
+        onClick: toggleGesture,
+        active: gestureEnabled,
+      }
+    );
+
+    return baseControls;
+  }, [onOpenSource, onToggleFullscreen, isFullscreen, handleReload, toggleGesture, gestureEnabled]);
 
   return (
     <div
@@ -83,8 +135,8 @@ const ControlMenu: React.FC<ControlMenuProps> = ({
           className={cn(
             "flex h-14 w-14 items-center justify-center rounded-full backdrop-blur-md",
             "bg-primary/20 shadow-xl border border-primary/30",
-            "ring-2 ring-primary/30 transition-all duration-300",
-            "hover:scale-110 hover:bg-primary/30 hover:ring-primary/50 hover:shadow-2xl",
+            "ring-4 ring-white/40 transition-all duration-300",
+            "hover:scale-110 hover:bg-primary/30 hover:ring-white/60 hover:shadow-2xl",
             "active:scale-95"
             )}
             whileTap={{ scale: 0.9 }}

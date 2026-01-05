@@ -57,7 +57,17 @@ const TvShowPlayer: React.FC<TvShowPlayerProps> = ({
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [movieRating, setMovieRating] = useState<{ rating: string; description: string } | null>(null);
   const [videoCurrentTime, setVideoCurrentTime] = useState(0);
+  const [showLoading, setShowLoading] = useState(true);
   const { enabled: gestureEnabled, toggle: toggleGesture } = useGestureContext();
+
+  // Ẩn loading sau 5 giây
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowLoading(false);
+    }, 5000);
+    
+    return () => clearTimeout(timer);
+  }, []);
   const logoPath = useMovieLogo(id, "tv", tv.original_language);
   
   // Ghi nhật ký gỡ lỗi
@@ -129,26 +139,21 @@ const TvShowPlayer: React.FC<TvShowPlayerProps> = ({
       addToast({ title: '⏪ Rewind', description: 'Tua lùi 10 giây', color: 'primary' });
     },
     onToggleFullscreen: () => {
-      if (cardRef.current) {
-        if (!isFullscreen) {
-          const requestFullscreen = cardRef.current.requestFullscreen ||
-            (cardRef.current as any).webkitRequestFullscreen ||
-            (cardRef.current as any).mozRequestFullScreen ||
-            (cardRef.current as any).msRequestFullscreen;
-          if (requestFullscreen) {
-            requestFullscreen.call(cardRef.current).catch(console.warn);
-          }
-        } else {
-          const exitFullscreen = document.exitFullscreen ||
-            (document as any).webkitExitFullscreen ||
-            (document as any).mozCancelFullScreen ||
-            (document as any).msExitFullscreen;
-          if (exitFullscreen) {
-            exitFullscreen.call(document).catch(console.warn);
-          }
-        }
+      if (document.fullscreenElement) {
+        document.exitFullscreen();
+      } else {
+        document.documentElement.requestFullscreen();
       }
-      addToast({ title: '🖥️ Fullscreen', description: 'Chuyển đổi toàn màn hình', color: 'secondary' });
+      addToast({ 
+        title: 'Fullscreen', 
+        description: 'Chuyển đổi toàn màn hình', 
+        color: 'secondary',
+        icon: document.fullscreenElement ? 'MdFullscreenExit' : 'MdFullscreen'
+      });
+    },
+    onReload: () => {
+      // Reload toàn trang như nút xem ngay
+      window.location.reload();
     },
     onFavorite: () => {
       addToast({ title: '❤️ Yêu thích', description: `Đã thêm ${props.seriesName} vào danh sách yêu thích`, color: 'danger' });
@@ -408,6 +413,20 @@ const TvShowPlayer: React.FC<TvShowPlayerProps> = ({
     };
   }, []);
 
+  // Khôi phục fullscreen sau khi reload
+  useEffect(() => {
+    const shouldRestore = sessionStorage.getItem('restoreFullscreen');
+    if (shouldRestore === 'true') {
+      sessionStorage.removeItem('restoreFullscreen');
+      // Đợi một chút để DOM render xong
+      setTimeout(() => {
+        if (!document.fullscreenElement) {
+          document.documentElement.requestFullscreen().catch(console.warn);
+        }
+      }, 500);
+    }
+  }, []);
+
   // Handle orientation change on mobile - auto enter fullscreen on landscape
   useEffect(() => {
     if (!mobile) return;
@@ -480,8 +499,8 @@ const TvShowPlayer: React.FC<TvShowPlayerProps> = ({
 
   const PLAYER = useMemo(() => players[selectedSource] || players[0], [players, selectedSource]);
 
-  // Show loading while fetching players
-  if (!PLAYER) {
+  // Show loading while fetching players or for 5 seconds
+  if (!PLAYER || showLoading) {
     return (
       <div className="relative w-full h-screen bg-black overflow-hidden">
         <div className="absolute-center">
@@ -518,6 +537,9 @@ const TvShowPlayer: React.FC<TvShowPlayerProps> = ({
           prevEpisodeNumber={props.prevEpisodeNumber}
           onOpenSource={sourceHandlers.open}
           onOpenEpisode={episodeHandlers.open}
+          onToggleFullscreen={gestureCallbacks.onToggleFullscreen}
+          onReload={gestureCallbacks.onReload}
+          isFullscreen={isFullscreen}
           hidden={idle && !mobile}
         />
 
@@ -594,7 +616,7 @@ const TvShowPlayer: React.FC<TvShowPlayerProps> = ({
             </div>
           )}
 
-          {/* Gesture Detector (hidden camera feed) */
+          {/* Gesture Detector (hidden camera feed) */}
           {gestureEnabled && (
             <GestureDetector
               enabled={gestureEnabled}

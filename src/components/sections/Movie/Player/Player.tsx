@@ -42,8 +42,18 @@ const MoviePlayer: React.FC<MoviePlayerProps> = ({ movie, startAt }) => {
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [movieRating, setMovieRating] = useState<{ rating: string; description: string } | null>(null);
   const [videoCurrentTime, setVideoCurrentTime] = useState(0);
+  const [showLoading, setShowLoading] = useState(true);
   const { enabled: gestureEnabled, toggle: toggleGesture } = useGestureContext();
   const logoPath = useMovieLogo(movie.id, "movie", movie.original_language);
+  
+  // Ẩn loading sau 5 giây
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowLoading(false);
+    }, 5000);
+    
+    return () => clearTimeout(timer);
+  }, []);
   
   // Sửa lỗi đăng nhập
   useEffect(() => {
@@ -129,26 +139,21 @@ const MoviePlayer: React.FC<MoviePlayerProps> = ({ movie, startAt }) => {
       addToast({ title: '⏪ Rewind', description: 'Tua lùi 10 giây', color: 'primary' });
     },
     onToggleFullscreen: () => {
-      if (cardRef.current) {
-        if (!isFullscreen) {
-          const requestFullscreen = cardRef.current.requestFullscreen ||
-            (cardRef.current as any).webkitRequestFullscreen ||
-            (cardRef.current as any).mozRequestFullScreen ||
-            (cardRef.current as any).msRequestFullscreen;
-          if (requestFullscreen) {
-            requestFullscreen.call(cardRef.current).catch(console.warn);
-          }
-        } else {
-          const exitFullscreen = document.exitFullscreen ||
-            (document as any).webkitExitFullscreen ||
-            (document as any).mozCancelFullScreen ||
-            (document as any).msExitFullscreen;
-          if (exitFullscreen) {
-            exitFullscreen.call(document).catch(console.warn);
-          }
-        }
+      if (document.fullscreenElement) {
+        document.exitFullscreen();
+      } else {
+        document.documentElement.requestFullscreen();
       }
-      addToast({ title: '🖥️ Fullscreen', description: 'Chuyển đổi toàn màn hình', color: 'secondary' });
+      addToast({ 
+        title: 'Fullscreen', 
+        description: 'Chuyển đổi toàn màn hình', 
+        color: 'secondary',
+        icon: document.fullscreenElement ? 'MdFullscreenExit' : 'MdFullscreen'
+      });
+    },
+    onReload: () => {
+      // Reload toàn trang như nút xem ngay
+      window.location.reload();
     },
     onFavorite: () => {
       addToast({ title: '❤️ Yêu thích', description: `Đã thêm ${title} vào danh sách yêu thích`, color: 'danger' });
@@ -402,6 +407,20 @@ const MoviePlayer: React.FC<MoviePlayerProps> = ({ movie, startAt }) => {
     };
   }, []);
 
+  // Khôi phục fullscreen sau khi reload
+  useEffect(() => {
+    const shouldRestore = sessionStorage.getItem('restoreFullscreen');
+    if (shouldRestore === 'true') {
+      sessionStorage.removeItem('restoreFullscreen');
+      // Đợi một chút để DOM render xong
+      setTimeout(() => {
+        if (!document.fullscreenElement) {
+          document.documentElement.requestFullscreen().catch(console.warn);
+        }
+      }, 500);
+    }
+  }, []);
+
   // Handle orientation change on mobile - auto enter fullscreen on landscape
   useEffect(() => {
     if (!mobile) return;
@@ -479,9 +498,9 @@ const MoviePlayer: React.FC<MoviePlayerProps> = ({ movie, startAt }) => {
     console.log(`🎯 Current PLAYER:`, PLAYER, `| Players count: ${players.length} | Selected: ${selectedSource}`);
   }, [PLAYER, players, selectedSource]);
 
-  // Show loading while fetching players
-  if (!PLAYER) {
-    console.log(`⏳ No PLAYER found, showing loading...`);
+  // Show loading while fetching players or for 5 seconds
+  if (!PLAYER || showLoading) {
+    console.log(`⏳ No PLAYER found or showing loading...`);
     return (
       <div className="relative w-full h-screen bg-black overflow-hidden">
         <div className="absolute-center">
@@ -508,6 +527,9 @@ const MoviePlayer: React.FC<MoviePlayerProps> = ({ movie, startAt }) => {
         
         <ControlMenu
           onOpenSource={handlers.open}
+          onToggleFullscreen={gestureCallbacks.onToggleFullscreen}
+          onReload={gestureCallbacks.onReload}
+          isFullscreen={isFullscreen}
           hidden={idle && !mobile}
         />
         

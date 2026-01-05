@@ -58,7 +58,7 @@ function convertDailymotionUrl(url: string): string {
     if (urlObj.hostname.includes('dailymotion.com') && urlObj.pathname.startsWith('/video/')) {
       const videoId = urlObj.pathname.split('/video/')[1]?.split('?')[0];
       if (videoId) {
-        return `https://www.dailymotion.com/embed/video/${videoId}?autoplay=1&api=postMessage`;
+        return `https://www.dailymotion.com/embed/video/${videoId}?autoplay=1&mute=0&api=postMessage`;
       }
     }
     
@@ -66,7 +66,7 @@ function convertDailymotionUrl(url: string): string {
     if (urlObj.hostname === 'dai.ly') {
       const videoId = urlObj.pathname.slice(1); // Remove leading /
       if (videoId) {
-        return `https://www.dailymotion.com/embed/video/${videoId}?autoplay=1&api=postMessage`;
+        return `https://www.dailymotion.com/embed/video/${videoId}?autoplay=1&mute=0&api=postMessage`;
       }
     }
     

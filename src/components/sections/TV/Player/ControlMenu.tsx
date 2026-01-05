@@ -5,6 +5,8 @@ import Link from "next/link";
 import { useState, useMemo } from "react";
 import { HiChevronLeft, HiChevronRight } from "react-icons/hi2";
 import { IoHandRight } from "react-icons/io5";
+import { MdFullscreen, MdFullscreenExit } from "react-icons/md";
+import { IoReload } from "react-icons/io5";
 import { useGestureContext } from "@/contexts/GestureContext";
 
 interface ControlMenuProps {
@@ -16,6 +18,9 @@ interface ControlMenuProps {
   prevEpisodeNumber: number | null;
   onOpenSource: () => void;
   onOpenEpisode: () => void;
+  onToggleFullscreen?: () => void;
+  onReload?: () => void;
+  isFullscreen?: boolean;
   hidden?: boolean;
 }
 
@@ -28,45 +33,84 @@ const ControlMenu: React.FC<ControlMenuProps> = ({
   prevEpisodeNumber,
   onOpenSource,
   onOpenEpisode,
+  onToggleFullscreen,
+  onReload,
+  isFullscreen = false,
   hidden,
 }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const { enabled: gestureEnabled, toggle: toggleGesture } = useGestureContext();
 
-  const controls = useMemo(() => [
-    {
-      icon: <Prev size={20} />,
-      label: "Tập trước",
-      disabled: !prevEpisodeNumber,
-      href: prevEpisodeNumber
-        ? `/tv/${id}/${seasonNumber}/${prevEpisodeNumber}/player?src=${selectedSource}`
-        : undefined,
-    },
-    {
-      icon: <Next size={20} />,
-      label: "Tập tiếp",
-      disabled: !nextEpisodeNumber,
-      href: nextEpisodeNumber
-        ? `/tv/${id}/${seasonNumber}/${nextEpisodeNumber}/player?src=${selectedSource}`
-        : undefined,
-    },
-    {
-      icon: <Server size={20} />,
-      label: "Nguồn phát",
-      onClick: onOpenSource,
-    },
-    {
-      icon: <List size={20} />,
-      label: "Danh sách tập",
-      onClick: onOpenEpisode,
-    },
-    {
-      icon: <IoHandRight size={20} />,
-      label: gestureEnabled ? "Tắt điều khiển cử chỉ" : "Bật điều khiển cử chỉ",
-      onClick: toggleGesture,
-      active: gestureEnabled,
-    },
-  ], [id, seasonNumber, episodeNumber, selectedSource, nextEpisodeNumber, prevEpisodeNumber, onOpenSource, onOpenEpisode, toggleGesture, gestureEnabled]);
+  const handleReload = () => {
+    if (onReload) {
+      // Dùng callback để reload iframe thay vì reload toàn trang
+      onReload();
+    } else {
+      // Fallback: reload toàn trang
+      if (document.fullscreenElement) {
+        sessionStorage.setItem('restoreFullscreen', 'true');
+      }
+      window.location.reload();
+    }
+  };
+
+  const controls = useMemo(() => {
+    const baseControls = [
+      {
+        icon: <Prev size={20} />,
+        label: "Tập trước",
+        disabled: !prevEpisodeNumber,
+        href: prevEpisodeNumber
+          ? `/tv/${id}/${seasonNumber}/${prevEpisodeNumber}/player?src=${selectedSource}`
+          : undefined,
+      },
+      {
+        icon: <Next size={20} />,
+        label: "Tập tiếp",
+        disabled: !nextEpisodeNumber,
+        href: nextEpisodeNumber
+          ? `/tv/${id}/${seasonNumber}/${nextEpisodeNumber}/player?src=${selectedSource}`
+          : undefined,
+      },
+      {
+        icon: <Server size={20} />,
+        label: "Nguồn phát",
+        onClick: onOpenSource,
+      },
+      {
+        icon: <List size={20} />,
+        label: "Danh sách tập",
+        onClick: onOpenEpisode,
+      },
+    ];
+
+    if (onToggleFullscreen) {
+      baseControls.push({
+        icon: isFullscreen ? <MdFullscreenExit size={20} /> : <MdFullscreen size={20} />,
+        label: isFullscreen ? "Thoát toàn màn hình" : "Toàn màn hình",
+        onClick: () => {
+          console.log('🖥️ Fullscreen button clicked');
+          onToggleFullscreen();
+        },
+      });
+    }
+
+    baseControls.push(
+      {
+        icon: <IoReload size={20} />,
+        label: "Làm mới",
+        onClick: handleReload,
+      },
+      {
+        icon: <IoHandRight size={20} />,
+        label: gestureEnabled ? "Tắt điều khiển cử chỉ" : "Bật điều khiển cử chỉ",
+        onClick: toggleGesture,
+        active: gestureEnabled,
+      }
+    );
+
+    return baseControls;
+  }, [id, seasonNumber, episodeNumber, selectedSource, nextEpisodeNumber, prevEpisodeNumber, onOpenSource, onOpenEpisode, onToggleFullscreen, isFullscreen, handleReload, toggleGesture, gestureEnabled]);
 
   return (
     <div
@@ -131,8 +175,8 @@ const ControlMenu: React.FC<ControlMenuProps> = ({
           className={cn(
             "flex h-14 w-14 items-center justify-center rounded-full backdrop-blur-md",
             "bg-warning/20 shadow-xl border border-warning/30",
-            "ring-2 ring-warning/30 transition-all duration-300",
-            "hover:scale-110 hover:bg-warning/30 hover:ring-warning/50 hover:shadow-2xl",
+            "ring-4 ring-white/40 transition-all duration-300",
+            "hover:scale-110 hover:bg-warning/30 hover:ring-white/60 hover:shadow-2xl",
             "active:scale-95"
           )}
           whileTap={{ scale: 0.9 }}
