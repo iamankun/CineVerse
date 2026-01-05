@@ -77,7 +77,6 @@ const ControlMenu: React.FC<ControlMenuProps> = ({
         icon: <IoHandRight size={20} />,
         label: gestureEnabled ? "Tắt điều khiển cử chỉ" : "Bật điều khiển cử chỉ",
         onClick: toggleGesture,
-        active: gestureEnabled,
       }
     );
 

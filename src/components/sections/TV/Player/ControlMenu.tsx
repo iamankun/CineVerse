@@ -105,7 +105,6 @@ const ControlMenu: React.FC<ControlMenuProps> = ({
         icon: <IoHandRight size={20} />,
         label: gestureEnabled ? "Tắt điều khiển cử chỉ" : "Bật điều khiển cử chỉ",
         onClick: toggleGesture,
-        active: gestureEnabled,
       }
     );
 
@@ -148,8 +147,7 @@ const ControlMenu: React.FC<ControlMenuProps> = ({
                         "hover:bg-white/25 hover:scale-110 hover:ring-white/40":
                           !control.disabled,
                         "opacity-40 cursor-not-allowed": control.disabled,
-                        "bg-success/40 ring-success/60 shadow-success/20":
-                          control.active,
+
                       }
                     )}
                   >
