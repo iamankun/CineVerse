@@ -509,8 +509,8 @@ const TvShowPlayer: React.FC<TvShowPlayerProps> = ({
       <div className="relative w-full h-screen bg-black overflow-hidden">
         <div className="absolute-center">
           <div className="text-center flex flex-col items-center gap-4">
-            {tvRating && (
-              <AgeRating rating={tvRating.rating} ratingDescription={tvRating.description} />
+            {movieRating && (
+              <AgeRating rating={movieRating.rating} ratingDescription={movieRating.description} />
             )}
             <div className="text-sm text-foreground/60" style={{ textShadow: '0 1px 4px rgba(0, 0, 0, 0.6)' }}>CineVerse - Vũ Trụ Điện Ảnh</div>
           </div>

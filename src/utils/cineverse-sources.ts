@@ -36,7 +36,15 @@ function convertYouTubeUrl(url: string): string {
       }
     }
     
-    // Already an embed URL or not a YouTube URL
+    // Handle youtube.com/embed/... (already embed URL, add autoplay if missing)
+    if ((urlObj.hostname.includes('youtube.com') || urlObj.hostname.includes('m.youtube.com')) && urlObj.pathname.startsWith('/embed/')) {
+      const videoId = urlObj.pathname.split('/embed/')[1]?.split('?')[0];
+      if (videoId) {
+        return `https://www.youtube.com/embed/${videoId}?autoplay=1&modestbranding=1&rel=0&enablejsapi=1`;
+      }
+    }
+    
+    // Not a YouTube URL
     return url;
   } catch (error) {
     console.warn('Failed to parse YouTube URL:', url, error);
