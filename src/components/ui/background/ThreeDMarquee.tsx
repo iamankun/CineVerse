@@ -18,11 +18,11 @@ const ThreeDMarquee: React.FC<ThreeDMarqueeProps> = ({ images, className, aspect
   });
 
   return (
-    <div {...props} className={cn("mx-auto block size-full overflow-hidden", className)}>
-      <div className="flex size-full items-center justify-center">
-        <div className="size-[1400px] shrink-0 -translate-x-32 scale-75 md:scale-100">
+    <div {...props} className={cn("mx-auto block size-full overflow-hidden pointer-events-none", className)}>
+      <div className="flex size-full items-center justify-center overflow-hidden">
+        <div className="w-full max-w-[1400px] h-[1400px] shrink-0 -translate-x-16 md:-translate-x-32 scale-[0.6] sm:scale-[0.65] md:scale-75 lg:scale-100">
           <div
-            className="relative right-[50%] top-96 grid size-full origin-top-left grid-cols-4 gap-8"
+            className="relative right-[50%] top-96 grid size-full origin-top-left grid-cols-4 gap-0"
             style={{
               transform: "rotateX(55deg) rotateY(0deg) rotateZ(-45deg)",
               transformStyle: "preserve-3d",
@@ -31,7 +31,7 @@ const ThreeDMarquee: React.FC<ThreeDMarqueeProps> = ({ images, className, aspect
             {chunks.map((subarray, colIndex) => (
               <motion.div
                 key={colIndex + "marquee"}
-                className="flex flex-col items-start gap-8"
+                className="flex flex-col items-start gap-4"
                 animate={{ y: colIndex % 2 === 0 ? 500 : -500 }}
                 transition={{
                   repeat: Infinity,
@@ -40,29 +40,27 @@ const ThreeDMarquee: React.FC<ThreeDMarqueeProps> = ({ images, className, aspect
                 }}
               >
                 {subarray.map((image, imageIndex) => (
-                  <div className="relative" key={imageIndex + image}>
-                    <motion.img
-                      src={image}
-                      key={imageIndex + image}
-                      alt={`Image ${imageIndex + 1}`}
-                      width={aspect === "video" ? 970 : 600}
-                      height={aspect === "video" ? 700 : 400}
-                      whileHover={{
-                        y: -40,
-                      }}
-                      transition={{
-                        duration: 0.3,
-                        ease: "easeInOut",
-                      }}
-                      className={cn(
-                        "rounded-lg object-cover hover:shadow-2xl",
-                        {
-                          "aspect-video": aspect === "video",
-                          "aspect-2/3": aspect === "poster",
-                        },
-                      )}
-                    />
-                  </div>
+                  <motion.img
+                    src={image}
+                    key={imageIndex + image}
+                    alt={`Image ${imageIndex + 1}`}
+                    width={aspect === "video" ? 970 : 600}
+                    height={aspect === "video" ? 700 : 400}
+                    whileHover={{
+                      y: -40,
+                    }}
+                    transition={{
+                      duration: 0.3,
+                      ease: "easeInOut",
+                    }}
+                    className={cn(
+                      "rounded-lg object-cover hover:shadow-2xl",
+                      {
+                        "aspect-video": aspect === "video",
+                        "aspect-2/3": aspect === "poster",
+                      },
+                    )}
+                  />
                 ))}
               </motion.div>
             ))}

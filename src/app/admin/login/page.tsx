@@ -99,12 +99,13 @@ export default function AdminLoginPage() {
         "before:pointer-events-none before:absolute before:inset-0 before:z-20 before:opacity-40 dark:before:opacity-70",
         "dark:before:bg-[radial-gradient(circle_at_center,transparent_0%,black_100%)]",
         "before:bg-[radial-gradient(circle_at_center,transparent_0%,white_100%)]",
+        "[&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]",
         SpacingClasses.reset,
       )}
     >
       <div className="pointer-events-none relative z-50 container mx-auto flex size-full flex-col items-center justify-center p-3">
         <Card
-          shadow="lg"
+          shadow="none"
           className="border-foreground-200 bg-background/70 dark:bg-background/80 pointer-events-auto w-full max-w-lg border-2 p-1 backdrop-blur-md md:p-3"
         >
           <CardHeader className="flex flex-col gap-3 px-6 pt-8 items-center">
