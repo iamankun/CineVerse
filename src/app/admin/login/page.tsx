@@ -11,7 +11,6 @@ import { tmdb } from "@/api/tmdb";
 import ThreeDMarquee from "@/components/ui/background/ThreeDMarquee";
 import { cn, isEmpty, shuffleArray } from "@/utils/helpers";
 import { getImageUrl } from "@/utils/movies";
-import { SpacingClasses } from "@/utils/constants";
 
 export default function AdminLoginPage() {
   const router = useRouter();
@@ -95,12 +94,11 @@ export default function AdminLoginPage() {
   return (
     <div
       className={cn(
-        "relative z-50 flex h-screen w-screen flex-col items-center justify-center overflow-hidden",
+        "relative z-50 flex h-screen w-screen flex-col items-center justify-center overflow-hidden m-0 p-0",
         "before:pointer-events-none before:absolute before:inset-0 before:z-20 before:opacity-40 dark:before:opacity-70",
         "dark:before:bg-[radial-gradient(circle_at_center,transparent_0%,black_100%)]",
         "before:bg-[radial-gradient(circle_at_center,transparent_0%,white_100%)]",
         "[&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]",
-        SpacingClasses.reset,
       )}
     >
       <div className="pointer-events-none relative z-50 container mx-auto flex size-full flex-col items-center justify-center p-3">
