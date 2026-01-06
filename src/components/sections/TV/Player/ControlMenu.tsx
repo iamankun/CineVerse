@@ -2,7 +2,7 @@ import { cn } from "@/utils/helpers";
 import { List, Next, Prev, Server } from "@/utils/icons";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useCallback } from "react";
 import { HiChevronLeft, HiChevronRight } from "react-icons/hi2";
 import { IoHandRight } from "react-icons/io5";
 import { MdFullscreen, MdFullscreenExit } from "react-icons/md";
@@ -41,7 +41,7 @@ const ControlMenu: React.FC<ControlMenuProps> = ({
   const [isExpanded, setIsExpanded] = useState(false);
   const { enabled: gestureEnabled, toggle: toggleGesture } = useGestureContext();
 
-  const handleReload = () => {
+  const handleReload = useCallback(() => {
     if (onReload) {
       // Dùng callback để reload iframe thay vì reload toàn trang
       onReload();
@@ -52,7 +52,13 @@ const ControlMenu: React.FC<ControlMenuProps> = ({
       }
       window.location.reload();
     }
-  };
+  }, [onReload]);
+
+  const handleToggleFullscreen = useCallback(() => {
+    if (onToggleFullscreen) {
+      onToggleFullscreen();
+    }
+  }, [onToggleFullscreen]);
 
   const controls = useMemo(() => {
     const baseControls = [
@@ -88,10 +94,7 @@ const ControlMenu: React.FC<ControlMenuProps> = ({
       baseControls.push({
         icon: isFullscreen ? <MdFullscreenExit size={20} /> : <MdFullscreen size={20} />,
         label: isFullscreen ? "Thoát toàn màn hình" : "Toàn màn hình",
-        onClick: () => {
-          console.log('🖥️ Fullscreen button clicked');
-          onToggleFullscreen();
-        },
+        onClick: handleToggleFullscreen,
       });
     }
 
@@ -109,7 +112,7 @@ const ControlMenu: React.FC<ControlMenuProps> = ({
     );
 
     return baseControls;
-  }, [id, seasonNumber, episodeNumber, selectedSource, nextEpisodeNumber, prevEpisodeNumber, onOpenSource, onOpenEpisode, onToggleFullscreen, isFullscreen, handleReload, toggleGesture, gestureEnabled]);
+  }, [id, seasonNumber, episodeNumber, selectedSource, nextEpisodeNumber, prevEpisodeNumber, onOpenSource, onOpenEpisode, handleToggleFullscreen, isFullscreen, handleReload, toggleGesture, gestureEnabled]);
 
   return (
     <div
@@ -180,13 +183,12 @@ const ControlMenu: React.FC<ControlMenuProps> = ({
           whileTap={{ scale: 0.9 }}
         >
             <motion.div
-              animate={{ rotate: isExpanded ? 180 : 0 }}
               transition={{ duration: 0.3 }}
             >
               {isExpanded ? (
-                <HiChevronRight className="text-white" size={24} />
-              ) : (
                 <HiChevronLeft className="text-white" size={24} />
+              ) : (
+                <HiChevronRight className="text-white" size={24} />
               )}
             </motion.div>
         </motion.button>

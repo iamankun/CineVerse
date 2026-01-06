@@ -73,6 +73,16 @@
     max-width: 100vw;
   }
 
+  /* Hide scrollbar for all browsers */
+  *::-webkit-scrollbar {
+    display: none;
+  }
+
+  * {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
   /* Mobile landscape video player support */
   @media screen and (orientation: landscape) and (max-height: 500px) {
     body {

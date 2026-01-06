@@ -8,7 +8,7 @@ import { cn, isEmpty, shuffleArray } from "@/utils/helpers";
 import { ArrowLeft } from "@/utils/icons";
 import { getImageUrl } from "@/utils/movies";
 import BrandLogo from "@/components/ui/other/BrandLogo";
-import { addToast, Card, CardBody, CardHeader, ScrollShadow, Spinner } from "@heroui/react";
+import { addToast, Card, CardBody, CardHeader, Spinner } from "@heroui/react";
 import { useQuery } from "@tanstack/react-query";
 import { AnimatePresence, motion } from "framer-motion";
 import { usePathname } from "next/navigation";
@@ -78,12 +78,13 @@ const AuthForms: React.FC = () => {
         "before:pointer-events-none before:absolute before:inset-0 before:z-20 before:opacity-40 dark:before:opacity-70",
         "dark:before:bg-[radial-gradient(circle_at_center,transparent_0%,black_100%)]",
         "before:bg-[radial-gradient(circle_at_center,transparent_0%,white_100%)]",
+        "[&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]",
         SpacingClasses.reset,
       )}
     >
       <div className="pointer-events-none relative z-50 container mx-auto flex size-full flex-col items-center justify-center p-3">
         <Card
-          shadow="lg"
+          shadow="none"
           className="border-foreground-200 bg-background/70 dark:bg-background/80 pointer-events-auto w-full max-w-lg border-2 p-1 backdrop-blur-md md:p-3"
         >
           <CardHeader className="relative flex items-center justify-center">
@@ -100,16 +101,15 @@ const AuthForms: React.FC = () => {
               <BrandLogo animate={true} />
             </div>
           </CardHeader>
-          <ScrollShadow hideScrollBar visibility="none">
-            <AnimatePresence mode="sync">
-              <motion.div
-                key={form}
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: "auto" }}
-                exit={{ opacity: 0, height: 0 }}
-                transition={{ duration: 0.4 }}
-              >
-                <CardBody>
+          <AnimatePresence mode="sync">
+            <motion.div
+              key={form}
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.4 }}
+            >
+              <CardBody>
                   {reset ? (
                     <AuthResetPasswordForm />
                   ) : (
@@ -119,10 +119,9 @@ const AuthForms: React.FC = () => {
                       forgot: <AuthForgotPasswordForm setForm={setForm} />,
                     }[form]
                   )}
-                </CardBody>
-              </motion.div>
-            </AnimatePresence>
-          </ScrollShadow>
+              </CardBody>
+            </motion.div>
+          </AnimatePresence>
         </Card>
       </div>
       <div className="pointer-events-none absolute inset-0 z-10 h-full w-full bg-black/60 backdrop-blur-[2px] dark:bg-black/20" />
