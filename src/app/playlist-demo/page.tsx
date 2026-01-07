@@ -1,12 +1,22 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import YouTubePlaylistPlayer, {
   VideoItem,
 } from '@/components/ui/YouTubePlaylistPlayer';
 import '@/styles/youtube-player.css';
 
 export default function PlaylistDemo() {
+  // Preload YouTube API
+  useEffect(() => {
+    if (!document.querySelector('script[src*="youtube.com/iframe_api"]')) {
+      const script = document.createElement('script');
+      script.src = 'https://www.youtube.com/iframe_api';
+      script.async = true;
+      document.head.appendChild(script);
+    }
+  }, []);
+
   // Danh sách video mẫu - có thể thay bằng dữ liệu từ API
   const demoPlaylist: VideoItem[] = [
     {

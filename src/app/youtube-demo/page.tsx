@@ -1,12 +1,22 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import YouTubePlayer from '@/components/ui/YouTubePlayer';
 import '@/styles/youtube-player.css';
 
 export default function YouTubePlayerDemo() {
   const [currentVideoId, setCurrentVideoId] = useState('M7lc1UVf-VE');
   const [customVideoId, setCustomVideoId] = useState('');
+
+  // Preload YouTube API
+  useEffect(() => {
+    if (!document.querySelector('script[src*="youtube.com/iframe_api"]')) {
+      const script = document.createElement('script');
+      script.src = 'https://www.youtube.com/iframe_api';
+      script.async = true;
+      document.head.appendChild(script);
+    }
+  }, []);
 
   // Danh sách video mẫu (có thể thay bằng danh sách từ An Kun Studio)
   const demoVideos = [

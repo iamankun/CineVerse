@@ -73,16 +73,32 @@ export const YouTubePlayer: React.FC<YouTubePlayerProps> = ({
     },
   });
 
-  // Timeout cho loading state - nếu quá 10s vẫn chưa ready thì có vấn đề
+  // Timeout cho loading state
   React.useEffect(() => {
-    const timer = setTimeout(() => {
+    if (isReady || hasError) return;
+    
+    let warningTimer: NodeJS.Timeout;
+    let errorTimer: NodeJS.Timeout;
+    
+    // Warning sau 15s
+    warningTimer = setTimeout(() => {
       if (!isReady && !hasError) {
-        console.error('YouTube Player timeout - taking too long to load');
+        console.warn('YouTube Player: Taking longer than expected to load...');
+      }
+    }, 15000);
+    
+    // Error sau 20s
+    errorTimer = setTimeout(() => {
+      if (!isReady && !hasError) {
+        console.error('YouTube Player timeout - Failed to load after 20s');
         setHasError(true);
       }
-    }, 10000);
+    }, 20000);
 
-    return () => clearTimeout(timer);
+    return () => {
+      clearTimeout(warningTimer);
+      clearTimeout(errorTimer);
+    };
   }, [isReady, hasError]);
 
   const handleProgressChange = (e: React.ChangeEvent<HTMLInputElement>) => {
