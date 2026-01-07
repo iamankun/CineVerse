@@ -9,7 +9,7 @@ export const POST = async (request: NextRequest) => {
 
     if (!email || !password) {
       return NextResponse.json(
-        { error: "Email and password are required" },
+        { error: "Email và mật khẩu là bắt buộc" },
         { status: 400 }
       );
     }
@@ -67,9 +67,9 @@ export const POST = async (request: NextRequest) => {
       return response;
     }
   } catch (error) {
-    console.error("Auth API error:", error);
+    console.error("Lỗi API xác minh:", error);
     return NextResponse.json(
-      { error: "Internal server error" },
+      { error: "Lỗi máy chủ nội bộ" },
       { status: 500 }
     );
   }
