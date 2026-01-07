@@ -230,8 +230,8 @@
       <body>
         <div class="container">
           <div class="header">
-            <h1>🗺️ Sitemap XML</h1>
-            <p>Bản đồ trang web CineVerse - Xem phim online chất lượng cao</p>
+            <h1>🗺️ CineVerse by An Kun Studio</h1>
+            <p>CineVerse - Vũ Trụ Điện Ảnh</p>
           </div>
           
           <div class="stats">

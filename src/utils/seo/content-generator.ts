@@ -54,7 +54,7 @@ export function generateSEODescription(item: Movie | TV): string {
     description += ` - ${truncatedOverview}`;
   }
 
-  description += ` | Xem phim online chất lượng cao, phụ đề tiếng Việt tại CineVerse.`;
+  description += ` | Vũ Trụ Điện Ảnh - Dành cho bạn với tất cả nội dung hàng đầu.`;
 
   // Keep between 120-155 characters
   if (description.length > 155) {
@@ -93,9 +93,13 @@ export function generateSEOKeywords(item: Movie | TV): string[] {
 
   // Add general keywords
   keywords.push(
-    "xem phim online",
-    "phim vietsub",
-    "phim chất lượng cao",
+    "Vũ Trụ Điện Ảnh",
+    "Phim Điện Ảnh trên CineVerse",
+    "CineVerse by An Kun Studio",
+    "CineVerse - Vũ Trụ Điện Ảnh",
+    "Phim Lồng Tiếng trên CineVerse",
+    "Phim Vietsub trên CineVerse",
+    "Phim Mới Nhất tại CineVerse",
     "CineVerse"
   );
 
@@ -234,8 +238,8 @@ export function generateSEOContent(item: Movie | TV): string {
   }
 
   content += `\n<h2>Xem ${title} tại CineVerse</h2>\n\n`;
-  content += `<p>Truy cập CineVerse để xem ${type} ${title} với chất lượng cao, phụ đề tiếng Việt đầy đủ. `;
-  content += `Trải nghiệm xem phim online mượt mà, không quảng cáo làm phiền.</p>\n\n`;
+  content += `<p>Truy cập CineVerse để xem ${type} ${title} với chất lượng cao, lồng tiếng và phụ đề tiếng Việt đầy đủ. `;
+  content += `Trải nghiệm xem phim online mượt mà cùng với giao diện hoàn toàn thân thiện và dễ sử dụng.</p>\n\n`;
 
   return content;
 }
@@ -263,7 +267,7 @@ function getGenreName(genreId: number): string {
     10770: "Phim truyền hình",
     53: "Gây cấn",
     10752: "Chiến tranh",
-    37: "Miền Tây",
+    37: "Miền Viễn Tây",
   };
 
   return genreMap[genreId] || "";

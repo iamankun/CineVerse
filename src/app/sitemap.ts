@@ -144,17 +144,17 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       }));
     console.log(`✅ Đã thêm ${trendingMoviePlayerPages.length} trang player phim`);
 
-    // 10. Tạo trang player cho TV show trending
+    // 10. Tạo trang player cho TV show trending (Season 1, Episode 1)
     console.log("🎮 Đang tạo trang player cho TV show trending...");
     const trendingTvPlayerPages: MetadataRoute.Sitemap = trendingTvShows.results
       .slice(0, 20) // Chỉ lấy top 20 TV show hot nhất
       .map((tv) => ({
-        url: `${BASE_URL}/tv/${tv.id}/player`,
+        url: `${BASE_URL}/tv/${tv.id}/1/1/player`, // Thêm season/episode (1/1)
         lastModified: currentDate,
         changeFrequency: "weekly" as const,
         priority: 0.6,
       }));
-    console.log(`✅ Đã thêm ${trendingTvPlayerPages.length} trang player TV show`);
+    console.log(`✅ Đã thêm ${trendingTvPlayerPages.length} trang player TV show (S01E01)`);
 
     // 11. Thêm các trang discover theo thể loại (genre pages)
     console.log("🎭 Đang tạo trang discover theo thể loại...");
