@@ -43,7 +43,9 @@ export const YouTubePlayer: React.FC<YouTubePlayerProps> = ({
   const playerId = `youtube-player-${uniqueId}`;
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [hasError, setHasError] = useState(false);
+  const [showUI, setShowUI] = useState(true);
   const containerRef = React.useRef<HTMLDivElement>(null);
+  const hideTimerRef = React.useRef<NodeJS.Timeout | null>(null);
 
   const {
     isReady,
@@ -72,6 +74,86 @@ export const YouTubePlayer: React.FC<YouTubePlayerProps> = ({
       onError?.(error);
     },
   });
+
+  // Auto-hide controls và cursor sau 3s
+  const resetHideTimer = React.useCallback(() => {
+    setShowUI(true);
+    
+    if (hideTimerRef.current) {
+      clearTimeout(hideTimerRef.current);
+    }
+    
+    hideTimerRef.current = setTimeout(() => {
+      setShowUI(false);
+    }, 3000);
+  }, []);
+
+  // Mouse movement hiện controls
+  React.useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    const handleMouseMove = () => {
+      resetHideTimer();
+    };
+
+    container.addEventListener('mousemove', handleMouseMove);
+    
+    // Initial timer
+    resetHideTimer();
+
+    return () => {
+      container.removeEventListener('mousemove', handleMouseMove);
+      if (hideTimerRef.current) {
+        clearTimeout(hideTimerRef.current);
+      }
+    };
+  }, [resetHideTimer]);
+
+  // Keyboard shortcuts
+  React.useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Không xử lý nếu đang focus vào input/textarea
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) {
+        return;
+      }
+
+      switch (e.key) {
+        case ' ': // Space - Play/Pause
+          e.preventDefault();
+          togglePlayPause();
+          resetHideTimer();
+          break;
+        
+        case 'ArrowLeft': // Left - Tua lùi 10s
+          e.preventDefault();
+          seekTo(Math.max(0, currentTime - 10));
+          resetHideTimer();
+          break;
+        
+        case 'ArrowRight': // Right - Tua tới 10s
+          e.preventDefault();
+          seekTo(Math.min(duration, currentTime + 10));
+          resetHideTimer();
+          break;
+        
+        case 'ArrowUp': // Up - Tăng volume
+          e.preventDefault();
+          setVolume(Math.min(100, volume + 10));
+          resetHideTimer();
+          break;
+        
+        case 'ArrowDown': // Down - Giảm volume
+          e.preventDefault();
+          setVolume(Math.max(0, volume - 10));
+          resetHideTimer();
+          break;
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [togglePlayPause, seekTo, setVolume, currentTime, duration, volume, resetHideTimer]);
 
   // Timeout cho loading state
   React.useEffect(() => {
@@ -141,6 +223,7 @@ export const YouTubePlayer: React.FC<YouTubePlayerProps> = ({
     <div
       ref={containerRef}
       className={`relative w-full h-full bg-black overflow-hidden ${className}`}
+      style={{ cursor: showUI ? 'default' : 'none' }}
     >
       {/* YouTube Player Container */}
       <div className="relative w-full h-full">
@@ -173,8 +256,8 @@ export const YouTubePlayer: React.FC<YouTubePlayerProps> = ({
         )}
 
         {/* Custom Controls Overlay */}
-        {showControls && isReady && (
-          <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 via-black/60 to-transparent p-4">
+        {showControls && isReady && showUI && (
+          <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 via-black/60 to-transparent p-4 transition-opacity duration-300">
             {/* Progress Bar */}
             <div className="mb-3">
               <input
