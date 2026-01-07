@@ -635,7 +635,7 @@ const TvShowPlayer: React.FC<TvShowPlayerProps> = ({
                       addToast({
                         title: 'Lỗi phát video',
                         description: 'Không thể phát video YouTube này. Thử nguồn khác.',
-                        type: 'error',
+                        color: 'danger',
                       });
                     }}
                   />
