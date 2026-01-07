@@ -623,6 +623,13 @@ const TvShowPlayer: React.FC<TvShowPlayerProps> = ({
                     showControls={true}
                     className="h-full w-full"
                     onReady={() => console.log('YouTube Player ready!')}
+                    onStateChange={(state) => {
+                      // State 0 = ENDED
+                      if (state === 0 && props.nextEpisodeNumber) {
+                        console.log('🎬 YouTube video ended, auto-playing next episode...');
+                        window.location.href = `/tv/${id}/${episode.season_number}/${props.nextEpisodeNumber}/player?src=${selectedSource}`;
+                      }
+                    }}
                     onError={(error) => {
                       console.error('YouTube Player Error:', error);
                       addToast({

@@ -195,3 +195,30 @@
 * {
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
 }
+
+/* Ẩn hoàn toàn YouTube UI elements */
+.ytp-title,
+.ytp-title-text,
+.ytp-chrome-top,
+.ytp-show-cards-title,
+.ytp-watermark,
+.ytp-paid-content-overlay,
+.ytp-ce-element,
+.ytp-cards-teaser,
+.ytp-endscreen-content,
+.ytp-share-button,
+.ytp-watch-later-button,
+.ytp-gradient-top,
+.ytp-pause-overlay {
+  display: none !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
+/* Ẩn YouTube branding và logo */
+.ytp-youtube-button,
+.ytp-watermark {
+  display: none !important;
+}
+

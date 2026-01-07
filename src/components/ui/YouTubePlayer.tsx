@@ -140,10 +140,10 @@ export const YouTubePlayer: React.FC<YouTubePlayerProps> = ({
   return (
     <div
       ref={containerRef}
-      className={`relative w-full bg-black rounded-lg overflow-hidden ${className}`}
+      className={`relative w-full h-full bg-black overflow-hidden ${className}`}
     >
       {/* YouTube Player Container */}
-      <div className="relative aspect-video w-full">
+      <div className="relative w-full h-full">
         <div id={playerId} className="absolute inset-0" />
 
         {/* Error Overlay */}

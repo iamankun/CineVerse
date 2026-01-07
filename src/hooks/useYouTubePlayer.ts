@@ -38,6 +38,8 @@ interface YTPlayerConfig {
     playsinline?: 0 | 1;
     start?: number;
     end?: number;
+    showinfo?: 0 | 1;
+    iv_load_policy?: 1 | 3;
   };
   events?: {
     onReady?: (event: YTPlayerEvent) => void;
@@ -155,13 +157,15 @@ export const useYouTubePlayer = (
             width: '100%',
             videoId: options.videoId,
             playerVars: {
-              controls: options.controls ? 1 : 0,
+              controls: 0, // Luôn ẩn YouTube controls, chỉ dùng custom controls
               disablekb: 1,
-              rel: 0,
-              modestbranding: 1,
+              rel: 0, // Không hiển thị video liên quan
+              modestbranding: 1, // Ẩn logo YouTube
               autoplay: options.autoplay ? 1 : 0,
-              fs: 1,
+              fs: 1, // Cho phép fullscreen
               playsinline: 1,
+              showinfo: 0, // Ẩn title (deprecated nhưng vẫn hoạt động)
+              iv_load_policy: 3, // Ẩn annotations
             },
             events: {
               onReady: (event: YTPlayerEvent) => {

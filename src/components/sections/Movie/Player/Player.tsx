@@ -616,6 +616,22 @@ const MoviePlayer: React.FC<MoviePlayerProps> = ({ movie, startAt }) => {
                     showControls={true}
                     className="h-full w-full"
                     onReady={() => console.log('YouTube Player ready!')}
+                    onStateChange={(state) => {
+                      // State 0 = ENDED
+                      if (state === 0) {
+                        console.log('🎬 YouTube video ended');
+                        // Nếu có phần tiếp theo (multi-part movie), chuyển sang phần đó
+                        const nextSourceIndex = selectedSource + 1;
+                        if (nextSourceIndex < players.length) {
+                          const nextPlayer = players[nextSourceIndex];
+                          // Chỉ auto-next nếu là CineVerse source (cùng bộ phim)
+                          if (nextPlayer?.isCineVerseSource) {
+                            console.log(`🎬 Auto-playing next part: ${nextPlayer.title}`);
+                            setSelectedSource(nextSourceIndex);
+                          }
+                        }
+                      }
+                    }}
                     onError={(error) => {
                       console.error('YouTube Player Error:', error);
                       addToast({
