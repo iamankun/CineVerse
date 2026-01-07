@@ -19,6 +19,8 @@ import { usePinchToZoom } from "@/hooks/usePinchToZoom";
 import { getMovieReleaseDates } from "@/api/tmdb";
 import { getVietnamRatingFromReleaseDates } from "@/utils/rating-converter";
 import { useGestureContext } from "@/contexts/GestureContext";
+import YouTubePlayer from "@/components/ui/YouTubePlayer";
+import "@/styles/youtube-player.css";
 const AdsWarning = dynamic(() => import("@/components/ui/overlay/AdsWarning"));
 const AgeRating = dynamic(() => import("@/components/ui/overlay/AgeRating"));
 const WatchingWithBrand = dynamic(() => import("@/components/ui/overlay/WatchingWithBrand"));
@@ -26,6 +28,37 @@ const MoviePlayerHeader = dynamic(() => import("./Header"));
 const ControlMenu = dynamic(() => import("./ControlMenu"));
 const MoviePlayerSourceSelection = dynamic(() => import("./SourceSelection"));
 const GestureDetector = dynamic(() => import("@/components/ui/gesture/GestureDetector"), { ssr: false });
+
+/**
+ * Extract YouTube video ID from various URL formats
+ */
+function extractYouTubeVideoId(url: string): string | null {
+  try {
+    const urlObj = new URL(url);
+    
+    // youtube.com/embed/VIDEO_ID
+    if (urlObj.pathname.startsWith('/embed/')) {
+      const videoId = urlObj.pathname.split('/embed/')[1]?.split('?')[0];
+      if (videoId) return videoId;
+    }
+    
+    // youtube.com/watch?v=VIDEO_ID
+    if (urlObj.pathname === '/watch') {
+      const videoId = urlObj.searchParams.get('v');
+      if (videoId) return videoId;
+    }
+    
+    // youtu.be/VIDEO_ID
+    if (urlObj.hostname === 'youtu.be') {
+      const videoId = urlObj.pathname.slice(1);
+      if (videoId) return videoId;
+    }
+    
+    return null;
+  } catch {
+    return null;
+  }
+}
 
 interface MoviePlayerProps {
   movie: MovieDetails;
@@ -499,10 +532,28 @@ const MoviePlayer: React.FC<MoviePlayerProps> = ({ movie, startAt }) => {
 
   const PLAYER = useMemo(() => players[selectedSource] || players[0], [players, selectedSource]);
 
+  // Detect if current player is YouTube
+  const youtubeVideoId = useMemo(() => {
+    if (!PLAYER?.source) return null;
+    
+    // Check if provider explicitly set to youtube
+    if (PLAYER.provider?.toLowerCase() === 'youtube') {
+      return extractYouTubeVideoId(PLAYER.source);
+    }
+    
+    // Also check if URL contains youtube.com or youtu.be
+    if (PLAYER.source.includes('youtube.com') || PLAYER.source.includes('youtu.be')) {
+      return extractYouTubeVideoId(PLAYER.source);
+    }
+    
+    return null;
+  }, [PLAYER]);
+
   // Debug log
   useEffect(() => {
     console.log(`🎯 Current PLAYER:`, PLAYER, `| Players count: ${players.length} | Selected: ${selectedSource}`);
-  }, [PLAYER, players, selectedSource]);
+    console.log(`📺 YouTube Video ID:`, youtubeVideoId);
+  }, [PLAYER, players, selectedSource, youtubeVideoId]);
 
   // Show loading while fetching players or for 5 seconds
   if (!PLAYER || showLoading) {
@@ -557,23 +608,43 @@ const MoviePlayer: React.FC<MoviePlayerProps> = ({ movie, startAt }) => {
                   overflow: 'hidden',
                 }}
               >
-                <iframe
-                  ref={iframeRef}
-                  allowFullScreen
-                  allow="autoplay; fullscreen; encrypted-media; picture-in-picture"
-                  key={`${PLAYER.title}-${reloadKey}`}
-                  src={PLAYER.source}
-                  className={cn("z-10 h-full w-full", {
-                    'pointer-events-none': idle && !mobile,
-                  })}
-                  style={{
-                    border: 'none',
-                    objectFit: 'cover',
-                    transform: `scale(${zoom})`,
-                    transformOrigin: 'center',
-                    transition: 'transform 0.2s ease-out',
-                  }}
-                />
+                {youtubeVideoId ? (
+                  // Custom YouTube Player với controls đẹp
+                  <YouTubePlayer
+                    videoId={youtubeVideoId}
+                    autoplay={true}
+                    showControls={true}
+                    className="h-full w-full"
+                    onReady={() => console.log('YouTube Player ready!')}
+                    onError={(error) => {
+                      console.error('YouTube Player Error:', error);
+                      addToast({
+                        title: 'Lỗi phát video',
+                        description: 'Không thể phát video YouTube này. Thử nguồn khác.',
+                        type: 'error',
+                      });
+                    }}
+                  />
+                ) : (
+                  // Standard iframe cho các nguồn khác (VidSrc, Dailymotion, etc.)
+                  <iframe
+                    ref={iframeRef}
+                    allowFullScreen
+                    allow="autoplay; fullscreen; encrypted-media; picture-in-picture"
+                    key={`${PLAYER.title}-${reloadKey}`}
+                    src={PLAYER.source}
+                    className={cn("z-10 h-full w-full", {
+                      'pointer-events-none': idle && !mobile,
+                    })}
+                    style={{
+                      border: 'none',
+                      objectFit: 'cover',
+                      transform: `scale(${zoom})`,
+                      transformOrigin: 'center',
+                      transition: 'transform 0.2s ease-out',
+                    }}
+                  />
+                )}
               </div>
             )}
           </Card>

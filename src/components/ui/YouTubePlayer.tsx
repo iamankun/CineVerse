@@ -272,12 +272,6 @@ export const YouTubePlayer: React.FC<YouTubePlayerProps> = ({
         )}
       </div>
 
-      {/* Player State Indicator (for debugging) */}
-      {process.env.NODE_ENV === 'development' && (
-        <div className="absolute top-2 right-2 bg-black/60 text-white text-xs px-2 py-1 rounded">
-          State: {PlayerState[playerState] || playerState}
-        </div>
-      )}
     </div>
   );
 };
