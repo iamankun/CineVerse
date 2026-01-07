@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useId } from 'react';
 import { useYouTubePlayer, PlayerState } from '@/hooks/useYouTubePlayer';
 import {
   Play,
@@ -38,8 +38,11 @@ export const YouTubePlayer: React.FC<YouTubePlayerProps> = ({
   onStateChange,
   onError,
 }) => {
-  const playerId = `youtube-player-${videoId}`;
+  // Sử dụng useId() để tạo ID ổn định cho SSR
+  const uniqueId = useId();
+  const playerId = `youtube-player-${uniqueId}`;
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [hasError, setHasError] = useState(false);
   const containerRef = React.useRef<HTMLDivElement>(null);
 
   const {
@@ -59,10 +62,28 @@ export const YouTubePlayer: React.FC<YouTubePlayerProps> = ({
     videoId,
     autoplay,
     controls: false,
-    onReady,
+    onReady: () => {
+      setHasError(false);
+      onReady?.();
+    },
     onStateChange,
-    onError,
+    onError: (error) => {
+      setHasError(true);
+      onError?.(error);
+    },
   });
+
+  // Timeout cho loading state - nếu quá 10s vẫn chưa ready thì có vấn đề
+  React.useEffect(() => {
+    const timer = setTimeout(() => {
+      if (!isReady && !hasError) {
+        console.error('YouTube Player timeout - taking too long to load');
+        setHasError(true);
+      }
+    }, 10000);
+
+    return () => clearTimeout(timer);
+  }, [isReady, hasError]);
 
   const handleProgressChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newTime = parseFloat(e.target.value);
@@ -109,10 +130,29 @@ export const YouTubePlayer: React.FC<YouTubePlayerProps> = ({
       <div className="relative aspect-video w-full">
         <div id={playerId} className="absolute inset-0" />
 
+        {/* Error Overlay */}
+        {hasError && (
+          <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/90 text-white p-4">
+            <div className="text-red-500 text-6xl mb-4">⚠️</div>
+            <h3 className="text-xl font-bold mb-2">Không thể tải video</h3>
+            <p className="text-gray-400 text-center mb-4">
+              Video có thể không tồn tại hoặc bị hạn chế
+            </p>
+            <p className="text-sm text-gray-500">Video ID: {videoId}</p>
+            <button
+              onClick={() => window.location.reload()}
+              className="mt-4 px-4 py-2 bg-primary hover:bg-primary/80 rounded-lg transition-colors"
+            >
+              Tải lại trang
+            </button>
+          </div>
+        )}
+
         {/* Loading Overlay */}
-        {!isReady && (
-          <div className="absolute inset-0 flex items-center justify-center bg-black/80">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+        {!isReady && !hasError && (
+          <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/80">
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary mb-4"></div>
+            <p className="text-white text-sm">Đang tải video...</p>
           </div>
         )}
 

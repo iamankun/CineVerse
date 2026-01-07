@@ -1,15 +1,12 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 
 // Định nghĩa types cho YouTube IFrame API
-declare global {
-  interface Window {
-    YT: typeof YT;
-    onYouTubeIframeAPIReady: () => void;
-  }
+interface YTPlayerConstructor {
+  new (elementId: string, config: YTPlayerConfig): YTPlayer;
 }
 
-interface YT {
-  Player: new (elementId: string, config: YTPlayerConfig) => YTPlayer;
+interface YTNamespace {
+  Player: YTPlayerConstructor;
   PlayerState: {
     UNSTARTED: number;
     ENDED: number;
@@ -18,6 +15,13 @@ interface YT {
     BUFFERING: number;
     CUED: number;
   };
+}
+
+declare global {
+  interface Window {
+    YT: YTNamespace;
+    onYouTubeIframeAPIReady: () => void;
+  }
 }
 
 interface YTPlayerConfig {
@@ -36,10 +40,22 @@ interface YTPlayerConfig {
     end?: number;
   };
   events?: {
-    onReady?: (event: { target: YTPlayer }) => void;
-    onStateChange?: (event: { data: number }) => void;
-    onError?: (event: { data: number }) => void;
+    onReady?: (event: YTPlayerEvent) => void;
+    onStateChange?: (event: YTStateChangeEvent) => void;
+    onError?: (event: YTErrorEvent) => void;
   };
+}
+
+interface YTPlayerEvent {
+  target: YTPlayer;
+}
+
+interface YTStateChangeEvent {
+  data: number;
+}
+
+interface YTErrorEvent {
+  data: number;
 }
 
 interface YTPlayer {
@@ -109,70 +125,119 @@ export const useYouTubePlayer = (
 
   // Load YouTube IFrame API
   useEffect(() => {
+    let isMounted = true;
+
     // Kiểm tra xem script đã được load chưa
-    if (!window.YT) {
-      const tag = document.createElement('script');
-      tag.src = 'https://www.youtube.com/iframe_api';
-      const firstScriptTag = document.getElementsByTagName('script')[0];
-      firstScriptTag.parentNode?.insertBefore(tag, firstScriptTag);
-    }
-
-    // Khởi tạo player khi API sẵn sàng
-    const initPlayer = () => {
-      if (window.YT && window.YT.Player) {
-        playerRef.current = new window.YT.Player(elementId, {
-          height: '100%',
-          width: '100%',
-          videoId: options.videoId,
-          playerVars: {
-            controls: options.controls ? 1 : 0,
-            disablekb: 1,
-            rel: 0,
-            modestbranding: 1,
-            autoplay: options.autoplay ? 1 : 0,
-            fs: 1,
-            playsinline: 1,
-          },
-          events: {
-            onReady: (event) => {
-              setIsReady(true);
-              setDuration(event.target.getDuration());
-              setVolumeState(event.target.getVolume());
-              setIsMuted(event.target.isMuted());
-              options.onReady?.();
-            },
-            onStateChange: (event) => {
-              setPlayerState(event.data);
-              options.onStateChange?.(event.data);
-
-              // Update duration khi video thay đổi state
-              if (playerRef.current) {
-                setDuration(playerRef.current.getDuration());
-              }
-            },
-            onError: (event) => {
-              options.onError?.(event.data);
-            },
-          },
-        });
+    const loadYouTubeAPI = () => {
+      if (!document.querySelector('script[src*="youtube.com/iframe_api"]')) {
+        const tag = document.createElement('script');
+        tag.src = 'https://www.youtube.com/iframe_api';
+        const firstScriptTag = document.getElementsByTagName('script')[0];
+        firstScriptTag.parentNode?.insertBefore(tag, firstScriptTag);
       }
     };
 
+    // Khởi tạo player khi API sẵn sàng
+    const initPlayer = () => {
+      // Kiểm tra element tồn tại
+      const element = document.getElementById(elementId);
+      if (!element) {
+        console.error(`Element with id "${elementId}" not found`);
+        return;
+      }
+
+      if (!isMounted) return;
+
+      if (window.YT && window.YT.Player) {
+        try {
+          playerRef.current = new window.YT.Player(elementId, {
+            height: '100%',
+            width: '100%',
+            videoId: options.videoId,
+            playerVars: {
+              controls: options.controls ? 1 : 0,
+              disablekb: 1,
+              rel: 0,
+              modestbranding: 1,
+              autoplay: options.autoplay ? 1 : 0,
+              fs: 1,
+              playsinline: 1,
+            },
+            events: {
+              onReady: (event: YTPlayerEvent) => {
+                if (!isMounted) return;
+                setIsReady(true);
+                setDuration(event.target.getDuration());
+                setVolumeState(event.target.getVolume());
+                setIsMuted(event.target.isMuted());
+                options.onReady?.();
+              },
+              onStateChange: (event: YTStateChangeEvent) => {
+                if (!isMounted) return;
+                setPlayerState(event.data);
+                options.onStateChange?.(event.data);
+
+                // Update duration khi video thay đổi state
+                if (playerRef.current) {
+                  setDuration(playerRef.current.getDuration());
+                }
+              },
+              onError: (event: YTErrorEvent) => {
+                if (!isMounted) return;
+                console.error('YouTube Player Error:', event.data);
+                setIsReady(true); // Set ready để ẩn loading
+                options.onError?.(event.data);
+              },
+            },
+          });
+        } catch (error) {
+          console.error('Error initializing YouTube Player:', error);
+          setIsReady(true); // Set ready để ẩn loading ngay cả khi lỗi
+        }
+      }
+    };
+
+    loadYouTubeAPI();
+
+    // Đợi API load xong
     if (window.YT && window.YT.Player) {
-      initPlayer();
+      // API đã có sẵn
+      const timer = setTimeout(() => {
+        initPlayer();
+      }, 100); // Đợi một chút để đảm bảo DOM đã ready
+      return () => {
+        isMounted = false;
+        clearTimeout(timer);
+        if (intervalRef.current) {
+          clearInterval(intervalRef.current);
+        }
+        if (playerRef.current) {
+          playerRef.current.destroy();
+        }
+      };
     } else {
-      window.onYouTubeIframeAPIReady = initPlayer;
+      // Chờ API load
+      window.onYouTubeIframeAPIReady = () => {
+        if (isMounted) {
+          setTimeout(initPlayer, 100);
+        }
+      };
     }
 
     return () => {
+      isMounted = false;
       if (intervalRef.current) {
         clearInterval(intervalRef.current);
       }
       if (playerRef.current) {
-        playerRef.current.destroy();
+        try {
+          playerRef.current.destroy();
+        } catch (error) {
+          console.error('Error destroying player:', error);
+        }
       }
     };
-  }, [elementId, options.videoId]);
+  }, [elementId, options.videoId, options.autoplay, options.controls]);
 
   // Update current time khi video đang phát
   useEffect(() => {
