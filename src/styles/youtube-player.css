@@ -1,0 +1,197 @@
+/* YouTube Player Custom Styles */
+
+/* Slider thumb styling */
+.slider-thumb::-webkit-slider-thumb {
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #ef4444;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.slider-thumb::-webkit-slider-thumb:hover {
+  transform: scale(1.2);
+  box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.2);
+}
+
+.slider-thumb::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #ef4444;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.slider-thumb::-moz-range-thumb:hover {
+  transform: scale(1.2);
+  box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.2);
+}
+
+/* Slider track */
+.slider-thumb::-webkit-slider-runnable-track {
+  height: 4px;
+  border-radius: 2px;
+}
+
+.slider-thumb::-moz-range-track {
+  height: 4px;
+  border-radius: 2px;
+}
+
+/* Fullscreen mode adjustments */
+.fullscreen-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 9999;
+  background: black;
+}
+
+.fullscreen-container .youtube-player-controls {
+  padding: 2rem;
+}
+
+/* Animation for controls */
+.youtube-controls-enter {
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+.youtube-controls-enter-active {
+  opacity: 1;
+  transform: translateY(0);
+  transition: all 0.3s ease;
+}
+
+.youtube-controls-exit {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.youtube-controls-exit-active {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 0.3s ease;
+}
+
+/* Loading animation */
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.loading-spinner {
+  animation: spin 1s linear infinite;
+}
+
+/* Hover effects for buttons */
+.control-button {
+  transition: all 0.2s ease;
+}
+
+.control-button:hover {
+  transform: scale(1.05);
+}
+
+.control-button:active {
+  transform: scale(0.95);
+}
+
+/* Volume slider animation */
+.volume-slider {
+  transition: width 0.3s ease;
+}
+
+/* Progress bar hover effect */
+.progress-bar:hover {
+  height: 6px;
+  transition: height 0.2s ease;
+}
+
+/* Custom scrollbar for playlist (if needed) */
+.youtube-playlist::-webkit-scrollbar {
+  width: 8px;
+}
+
+.youtube-playlist::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+}
+
+.youtube-playlist::-webkit-scrollbar-thumb {
+  background: rgba(239, 68, 68, 0.6);
+  border-radius: 4px;
+}
+
+.youtube-playlist::-webkit-scrollbar-thumb:hover {
+  background: rgba(239, 68, 68, 0.8);
+}
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
+  .youtube-player-controls {
+    padding: 0.75rem;
+  }
+
+  .control-button {
+    padding: 0.5rem;
+  }
+
+  .control-button svg {
+    width: 1rem;
+    height: 1rem;
+  }
+
+  .slider-thumb::-webkit-slider-thumb {
+    width: 12px;
+    height: 12px;
+  }
+
+  .slider-thumb::-moz-range-thumb {
+    width: 12px;
+    height: 12px;
+  }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .youtube-player-container {
+    background: #000;
+  }
+}
+
+/* Accessibility: Focus visible states */
+.control-button:focus-visible {
+  outline: 2px solid #ef4444;
+  outline-offset: 2px;
+}
+
+.slider-thumb:focus-visible {
+  outline: 2px solid #ef4444;
+  outline-offset: 2px;
+}
+
+/* Prevent text selection on controls */
+.youtube-player-controls {
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
+
+/* Smooth transitions for all interactive elements */
+* {
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
