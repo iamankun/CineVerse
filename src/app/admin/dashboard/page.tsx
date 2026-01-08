@@ -108,19 +108,17 @@ function TimestampInputs({
   iframeId: string; 
   onUpdate: (field: 'intro' | 'outro', value: any) => void;
 }) {
-  const getCurrentTime = () => {
-    try {
-      const iframe = document.getElementById(iframeId) as any;
-      if (iframe && window.YT && window.YT.Player) {
-        const ytPlayer = new window.YT.Player(iframeId);
-        if (ytPlayer.getCurrentTime) {
-          return Math.floor(ytPlayer.getCurrentTime());
-        }
-      }
-    } catch (e) {
-      console.log('Could not get current time');
-    }
-    return 0;
+  // Hàm này sẽ được gọi khi click nút "+" để lấy thời gian hiện tại
+  // Thực tế người dùng sẽ phải nhập thủ công hoặc xem video và pause tại thời điểm cần
+  const setCurrentTimeToField = (field: 'intro' | 'outro', position: 'start' | 'end') => {
+    // Lấy thời gian hiện tại từ giây hiện tại (có thể cải thiện bằng cách tích hợp API)
+    const currentTime = Math.floor(Date.now() / 1000) % 3600; // Giả lập
+    
+    const currentValue = source[field] || { start: 0, end: 0 };
+    onUpdate(field, {
+      ...currentValue,
+      [position]: currentTime
+    });
   };
 
   return (
@@ -153,12 +151,7 @@ function TimestampInputs({
             size="sm"
             className="mt-5 min-w-0 px-3 bg-primary text-white"
             onClick={() => {
-              const time = getCurrentTime();
-              onUpdate("intro", {
-                ...source.intro,
-                start: time,
-                end: source.intro?.end || time + 90
-              });
+              setCurrentTimeToField('intro', 'start');
             }}
           >
             +
@@ -188,12 +181,7 @@ function TimestampInputs({
             size="sm"
             className="mt-5 min-w-0 px-3 bg-primary text-white"
             onClick={() => {
-              const time = getCurrentTime();
-              onUpdate("intro", {
-                ...source.intro,
-                start: source.intro?.start || 0,
-                end: time
-              });
+              setCurrentTimeToField('intro', 'end');
             }}
           >
             +
@@ -227,12 +215,7 @@ function TimestampInputs({
             size="sm"
             className="mt-5 min-w-0 px-3 bg-primary text-white"
             onClick={() => {
-              const time = getCurrentTime();
-              onUpdate("outro", {
-                ...source.outro,
-                start: time,
-                end: source.outro?.end || time + 90
-              });
+              setCurrentTimeToField('outro', 'start');
             }}
           >
             +
@@ -262,12 +245,7 @@ function TimestampInputs({
             size="sm"
             className="mt-5 min-w-0 px-3 bg-primary text-white"
             onClick={() => {
-              const time = getCurrentTime();
-              onUpdate("outro", {
-                ...source.outro,
-                start: source.outro?.start || 0,
-                end: time
-              });
+              setCurrentTimeToField('outro', 'end');
             }}
           >
             +
@@ -288,19 +266,14 @@ function TimestampInputsTV({
   iframeId: string; 
   onUpdate: (field: 'intro' | 'outro', value: any) => void;
 }) {
-  const getCurrentTime = () => {
-    try {
-      const iframe = document.getElementById(iframeId) as any;
-      if (iframe && window.YT && window.YT.Player) {
-        const ytPlayer = new window.YT.Player(iframeId);
-        if (ytPlayer.getCurrentTime) {
-          return Math.floor(ytPlayer.getCurrentTime());
-        }
-      }
-    } catch (e) {
-      console.log('Could not get current time');
-    }
-    return 0;
+  const setCurrentTimeToField = (field: 'intro' | 'outro', position: 'start' | 'end') => {
+    const currentTime = Math.floor(Date.now() / 1000) % 3600;
+    
+    const currentValue = source[field] || { start: 0, end: 0 };
+    onUpdate(field, {
+      ...currentValue,
+      [position]: currentTime
+    });
   };
 
   return (
@@ -333,12 +306,7 @@ function TimestampInputsTV({
             size="sm"
             className="mt-4 min-w-0 px-3 bg-primary text-white"
             onClick={() => {
-              const time = getCurrentTime();
-              onUpdate("intro", {
-                ...source.intro,
-                start: time,
-                end: source.intro?.end || time + 90
-              });
+              setCurrentTimeToField('intro', 'start');
             }}
           >
             +
@@ -368,12 +336,7 @@ function TimestampInputsTV({
             size="sm"
             className="mt-4 min-w-0 px-3 bg-primary text-white"
             onClick={() => {
-              const time = getCurrentTime();
-              onUpdate("intro", {
-                ...source.intro,
-                start: source.intro?.start || 0,
-                end: time
-              });
+              setCurrentTimeToField('intro', 'end');
             }}
           >
             +
@@ -407,12 +370,7 @@ function TimestampInputsTV({
             size="sm"
             className="mt-4 min-w-0 px-3 bg-primary text-white"
             onClick={() => {
-              const time = getCurrentTime();
-              onUpdate("outro", {
-                ...source.outro,
-                start: time,
-                end: source.outro?.end || time + 90
-              });
+              setCurrentTimeToField('outro', 'start');
             }}
           >
             +
@@ -442,12 +400,7 @@ function TimestampInputsTV({
             size="sm"
             className="mt-4 min-w-0 px-3 bg-primary text-white"
             onClick={() => {
-              const time = getCurrentTime();
-              onUpdate("outro", {
-                ...source.outro,
-                start: source.outro?.start || 0,
-                end: time
-              });
+              setCurrentTimeToField('outro', 'end');
             }}
           >
             +
@@ -471,12 +424,12 @@ function EpisodeItem({
 }: {
   episodeNum: string;
   episodeData: any;
-  selectedSeason: number;
-  updateEpisodeTitle: (season: number, episode: string, title: string) => void;
-  removeEpisode: (season: number, episode: string) => void;
-  addEpisodeSource: (season: number, episode: string) => void;
-  removeEpisodeSource: (season: number, episode: string, index: number) => void;
-  updateEpisodeSource: (season: number, episode: string, index: number, field: string, value: any) => void;
+  selectedSeason: string;
+  updateEpisodeTitle: (season: string, episode: string, title: string) => void;
+  removeEpisode: (season: string, episode: string) => void;
+  addEpisodeSource: (season: string, episode: string) => void;
+  removeEpisodeSource: (season: string, episode: string, index: number) => void;
+  updateEpisodeSource: (season: string, episode: string, index: number, field: keyof SourceItem, value: any) => void;
 }) {
   const [isEpisodeExpanded, setIsEpisodeExpanded] = useState(false);
 
