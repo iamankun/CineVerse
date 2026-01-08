@@ -28,7 +28,15 @@
             "language": "vi",
             "subtitles": [
               "vi"
-            ]
+            ],
+            "intro": {
+              "start": 50,
+              "end": 142
+            },
+            "outro": {
+              "start": 1287,
+              "end": 1381
+            }
           }
         ]
       },
@@ -42,7 +50,15 @@
             "language": "vi",
             "subtitles": [
               "vi"
-            ]
+            ],
+            "intro": {
+              "start": 130,
+              "end": 222
+            },
+            "outro": {
+              "start": 1286,
+              "end": 1382
+            }
           }
         ]
       },
@@ -56,7 +72,15 @@
             "language": "vi",
             "subtitles": [
               "vi"
-            ]
+            ],
+            "intro": {
+              "start": 104,
+              "end": 197
+            },
+            "outro": {
+              "start": 1286,
+              "end": 1381
+            }
           }
         ]
       },
@@ -70,7 +94,15 @@
             "language": "vi",
             "subtitles": [
               "vi"
-            ]
+            ],
+            "intro": {
+              "start": 30,
+              "end": 122
+            },
+            "outro": {
+              "start": 1286,
+              "end": 1382
+            }
           }
         ]
       },
@@ -359,7 +391,7 @@
   "metadata": {
     "movie-rating": "K",
     "audioVersion": "PhuDe",
-    "lastUpdate": "2025-12-18T08:09:17.266Z",
+    "lastUpdate": "2026-01-08T14:25:24.563Z",
     "genre": [
       "Phim Hoạt Hình",
       "Action & Adventure",
