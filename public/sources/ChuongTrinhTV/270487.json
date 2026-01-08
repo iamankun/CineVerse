@@ -72,7 +72,15 @@
             "language": "vi",
             "subtitles": [
               "vi"
-            ]
+            ],
+            "intro": {
+              "start": 104,
+              "end": 197
+            },
+            "outro": {
+              "start": 1286,
+              "end": 1381
+            }
           }
         ]
       },
@@ -86,7 +94,15 @@
             "language": "vi",
             "subtitles": [
               "vi"
-            ]
+            ],
+            "intro": {
+              "start": 30,
+              "end": 122
+            },
+            "outro": {
+              "start": 1286,
+              "end": 1382
+            }
           }
         ]
       },
@@ -375,7 +391,7 @@
   "metadata": {
     "movie-rating": "K",
     "audioVersion": "PhuDe",
-    "lastUpdate": "2026-01-08T14:08:31.395Z",
+    "lastUpdate": "2026-01-08T14:16:38.086Z",
     "genre": [
       "Phim Hoạt Hình",
       "Action & Adventure",
