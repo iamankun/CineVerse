@@ -1,5 +1,12 @@
 "use client";
 
+declare global {
+  interface Window {
+    YT: any;
+    onYouTubeIframeAPIReady: () => void;
+  }
+}
+
 function normalizeYouTubeUrl(url: string): { id: string, url: string } | null {
   try {
     if (!url) return null;
@@ -64,6 +71,628 @@ import Image from "next/image";
 import AdminGuard from "@/components/AdminGuard";
 import { useRouter } from "next/navigation";
 
+// Video Preview Component
+function VideoPreview({ videoId, iframeId }: { videoId: string; iframeId: string }) {
+  const [isExpanded, setIsExpanded] = useState(true);
+
+  return (
+    <Card className="bg-gray-900/50">
+      <CardBody className="p-2">
+        <div className="flex items-center justify-between mb-2">
+          <p className="text-xs text-white/60">Xem trước</p>
+          <Button
+            size="sm"
+            variant="light"
+            className="text-white min-w-0 px-2 h-6"
+            onClick={() => setIsExpanded(!isExpanded)}
+          >
+            {isExpanded ? '🔽' : '▶️'}
+          </Button>
+        </div>
+        {isExpanded && (
+          <div className="aspect-video w-full overflow-hidden rounded-lg">
+            <iframe
+              id={iframeId}
+              src={`https://www.youtube.com/embed/${videoId}?enablejsapi=1`}
+              className="h-full w-full"
+              allowFullScreen
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            />
+          </div>
+        )}
+      </CardBody>
+    </Card>
+  );
+}
+
+// Timestamp Inputs Component
+function TimestampInputs({ 
+  source, 
+  iframeId, 
+  onUpdate 
+}: { 
+  source: any; 
+  iframeId: string; 
+  onUpdate: (field: 'intro' | 'outro', value: any) => void;
+}) {
+  const getCurrentTime = () => {
+    try {
+      const iframe = document.getElementById(iframeId) as any;
+      if (iframe && window.YT && window.YT.Player) {
+        const ytPlayer = new window.YT.Player(iframeId);
+        if (ytPlayer.getCurrentTime) {
+          return Math.floor(ytPlayer.getCurrentTime());
+        }
+      }
+    } catch (e) {
+      console.log('Could not get current time');
+    }
+    return 0;
+  };
+
+  return (
+    <div className="space-y-2">
+      <p className="text-sm font-semibold text-white">Mốc thời gian (giây)</p>
+      
+      {/* Intro */}
+      <div className="space-y-2">
+        <div className="flex gap-2">
+          <Input
+            label="Intro - Bắt đầu"
+            type="number"
+            size="sm"
+            placeholder="0"
+            value={source.intro?.start?.toString() || ""}
+            onChange={(e) => {
+              const start = parseFloat(e.target.value) || 0;
+              onUpdate("intro", {
+                ...source.intro,
+                start,
+                end: source.intro?.end || start + 90
+              });
+            }}
+            classNames={{
+              input: "text-white",
+              inputWrapper: "bg-gray-600",
+            }}
+          />
+          <Button
+            size="sm"
+            className="mt-5 min-w-0 px-3 bg-primary text-white"
+            onClick={() => {
+              const time = getCurrentTime();
+              onUpdate("intro", {
+                ...source.intro,
+                start: time,
+                end: source.intro?.end || time + 90
+              });
+            }}
+          >
+            +
+          </Button>
+        </div>
+        <div className="flex gap-2">
+          <Input
+            label="Intro - Kết thúc"
+            type="number"
+            size="sm"
+            placeholder="90"
+            value={source.intro?.end?.toString() || ""}
+            onChange={(e) => {
+              const end = parseFloat(e.target.value) || 90;
+              onUpdate("intro", {
+                ...source.intro,
+                start: source.intro?.start || 0,
+                end
+              });
+            }}
+            classNames={{
+              input: "text-white",
+              inputWrapper: "bg-gray-600",
+            }}
+          />
+          <Button
+            size="sm"
+            className="mt-5 min-w-0 px-3 bg-primary text-white"
+            onClick={() => {
+              const time = getCurrentTime();
+              onUpdate("intro", {
+                ...source.intro,
+                start: source.intro?.start || 0,
+                end: time
+              });
+            }}
+          >
+            +
+          </Button>
+        </div>
+      </div>
+
+      {/* Outro */}
+      <div className="space-y-2">
+        <div className="flex gap-2">
+          <Input
+            label="Outro - Bắt đầu"
+            type="number"
+            size="sm"
+            placeholder="1200"
+            value={source.outro?.start?.toString() || ""}
+            onChange={(e) => {
+              const start = parseFloat(e.target.value) || 0;
+              onUpdate("outro", {
+                ...source.outro,
+                start,
+                end: source.outro?.end || start + 90
+              });
+            }}
+            classNames={{
+              input: "text-white",
+              inputWrapper: "bg-gray-600",
+            }}
+          />
+          <Button
+            size="sm"
+            className="mt-5 min-w-0 px-3 bg-primary text-white"
+            onClick={() => {
+              const time = getCurrentTime();
+              onUpdate("outro", {
+                ...source.outro,
+                start: time,
+                end: source.outro?.end || time + 90
+              });
+            }}
+          >
+            +
+          </Button>
+        </div>
+        <div className="flex gap-2">
+          <Input
+            label="Outro - Kết thúc"
+            type="number"
+            size="sm"
+            placeholder="1290"
+            value={source.outro?.end?.toString() || ""}
+            onChange={(e) => {
+              const end = parseFloat(e.target.value) || 0;
+              onUpdate("outro", {
+                ...source.outro,
+                start: source.outro?.start || 0,
+                end
+              });
+            }}
+            classNames={{
+              input: "text-white",
+              inputWrapper: "bg-gray-600",
+            }}
+          />
+          <Button
+            size="sm"
+            className="mt-5 min-w-0 px-3 bg-primary text-white"
+            onClick={() => {
+              const time = getCurrentTime();
+              onUpdate("outro", {
+                ...source.outro,
+                start: source.outro?.start || 0,
+                end: time
+              });
+            }}
+          >
+            +
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Timestamp Inputs Component for TV Shows (smaller size)
+function TimestampInputsTV({ 
+  source, 
+  iframeId, 
+  onUpdate 
+}: { 
+  source: any; 
+  iframeId: string; 
+  onUpdate: (field: 'intro' | 'outro', value: any) => void;
+}) {
+  const getCurrentTime = () => {
+    try {
+      const iframe = document.getElementById(iframeId) as any;
+      if (iframe && window.YT && window.YT.Player) {
+        const ytPlayer = new window.YT.Player(iframeId);
+        if (ytPlayer.getCurrentTime) {
+          return Math.floor(ytPlayer.getCurrentTime());
+        }
+      }
+    } catch (e) {
+      console.log('Could not get current time');
+    }
+    return 0;
+  };
+
+  return (
+    <div className="space-y-2">
+      <p className="text-xs font-semibold text-white">Mốc thời gian (giây)</p>
+      
+      {/* Intro */}
+      <div className="space-y-2">
+        <div className="flex gap-2">
+          <Input
+            label="Intro - Bắt đầu"
+            type="number"
+            size="sm"
+            placeholder="0"
+            value={source.intro?.start?.toString() || ""}
+            onChange={(e) => {
+              const start = parseFloat(e.target.value) || 0;
+              onUpdate("intro", {
+                ...source.intro,
+                start,
+                end: source.intro?.end || start + 90
+              });
+            }}
+            classNames={{
+              input: "text-white text-xs",
+              inputWrapper: "bg-gray-500",
+            }}
+          />
+          <Button
+            size="sm"
+            className="mt-4 min-w-0 px-3 bg-primary text-white"
+            onClick={() => {
+              const time = getCurrentTime();
+              onUpdate("intro", {
+                ...source.intro,
+                start: time,
+                end: source.intro?.end || time + 90
+              });
+            }}
+          >
+            +
+          </Button>
+        </div>
+        <div className="flex gap-2">
+          <Input
+            label="Intro - Kết thúc"
+            type="number"
+            size="sm"
+            placeholder="90"
+            value={source.intro?.end?.toString() || ""}
+            onChange={(e) => {
+              const end = parseFloat(e.target.value) || 90;
+              onUpdate("intro", {
+                ...source.intro,
+                start: source.intro?.start || 0,
+                end
+              });
+            }}
+            classNames={{
+              input: "text-white text-xs",
+              inputWrapper: "bg-gray-500",
+            }}
+          />
+          <Button
+            size="sm"
+            className="mt-4 min-w-0 px-3 bg-primary text-white"
+            onClick={() => {
+              const time = getCurrentTime();
+              onUpdate("intro", {
+                ...source.intro,
+                start: source.intro?.start || 0,
+                end: time
+              });
+            }}
+          >
+            +
+          </Button>
+        </div>
+      </div>
+
+      {/* Outro */}
+      <div className="space-y-2">
+        <div className="flex gap-2">
+          <Input
+            label="Outro - Bắt đầu"
+            type="number"
+            size="sm"
+            placeholder="1200"
+            value={source.outro?.start?.toString() || ""}
+            onChange={(e) => {
+              const start = parseFloat(e.target.value) || 0;
+              onUpdate("outro", {
+                ...source.outro,
+                start,
+                end: source.outro?.end || start + 90
+              });
+            }}
+            classNames={{
+              input: "text-white text-xs",
+              inputWrapper: "bg-gray-500",
+            }}
+          />
+          <Button
+            size="sm"
+            className="mt-4 min-w-0 px-3 bg-primary text-white"
+            onClick={() => {
+              const time = getCurrentTime();
+              onUpdate("outro", {
+                ...source.outro,
+                start: time,
+                end: source.outro?.end || time + 90
+              });
+            }}
+          >
+            +
+          </Button>
+        </div>
+        <div className="flex gap-2">
+          <Input
+            label="Outro - Kết thúc"
+            type="number"
+            size="sm"
+            placeholder="1290"
+            value={source.outro?.end?.toString() || ""}
+            onChange={(e) => {
+              const end = parseFloat(e.target.value) || 0;
+              onUpdate("outro", {
+                ...source.outro,
+                start: source.outro?.start || 0,
+                end
+              });
+            }}
+            classNames={{
+              input: "text-white text-xs",
+              inputWrapper: "bg-gray-500",
+            }}
+          />
+          <Button
+            size="sm"
+            className="mt-4 min-w-0 px-3 bg-primary text-white"
+            onClick={() => {
+              const time = getCurrentTime();
+              onUpdate("outro", {
+                ...source.outro,
+                start: source.outro?.start || 0,
+                end: time
+              });
+            }}
+          >
+            +
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Episode Item Component
+function EpisodeItem({
+  episodeNum,
+  episodeData,
+  selectedSeason,
+  updateEpisodeTitle,
+  removeEpisode,
+  addEpisodeSource,
+  removeEpisodeSource,
+  updateEpisodeSource,
+}: {
+  episodeNum: string;
+  episodeData: any;
+  selectedSeason: number;
+  updateEpisodeTitle: (season: number, episode: string, title: string) => void;
+  removeEpisode: (season: number, episode: string) => void;
+  addEpisodeSource: (season: number, episode: string) => void;
+  removeEpisodeSource: (season: number, episode: string, index: number) => void;
+  updateEpisodeSource: (season: number, episode: string, index: number, field: string, value: any) => void;
+}) {
+  const [isEpisodeExpanded, setIsEpisodeExpanded] = useState(false);
+
+  return (
+    <Card key={episodeNum} className="bg-gray-700/30">
+      <CardBody className="space-y-3">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Button
+              size="sm"
+              variant="light"
+              className="text-white min-w-0 px-2"
+              onClick={() => setIsEpisodeExpanded(!isEpisodeExpanded)}
+            >
+              {isEpisodeExpanded ? '🔽' : '▶️'}
+            </Button>
+            <Chip color="warning" size="sm">
+              Episode {episodeNum}
+            </Chip>
+          </div>
+          <Button
+            size="sm"
+            color="danger"
+            variant="light"
+            isIconOnly
+            onPress={() => removeEpisode(selectedSeason, episodeNum)}
+          >
+            <IoTrash />
+          </Button>
+        </div>
+
+        {isEpisodeExpanded && (
+          <>
+            <Input
+              label="Tiêu đề Episode"
+              value={episodeData.title || ""}
+              onChange={(e) => 
+                updateEpisodeTitle(selectedSeason, episodeNum, e.target.value)
+              }
+              classNames={{
+                input: "text-white",
+                inputWrapper: "bg-gray-600",
+              }}
+            />
+
+            {/* Episode Sources */}
+            <div className="pl-4">
+              <div className="mb-2 flex items-center justify-between">
+                <span className="text-sm text-gray-400">
+                  Nguồn phát ({episodeData.sources?.length || 0})
+                </span>
+                <Button
+                  size="sm"
+                  color="success"
+                  variant="flat"
+                  startContent={<IoAdd />}
+                  onPress={() => addEpisodeSource(selectedSeason, episodeNum)}
+                >
+                  Thêm nguồn
+                </Button>
+              </div>
+
+              <div className="space-y-3">
+                {episodeData.sources?.map((source: any, srcIdx: number) => (
+                  <Card key={srcIdx} className="bg-gray-600/50">
+                    <CardBody className="space-y-2">
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs text-gray-300">Nguồn #{srcIdx + 1}</span>
+                        <Button
+                          size="sm"
+                          color="danger"
+                          variant="light"
+                          isIconOnly
+                          onPress={() => 
+                            removeEpisodeSource(selectedSeason, episodeNum, srcIdx)
+                          }
+                        >
+                          <IoTrash />
+                        </Button>
+                      </div>
+
+                      <Select
+                        label="Provider"
+                        size="sm"
+                        selectedKeys={[source.provider]}
+                        onChange={(e) => 
+                          updateEpisodeSource(
+                            selectedSeason, 
+                            episodeNum, 
+                            srcIdx, 
+                            "provider", 
+                            e.target.value
+                          )
+                        }
+                      >
+                        <SelectItem key="youtube">YouTube</SelectItem>
+                        <SelectItem key="dailymotion">DailyMotion</SelectItem>
+                        <SelectItem key="vidsrc">VidSrc</SelectItem>
+                      </Select>
+
+                      <Input
+                        label="URL"
+                        size="sm"
+                        placeholder="https://..."
+                        value={source.url}
+                        onChange={(e) => 
+                          updateEpisodeSource(
+                            selectedSeason, 
+                            episodeNum, 
+                            srcIdx, 
+                            "url", 
+                            e.target.value
+                          )
+                        }
+                        classNames={{
+                          input: "text-white text-xs",
+                          inputWrapper: "bg-gray-500",
+                        }}
+                      />
+
+                      {/* Video Preview for YouTube */}
+                      {source.provider === "youtube" && source.url && (
+                        <VideoPreview 
+                          videoId={normalizeYouTubeUrl(source.url)?.id || ''} 
+                          iframeId={`tv-preview-${selectedSeason}-${episodeNum}-${srcIdx}`}
+                        />
+                      )}
+
+                      {/* Intro/Outro Timestamps */}
+                      {source.provider === "youtube" && source.url && (
+                        <TimestampInputsTV
+                          source={source}
+                          iframeId={`tv-preview-${selectedSeason}-${episodeNum}-${srcIdx}`}
+                          onUpdate={(field, value) => 
+                            updateEpisodeSource(selectedSeason, episodeNum, srcIdx, field, value)
+                          }
+                        />
+                      )}
+
+                      <Input
+                        label="Title"
+                        size="sm"
+                        value={source.title || ""}
+                        onChange={(e) => 
+                          updateEpisodeSource(
+                            selectedSeason, 
+                            episodeNum, 
+                            srcIdx, 
+                            "title", 
+                            e.target.value
+                          )
+                        }
+                        classNames={{
+                          input: "text-white text-xs",
+                          inputWrapper: "bg-gray-500",
+                        }}
+                      />
+
+                      <div className="grid grid-cols-2 gap-2">
+                        <Input
+                          label="Ngôn ngữ"
+                          size="sm"
+                          value={source.language || "vi"}
+                          onChange={(e) => 
+                            updateEpisodeSource(
+                              selectedSeason, 
+                              episodeNum, 
+                              srcIdx, 
+                              "language", 
+                              e.target.value
+                            )
+                          }
+                          classNames={{
+                            input: "text-white text-xs",
+                            inputWrapper: "bg-gray-500",
+                          }}
+                        />
+                        <Input
+                          label="Chất lượng"
+                          size="sm"
+                          placeholder="1080p"
+                          value={source.quality || ""}
+                          onChange={(e) => 
+                            updateEpisodeSource(
+                              selectedSeason, 
+                              episodeNum, 
+                              srcIdx, 
+                              "quality", 
+                              e.target.value
+                            )
+                          }
+                          classNames={{
+                            input: "text-white text-xs",
+                            inputWrapper: "bg-gray-500",
+                          }}
+                        />
+                      </div>
+                    </CardBody>
+                  </Card>
+                ))}
+              </div>
+            </div>
+          </>
+        )}
+      </CardBody>
+    </Card>
+  );
+}
+
 interface TMDBResult {
   id: number;
   title?: string;
@@ -82,6 +711,14 @@ interface SourceItem {
   quality?: string;
   language?: string;
   subtitles?: string[];
+  intro?: {
+    start: number; // seconds
+    end: number;   // seconds
+  };
+  outro?: {
+    start: number; // seconds
+    end: number;   // seconds
+  };
 }
 
 interface EpisodeData {
@@ -1463,6 +2100,23 @@ export default function DashboardPage() {
                                   }}
                                 />
 
+                                {/* Video Preview for YouTube */}
+                                {source.provider === "youtube" && source.url && (
+                                  <VideoPreview 
+                                    videoId={normalizeYouTubeUrl(source.url)?.id || ''} 
+                                    iframeId={`movie-preview-${index}`}
+                                  />
+                                )}
+
+                                {/* Intro/Outro Timestamps */}
+                                {source.provider === "youtube" && source.url && (
+                                  <TimestampInputs
+                                    source={source}
+                                    iframeId={`movie-preview-${index}`}
+                                    onUpdate={(field, value) => updateSource(index, field, value)}
+                                  />
+                                )}
+
                                 <div className="grid grid-cols-2 gap-3">
                                   <Input
                                     label="Ngôn ngữ"
@@ -1544,175 +2198,17 @@ export default function DashboardPage() {
                             <div className="space-y-4">
                               {Object.entries(formData.seasons[selectedSeason] || {}).map(
                                 ([episodeNum, episodeData]: [string, any]) => (
-                                  <Card key={episodeNum} className="bg-gray-700/30">
-                                    <CardBody className="space-y-3">
-                                      <div className="flex items-center justify-between">
-                                        <Chip color="warning" size="sm">
-                                          Episode {episodeNum}
-                                        </Chip>
-                                        <Button
-                                          size="sm"
-                                          color="danger"
-                                          variant="light"
-                                          isIconOnly
-                                          onPress={() => removeEpisode(selectedSeason, episodeNum)}
-                                        >
-                                          <IoTrash />
-                                        </Button>
-                                      </div>
-
-                                      <Input
-                                        label="Tiêu đề Episode"
-                                        value={episodeData.title || ""}
-                                        onChange={(e) => 
-                                          updateEpisodeTitle(selectedSeason, episodeNum, e.target.value)
-                                        }
-                                        classNames={{
-                                          input: "text-white",
-                                          inputWrapper: "bg-gray-600",
-                                        }}
-                                      />
-
-                                      {/* Episode Sources */}
-                                      <div className="pl-4">
-                                        <div className="mb-2 flex items-center justify-between">
-                                          <span className="text-sm text-gray-400">
-                                            Nguồn phát ({episodeData.sources?.length || 0})
-                                          </span>
-                                          <Button
-                                            size="sm"
-                                            color="success"
-                                            variant="flat"
-                                            startContent={<IoAdd />}
-                                            onPress={() => addEpisodeSource(selectedSeason, episodeNum)}
-                                          >
-                                            Thêm nguồn
-                                          </Button>
-                                        </div>
-
-                                        <div className="space-y-3">
-                                          {episodeData.sources?.map((source: any, srcIdx: number) => (
-                                            <Card key={srcIdx} className="bg-gray-600/50">
-                                              <CardBody className="space-y-2">
-                                                <div className="flex items-center justify-between">
-                                                  <span className="text-xs text-gray-300">Nguồn #{srcIdx + 1}</span>
-                                                  <Button
-                                                    size="sm"
-                                                    color="danger"
-                                                    variant="light"
-                                                    isIconOnly
-                                                    onPress={() => 
-                                                      removeEpisodeSource(selectedSeason, episodeNum, srcIdx)
-                                                    }
-                                                  >
-                                                    <IoTrash />
-                                                  </Button>
-                                                </div>
-
-                                                <Select
-                                                  label="Provider"
-                                                  size="sm"
-                                                  selectedKeys={[source.provider]}
-                                                  onChange={(e) => 
-                                                    updateEpisodeSource(
-                                                      selectedSeason, 
-                                                      episodeNum, 
-                                                      srcIdx, 
-                                                      "provider", 
-                                                      e.target.value
-                                                    )
-                                                  }
-                                                >
-                                                  <SelectItem key="youtube">YouTube</SelectItem>
-                                                  <SelectItem key="dailymotion">DailyMotion</SelectItem>
-                                                  <SelectItem key="vidsrc">VidSrc</SelectItem>
-                                                </Select>
-
-                                                <Input
-                                                  label="URL"
-                                                  size="sm"
-                                                  placeholder="https://..."
-                                                  value={source.url}
-                                                  onChange={(e) => 
-                                                    updateEpisodeSource(
-                                                      selectedSeason, 
-                                                      episodeNum, 
-                                                      srcIdx, 
-                                                      "url", 
-                                                      e.target.value
-                                                    )
-                                                  }
-                                                  classNames={{
-                                                    input: "text-white text-xs",
-                                                    inputWrapper: "bg-gray-500",
-                                                  }}
-                                                />
-
-                                                <Input
-                                                  label="Title"
-                                                  size="sm"
-                                                  value={source.title || ""}
-                                                  onChange={(e) => 
-                                                    updateEpisodeSource(
-                                                      selectedSeason, 
-                                                      episodeNum, 
-                                                      srcIdx, 
-                                                      "title", 
-                                                      e.target.value
-                                                    )
-                                                  }
-                                                  classNames={{
-                                                    input: "text-white text-xs",
-                                                    inputWrapper: "bg-gray-500",
-                                                  }}
-                                                />
-
-                                                <div className="grid grid-cols-2 gap-2">
-                                                  <Input
-                                                    label="Ngôn ngữ"
-                                                    size="sm"
-                                                    value={source.language || "vi"}
-                                                    onChange={(e) => 
-                                                      updateEpisodeSource(
-                                                        selectedSeason, 
-                                                        episodeNum, 
-                                                        srcIdx, 
-                                                        "language", 
-                                                        e.target.value
-                                                      )
-                                                    }
-                                                    classNames={{
-                                                      input: "text-white text-xs",
-                                                      inputWrapper: "bg-gray-500",
-                                                    }}
-                                                  />
-                                                  <Input
-                                                    label="Chất lượng"
-                                                    size="sm"
-                                                    placeholder="1080p"
-                                                    value={source.quality || ""}
-                                                    onChange={(e) => 
-                                                      updateEpisodeSource(
-                                                        selectedSeason, 
-                                                        episodeNum, 
-                                                        srcIdx, 
-                                                        "quality", 
-                                                        e.target.value
-                                                      )
-                                                    }
-                                                    classNames={{
-                                                      input: "text-white text-xs",
-                                                      inputWrapper: "bg-gray-500",
-                                                    }}
-                                                  />
-                                                </div>
-                                              </CardBody>
-                                            </Card>
-                                          ))}
-                                        </div>
-                                      </div>
-                                    </CardBody>
-                                  </Card>
+                                  <EpisodeItem
+                                    key={episodeNum}
+                                    episodeNum={episodeNum}
+                                    episodeData={episodeData}
+                                    selectedSeason={selectedSeason}
+                                    updateEpisodeTitle={updateEpisodeTitle}
+                                    removeEpisode={removeEpisode}
+                                    addEpisodeSource={addEpisodeSource}
+                                    removeEpisodeSource={removeEpisodeSource}
+                                    updateEpisodeSource={updateEpisodeSource}
+                                  />
                                 )
                               )}
                             </div>

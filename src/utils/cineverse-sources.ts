@@ -145,6 +145,8 @@ export const fetchCineVerseMovieSources = async (
         ads: false,
         isCineVerseSource: true,
         provider: source.provider,
+        ...(source.intro && { intro: source.intro }),
+        ...(source.outro && { outro: source.outro }),
       };
     });
   } catch (error) {
@@ -187,6 +189,8 @@ export const fetchCineVerseTvSources = async (
         ads: false,
         isCineVerseSource: true,
         provider: source.provider,
+        ...(source.intro && { intro: source.intro }),
+        ...(source.outro && { outro: source.outro }),
       };
     });
   } catch (error) {

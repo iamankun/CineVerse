@@ -73,6 +73,14 @@ export type PlayersProps = {
   resumable?: boolean;
   isCineVerseSource?: boolean;
   provider?: string;
+  intro?: {
+    start: number;
+    end: number;
+  };
+  outro?: {
+    start: number;
+    end: number;
+  };
 };
 
 export type CineVerseSource = {

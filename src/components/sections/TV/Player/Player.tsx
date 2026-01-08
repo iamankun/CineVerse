@@ -622,6 +622,15 @@ const TvShowPlayer: React.FC<TvShowPlayerProps> = ({
                     autoplay={true}
                     showControls={true}
                     className="h-full w-full"
+                    intro={PLAYER.intro}
+                    outro={PLAYER.outro}
+                    onNextEpisode={() => {
+                      // Next episode handler
+                      if (props.nextEpisodeNumber) {
+                        console.log('🎬 User clicked next episode button');
+                        window.location.href = `/tv/${id}/${episode.season_number}/${props.nextEpisodeNumber}/player?src=${selectedSource}`;
+                      }
+                    }}
                     onReady={() => console.log('YouTube Player ready!')}
                     onStateChange={(state) => {
                       // State 0 = ENDED

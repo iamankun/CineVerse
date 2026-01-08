@@ -615,6 +615,19 @@ const MoviePlayer: React.FC<MoviePlayerProps> = ({ movie, startAt }) => {
                     autoplay={true}
                     showControls={true}
                     className="h-full w-full"
+                    intro={PLAYER.intro}
+                    outro={PLAYER.outro}
+                    onNextEpisode={() => {
+                      // Next episode handler for movies (next part if multi-part)
+                      const nextSourceIndex = selectedSource + 1;
+                      if (nextSourceIndex < players.length) {
+                        const nextPlayer = players[nextSourceIndex];
+                        if (nextPlayer?.isCineVerseSource) {
+                          console.log(`🎬 User clicked next part: ${nextPlayer.title}`);
+                          setSelectedSource(nextSourceIndex);
+                        }
+                      }
+                    }}
                     onReady={() => console.log('YouTube Player ready!')}
                     onStateChange={(state) => {
                       // State 0 = ENDED

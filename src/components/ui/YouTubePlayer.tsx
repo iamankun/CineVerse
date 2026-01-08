@@ -12,6 +12,8 @@ import {
   Maximize,
   Minimize,
   Settings,
+  FastForward,
+  ChevronsRight,
 } from 'lucide-react';
 
 interface YouTubePlayerProps {
@@ -22,6 +24,16 @@ interface YouTubePlayerProps {
   onReady?: () => void;
   onStateChange?: (state: number) => void;
   onError?: (error: number) => void;
+  // Intro/Outro config
+  intro?: {
+    start: number;
+    end: number;
+  };
+  outro?: {
+    start: number;
+    end: number;
+  };
+  onNextEpisode?: () => void; // Callback khi bấm next episode
 }
 
 const formatTime = (seconds: number): string => {
@@ -38,6 +50,9 @@ export const YouTubePlayer: React.FC<YouTubePlayerProps> = ({
   onReady,
   onStateChange,
   onError,
+  intro,
+  outro,
+  onNextEpisode,
 }) => {
   // Sử dụng useId() để tạo ID ổn định cho SSR
   const uniqueId = useId();
@@ -46,6 +61,8 @@ export const YouTubePlayer: React.FC<YouTubePlayerProps> = ({
   const [hasError, setHasError] = useState(false);
   const [showUI, setShowUI] = useState(true);
   const [showQualityMenu, setShowQualityMenu] = useState(false);
+  const [showSkipIntro, setShowSkipIntro] = useState(false);
+  const [showNextEpisode, setShowNextEpisode] = useState(false);
   const containerRef = React.useRef<HTMLDivElement>(null);
   const hideTimerRef = React.useRef<NodeJS.Timeout | null>(null);
 
@@ -180,6 +197,40 @@ export const YouTubePlayer: React.FC<YouTubePlayerProps> = ({
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [togglePlayPause, seekTo, setVolume, currentTime, duration, volume, resetHideTimer]);
 
+  // Check intro/outro timing
+  React.useEffect(() => {
+    if (!isReady) return;
+
+    // Check if in intro range
+    if (intro && currentTime >= intro.start && currentTime <= intro.end) {
+      setShowSkipIntro(true);
+    } else {
+      setShowSkipIntro(false);
+    }
+
+    // Check if in outro range
+    if (outro && currentTime >= outro.start && currentTime <= outro.end) {
+      setShowNextEpisode(true);
+    } else {
+      setShowNextEpisode(false);
+    }
+  }, [currentTime, intro, outro, isReady]);
+
+  // Skip intro handler
+  const handleSkipIntro = () => {
+    if (intro) {
+      seekTo(intro.end);
+      setShowSkipIntro(false);
+    }
+  };
+
+  // Next episode handler
+  const handleNextEpisode = () => {
+    if (onNextEpisode) {
+      onNextEpisode();
+    }
+  };
+
   // Timeout cho loading state
   React.useEffect(() => {
     if (isReady || hasError) return;
@@ -311,6 +362,28 @@ export const YouTubePlayer: React.FC<YouTubePlayerProps> = ({
           </div>
         )}
 
+        {/* Skip Intro Button */}
+        {showSkipIntro && (
+          <button
+            onClick={handleSkipIntro}
+            className="absolute bottom-20 right-4 px-4 py-2 bg-white/90 hover:bg-white hover:scale-105 text-black font-semibold rounded-md transition-all duration-300 flex items-center gap-2 shadow-lg z-50 animate-[slideInRight_0.3s_ease-out,pulse_2s_ease-in-out_infinite]"
+          >
+            <FastForward className="w-4 h-4" />
+            Bỏ qua giới thiệu
+          </button>
+        )}
+
+        {/* Next Episode Button */}
+        {showNextEpisode && onNextEpisode && (
+          <button
+            onClick={handleNextEpisode}
+            className="absolute bottom-20 right-4 px-4 py-2 bg-primary hover:bg-primary/90 hover:scale-105 text-white font-semibold rounded-md transition-all duration-300 flex items-center gap-2 shadow-lg z-50 animate-[slideInRight_0.3s_ease-out,pulse_2s_ease-in-out_infinite]"
+          >
+           Xem tập tiếp theo
+            <ChevronsRight className="w-4 h-4" />
+          </button>
+        )}
+
         {/* Custom Controls Overlay */}
         {showControls && isReady && showUI && (
           <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 via-black/60 to-transparent p-4 transition-opacity duration-300">
@@ -403,10 +476,10 @@ export const YouTubePlayer: React.FC<YouTubePlayerProps> = ({
                       e.stopPropagation();
                       setShowQualityMenu(!showQualityMenu);
                     }}
-                    className="p-2 rounded-full hover:bg-white/10 transition-colors"
+                    className="p-2 rounded-full hover:bg-white/5 transition-all"
                     aria-label="Chất lượng video"
                   >
-                    <Settings className="w-5 h-5 text-white" />
+                    <Settings className="w-5 h-5 text-white/80 hover:text-white transition-colors" />
                   </button>
 
                   {/* Quality Menu Dropdown */}
@@ -443,8 +516,10 @@ export const YouTubePlayer: React.FC<YouTubePlayerProps> = ({
                           </div>
                         )}
                         
-                        {/* Available qualities */}
-                        {availableQualities.length > 0 && availableQualities.map((quality) => (
+                        {/* Available qualities - Filter out 'auto' and 'default' */}
+                        {availableQualities.length > 0 && availableQualities
+                          .filter(quality => quality !== 'auto' && quality !== 'default')
+                          .map((quality) => (
                           <button
                             key={quality}
                             onClick={(e) => {

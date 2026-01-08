@@ -29,7 +29,15 @@
             "language": "vi",
             "subtitles": [
               "vi"
-            ]
+            ],
+            "intro": {
+              "start": 0,
+              "end": 90
+            },
+            "outro": {
+              "start": 1326,
+              "end": 1422
+            }
           }
         ]
       },
