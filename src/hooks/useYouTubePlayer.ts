@@ -74,6 +74,9 @@ interface YTPlayer {
   getCurrentTime: () => number;
   getDuration: () => number;
   getVideoUrl: () => string;
+  getAvailableQualityLevels: () => string[];
+  getPlaybackQuality: () => string;
+  setPlaybackQuality: (quality: string) => void;
   destroy: () => void;
 }
 
@@ -103,6 +106,8 @@ interface UseYouTubePlayerReturn {
   duration: number;
   volume: number;
   isMuted: boolean;
+  availableQualities: string[];
+  currentQuality: string;
   play: () => void;
   pause: () => void;
   stop: () => void;
@@ -110,6 +115,7 @@ interface UseYouTubePlayerReturn {
   setVolume: (volume: number) => void;
   toggleMute: () => void;
   togglePlayPause: () => void;
+  setPlaybackQuality: (quality: string) => void;
 }
 
 export const useYouTubePlayer = (
@@ -123,6 +129,8 @@ export const useYouTubePlayer = (
   const [duration, setDuration] = useState(0);
   const [volume, setVolumeState] = useState(100);
   const [isMuted, setIsMuted] = useState(false);
+  const [availableQualities, setAvailableQualities] = useState<string[]>([]);
+  const [currentQuality, setCurrentQuality] = useState<string>('auto');
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
   // Load YouTube IFrame API
@@ -175,6 +183,16 @@ export const useYouTubePlayer = (
                 setDuration(event.target.getDuration());
                 setVolumeState(event.target.getVolume());
                 setIsMuted(event.target.isMuted());
+                
+                // Get available qualities
+                const qualities = event.target.getAvailableQualityLevels();
+                console.log('Available quality levels:', qualities);
+                setAvailableQualities(qualities);
+                
+                const currentQual = event.target.getPlaybackQuality();
+                console.log('Current quality:', currentQual);
+                setCurrentQuality(currentQual);
+                
                 options.onReady?.();
               },
               onStateChange: (event: YTStateChangeEvent) => {
@@ -185,6 +203,13 @@ export const useYouTubePlayer = (
                 // Update duration khi video thay đổi state
                 if (playerRef.current) {
                   setDuration(playerRef.current.getDuration());
+                  
+                  // Update quality levels khi video state changes (có thể có thêm quality sau khi load)
+                  const qualities = playerRef.current.getAvailableQualityLevels();
+                  if (qualities.length > 0) {
+                    setAvailableQualities(qualities);
+                    setCurrentQuality(playerRef.current.getPlaybackQuality());
+                  }
                 }
               },
               onError: (event: YTErrorEvent) => {
@@ -332,6 +357,16 @@ export const useYouTubePlayer = (
     }
   }, [playerState, play, pause]);
 
+  const setPlaybackQuality = useCallback(
+    (quality: string) => {
+      if (playerRef.current && isReady) {
+        playerRef.current.setPlaybackQuality(quality);
+        setCurrentQuality(quality);
+      }
+    },
+    [isReady]
+  );
+
   return {
     playerRef,
     isReady,
@@ -340,6 +375,8 @@ export const useYouTubePlayer = (
     duration,
     volume,
     isMuted,
+    availableQualities,
+    currentQuality,
     play,
     pause,
     stop,
@@ -347,5 +384,6 @@ export const useYouTubePlayer = (
     setVolume,
     toggleMute,
     togglePlayPause,
+    setPlaybackQuality,
   };
 };

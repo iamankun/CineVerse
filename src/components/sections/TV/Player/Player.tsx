@@ -577,7 +577,7 @@ const TvShowPlayer: React.FC<TvShowPlayerProps> = ({
         <TvShowPlayerHeader
           id={id}
           episode={episode}
-          hidden={idle && !mobile}
+          hidden={idle && !mobile && !isFullscreen}
           selectedSource={selectedSource}
           onOpenSource={sourceHandlers.open}
           onOpenEpisode={episodeHandlers.open}
@@ -596,7 +596,7 @@ const TvShowPlayer: React.FC<TvShowPlayerProps> = ({
           onToggleFullscreen={gestureCallbacks.onToggleFullscreen}
           onReload={gestureCallbacks.onReload}
           isFullscreen={isFullscreen}
-          hidden={idle && !mobile}
+          hidden={idle && !mobile && !isFullscreen}
         />
 
         <div className="relative h-screen overflow-hidden" ref={cardRef}>

@@ -581,7 +581,7 @@ const MoviePlayer: React.FC<MoviePlayerProps> = ({ movie, startAt }) => {
           id={movie.id}
           movieName={title}
           onOpenSource={handlers.open}
-          hidden={idle && !mobile}
+          hidden={idle && !mobile && !isFullscreen}
         />
         
         <ControlMenu
@@ -589,7 +589,7 @@ const MoviePlayer: React.FC<MoviePlayerProps> = ({ movie, startAt }) => {
           onToggleFullscreen={gestureCallbacks.onToggleFullscreen}
           onReload={gestureCallbacks.onReload}
           isFullscreen={isFullscreen}
-          hidden={idle && !mobile}
+          hidden={idle && !mobile && !isFullscreen}
         />
         
         <div className="relative h-screen overflow-hidden" ref={cardRef}>

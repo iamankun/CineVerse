@@ -11,6 +11,7 @@ import {
   SkipForward,
   Maximize,
   Minimize,
+  Settings,
 } from 'lucide-react';
 
 interface YouTubePlayerProps {
@@ -44,6 +45,7 @@ export const YouTubePlayer: React.FC<YouTubePlayerProps> = ({
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [hasError, setHasError] = useState(false);
   const [showUI, setShowUI] = useState(true);
+  const [showQualityMenu, setShowQualityMenu] = useState(false);
   const containerRef = React.useRef<HTMLDivElement>(null);
   const hideTimerRef = React.useRef<NodeJS.Timeout | null>(null);
 
@@ -54,12 +56,15 @@ export const YouTubePlayer: React.FC<YouTubePlayerProps> = ({
     duration,
     volume,
     isMuted,
+    availableQualities,
+    currentQuality,
     play,
     pause,
     seekTo,
     setVolume,
     toggleMute,
     togglePlayPause,
+    setPlaybackQuality,
   } = useYouTubePlayer(playerId, {
     videoId,
     autoplay,
@@ -83,32 +88,52 @@ export const YouTubePlayer: React.FC<YouTubePlayerProps> = ({
       clearTimeout(hideTimerRef.current);
     }
     
-    hideTimerRef.current = setTimeout(() => {
-      setShowUI(false);
-    }, 3000);
-  }, []);
+    // Không auto-hide khi quality menu đang mở
+    if (showQualityMenu) {
+      return;
+    }
+    
+    // Chỉ auto-hide khi đang playing
+    if (playerState === PlayerState.PLAYING) {
+      hideTimerRef.current = setTimeout(() => {
+        setShowUI(false);
+      }, 3000);
+    }
+  }, [playerState, showQualityMenu]);
 
-  // Mouse movement hiện controls
+  // Mouse movement và click hiện controls
   React.useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
 
-    const handleMouseMove = () => {
+    const handleInteraction = () => {
       resetHideTimer();
     };
 
-    container.addEventListener('mousemove', handleMouseMove);
+    container.addEventListener('mousemove', handleInteraction);
+    container.addEventListener('click', handleInteraction);
     
     // Initial timer
     resetHideTimer();
 
     return () => {
-      container.removeEventListener('mousemove', handleMouseMove);
+      container.removeEventListener('mousemove', handleInteraction);
+      container.removeEventListener('click', handleInteraction);
       if (hideTimerRef.current) {
         clearTimeout(hideTimerRef.current);
       }
     };
   }, [resetHideTimer]);
+
+  // Khi pause, luôn hiện controls
+  React.useEffect(() => {
+    if (playerState === PlayerState.PAUSED) {
+      setShowUI(true);
+      if (hideTimerRef.current) {
+        clearTimeout(hideTimerRef.current);
+      }
+    }
+  }, [playerState]);
 
   // Keyboard shortcuts
   React.useEffect(() => {
@@ -219,15 +244,46 @@ export const YouTubePlayer: React.FC<YouTubePlayerProps> = ({
   const isPlaying = playerState === PlayerState.PLAYING;
   const progressPercentage = duration > 0 ? (currentTime / duration) * 100 : 0;
 
+  // Quality label mapping
+  const qualityLabels: Record<string, string> = {
+    'highres': '4K+',
+    'hd1080': '1080p',
+    'hd720': '720p',
+    'large': '480p',
+    'medium': '360p',
+    'small': '240p',
+    'tiny': '144p',
+    'auto': 'Tự động',
+  };
+
   return (
     <div
       ref={containerRef}
       className={`relative w-full h-full bg-black overflow-hidden ${className}`}
       style={{ cursor: showUI ? 'default' : 'none' }}
+      onMouseEnter={() => setShowUI(true)}
+      onMouseMove={() => resetHideTimer()}
+      onClick={(e) => {
+        // Đóng quality menu khi click outside
+        if (showQualityMenu && !(e.target as HTMLElement).closest('.quality-menu-container')) {
+          setShowQualityMenu(false);
+        }
+        resetHideTimer();
+      }}
     >
       {/* YouTube Player Container */}
       <div className="relative w-full h-full">
         <div id={playerId} className="absolute inset-0" />
+
+        {/* Invisible overlay để capture mouse events khi controls ẩn */}
+        {!showUI && (
+          <div 
+            className="absolute inset-0 z-50" 
+            style={{ cursor: 'none' }}
+            onMouseMove={() => resetHideTimer()}
+            onClick={() => resetHideTimer()}
+          />
+        )}
 
         {/* Error Overlay */}
         {hasError && (
@@ -338,18 +394,92 @@ export const YouTubePlayer: React.FC<YouTubePlayerProps> = ({
                 </div>
               </div>
 
-              {/* Fullscreen Button */}
-              <button
-                onClick={toggleFullscreen}
-                className="p-2 rounded-full hover:bg-white/10 transition-colors"
-                aria-label={isFullscreen ? 'Exit fullscreen' : 'Fullscreen'}
-              >
-                {isFullscreen ? (
-                  <Minimize className="w-5 h-5 text-white" />
-                ) : (
-                  <Maximize className="w-5 h-5 text-white" />
-                )}
-              </button>
+              {/* Right Side Controls */}
+              <div className="flex items-center gap-2">
+                {/* Quality Selector */}
+                <div className="relative z-50 quality-menu-container">
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setShowQualityMenu(!showQualityMenu);
+                    }}
+                    className="p-2 rounded-full hover:bg-white/10 transition-colors"
+                    aria-label="Chất lượng video"
+                  >
+                    <Settings className="w-5 h-5 text-white" />
+                  </button>
+
+                  {/* Quality Menu Dropdown */}
+                  {showQualityMenu && (
+                    <div 
+                      className="absolute bottom-full right-0 mb-2 bg-black/95 backdrop-blur-sm rounded-lg shadow-xl overflow-hidden min-w-[140px] border border-white/10 z-[100]"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <div className="px-3 py-2 border-b border-white/10 text-xs text-white/60 font-semibold">
+                        Chất lượng
+                      </div>
+                      <div className="py-1">
+                        {/* Auto quality option */}
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setPlaybackQuality('default');
+                            setShowQualityMenu(false);
+                          }}
+                          className={`w-full px-3 py-2 text-left text-sm hover:bg-white/10 transition-colors flex items-center justify-between ${
+                            currentQuality === 'auto' || currentQuality === 'default' || !currentQuality ? 'text-primary font-semibold' : 'text-white'
+                          }`}
+                        >
+                          <span>Tự động</span>
+                          {(currentQuality === 'auto' || currentQuality === 'default' || !currentQuality) && (
+                            <span className="text-primary">✓</span>
+                          )}
+                        </button>
+                        
+                        {/* Debug: Show available qualities count */}
+                        {availableQualities.length === 0 && (
+                          <div className="px-3 py-2 text-xs text-white/40 italic">
+                            Đang tải chất lượng...
+                          </div>
+                        )}
+                        
+                        {/* Available qualities */}
+                        {availableQualities.length > 0 && availableQualities.map((quality) => (
+                          <button
+                            key={quality}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setPlaybackQuality(quality);
+                              setShowQualityMenu(false);
+                            }}
+                            className={`w-full px-3 py-2 text-left text-sm hover:bg-white/10 transition-colors flex items-center justify-between ${
+                              currentQuality === quality ? 'text-primary font-semibold' : 'text-white'
+                            }`}
+                          >
+                            <span>{qualityLabels[quality] || quality}</span>
+                            {currentQuality === quality && (
+                              <span className="text-primary">✓</span>
+                            )}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Fullscreen Button - Temporarily Hidden */}
+                {/* <button
+                  onClick={toggleFullscreen}
+                  className="p-2 rounded-full hover:bg-white/10 transition-colors"
+                  aria-label={isFullscreen ? 'Exit fullscreen' : 'Fullscreen'}
+                >
+                  {isFullscreen ? (
+                    <Minimize className="w-5 h-5 text-white" />
+                  ) : (
+                    <Maximize className="w-5 h-5 text-white" />
+                  )}
+                </button> */}
+              </div>
             </div>
           </div>
         )}

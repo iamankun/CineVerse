@@ -67,28 +67,28 @@ const AgeRating: React.FC<AgeRatingProps> = ({ rating, ratingDescription }) => {
         ))}
       </div>
 
-      {/* Rating Description - Slides in/out */}
+      {/* Rating Description - Blur to sharp + elastic slide */}
       <div
-        className={cn(
-          "overflow-hidden whitespace-nowrap text-sm font-semibold text-white transition-all duration-700 ease-in-out",
-          {
-            "max-w-0 opacity-0": !isExpanded,
-            "max-w-[400px] opacity-100": isExpanded,
-          }
-        )}
+        className="overflow-visible transition-all duration-700"
+        style={{
+          maxWidth: isExpanded ? '400px' : '0px',
+          transitionTimingFunction: "cubic-bezier(0.68, -0.55, 0.265, 1.55)", // Elastic
+        }}
       >
-        <span className="inline-block pl-2">
-          {ratingDescription.split('').map((char, idx) => (
-            <span
-              key={idx}
-              style={{
-                textShadow: "0 2px 4px rgba(0, 0, 0, 0.8)",
-              }}
-            >
-              {char}
-            </span>
-          ))}
-        </span>
+        <div
+          className="whitespace-nowrap text-sm font-semibold text-white pl-2"
+          style={{
+            filter: isExpanded ? 'blur(0px)' : 'blur(8px)',
+            opacity: isExpanded ? 1 : 0,
+            transform: isExpanded ? 'translateX(0px) rotateX(0deg)' : 'translateX(-30px) rotateX(-15deg)',
+            transition: 'all 800ms cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+            textShadow: "0 2px 4px rgba(0, 0, 0, 0.8)",
+            transformStyle: 'preserve-3d',
+            perspective: '1000px',
+          }}
+        >
+          {ratingDescription}
+        </div>
       </div>
     </div>
   );
