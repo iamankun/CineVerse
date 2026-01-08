@@ -33,10 +33,13 @@
             "intro": {
               "start": 0,
               "end": 90
+<<<<<<< HEAD
             },
             "outro": {
               "start": 1326,
               "end": 1422
+=======
+>>>>>>> e33c3f5581f5864992a8843960fe729176078d31
             }
           }
         ]
@@ -1030,7 +1033,7 @@
   "metadata": {
     "movie-rating": "T13",
     "audioVersion": "LongTieng",
-    "lastUpdate": "2025-12-19T14:46:50.503Z",
+    "lastUpdate": "2026-01-08T06:45:23.158Z",
     "studio": "8bit",
     "genre": [
       "Fantasy",
