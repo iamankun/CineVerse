@@ -29,7 +29,11 @@
             "language": "vi",
             "subtitles": [
               "vi"
-            ]
+            ],
+            "intro": {
+              "start": 0,
+              "end": 90
+            }
           }
         ]
       },
@@ -1022,7 +1026,7 @@
   "metadata": {
     "movie-rating": "T13",
     "audioVersion": "LongTieng",
-    "lastUpdate": "2025-12-19T14:46:50.503Z",
+    "lastUpdate": "2026-01-08T06:45:23.158Z",
     "studio": "8bit",
     "genre": [
       "Fantasy",
