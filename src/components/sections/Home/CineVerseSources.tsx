@@ -48,13 +48,18 @@ const fetchCineVerseContent = async () => {
   // Helper function để fetch với fallback languages
   const fetchWithLanguageFallback = async (url: string, type: 'movie' | 'tv') => {
     const languages = ['vi-VN', 'en-US', '']; // '' = original language
-    
+
     for (const lang of languages) {
+      // Xây dựng query string an toàn, tránh lỗi ?& hoặc &&
+      const urlWithParams =
+        url +
+        (url.includes('?')
+          ? (lang ? `&language=${lang}` : '')
+          : (lang ? `?language=${lang}` : '')) +
+        `&append_to_response=videos&include_video_language=vi,en,ja,ko,null`;
       try {
-        const langParam = lang ? `?language=${lang}` : '';
-        // Thêm include_video_language để lấy videos từ nhiều ngôn ngữ
         const response = await fetch(
-          `${url}${langParam}&append_to_response=videos&include_video_language=vi,en,ja,ko,null`,
+          urlWithParams,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -62,26 +67,25 @@ const fetchCineVerseContent = async () => {
             },
           }
         );
-        
-        if (!response.ok) continue;
+        if (!response.ok) {
+          console.error(`Fetch failed: ${response.status} ${response.statusText} - ${urlWithParams}`);
+          continue;
+        }
         const data = await response.json();
-        
         // Kiểm tra xem có overview không, nếu có thì return
         if (data.overview && data.overview.trim() !== '') {
           return data;
         }
-        
         // Nếu không có overview với ngôn ngữ này, thử ngôn ngữ tiếp theo
         // Nhưng lưu lại data để dùng nếu không tìm thấy overview nào
         if (lang === languages[languages.length - 1]) {
           return data;
         }
       } catch (error) {
-        console.error(`Error fetching ${type} with language ${lang}:`, error);
+        console.error(`Error fetching ${type} with language ${lang}:`, error, urlWithParams);
         continue;
       }
     }
-    
     return null;
   };
 

@@ -183,16 +183,26 @@ export const useYouTubePlayer = (
                 setDuration(event.target.getDuration());
                 setVolumeState(event.target.getVolume());
                 setIsMuted(event.target.isMuted());
-                
+
                 // Get available qualities
                 const qualities = event.target.getAvailableQualityLevels();
                 console.log('Available quality levels:', qualities);
                 setAvailableQualities(qualities);
-                
-                const currentQual = event.target.getPlaybackQuality();
-                console.log('Current quality:', currentQual);
-                setCurrentQuality(currentQual);
-                
+
+                // Ưu tiên chọn chất lượng cao nhất nếu có
+                if (qualities && qualities.length > 0) {
+                  // Bỏ qua 'auto' và 'default', chọn chất lượng cao nhất thực tế
+                  const filtered = qualities.filter(q => q !== 'auto' && q !== 'default');
+                  if (filtered.length > 0) {
+                    event.target.setPlaybackQuality(filtered[0]);
+                    setCurrentQuality(filtered[0]);
+                  } else {
+                    setCurrentQuality(event.target.getPlaybackQuality());
+                  }
+                } else {
+                  setCurrentQuality(event.target.getPlaybackQuality());
+                }
+
                 options.onReady?.();
               },
               onStateChange: (event: YTStateChangeEvent) => {
@@ -203,12 +213,19 @@ export const useYouTubePlayer = (
                 // Update duration khi video thay đổi state
                 if (playerRef.current) {
                   setDuration(playerRef.current.getDuration());
-                  
+
                   // Update quality levels khi video state changes (có thể có thêm quality sau khi load)
                   const qualities = playerRef.current.getAvailableQualityLevels();
                   if (qualities.length > 0) {
                     setAvailableQualities(qualities);
-                    setCurrentQuality(playerRef.current.getPlaybackQuality());
+                    // Ưu tiên chọn chất lượng cao nhất nếu có
+                    const filtered = qualities.filter(q => q !== 'auto' && q !== 'default');
+                    if (filtered.length > 0) {
+                      playerRef.current.setPlaybackQuality(filtered[0]);
+                      setCurrentQuality(filtered[0]);
+                    } else {
+                      setCurrentQuality(playerRef.current.getPlaybackQuality());
+                    }
                   }
                 }
               },

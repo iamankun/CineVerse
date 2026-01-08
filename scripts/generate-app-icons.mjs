@@ -206,7 +206,8 @@ async function main() {
     
     console.log('\n✨ Hoàn tất! Đã tạo tất cả app icons từ CineVerse.png');
     console.log(`📊 Tổng số icons: ${androidSizes.length + iosSizes.length + windowsIcons.length}`);
-    
+    console.log('📽 CineVerse - Vũ Trụ Điện Ảnh | Hoàn tất cài đặt, trải nghiệm ngay.');
+
   } catch (error) {
     console.error('❌ Lỗi:', error);
     process.exit(1);
