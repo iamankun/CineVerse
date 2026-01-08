@@ -1,12 +1,5 @@
 "use client";
 
-declare global {
-  interface Window {
-    YT: any;
-    onYouTubeIframeAPIReady: () => void;
-  }
-}
-
 function normalizeYouTubeUrl(url: string): { id: string, url: string } | null {
   try {
     if (!url) return null;
