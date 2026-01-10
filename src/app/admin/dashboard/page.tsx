@@ -38,7 +38,7 @@ function normalizeYouTubeUrl(url: string): { id: string, url: string } | null {
   }
 }
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   Button,
   Input,
@@ -65,8 +65,65 @@ import AdminGuard from "@/components/AdminGuard";
 import { useRouter } from "next/navigation";
 
 // Video Preview Component
-function VideoPreview({ videoId, iframeId }: { videoId: string; iframeId: string }) {
+function VideoPreview({ videoId, iframeId, onPlayerReady }: { videoId: string; iframeId: string; onPlayerReady?: (player: any) => void }) {
   const [isExpanded, setIsExpanded] = useState(true);
+  const [player, setPlayer] = useState<any>(null);
+  const playerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    // Load YouTube API if not loaded
+    if (!(window as any).YT) {
+      const script = document.createElement('script');
+      script.src = 'https://www.youtube.com/iframe_api';
+      script.async = true;
+      document.body.appendChild(script);
+      
+      (window as any).onYouTubeIframeAPIReady = () => {
+        initPlayer();
+      };
+    } else {
+      initPlayer();
+    }
+
+    function initPlayer() {
+      if (playerRef.current && videoId) {
+        const newPlayer = new (window as any).YT.Player(playerRef.current, {
+          height: '100%',
+          width: '100%',
+          videoId: videoId,
+          playerVars: {
+            autoplay: 0,
+            controls: 1,
+            rel: 0,
+            showinfo: 0,
+            modestbranding: 1,
+          },
+          events: {
+            onReady: (event: any) => {
+              setPlayer(event.target);
+              onPlayerReady?.(event.target);
+            },
+            onStateChange: (event: any) => {
+              // Handle state changes if needed
+            },
+          },
+        });
+      }
+    }
+
+    return () => {
+      if (player) {
+        player.destroy();
+        setPlayer(null);
+      }
+    };
+  }, [videoId]);
+
+  useEffect(() => {
+    if (player && !isExpanded) {
+      player.pauseVideo();
+    }
+  }, [isExpanded, player]);
 
   return (
     <Card className="bg-gray-900/50">
@@ -84,12 +141,10 @@ function VideoPreview({ videoId, iframeId }: { videoId: string; iframeId: string
         </div>
         {isExpanded && (
           <div className="aspect-video w-full overflow-hidden rounded-lg">
-            <iframe
+            <div
+              ref={playerRef}
               id={iframeId}
-              src={`https://www.youtube.com/embed/${videoId}?enablejsapi=1`}
               className="h-full w-full"
-              allowFullScreen
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
             />
           </div>
         )}
