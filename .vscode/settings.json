@@ -12,6 +12,7 @@
     "bình",
     "bprogress",
     "buộc",
+    "cách",
     "Cảnh",
     "chắc",
     "chào",
@@ -28,6 +29,7 @@
     "chọn",
     "chưa",
     "chứa",
+    "chuẩn",
     "chúng",
     "chuỗi",
     "Chương",
@@ -65,6 +67,7 @@
     "Dưới",
     "gian",
     "GIAO",
+    "giây",
     "Giấy",
     "GIỚI",
     "giữa",
@@ -79,6 +82,7 @@
     "hoàn",
     "hoạt",
     "Hoverable",
+    "Hướng",
     "huynh",
     "iconify",
     "khác",
@@ -112,6 +116,7 @@
     "lòng",
     "Lồng",
     "longtieng",
+    "luôn",
     "lượng",
     "lượt",
     "marsidev",
@@ -245,7 +250,8 @@
     "vutrudienanh",
     "wallpapercave",
     "Watchlist",
-    "xuất"
+    "xuất",
+    "youtu"
   ],
   "chat.mcp.serverSampling": {
     "CineVerse/.vscode/mcp.json: io.github.github/github-mcp-server": {
