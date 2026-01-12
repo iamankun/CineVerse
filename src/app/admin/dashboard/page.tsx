@@ -58,7 +58,7 @@ import {
   TableRow,
   TableCell,
 } from "@heroui/react";
-import { IoSearch, IoSave, IoRefresh, IoAdd, IoTrash, IoList, IoCreate, IoLogOut, IoClipboard, IoArrowBack } from "react-icons/io5";
+import { IoSearch, IoSave, IoRefresh, IoAdd, IoTrash, IoList, IoCreate, IoLogOut, IoClipboard, IoArrowBack, IoChevronDown, IoChevronForward } from "react-icons/io5";
 import { searchMovies, searchTV, getMovieDetails, getTvShowDetails } from "@/api/tmdb";
 import Image from "next/image";
 import AdminGuard from "@/components/AdminGuard";
@@ -137,8 +137,9 @@ function VideoPreview({ videoId, iframeId, onPlayerReady }: { videoId: string; i
             variant="light"
             className="text-white min-w-0 px-2 h-6"
             onClick={() => setIsExpanded(!isExpanded)}
+            aria-label={isExpanded ? 'Thu gọn' : 'Mở rộng'}
           >
-            {isExpanded ? '🔽' : '▶️'}
+            {isExpanded ? <IoChevronDown size={18} /> : <IoChevronForward size={18} />}
           </Button>
         </div>
         {isExpanded && (
@@ -527,8 +528,9 @@ function EpisodeItem({
               variant="light"
               className="text-white min-w-0 px-2"
               onClick={() => setIsEpisodeExpanded(!isEpisodeExpanded)}
+              aria-label={isEpisodeExpanded ? 'Thu gọn' : 'Mở rộng'}
             >
-              {isEpisodeExpanded ? '🔽' : '▶️'}
+              {isEpisodeExpanded ? <IoChevronDown size={18} /> : <IoChevronForward size={18} />}
             </Button>
             <Chip color="warning" size="sm">
               Episode {episodeNum}
