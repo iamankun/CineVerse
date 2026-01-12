@@ -101,6 +101,8 @@ function VideoPreview({ videoId, iframeId, onPlayerReady }: { videoId: string; i
           events: {
             onReady: (event: any) => {
               setPlayer(event.target);
+              // Lưu instance player vào window để các component khác truy cập
+              (window as any)["ytPlayerInstance_" + iframeId] = event.target;
               onPlayerReady?.(event.target);
             },
             onStateChange: (event: any) => {
@@ -163,12 +165,25 @@ function TimestampInputs({
   iframeId: string; 
   onUpdate: (field: 'intro' | 'outro', value: any) => void;
 }) {
-  // Hàm này sẽ được gọi khi click nút "+" để lấy thời gian hiện tại
-  // Thực tế người dùng sẽ phải nhập thủ công hoặc xem video và pause tại thời điểm cần
+  // Lấy player từ window theo iframeId
+  const getPlayerInstance = () => {
+    // Tìm player instance đã được khởi tạo bởi VideoPreview
+    const ytPlayers = (window as any).YT?.players;
+    if (ytPlayers && ytPlayers[iframeId]) {
+      return ytPlayers[iframeId];
+    }
+    // Nếu không có, thử lấy từ global
+    return (window as any)["ytPlayerInstance_" + iframeId];
+  };
+
   const setCurrentTimeToField = (field: 'intro' | 'outro', position: 'start' | 'end') => {
-    // Lấy thời gian hiện tại từ giây hiện tại (có thể cải thiện bằng cách tích hợp API)
-    const currentTime = Math.floor(Date.now() / 1000) % 3600; // Giả lập
-    
+    let currentTime = 0;
+    try {
+      const player = getPlayerInstance();
+      if (player && typeof player.getCurrentTime === "function") {
+        currentTime = Math.floor(player.getCurrentTime());
+      }
+    } catch {}
     const currentValue = source[field] || { start: 0, end: 0 };
     onUpdate(field, {
       ...currentValue,
@@ -321,9 +336,23 @@ function TimestampInputsTV({
   iframeId: string; 
   onUpdate: (field: 'intro' | 'outro', value: any) => void;
 }) {
+  // Lấy player từ window theo iframeId
+  const getPlayerInstance = () => {
+    const ytPlayers = (window as any).YT?.players;
+    if (ytPlayers && ytPlayers[iframeId]) {
+      return ytPlayers[iframeId];
+    }
+    return (window as any)["ytPlayerInstance_" + iframeId];
+  };
+
   const setCurrentTimeToField = (field: 'intro' | 'outro', position: 'start' | 'end') => {
-    const currentTime = Math.floor(Date.now() / 1000) % 3600;
-    
+    let currentTime = 0;
+    try {
+      const player = getPlayerInstance();
+      if (player && typeof player.getCurrentTime === "function") {
+        currentTime = Math.floor(player.getCurrentTime());
+      }
+    } catch {}
     const currentValue = source[field] || { start: 0, end: 0 };
     onUpdate(field, {
       ...currentValue,
