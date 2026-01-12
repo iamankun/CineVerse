@@ -43,7 +43,7 @@ export async function commitToGitHub(options: GitHubCommitOptions): Promise<any>
       }
     } catch (error) {
       // File doesn't exist, will create new
-      console.log('File does not exist, creating new file');
+      console.log('Tệp không tồn tại, tạo tệp mới');
     }
 
     // Create or update file
@@ -67,12 +67,12 @@ export async function commitToGitHub(options: GitHubCommitOptions): Promise<any>
 
     if (!response.ok) {
       const error = await response.text();
-      throw new Error(`GitHub API error: ${error}`);
+      throw new Error(`Lỗi API GitHub: ${error}`);
     }
 
     return await response.json();
   } catch (error) {
-    console.error('Error committing to GitHub:', error);
+    console.error('Lỗi khi ủy thác lên GitHub:', error);
     throw error;
   }
 }
@@ -87,12 +87,12 @@ export async function triggerVercelDeploy(
     });
     
     if (!response.ok) {
-      throw new Error('Failed to trigger Vercel deployment');
+      throw new Error('Không thể kích hoạt triển khai Vercel');
     }
     
-    console.log('Vercel deployment triggered successfully');
+    console.log('Kích hoạt triển khai Vercel thành công');
   } catch (error) {
-    console.error('Error triggering Vercel deploy:', error);
+    console.error('Lỗi khi kích hoạt triển khai Vercel:', error);
     throw error;
   }
 }

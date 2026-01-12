@@ -316,8 +316,21 @@ function TimestampInputs({
             size="sm"
             className="mt-5 min-w-0 px-3 bg-primary text-white"
             onClick={() => {
-              setCurrentTimeToField('outro', 'end');
+              // Nếu đã có outro bắt đầu, tự động lấy duration video
+              let endTime = 0;
+              try {
+                const player = (window as any)["ytPlayerInstance_" + iframeId];
+                if (player && typeof player.getDuration === "function") {
+                  endTime = Math.floor(player.getDuration());
+                }
+              } catch {}
+              const currentValue = source["outro"] || { start: 0, end: 0 };
+              onUpdate("outro", {
+                ...currentValue,
+                end: endTime
+              });
             }}
+            aria-label="Tự động điền thời lượng còn lại"
           >
             +
           </Button>
@@ -485,8 +498,21 @@ function TimestampInputsTV({
             size="sm"
             className="mt-4 min-w-0 px-3 bg-primary text-white"
             onClick={() => {
-              setCurrentTimeToField('outro', 'end');
+              // Nếu đã có outro bắt đầu, tự động lấy duration video
+              let endTime = 0;
+              try {
+                const player = (window as any)["ytPlayerInstance_" + iframeId];
+                if (player && typeof player.getDuration === "function") {
+                  endTime = Math.floor(player.getDuration());
+                }
+              } catch {}
+              const currentValue = source["outro"] || { start: 0, end: 0 };
+              onUpdate("outro", {
+                ...currentValue,
+                end: endTime
+              });
             }}
+            aria-label="Tự động điền thời lượng còn lại"
           >
             +
           </Button>
