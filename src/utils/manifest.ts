@@ -16,7 +16,7 @@ export function useManifestRefresh() {
 
     // If version changed, clear relevant caches
     if (storedVersion && storedVersion !== currentVersion) {
-      console.log(`Version updated: ${storedVersion} → ${currentVersion}`);
+      console.log(`Phiên bản cập nhật: ${storedVersion} → ${currentVersion}`);
       
       // Clear manifest and icon caches
       if ("caches" in window) {
