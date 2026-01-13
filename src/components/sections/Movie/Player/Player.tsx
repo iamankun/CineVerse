@@ -563,7 +563,11 @@ const MoviePlayer: React.FC<MoviePlayerProps> = ({ movie, startAt }) => {
         <div className="absolute-center">
           <div className="text-center flex flex-col items-center gap-4">
             {movieRating && (
-              <AgeRating rating={movieRating.rating} ratingDescription={movieRating.description} />
+              <AgeRating 
+                rating={movieRating.rating} 
+                ratingDescription={movieRating.description} 
+                isLoading={true}
+              />
             )}
             <div className="text-sm text-foreground/60" style={{ textShadow: '0 1px 4px rgba(0, 0, 0, 0.6)' }}>CineVerse - Vũ Trụ Điện Ảnh</div>
           </div>

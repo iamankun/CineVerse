@@ -560,7 +560,11 @@ const TvShowPlayer: React.FC<TvShowPlayerProps> = ({
         <div className="absolute-center">
           <div className="text-center flex flex-col items-center gap-4">
             {movieRating && (
-              <AgeRating rating={movieRating.rating} ratingDescription={movieRating.description} />
+              <AgeRating 
+                rating={movieRating.rating} 
+                ratingDescription={movieRating.description} 
+                isLoading={true}
+              />
             )}
             <div className="text-sm text-foreground/60" style={{ textShadow: '0 1px 4px rgba(0, 0, 0, 0.6)' }}>CineVerse - Vũ Trụ Điện Ảnh</div>
           </div>
@@ -624,13 +628,11 @@ const TvShowPlayer: React.FC<TvShowPlayerProps> = ({
                     className="h-full w-full"
                     intro={PLAYER.intro}
                     outro={PLAYER.outro}
-                    onNextEpisode={() => {
-                      // Next episode handler
-                      if (props.nextEpisodeNumber) {
-                        console.log('🎬 User clicked next episode button');
-                        window.location.href = `/tv/${id}/${episode.season_number}/${props.nextEpisodeNumber}/player?src=${selectedSource}`;
-                      }
-                    }}
+                    // New props for direct navigation
+                    id={id}
+                    seasonNumber={episode.season_number}
+                    nextEpisodeNumber={props.nextEpisodeNumber}
+                    selectedSource={selectedSource}
                     onReady={() => console.log('YouTube Player ready!')}
                     onStateChange={(state) => {
                       // State 0 = ENDED

@@ -1,14 +1,64 @@
 import { cn } from "@/utils/helpers";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { ageRatingConfig } from "@/utils/overlay-config";
 
 interface AgeRatingProps {
   rating: string;
   ratingDescription: string;
+  isLoading?: boolean; // Thêm prop để kiểm tra loading state
 }
 
-const AgeRating: React.FC<AgeRatingProps> = ({ rating, ratingDescription }) => {
+const AgeRating: React.FC<AgeRatingProps> = ({ rating, ratingDescription, isLoading = false }) => {
   const [isExpanded, setIsExpanded] = useState(false);
+  const [hasPlayedAudio, setHasPlayedAudio] = useState(false);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  // Play audio only once when in loading state
+  useEffect(() => {
+    // Only play audio when isLoading is true and hasn't played yet
+    if (!isLoading || hasPlayedAudio) return;
+    
+    // Small delay to ensure component is fully mounted
+    const timer = setTimeout(() => {
+      // Extract rating code from rating string (P, K, 13, 16, 18)
+      let ratingCode = rating.trim();
+      if (ratingCode.startsWith('T')) {
+        ratingCode = ratingCode.substring(1); // Remove 'T' from T13, T16, T18
+      }
+
+      // Map rating codes to audio files
+      const audioFiles: { [key: string]: string } = {
+        'P': '/agerating/P.m4a',
+        'K': '/agerating/K.m4a',
+        '13': '/agerating/13.m4a',
+        '16': '/agerating/16.m4a',
+        '18': '/agerating/18.m4a'
+      };
+
+      const audioFile = audioFiles[ratingCode];
+      if (audioFile) {
+        console.log(`🔊 Playing rating audio for ${ratingCode}: ${audioFile}`);
+        
+        // Create and play audio
+        const audio = new Audio(audioFile);
+        audio.volume = 0.8; // Set volume to 80%
+        audioRef.current = audio;
+        
+        audio.play().catch(error => {
+          console.warn(`⚠️ Could not play rating audio:`, error);
+          audioRef.current = null;
+        }).then(() => {
+          console.log(`✅ Successfully played rating audio for ${ratingCode}`);
+          setHasPlayedAudio(true);
+          audioRef.current = null;
+        });
+      } else {
+        console.warn(`⚠️ No audio file found for rating: ${ratingCode}`);
+      }
+    }, 100);
+
+    return () => clearTimeout(timer);
+  }, [isLoading, hasPlayedAudio, rating]);
 
   useEffect(() => {
     // Special case: repeatInterval = 0 means always show expanded
@@ -21,6 +71,7 @@ const AgeRating: React.FC<AgeRatingProps> = ({ rating, ratingDescription }) => {
     // Normal mode: Show expanded rating notification based on config
     const showRating = () => {
       setIsExpanded(true);
+      // Don't play audio here - only play once on initial load
 
       // After configured duration, collapse to icon only (but stay visible)
       setTimeout(() => {
@@ -37,8 +88,13 @@ const AgeRating: React.FC<AgeRatingProps> = ({ rating, ratingDescription }) => {
     return () => {
       clearTimeout(initialTimer);
       clearInterval(interval);
+      // Cleanup any playing audio
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current = null;
+      }
     };
-  }, []);
+  }, []); // Remove playRatingAudio dependency since we don't call it here
 
   return (
     <div className="flex items-center gap-1.5">

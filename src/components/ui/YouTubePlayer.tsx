@@ -33,7 +33,12 @@ interface YouTubePlayerProps {
     start: number;
     end: number;
   };
-  onNextEpisode?: () => void; // Callback khi bấm next episode
+  onNextEpisode?: () => void; // Callback khi bấm next episode (deprecated)
+  // New props for direct navigation like ControlMenu
+  id?: number;
+  seasonNumber?: number;
+  nextEpisodeNumber?: number | null;
+  selectedSource?: number;
 }
 
 const formatTime = (seconds: number): string => {
@@ -53,6 +58,11 @@ export const YouTubePlayer: React.FC<YouTubePlayerProps> = ({
   intro,
   outro,
   onNextEpisode,
+  // New props for direct navigation
+  id,
+  seasonNumber,
+  nextEpisodeNumber,
+  selectedSource,
 }) => {
   // Sử dụng useId() để tạo ID ổn định cho SSR
   const uniqueId = useId();
@@ -232,7 +242,11 @@ export const YouTubePlayer: React.FC<YouTubePlayerProps> = ({
 
   // Next episode handler
   const handleNextEpisode = () => {
-    if (onNextEpisode) {
+    // Use direct navigation like ControlMenu if new props are available
+    if (id && seasonNumber && nextEpisodeNumber && selectedSource !== undefined) {
+      window.location.href = `/tv/${id}/${seasonNumber}/${nextEpisodeNumber}/player?src=${selectedSource}`;
+    } else if (onNextEpisode) {
+      // Fallback to callback for backward compatibility
       onNextEpisode();
     }
   };
@@ -578,7 +592,7 @@ export const YouTubePlayer: React.FC<YouTubePlayerProps> = ({
         )}
 
         {/* Next Episode Button */}
-        {showNextEpisode && onNextEpisode && (
+        {showNextEpisode && (nextEpisodeNumber || onNextEpisode) && (
           <button
             onClick={handleNextEpisode}
             className="absolute bottom-32 right-4 px-4 py-2 border-2 border-primary/90 hover:border-primary hover:scale-105 text-white font-semibold rounded-full transition-all duration-300 flex items-center gap-2 z-50 animate-[slideInRight_0.3s_ease-out,pulse_2s_ease-in-out_infinite]"
