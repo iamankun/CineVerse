@@ -139,7 +139,7 @@ export function useVidlinkPlayer(options: UseVidlinkPlayerOptions = {}) {
     };
 
     window.addEventListener("message", handleMessage);
-    window.addEventListener("beforeunload", handleBeforeUnload);
+    window.addEventListener("pagehide", handleBeforeUnload);
 
     return () => {
       if (eventDataRef.current) {
@@ -147,7 +147,7 @@ export function useVidlinkPlayer(options: UseVidlinkPlayerOptions = {}) {
       }
 
       window.removeEventListener("message", handleMessage);
-      window.removeEventListener("beforeunload", handleBeforeUnload);
+      window.removeEventListener("pagehide", handleBeforeUnload);
     };
   }, []);
 
