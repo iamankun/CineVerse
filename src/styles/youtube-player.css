@@ -1,47 +1,212 @@
 /* YouTube Player Custom Styles */
 
-/* Slider thumb styling */
+/* Glassmorphism base styles */
+.glass-morphism {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 
+    0 4px 16px rgba(0, 0, 0, 0.15),
+    0 2px 8px rgba(0, 0, 0, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.glass-morphism-dark {
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 
+    0 4px 16px rgba(0, 0, 0, 0.2),
+    0 2px 8px rgba(0, 0, 0, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+/* Glass button styles */
+.glass-button {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 
+    0 2px 8px rgba(0, 0, 0, 0.1),
+    0 1px 2px rgba(0, 0, 0, 0.05),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.glass-button:hover {
+  background: rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 
+    0 4px 16px rgba(0, 0, 0, 0.15),
+    0 2px 8px rgba(0, 0, 0, 0.1),
+    0 1px 0 rgba(255, 255, 255, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  transform: translateY(-1px);
+}
+
+.glass-button:active {
+  background: rgba(255, 255, 255, 0.15);
+  transform: translateY(0);
+  box-shadow: 
+    0 2px 8px rgba(0, 0, 0, 0.1),
+    0 1px 2px rgba(0, 0, 0, 0.05),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+/* Glass slider styles */
+.glass-slider {
+  background: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 
+    inset 0 2px 8px rgba(0, 0, 0, 0.2),
+    0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+/* Base slider styles */
+.slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+  cursor: pointer;
+}
+
+/* Slider thumb styling with glass effect */
 .slider-thumb::-webkit-slider-thumb {
   appearance: none;
-  width: 14px;
-  height: 14px;
+  width: 18px;
+  height: 18px;
   border-radius: 50%;
-  background: #ef4444;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.6));
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   cursor: pointer;
-  transition: all 0.2s ease;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 
+    0 4px 16px rgba(239, 68, 68, 0.4),
+    0 2px 8px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  border: 2px solid rgba(239, 68, 68, 0.8);
+  margin-top: -7px; /* Center thumb */
+  position: relative;
+  z-index: 10;
 }
 
 .slider-thumb::-webkit-slider-thumb:hover {
   transform: scale(1.2);
-  box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.2);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.7));
+  box-shadow: 
+    0 6px 24px rgba(239, 68, 68, 0.6),
+    0 0 0 8px rgba(239, 68, 68, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  border-color: #ef4444;
+}
+
+.slider-thumb::-webkit-slider-thumb:active {
+  transform: scale(1.1);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 1), rgba(255, 255, 255, 0.8));
+  box-shadow: 
+    0 2px 12px rgba(239, 68, 68, 0.5),
+    0 0 0 4px rgba(239, 68, 68, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 1);
 }
 
 .slider-thumb::-moz-range-thumb {
-  width: 14px;
-  height: 14px;
+  width: 18px;
+  height: 18px;
   border-radius: 50%;
-  background: #ef4444;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.6));
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   cursor: pointer;
-  border: none;
-  transition: all 0.2s ease;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  border: 2px solid rgba(239, 68, 68, 0.8);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 
+    0 4px 16px rgba(239, 68, 68, 0.4),
+    0 2px 8px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  position: relative;
+  z-index: 10;
 }
 
 .slider-thumb::-moz-range-thumb:hover {
   transform: scale(1.2);
-  box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.2);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.7));
+  box-shadow: 
+    0 6px 24px rgba(239, 68, 68, 0.6),
+    0 0 0 8px rgba(239, 68, 68, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  border-color: #ef4444;
 }
 
-/* Slider track */
+.slider-thumb::-moz-range-thumb:active {
+  transform: scale(1.1);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 1), rgba(255, 255, 255, 0.8));
+  box-shadow: 
+    0 2px 12px rgba(239, 68, 68, 0.5),
+    0 0 0 4px rgba(239, 68, 68, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 1);
+}
+
+/* Slider track with glass effect */
 .slider-thumb::-webkit-slider-runnable-track {
-  height: 4px;
-  border-radius: 2px;
+  height: 6px;
+  border-radius: 3px;
+  background: linear-gradient(to right, 
+    rgba(239, 68, 68, 0.8) 0%, 
+    rgba(239, 68, 68, 0.8) var(--progress, 0%), 
+    rgba(255, 255, 255, 0.1) var(--progress, 0%), 
+    rgba(255, 255, 255, 0.1) 100%);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 
+    inset 0 2px 4px rgba(0, 0, 0, 0.2),
+    0 1px 0 rgba(255, 255, 255, 0.05);
 }
 
 .slider-thumb::-moz-range-track {
-  height: 4px;
-  border-radius: 2px;
+  height: 6px;
+  border-radius: 3px;
+  background: linear-gradient(to right, 
+    rgba(239, 68, 68, 0.8) 0%, 
+    rgba(239, 68, 68, 0.8) var(--progress, 0%), 
+    rgba(255, 255, 255, 0.1) var(--progress, 0%), 
+    rgba(255, 255, 255, 0.1) 100%);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 
+    inset 0 2px 4px rgba(0, 0, 0, 0.2),
+    0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+/* Mobile-specific slider improvements */
+@media (pointer: coarse) {
+  .slider-thumb::-webkit-slider-thumb {
+    width: 20px;
+    height: 20px;
+    margin-top: -8px;
+  }
+  
+  .slider-thumb::-moz-range-thumb {
+    width: 20px;
+    height: 20px;
+  }
+  
+  .slider-thumb::-webkit-slider-runnable-track {
+    height: 6px;
+  }
+  
+  .slider-thumb::-moz-range-track {
+    height: 6px;
+  }
 }
 
 /* Fullscreen mode adjustments */
@@ -82,6 +247,27 @@
   transition: all 0.3s ease;
 }
 
+/* Animation keyframes */
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.02);
+  }
+}
+
 /* Loading animation */
 @keyframes spin {
   from {
@@ -96,28 +282,156 @@
   animation: spin 1s linear infinite;
 }
 
-/* Hover effects for buttons */
+/* Hover effects for buttons with glass effect */
 .control-button {
-  transition: all 0.2s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 50%;
+  box-shadow: 
+    0 2px 8px rgba(0, 0, 0, 0.1),
+    0 1px 2px rgba(0, 0, 0, 0.05),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
 
 .control-button:hover {
-  transform: scale(1.05);
+  transform: scale(1.05) translateY(-1px);
+  background: rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 
+    0 8px 24px rgba(0, 0, 0, 0.15),
+    0 4px 12px rgba(0, 0, 0, 0.1),
+    0 1px 0 rgba(255, 255, 255, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15);
 }
 
 .control-button:active {
-  transform: scale(0.95);
+  transform: scale(0.95) translateY(0);
+  background: rgba(255, 255, 255, 0.15);
+  box-shadow: 
+    0 2px 8px rgba(0, 0, 0, 0.1),
+    0 1px 2px rgba(0, 0, 0, 0.05),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
 
-/* Volume slider animation */
+/* Volume slider animation with glass effect */
 .volume-slider {
-  transition: width 0.3s ease;
+  transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  background: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+  cursor: pointer;
+  min-width: 40px; /* Ensure minimum width for better touch target */
 }
 
-/* Progress bar hover effect */
+/* Volume slider thumb improvements */
+.volume-slider::-webkit-slider-thumb {
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.6));
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 
+    0 3px 12px rgba(239, 68, 68, 0.3),
+    0 1px 4px rgba(0, 0, 0, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  border: 2px solid rgba(239, 68, 68, 0.7);
+  margin-top: -5px;
+}
+
+.volume-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.15);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.7));
+  box-shadow: 
+    0 4px 16px rgba(239, 68, 68, 0.4),
+    0 0 0 6px rgba(239, 68, 68, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  border-color: #ef4444;
+}
+
+.volume-slider::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.6));
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  cursor: pointer;
+  border: 2px solid rgba(239, 68, 68, 0.7);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 
+    0 3px 12px rgba(239, 68, 68, 0.3),
+    0 1px 4px rgba(0, 0, 0, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+}
+
+.volume-slider::-moz-range-thumb:hover {
+  transform: scale(1.15);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.7));
+  box-shadow: 
+    0 4px 16px rgba(239, 68, 68, 0.4),
+    0 0 0 6px rgba(239, 68, 68, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  border-color: #ef4444;
+}
+
+/* Volume slider mobile improvements */
+@media (pointer: coarse) {
+  .volume-slider {
+    /* Always show volume slider on mobile for better UX */
+    width: 80px !important;
+    min-width: 60px;
+  }
+  
+  .volume-slider::-webkit-slider-thumb {
+    width: 20px;
+    height: 20px;
+    margin-top: -7px;
+  }
+  
+  .volume-slider::-moz-range-thumb {
+    width: 20px;
+    height: 20px;
+  }
+}
+
+/* Progress bar hover effect with glass */
 .progress-bar:hover {
-  height: 6px;
-  transition: height 0.2s ease;
+  height: 8px;
+  transition: height 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+/* Progress bar mobile improvements */
+@media (pointer: coarse) {
+  .progress-bar {
+    height: 10px; /* Larger for touch */
+    background: rgba(255, 255, 255, 0.06);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  
+  .progress-bar::-webkit-slider-runnable-track {
+    height: 10px;
+  }
+  
+  .progress-bar::-moz-range-track {
+    height: 10px;
+  }
 }
 
 /* Custom scrollbar for playlist (if needed) */
@@ -153,15 +467,30 @@
     width: 1rem;
     height: 1rem;
   }
-
+  
+  /* Mobile slider improvements */
   .slider-thumb::-webkit-slider-thumb {
-    width: 12px;
-    height: 12px;
+    width: 20px;
+    height: 20px;
+    margin-top: -8px;
   }
 
   .slider-thumb::-moz-range-thumb {
-    width: 12px;
-    height: 12px;
+    width: 20px;
+    height: 20px;
+  }
+  
+  .slider-thumb::-webkit-slider-runnable-track {
+    height: 6px;
+  }
+  
+  .slider-thumb::-moz-range-track {
+    height: 6px;
+  }
+  
+  /* Volume slider always visible on mobile */
+  .volume-slider {
+    width: 60px !important;
   }
 }
 
@@ -189,6 +518,20 @@
   -webkit-user-select: none;
   -moz-user-select: none;
   -ms-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation; /* Improve touch responsiveness */
+}
+
+/* Better touch handling for sliders */
+.slider-thumb {
+  touch-action: manipulation;
+}
+
+/* Remove default tap highlight on mobile */
+@media (pointer: coarse) {
+  .slider-thumb {
+    -webkit-tap-highlight-color: transparent;
+  }
 }
 
 /* Smooth transitions for all interactive elements */

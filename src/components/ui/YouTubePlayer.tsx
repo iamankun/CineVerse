@@ -65,6 +65,12 @@ export const YouTubePlayer: React.FC<YouTubePlayerProps> = ({
   const [showNextEpisode, setShowNextEpisode] = useState(false);
   const containerRef = React.useRef<HTMLDivElement>(null);
   const hideTimerRef = React.useRef<NodeJS.Timeout | null>(null);
+  const progressEventRef = React.useRef<{
+    mouseMoveHandler?: (e: MouseEvent) => void;
+    mouseUpHandler?: () => void;
+    touchMoveHandler?: (e: TouchEvent) => void;
+    touchEndHandler?: () => void;
+  }>({});
 
   const {
     isReady,
@@ -231,6 +237,25 @@ export const YouTubePlayer: React.FC<YouTubePlayerProps> = ({
     }
   };
 
+  // Cleanup event listeners on unmount
+  React.useEffect(() => {
+    return () => {
+      // Cleanup any remaining event listeners
+      if (progressEventRef.current.mouseMoveHandler) {
+        document.removeEventListener('mousemove', progressEventRef.current.mouseMoveHandler);
+      }
+      if (progressEventRef.current.mouseUpHandler) {
+        document.removeEventListener('mouseup', progressEventRef.current.mouseUpHandler);
+      }
+      if (progressEventRef.current.touchMoveHandler) {
+        document.removeEventListener('touchmove', progressEventRef.current.touchMoveHandler);
+      }
+      if (progressEventRef.current.touchEndHandler) {
+        document.removeEventListener('touchend', progressEventRef.current.touchEndHandler);
+      }
+    };
+  }, []);
+
   // Timeout cho loading state
   React.useEffect(() => {
     if (isReady || hasError) return;
@@ -264,9 +289,188 @@ export const YouTubePlayer: React.FC<YouTubePlayerProps> = ({
     seekTo(newTime);
   };
 
+  const handleProgressMouseDown = (e: React.MouseEvent<HTMLInputElement>) => {
+    e.preventDefault();
+    
+    // Cleanup previous listeners
+    if (progressEventRef.current.mouseMoveHandler) {
+      document.removeEventListener('mousemove', progressEventRef.current.mouseMoveHandler);
+    }
+    if (progressEventRef.current.mouseUpHandler) {
+      document.removeEventListener('mouseup', progressEventRef.current.mouseUpHandler);
+    }
+    
+    const input = e.target as HTMLInputElement;
+    const rect = input.getBoundingClientRect();
+    
+    // Calculate initial position for immediate response
+    const initialPercent = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+    const initialTime = initialPercent * duration;
+    seekTo(initialTime);
+    
+    const handleMouseMove = (moveEvent: MouseEvent) => {
+      const percent = Math.max(0, Math.min(1, (moveEvent.clientX - rect.left) / rect.width));
+      const newTime = percent * duration;
+      seekTo(newTime);
+    };
+
+    const handleMouseUp = () => {
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+      // Clear refs
+      progressEventRef.current.mouseMoveHandler = undefined;
+      progressEventRef.current.mouseUpHandler = undefined;
+    };
+
+    // Store refs for cleanup
+    progressEventRef.current.mouseMoveHandler = handleMouseMove;
+    progressEventRef.current.mouseUpHandler = handleMouseUp;
+    
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseup', handleMouseUp);
+  };
+
+  const handleProgressTouchStart = (e: React.TouchEvent<HTMLInputElement>) => {
+    e.preventDefault();
+    const input = e.target as HTMLInputElement;
+    const rect = input.getBoundingClientRect();
+    
+    // Cleanup previous listeners
+    if (progressEventRef.current.touchMoveHandler) {
+      document.removeEventListener('touchmove', progressEventRef.current.touchMoveHandler);
+    }
+    if (progressEventRef.current.touchEndHandler) {
+      document.removeEventListener('touchend', progressEventRef.current.touchEndHandler);
+    }
+    
+    // Calculate initial touch position for immediate response
+    if (e.touches.length > 0) {
+      const touch = e.touches[0];
+      const initialPercent = Math.max(0, Math.min(1, (touch.clientX - rect.left) / rect.width));
+      const initialTime = initialPercent * duration;
+      seekTo(initialTime);
+    }
+    
+    const handleTouchMove = (moveEvent: TouchEvent) => {
+      if (moveEvent.touches.length > 0) {
+        const touch = moveEvent.touches[0];
+        const percent = Math.max(0, Math.min(1, (touch.clientX - rect.left) / rect.width));
+        const newTime = percent * duration;
+        seekTo(newTime);
+      }
+    };
+
+    const handleTouchEnd = () => {
+      document.removeEventListener('touchmove', handleTouchMove);
+      document.removeEventListener('touchend', handleTouchEnd);
+      // Clear refs
+      progressEventRef.current.touchMoveHandler = undefined;
+      progressEventRef.current.touchEndHandler = undefined;
+    };
+
+    // Store refs for cleanup
+    progressEventRef.current.touchMoveHandler = handleTouchMove;
+    progressEventRef.current.touchEndHandler = handleTouchEnd;
+    
+    document.addEventListener('touchmove', handleTouchMove, { passive: false });
+    document.addEventListener('touchend', handleTouchEnd);
+  };
+
   const handleVolumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newVolume = parseFloat(e.target.value);
-    setVolume(newVolume);
+    // Ensure volume is properly clamped and update immediately
+    const clampedVolume = Math.max(0, Math.min(100, newVolume));
+    setVolume(clampedVolume);
+  };
+
+  // Enhanced volume handlers for better mobile support
+  const handleVolumeMouseDown = (e: React.MouseEvent<HTMLInputElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    // Cleanup previous listeners
+    if (progressEventRef.current.mouseMoveHandler) {
+      document.removeEventListener('mousemove', progressEventRef.current.mouseMoveHandler);
+    }
+    if (progressEventRef.current.mouseUpHandler) {
+      document.removeEventListener('mouseup', progressEventRef.current.mouseUpHandler);
+    }
+    
+    const input = e.target as HTMLInputElement;
+    const rect = input.getBoundingClientRect();
+    
+    // Calculate initial position
+    const initialPercent = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+    const initialVolume = initialPercent * 100;
+    setVolume(initialVolume);
+    
+    const handleMouseMove = (moveEvent: MouseEvent) => {
+      const percent = Math.max(0, Math.min(1, (moveEvent.clientX - rect.left) / rect.width));
+      const newVolume = percent * 100;
+      setVolume(newVolume);
+    };
+
+    const handleMouseUp = () => {
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+      // Clear refs
+      progressEventRef.current.mouseMoveHandler = undefined;
+      progressEventRef.current.mouseUpHandler = undefined;
+    };
+
+    // Store refs for cleanup
+    progressEventRef.current.mouseMoveHandler = handleMouseMove;
+    progressEventRef.current.mouseUpHandler = handleMouseUp;
+    
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseup', handleMouseUp);
+  };
+
+  const handleVolumeTouchStart = (e: React.TouchEvent<HTMLInputElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const input = e.target as HTMLInputElement;
+    const rect = input.getBoundingClientRect();
+    
+    // Cleanup previous listeners
+    if (progressEventRef.current.touchMoveHandler) {
+      document.removeEventListener('touchmove', progressEventRef.current.touchMoveHandler);
+    }
+    if (progressEventRef.current.touchEndHandler) {
+      document.removeEventListener('touchend', progressEventRef.current.touchEndHandler);
+    }
+    
+    // Calculate initial touch position
+    if (e.touches.length > 0) {
+      const touch = e.touches[0];
+      const initialPercent = Math.max(0, Math.min(1, (touch.clientX - rect.left) / rect.width));
+      const initialVolume = initialPercent * 100;
+      setVolume(initialVolume);
+    }
+    
+    const handleTouchMove = (moveEvent: TouchEvent) => {
+      if (moveEvent.touches.length > 0) {
+        const touch = moveEvent.touches[0];
+        const percent = Math.max(0, Math.min(1, (touch.clientX - rect.left) / rect.width));
+        const newVolume = percent * 100;
+        setVolume(newVolume);
+      }
+    };
+
+    const handleTouchEnd = () => {
+      document.removeEventListener('touchmove', handleTouchMove);
+      document.removeEventListener('touchend', handleTouchEnd);
+      // Clear refs
+      progressEventRef.current.touchMoveHandler = undefined;
+      progressEventRef.current.touchEndHandler = undefined;
+    };
+
+    // Store refs for cleanup
+    progressEventRef.current.touchMoveHandler = handleTouchMove;
+    progressEventRef.current.touchEndHandler = handleTouchEnd;
+    
+    document.addEventListener('touchmove', handleTouchMove, { passive: false });
+    document.addEventListener('touchend', handleTouchEnd);
   };
 
   const handleSkipBackward = () => {
@@ -384,9 +588,9 @@ export const YouTubePlayer: React.FC<YouTubePlayerProps> = ({
           </button>
         )}
 
-        {/* Custom Controls Overlay */}
+        {/* Custom Controls Overlay with Glass Effect */}
         {showControls && isReady && showUI && (
-          <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 via-black/60 to-transparent p-4 transition-opacity duration-300">
+          <div className="absolute bottom-0 left-0 right-0 glass-morphism-dark p-4 transition-all duration-300">
             {/* Progress Bar */}
             <div className="mb-3">
               <input
@@ -395,10 +599,12 @@ export const YouTubePlayer: React.FC<YouTubePlayerProps> = ({
                 max={duration || 100}
                 value={currentTime}
                 onChange={handleProgressChange}
-                className="w-full h-1 bg-gray-600 rounded-lg appearance-none cursor-pointer slider-thumb"
+                onMouseDown={handleProgressMouseDown}
+                onTouchStart={handleProgressTouchStart}
+                className="w-full h-2 rounded-lg appearance-none cursor-pointer slider-thumb progress-bar glass-slider"
                 style={{
-                  background: `linear-gradient(to right, #ef4444 0%, #ef4444 ${progressPercentage}%, #4b5563 ${progressPercentage}%, #4b5563 100%)`,
-                }}
+                  '--progress': `${progressPercentage}%`
+                } as React.CSSProperties}
               />
               <div className="flex justify-between text-xs text-white/80 mt-1">
                 <span>{formatTime(currentTime)}</span>
@@ -412,7 +618,7 @@ export const YouTubePlayer: React.FC<YouTubePlayerProps> = ({
                 {/* Play/Pause Button */}
                 <button
                   onClick={togglePlayPause}
-                  className="p-2 rounded-full bg-primary hover:bg-primary/80 transition-colors"
+                  className="p-3 glass-button control-button"
                   aria-label={isPlaying ? 'Pause' : 'Play'}
                 >
                   {isPlaying ? (
@@ -425,7 +631,7 @@ export const YouTubePlayer: React.FC<YouTubePlayerProps> = ({
                 {/* Skip Backward */}
                 <button
                   onClick={handleSkipBackward}
-                  className="p-2 rounded-full hover:bg-white/10 transition-colors"
+                  className="p-2 glass-button control-button"
                   aria-label="Skip backward 10 seconds"
                 >
                   <SkipBack className="w-5 h-5 text-white" />
@@ -434,7 +640,7 @@ export const YouTubePlayer: React.FC<YouTubePlayerProps> = ({
                 {/* Skip Forward */}
                 <button
                   onClick={handleSkipForward}
-                  className="p-2 rounded-full hover:bg-white/10 transition-colors"
+                  className="p-2 glass-button control-button"
                   aria-label="Skip forward 10 seconds"
                 >
                   <SkipForward className="w-5 h-5 text-white" />
@@ -444,7 +650,7 @@ export const YouTubePlayer: React.FC<YouTubePlayerProps> = ({
                 <div className="flex items-center gap-2 group">
                   <button
                     onClick={toggleMute}
-                    className="p-2 rounded-full hover:bg-white/10 transition-colors"
+                    className="p-2 glass-button control-button"
                     aria-label={isMuted ? 'Unmute' : 'Mute'}
                   >
                     {isMuted ? (
@@ -459,10 +665,12 @@ export const YouTubePlayer: React.FC<YouTubePlayerProps> = ({
                     max="100"
                     value={isMuted ? 0 : volume}
                     onChange={handleVolumeChange}
-                    className="w-0 group-hover:w-20 transition-all duration-300 h-1 bg-gray-600 rounded-lg appearance-none cursor-pointer"
+                    onMouseDown={handleVolumeMouseDown}
+                    onTouchStart={handleVolumeTouchStart}
+                    className="w-0 group-hover:w-28 transition-all duration-300 h-2 rounded-lg appearance-none cursor-pointer slider-thumb volume-slider glass-slider"
                     style={{
-                      background: `linear-gradient(to right, #ef4444 0%, #ef4444 ${volume}%, #4b5563 ${volume}%, #4b5563 100%)`,
-                    }}
+                      '--progress': `${volume}%`
+                    } as React.CSSProperties}
                   />
                 </div>
               </div>
@@ -476,7 +684,7 @@ export const YouTubePlayer: React.FC<YouTubePlayerProps> = ({
                       e.stopPropagation();
                       setShowQualityMenu(!showQualityMenu);
                     }}
-                    className="p-2 rounded-full hover:bg-white/5 transition-all"
+                    className="p-2 glass-button control-button"
                     aria-label="Chất lượng video"
                   >
                     <Settings className="w-5 h-5 text-white/80 hover:text-white transition-colors" />
@@ -485,7 +693,7 @@ export const YouTubePlayer: React.FC<YouTubePlayerProps> = ({
                   {/* Quality Menu Dropdown */}
                   {showQualityMenu && (
                     <div 
-                      className="absolute bottom-full right-0 mb-2 bg-black/95 backdrop-blur-sm rounded-lg shadow-xl overflow-hidden min-w-[140px] border border-white/10 z-[100]"
+                      className="absolute bottom-full right-0 mb-2 glass-morphism rounded-lg shadow-2xl overflow-hidden min-w-[140px] z-[100]"
                       onClick={(e) => e.stopPropagation()}
                     >
                       <div className="px-3 py-2 border-b border-white/10 text-xs text-white/60 font-semibold">
