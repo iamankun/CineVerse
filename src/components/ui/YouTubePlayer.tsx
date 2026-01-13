@@ -570,7 +570,7 @@ export const YouTubePlayer: React.FC<YouTubePlayerProps> = ({
         {showSkipIntro && (
           <button
             onClick={handleSkipIntro}
-            className="absolute bottom-20 right-4 px-4 py-2 bg-white/90 hover:bg-white hover:scale-105 text-black font-semibold rounded-md transition-all duration-300 flex items-center gap-2 shadow-lg z-50 animate-[slideInRight_0.3s_ease-out,pulse_2s_ease-in-out_infinite]"
+            className="absolute bottom-32 right-4 px-4 py-2 border-2 border-white/90 hover:border-white hover:scale-105 text-white font-semibold rounded-full transition-all duration-300 flex items-center gap-2 z-50 animate-[slideInRight_0.3s_ease-out,pulse_2s_ease-in-out_infinite]"
           >
             <FastForward className="w-4 h-4" />
             Bỏ qua giới thiệu
@@ -581,7 +581,7 @@ export const YouTubePlayer: React.FC<YouTubePlayerProps> = ({
         {showNextEpisode && onNextEpisode && (
           <button
             onClick={handleNextEpisode}
-            className="absolute bottom-20 right-4 px-4 py-2 bg-primary hover:bg-primary/90 hover:scale-105 text-white font-semibold rounded-md transition-all duration-300 flex items-center gap-2 shadow-lg z-50 animate-[slideInRight_0.3s_ease-out,pulse_2s_ease-in-out_infinite]"
+            className="absolute bottom-32 right-4 px-4 py-2 border-2 border-primary/90 hover:border-primary hover:scale-105 text-white font-semibold rounded-full transition-all duration-300 flex items-center gap-2 z-50 animate-[slideInRight_0.3s_ease-out,pulse_2s_ease-in-out_infinite]"
           >
            Xem tập tiếp theo
             <ChevronsRight className="w-4 h-4" />
@@ -590,7 +590,7 @@ export const YouTubePlayer: React.FC<YouTubePlayerProps> = ({
 
         {/* Custom Controls Overlay with Glass Effect */}
         {showControls && isReady && showUI && (
-          <div className="absolute bottom-0 left-0 right-0 glass-morphism-dark p-4 transition-all duration-300">
+          <div className="absolute bottom-0 left-0 right-0 glass-morphism p-4 transition-all duration-300">
             {/* Progress Bar */}
             <div className="mb-3">
               <input
