@@ -29,7 +29,7 @@ const tmdbFetch = async (endpoint: string, params: Record<string, any> = {}) => 
     );
     return await response.json();
   } catch (error) {
-    console.error('Error fetching from TMDB:', error);
+    console.error('Lỗi khi tải dữ liệu từ TMDB:', error);
     throw error;
   }
 };
@@ -50,7 +50,7 @@ export const getMovieDetailsInVietnamese = async (movieId: number, append_to_res
     );
     return await response.json();
   } catch (error) {
-    console.error('Error fetching movie details:', error);
+    console.error('Lỗi khi tải chi tiết phim:', error);
     throw error;
   }
 };

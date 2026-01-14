@@ -12,8 +12,8 @@ async function main() {
   }
 
   console.log();
-  console.log('Token usage:', await result.usage);
-  console.log('Finish reason:', await result.finishReason);
+  console.log(' Số token đã sử dụng:', await result.usage);
+  console.log('Lý do kết thúc:', await result.finishReason);
 }
 
 main().catch(console.error);

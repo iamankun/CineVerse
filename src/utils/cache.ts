@@ -32,7 +32,7 @@ export async function clearAllCache(): Promise<{
       await Promise.all(
         registrations.map(async (registration) => {
           await registration.unregister();
-          results.push('✓ Đã gỡ đăng ký Service Worker');
+          results.push('✓ Đã gỡ đăng ký dịch vụ làm việc');
         })
       );
     }
@@ -48,32 +48,32 @@ export async function clearAllCache(): Promise<{
 
       const data = await response.json();
       if (data.success) {
-        results.push('✓ Đã làm mới cache server');
+        results.push('✓ Đã làm mới bộ nhớ máy chủ');
       }
     } catch (error) {
-      results.push('⚠ Không thể làm mới cache server');
-      console.error('Server cache clear error:', error);
+      results.push('⚠ Không thể làm mới bộ nhớ máy chủ');
+      console.error('Máy chủ bộ nhớ lỗi dọn dẹp:', error);
     }
 
     // 4. Clear localStorage và sessionStorage
     try {
       localStorage.clear();
       sessionStorage.clear();
-      results.push('✓ Đã xóa dữ liệu local storage');
+      results.push('✓ Đã xóa dữ liệu bộ nhớ trên thiết bị của bạn');
     } catch (error) {
-      console.error('Storage clear error:', error);
+      console.error('Lỗi khi xóa dữ liệu bộ nhớ trên thiết bị của bạn:', error);
     }
 
     return {
       success: true,
-      message: 'Đã làm mới toàn bộ cache thành công!',
+      message: 'Đã làm mới toàn bộ bộ nhớ đệm thành công!',
       details: results,
     };
   } catch (error) {
-    console.error('Cache clear error:', error);
+    console.error('Lỗi khi làm mới bộ nhớ đệm:', error);
     return {
       success: false,
-      message: 'Có lỗi khi làm mới cache',
+      message: 'Có lỗi khi làm mới bộ nhớ đệm',
       details: results,
     };
   }
@@ -101,7 +101,7 @@ export function clearBrowserStorage(): void {
     localStorage.clear();
     sessionStorage.clear();
   } catch (error) {
-    console.error('Failed to clear browser storage:', error);
+    console.error('Lỗi khi xóa dữ liệu bộ nhớ trên thiết bị của bạn:', error);
   }
 }
 
