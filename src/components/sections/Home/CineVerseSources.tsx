@@ -298,7 +298,7 @@ const CineVerseHero = () => {
                     src={getImageUrl(logoPath, "title", true)}
                     alt={title}
                     fill
-                    className="object-contain object-left transition-transform duration-500 group-hover:scale-125 group-hover:translate-x-8 group-hover:-translate-y-4"
+                    className="object-contain object-left transition-transform duration-500 ease-in-out group-hover:scale-110 group-hover:translate-x-4 group-hover:-translate-y-2 group-hover:shadow-2xl group-hover:opacity-90"
                     priority
                   />
                 </div>
