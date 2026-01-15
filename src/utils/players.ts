@@ -26,6 +26,13 @@ export const getMoviePlayers = async (
       ads: false,
     },
     {
+      title: "VidSrc (Fixed Caption)",
+      source: `https://vidsrc-embed.ru/embed/movie?tmdb=${id}&ds_lang=vi&autoplay=1&sub_url=https://raw.githubusercontent.com/cineverse/subtitles/main/movie/${id}_vi_fixed.vtt`,
+      recommended: false,
+      fast: true,
+      ads: false,
+    },
+    {
       title: "VidSrc 1",
       source: `https://vidsrc.xyz/embed/movie/${id}?ds_lang=vi&autoplay=1`,
       ads: false,
@@ -83,6 +90,13 @@ export const getTvShowPlayers = async (
       title: "VidSrc",
       source: `https://vidsrc-embed.ru/embed/tv?tmdb=${id}&season=${season}&episode=${episode}&ds_lang=vi&autoplay=1`,
       recommended: true,
+      fast: true,
+      ads: false,
+    },
+    {
+      title: "VidSrc (Fixed Caption)",
+      source: `https://vidsrc-embed.ru/embed/tv?tmdb=${id}&season=${season}&episode=${episode}&ds_lang=vi&autoplay=1&sub_url=https://raw.githubusercontent.com/cineverse/subtitles/main/tv/${id}_s${season}_e${episode}_vi_fixed.vtt`,
+      recommended: false,
       fast: true,
       ads: false,
     },
