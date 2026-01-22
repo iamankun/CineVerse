@@ -57,15 +57,23 @@ const nextConfig: NextConfig = {
   },
   // Allow unsafe-eval for development (required by some libraries like Vaul)
   async headers() {
+    const ContentSecurityPolicy = `
+      default-src 'self';
+      script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.youtube.com https://vidsrc-embed.ru https://vidsrc.xyz https://vidsrc.to https://vidsrc.icu https://vidsrc.cc https://www.dailymotion.com https://www.dailymotion.net https://www.dailymotion.fr https://va.vercel-scripts.com https://geo.dailymotion.com vercel.live *.vercel.live *.vercel.app;
+      style-src 'self' 'unsafe-inline' fonts.googleapis.com;
+      img-src 'self' data: https: blob:;
+      font-src 'self' fonts.gstatic.com;
+      connect-src 'self' https://live.fptplay53.net https://ott1.nethubtv.vn *.vercel.live *.vercel.app blob:;
+      media-src 'self' blob: https://live.fptplay53.net https://ott1.nethubtv.vn;
+      frame-src 'self' https://www.youtube.com https://vidsrc-embed.ru https://vidsrc.xyz https://vidsrc.to https://vidsrc.icu https://vidsrc.cc https://www.dailymotion.com https://www.dailymotion.net https://www.dailymotion.fr https://va.vercel-scripts.com https://geo.dailymotion.com;
+    `;
     return [
       {
         source: '/:path*',
         headers: [
           {
             key: 'Content-Security-Policy',
-            value: process.env.NODE_ENV === 'development'
-              ? "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://www.youtube.com https://vidsrc-embed.ru https://vidsrc.xyz https://vidsrc.to https://vidsrc.icu https://vidsrc.cc https://www.dailymotion.com https://www.dailymotion.net https://www.dailymotion.fr https://va.vercel-scripts.com https://geo.dailymotion.com; frame-src https://www.youtube.com https://vidsrc-embed.ru https://vidsrc.xyz https://vidsrc.to https://vidsrc.icu https://vidsrc.cc https://www.dailymotion.com https://www.dailymotion.net https://www.dailymotion.fr https://va.vercel-scripts.com https://geo.dailymotion.com;"
-              : "script-src 'self' 'unsafe-inline' https://www.youtube.com https://vidsrc-embed.ru https://vidsrc.xyz https://vidsrc.to https://vidsrc.icu https://vidsrc.cc https://www.dailymotion.com https://www.dailymotion.net https://www.dailymotion.fr https://va.vercel-scripts.com https://geo.dailymotion.com; frame-src https://www.youtube.com https://vidsrc-embed.ru https://vidsrc.xyz https://vidsrc.to https://vidsrc.icu https://vidsrc.cc https://www.dailymotion.com https://www.dailymotion.net https://www.dailymotion.fr https://va.vercel-scripts.com https://geo.dailymotion.com;",
+            value: ContentSecurityPolicy.replace(/\n/g, ''),
           },
         ],
       },
