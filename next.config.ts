@@ -59,11 +59,11 @@ const nextConfig: NextConfig = {
   async headers() {
     const ContentSecurityPolicy = `
       default-src 'self';
-      script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.youtube.com https://vidsrc-embed.ru https://vidsrc.xyz https://vidsrc.to https://vidsrc.icu https://vidsrc.cc https://www.dailymotion.com https://www.dailymotion.net https://www.dailymotion.fr https://va.vercel-scripts.com https://geo.dailymotion.com vercel.live *.vercel.live *.vercel.app;
+      script-src 'self' 'unsafe-inline' https://www.youtube.com https://vidsrc-embed.ru https://vidsrc.xyz https://vidsrc.to https://vidsrc.icu https://vidsrc.cc https://www.dailymotion.com https://www.dailymotion.net https://www.dailymotion.fr https://va.vercel-scripts.com https://geo.dailymotion.com vercel.live *.vercel.live *.vercel.app;
       style-src 'self' 'unsafe-inline' fonts.googleapis.com;
-      img-src 'self' data: https: blob:;
+      img-src 'self' data: https: blob: https://image.tmdb.org https://api.themoviedb.org;
       font-src 'self' fonts.gstatic.com;
-      connect-src 'self' https://live.fptplay53.net https://ott1.nethubtv.vn *.vercel.live *.vercel.app blob:;
+      connect-src 'self' https://live.fptplay53.net https://ott1.nethubtv.vn *.vercel.live *.vercel.app blob: https://api.themoviedb.org https://api.iconify.design https://api.simplesvg.com https://api.unisvg.com;
       media-src 'self' blob: https://live.fptplay53.net https://ott1.nethubtv.vn;
       frame-src 'self' https://www.youtube.com https://vidsrc-embed.ru https://vidsrc.xyz https://vidsrc.to https://vidsrc.icu https://vidsrc.cc https://www.dailymotion.com https://www.dailymotion.net https://www.dailymotion.fr https://va.vercel-scripts.com https://geo.dailymotion.com;
     `;
