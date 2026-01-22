@@ -1,0 +1,22 @@
+[
+  {
+    "id": "ANTV",
+    "name": "An Ninh TV",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/a/a8/Logoantv.png",
+    "url": "https://ott1.nethubtv.vn/live/antv/playlist.m3u8",
+    "type": "m3u8",
+    "category": "Tin Tức",
+    "country": "VN",
+    "quality": "HD"
+  },
+  {
+    "id": "HTV3",
+    "name": "HTV3",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/6/65/HTV3-2018.png",
+    "url": "https://live.fptplay53.net/epzhd1/htv3_hls.smil/chunklist.m3u8",
+    "type": "m3u8",
+    "category": "Kênh chiếu lại HTV7",
+    "country": "VN",
+    "quality": "HD"
+  }
+]
