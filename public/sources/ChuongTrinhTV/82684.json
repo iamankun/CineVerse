@@ -541,7 +541,15 @@
             "language": "vi",
             "subtitles": [
               "vi"
-            ]
+            ],
+            "intro": {
+              "start": 275,
+              "end": 365
+            },
+            "outro": {
+              "start": 1326,
+              "end": 1423
+            }
           }
         ]
       },
@@ -555,7 +563,15 @@
             "language": "vi",
             "subtitles": [
               "vi"
-            ]
+            ],
+            "intro": {
+              "start": 41,
+              "end": 132
+            },
+            "outro": {
+              "start": 1326,
+              "end": 1423
+            }
           }
         ]
       },
@@ -569,7 +585,15 @@
             "language": "vi",
             "subtitles": [
               "vi"
-            ]
+            ],
+            "intro": {
+              "start": 15,
+              "end": 105
+            },
+            "outro": {
+              "start": 1326,
+              "end": 1423
+            }
           }
         ]
       },
@@ -583,7 +607,15 @@
             "language": "vi",
             "subtitles": [
               "vi"
-            ]
+            ],
+            "intro": {
+              "start": 136,
+              "end": 226
+            },
+            "outro": {
+              "start": 1326,
+              "end": 1422
+            }
           }
         ]
       },
@@ -597,7 +629,15 @@
             "language": "vi",
             "subtitles": [
               "vi"
-            ]
+            ],
+            "intro": {
+              "start": 88,
+              "end": 178
+            },
+            "outro": {
+              "start": 1326,
+              "end": 1422
+            }
           }
         ]
       },
@@ -611,7 +651,15 @@
             "language": "vi",
             "subtitles": [
               "vi"
-            ]
+            ],
+            "outro": {
+              "start": 1326,
+              "end": 1423
+            },
+            "intro": {
+              "start": 0,
+              "end": 91
+            }
           }
         ]
       },
@@ -625,7 +673,15 @@
             "language": "vi",
             "subtitles": [
               "vi"
-            ]
+            ],
+            "outro": {
+              "start": 1324,
+              "end": 1423
+            },
+            "intro": {
+              "start": 18,
+              "end": 108
+            }
           }
         ]
       },
@@ -639,7 +695,15 @@
             "language": "vi",
             "subtitles": [
               "vi"
-            ]
+            ],
+            "outro": {
+              "start": 1324,
+              "end": 1422
+            },
+            "intro": {
+              "start": 136,
+              "end": 226
+            }
           }
         ]
       },
@@ -653,7 +717,15 @@
             "language": "vi",
             "subtitles": [
               "vi"
-            ]
+            ],
+            "outro": {
+              "start": 1323,
+              "end": 1423
+            },
+            "intro": {
+              "start": 15,
+              "end": 107
+            }
           }
         ]
       },
@@ -667,7 +739,15 @@
             "language": "vi",
             "subtitles": [
               "vi"
-            ]
+            ],
+            "outro": {
+              "start": 1411,
+              "end": 1428
+            },
+            "intro": {
+              "start": 87,
+              "end": 180
+            }
           }
         ]
       },
@@ -681,7 +761,11 @@
             "language": "vi",
             "subtitles": [
               "vi"
-            ]
+            ],
+            "outro": {
+              "start": 1416,
+              "end": 1423
+            }
           }
         ]
       },
@@ -695,7 +779,15 @@
             "language": "vi",
             "subtitles": [
               "vi"
-            ]
+            ],
+            "outro": {
+              "start": 1326,
+              "end": 1417
+            },
+            "intro": {
+              "start": 52,
+              "end": 144
+            }
           }
         ]
       },
@@ -709,7 +801,15 @@
             "language": "vi",
             "subtitles": [
               "vi"
-            ]
+            ],
+            "outro": {
+              "start": 1326,
+              "end": 1423
+            },
+            "intro": {
+              "start": 134,
+              "end": 224
+            }
           }
         ]
       },
@@ -723,7 +823,15 @@
             "language": "vi",
             "subtitles": [
               "vi"
-            ]
+            ],
+            "outro": {
+              "start": 1325,
+              "end": 1423
+            },
+            "intro": {
+              "start": 48,
+              "end": 138
+            }
           }
         ]
       },
@@ -737,7 +845,15 @@
             "language": "vi",
             "subtitles": [
               "vi"
-            ]
+            ],
+            "outro": {
+              "start": 1326,
+              "end": 1423
+            },
+            "intro": {
+              "start": 127,
+              "end": 218
+            }
           }
         ]
       },
@@ -751,7 +867,15 @@
             "language": "vi",
             "subtitles": [
               "vi"
-            ]
+            ],
+            "outro": {
+              "start": 1322,
+              "end": 1422
+            },
+            "intro": {
+              "start": 100,
+              "end": 193
+            }
           }
         ]
       },
@@ -765,7 +889,15 @@
             "language": "vi",
             "subtitles": [
               "vi"
-            ]
+            ],
+            "outro": {
+              "start": 1326,
+              "end": 1423
+            },
+            "intro": {
+              "start": 24,
+              "end": 114
+            }
           }
         ]
       },
@@ -779,7 +911,15 @@
             "language": "vi",
             "subtitles": [
               "vi"
-            ]
+            ],
+            "outro": {
+              "start": 1326,
+              "end": 1423
+            },
+            "intro": {
+              "start": 89,
+              "end": 179
+            }
           }
         ]
       },
@@ -793,7 +933,15 @@
             "language": "vi",
             "subtitles": [
               "vi"
-            ]
+            ],
+            "outro": {
+              "start": 1324,
+              "end": 1423
+            },
+            "intro": {
+              "start": 112,
+              "end": 205
+            }
           }
         ]
       },
@@ -807,7 +955,15 @@
             "language": "vi",
             "subtitles": [
               "vi"
-            ]
+            ],
+            "outro": {
+              "start": 0,
+              "end": 1422
+            },
+            "intro": {
+              "start": 0,
+              "end": 91
+            }
           }
         ]
       },
@@ -821,7 +977,15 @@
             "language": "vi",
             "subtitles": [
               "vi"
-            ]
+            ],
+            "outro": {
+              "start": 1415,
+              "end": 1422
+            },
+            "intro": {
+              "start": 279,
+              "end": 370
+            }
           }
         ]
       },
@@ -835,7 +999,11 @@
             "language": "vi",
             "subtitles": [
               "vi"
-            ]
+            ],
+            "outro": {
+              "start": 1324,
+              "end": 1423
+            }
           }
         ]
       },
@@ -849,7 +1017,15 @@
             "language": "vi",
             "subtitles": [
               "vi"
-            ]
+            ],
+            "outro": {
+              "start": 1412,
+              "end": 1422
+            },
+            "intro": {
+              "start": 0,
+              "end": 91
+            }
           }
         ]
       },
@@ -863,7 +1039,11 @@
             "language": "vi",
             "subtitles": [
               "vi"
-            ]
+            ],
+            "outro": {
+              "start": 0,
+              "end": 1418
+            }
           }
         ]
       }
@@ -1210,7 +1390,7 @@
   "metadata": {
     "movie-rating": "T13",
     "audioVersion": "LongTieng",
-    "lastUpdate": "2026-01-12T13:10:27.651Z",
+    "lastUpdate": "2026-01-24T15:35:26.080Z",
     "studio": "8bit",
     "genre": [
       "Fantasy",
