@@ -14,7 +14,11 @@
             "language": "vi",
             "subtitles": [
               "vi"
-            ]
+            ],
+            "intro": {
+              "start": 0,
+              "end": 40
+            }
           }
         ]
       },
@@ -28,7 +32,11 @@
             "language": "vi",
             "subtitles": [
               "vi"
-            ]
+            ],
+            "intro": {
+              "start": 0,
+              "end": 40
+            }
           }
         ]
       },
@@ -42,7 +50,11 @@
             "language": "vi",
             "subtitles": [
               "vi"
-            ]
+            ],
+            "intro": {
+              "start": 0,
+              "end": 39
+            }
           }
         ]
       },
@@ -56,7 +68,11 @@
             "language": "vi",
             "subtitles": [
               "vi"
-            ]
+            ],
+            "intro": {
+              "start": -1,
+              "end": 40
+            }
           }
         ]
       },
@@ -70,7 +86,119 @@
             "language": "vi",
             "subtitles": [
               "vi"
-            ]
+            ],
+            "intro": {
+              "start": 0,
+              "end": 40
+            }
+          }
+        ]
+      },
+      "6": {
+        "title": "Tập 6",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "A.I LÀ AI?",
+            "url": "https://www.youtube.com/watch?v=vvO9OyfmvdA&list=PL66JnDyk2r_B3554uriM8-Mx-Mh4_P7ds&index=6&pp=iAQB",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ],
+            "intro": {
+              "start": 0,
+              "end": 39
+            }
+          }
+        ]
+      },
+      "7": {
+        "title": "Tập 7",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "A.I LÀ AI?",
+            "url": "https://www.youtube.com/watch?v=bzKBP8-nKTA&list=PL66JnDyk2r_B3554uriM8-Mx-Mh4_P7ds&index=7&pp=iAQB2AbYIQ%3D%3D",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ],
+            "intro": {
+              "start": 0,
+              "end": 39
+            }
+          }
+        ]
+      },
+      "8": {
+        "title": "Tập 8",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "A.I LÀ AI?",
+            "url": "https://www.youtube.com/watch?v=VsyubDt8QHY&list=PL66JnDyk2r_B3554uriM8-Mx-Mh4_P7ds&index=8&pp=iAQB2AbkFw%3D%3D",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ],
+            "intro": {
+              "start": 0,
+              "end": 39
+            }
+          }
+        ]
+      },
+      "9": {
+        "title": "Tập 9",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "A.I LÀ AI?",
+            "url": "https://www.youtube.com/watch?v=yWE1IgJae38&list=PL66JnDyk2r_B3554uriM8-Mx-Mh4_P7ds&index=9&pp=iAQB2AaCGw%3D%3D",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ],
+            "intro": {
+              "start": 0,
+              "end": 39
+            }
+          }
+        ]
+      },
+      "10": {
+        "title": "Tập 10",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "A.I LÀ AI?",
+            "url": "https://www.youtube.com/watch?v=T5d3OR8Unns&list=PL66JnDyk2r_B3554uriM8-Mx-Mh4_P7ds&index=10&pp=iAQB2Aa0Fg%3D%3D",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ],
+            "intro": {
+              "start": 0,
+              "end": 40
+            }
+          }
+        ]
+      },
+      "11": {
+        "title": "Tập Đặc Biệt",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "A.I LÀ AI?",
+            "url": "https://www.youtube.com/watch?v=cxcXtuq3Q2A&list=PL66JnDyk2r_B3554uriM8-Mx-Mh4_P7ds&index=11&pp=iAQB2AYC",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ],
+            "intro": {
+              "start": 0,
+              "end": 40
+            }
           }
         ]
       }
@@ -79,13 +207,13 @@
   "metadata": {
     "movie-rating": "P",
     "audioVersion": "Goc",
-    "lastUpdate": "2025-11-25T04:14:13.909Z",
+    "lastUpdate": "2026-01-24T15:15:29.226Z",
     "genre": [],
     "duration": 75,
     "status": "Returning Series",
     "note": "",
     "studio": "",
-    "totalEpisodes": 5,
+    "totalEpisodes": 11,
     "totalSeasons": 1
   }
 }
