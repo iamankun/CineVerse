@@ -14,7 +14,11 @@
             "language": "vi",
             "subtitles": [
               "vi"
-            ]
+            ],
+            "outro": {
+              "start": 1380,
+              "end": 1435
+            }
           }
         ]
       },
@@ -28,7 +32,11 @@
             "language": "vi",
             "subtitles": [
               "vi"
-            ]
+            ],
+            "outro": {
+              "start": 1295,
+              "end": 1345
+            }
           }
         ]
       },
@@ -42,7 +50,11 @@
             "language": "vi",
             "subtitles": [
               "vi"
-            ]
+            ],
+            "outro": {
+              "start": 1204,
+              "end": 1345
+            }
           }
         ]
       },
@@ -56,7 +68,11 @@
             "language": "vi",
             "subtitles": [
               "vi"
-            ]
+            ],
+            "outro": {
+              "start": 1191,
+              "end": 1345
+            }
           }
         ]
       },
@@ -70,7 +86,11 @@
             "language": "vi",
             "subtitles": [
               "vi"
-            ]
+            ],
+            "outro": {
+              "start": 1286,
+              "end": 1345
+            }
           }
         ]
       },
@@ -84,7 +104,11 @@
             "language": "vi",
             "subtitles": [
               "vi"
-            ]
+            ],
+            "outro": {
+              "start": 1126,
+              "end": 1345
+            }
           }
         ]
       },
@@ -98,7 +122,11 @@
             "language": "vi",
             "subtitles": [
               "vi"
-            ]
+            ],
+            "outro": {
+              "start": 1206,
+              "end": 1345
+            }
           }
         ]
       },
@@ -112,7 +140,11 @@
             "language": "vi",
             "subtitles": [
               "vi"
-            ]
+            ],
+            "outro": {
+              "start": 1214,
+              "end": 1345
+            }
           }
         ]
       },
@@ -126,7 +158,11 @@
             "language": "vi",
             "subtitles": [
               "vi"
-            ]
+            ],
+            "outro": {
+              "start": 1194,
+              "end": 1345
+            }
           }
         ]
       },
@@ -140,7 +176,11 @@
             "language": "vi",
             "subtitles": [
               "vi"
-            ]
+            ],
+            "outro": {
+              "start": 1244,
+              "end": 1345
+            }
           }
         ]
       },
@@ -154,7 +194,11 @@
             "language": "vi",
             "subtitles": [
               "vi"
-            ]
+            ],
+            "outro": {
+              "start": 1185,
+              "end": 1346
+            }
           }
         ]
       },
@@ -297,7 +341,7 @@
   "metadata": {
     "movie-rating": "P",
     "audioVersion": "LongTieng",
-    "lastUpdate": "2025-11-21T02:55:09.502Z",
+    "lastUpdate": "2026-01-25T14:31:40.589Z",
     "genre": [
       "Phim Hoạt Hình",
       "Action & Adventure",
