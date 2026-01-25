@@ -224,11 +224,19 @@
           {
             "provider": "youtube",
             "title": "Ẩm thực dã ngoại tại dị giới với kỹ năng không tưởng",
-            "url": "https://www.youtube.com/watch?v=oepr0jkWv4Y&pp=ygUy4bqpbSB0aOG7sWMgZMOjIG5nb-G6oWkgdOG6oWkgZOG7iyBnaeG7m2kgdOG6rXAgMTM%3D",
+            "url": "https://www.youtube.com/watch?v=V0jI_0EjGKk",
             "language": "vi",
             "subtitles": [
               "vi"
-            ]
+            ],
+            "intro": {
+              "start": 375,
+              "end": 465
+            },
+            "outro": {
+              "start": 1324,
+              "end": 1436
+            }
           }
         ]
       },
@@ -238,11 +246,19 @@
           {
             "provider": "youtube",
             "title": "Ẩm thực dã ngoại tại dị giới với kỹ năng không tưởng",
-            "url": "https://www.youtube.com/watch?v=Hzk5tNMBxuk&pp=ygUy4bqpbSB0aOG7sWMgZMOjIG5nb-G6oWkgdOG6oWkgZOG7iyBnaeG7m2kgdOG6rXAgMTQ%3D",
+            "url": "https://www.youtube.com/watch?v=yzQwX3aSd04",
             "language": "vi",
             "subtitles": [
               "vi"
-            ]
+            ],
+            "intro": {
+              "start": 143,
+              "end": 233
+            },
+            "outro": {
+              "start": 1317,
+              "end": 1436
+            }
           }
         ]
       },
@@ -252,11 +268,19 @@
           {
             "provider": "youtube",
             "title": "Ẩm thực dã ngoại tại dị giới với kỹ năng không tưởng",
-            "url": "https://www.youtube.com/watch?v=utoGoEO90Oo&pp=ygUy4bqpbSB0aOG7sWMgZMOjIG5nb-G6oWkgdOG6oWkgZOG7iyBnaeG7m2kgdOG6rXAgMTQ%3D",
+            "url": "https://www.youtube.com/watch?v=IxQE-7iwjoQ",
             "language": "vi",
             "subtitles": [
               "vi"
-            ]
+            ],
+            "intro": {
+              "start": 163,
+              "end": 254
+            },
+            "outro": {
+              "start": 1292,
+              "end": 1435
+            }
           }
         ]
       },
@@ -341,7 +365,7 @@
   "metadata": {
     "movie-rating": "P",
     "audioVersion": "LongTieng",
-    "lastUpdate": "2026-01-25T14:31:40.589Z",
+    "lastUpdate": "2026-01-25T14:35:14.768Z",
     "genre": [
       "Phim Hoạt Hình",
       "Action & Adventure",
