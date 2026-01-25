@@ -14,7 +14,7 @@
   },
   "brandLogo": {
     "alwaysVisible": true,
-    "logoPath": null,
+    "logoPath": "/logo-cineverse.png",
     "scale": 1.5,
     "description": "CineVerse Logo - logoPath: nếu không dùng logo mặc định, hoặc đường dẫn tùy chỉnh"
   },

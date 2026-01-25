@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useId } from 'react';
+import Link from "next/link";
 import { useYouTubePlayer, PlayerState } from '@/hooks/useYouTubePlayer';
 import {
   Play,
@@ -593,13 +594,25 @@ export const YouTubePlayer: React.FC<YouTubePlayerProps> = ({
 
         {/* Next Episode Button */}
         {showNextEpisode && (nextEpisodeNumber || onNextEpisode) && (
-          <button
-            onClick={handleNextEpisode}
-            className="absolute bottom-32 right-4 px-4 py-2 border-2 border-primary/90 hover:border-primary hover:scale-105 text-white font-semibold rounded-full transition-all duration-300 flex items-center gap-2 z-50 animate-[slideInRight_0.3s_ease-out,pulse_2s_ease-in-out_infinite]"
-          >
-           Xem tập tiếp theo
-            <ChevronsRight className="w-4 h-4" />
-          </button>
+          <>
+            {id && seasonNumber && nextEpisodeNumber && selectedSource !== undefined ? (
+              <Link
+                href={`/tv/${id}/${seasonNumber}/${nextEpisodeNumber}/player?src=${selectedSource}`}
+                className="absolute bottom-32 right-4 px-4 py-2 border-2 border-primary/90 hover:border-primary hover:scale-105 text-white font-semibold rounded-full transition-all duration-300 flex items-center gap-2 z-50 animate-[slideInRight_0.3s_ease-out,pulse_2s_ease-in-out_infinite]"
+              >
+                Xem tập tiếp theo
+                <ChevronsRight className="w-4 h-4" />
+              </Link>
+            ) : (
+              <button
+                onClick={onNextEpisode}
+                className="absolute bottom-32 right-4 px-4 py-2 border-2 border-primary/90 hover:border-primary hover:scale-105 text-white font-semibold rounded-full transition-all duration-300 flex items-center gap-2 z-50 animate-[slideInRight_0.3s_ease-out,pulse_2s_ease-in-out_infinite]"
+              >
+                Xem tập tiếp theo
+                <ChevronsRight className="w-4 h-4" />
+              </button>
+            )}
+          </>
         )}
 
         {/* Custom Controls Overlay with Glass Effect */}
