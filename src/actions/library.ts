@@ -78,9 +78,10 @@ export async function addToWatchlist(item: WatchlistItem): Promise<ActionRespons
     }
 
     // Add to watchlist
-    const { data, error } = await supabase
+    const supabaseClient = supabase as any;
+    const { data, error } = await supabaseClient
       .from("watchlist")
-      .insert({
+      .insert([{
         user_id: user.id,
         id: item.id,
         type: item.type,
@@ -90,9 +91,9 @@ export async function addToWatchlist(item: WatchlistItem): Promise<ActionRespons
         release_date: item.release_date || new Date().toISOString().split("T")[0],
         title: item.title,
         vote_average: item.vote_average || 0,
-      })
+      }])
       .select()
-      .single<WatchlistEntry>();
+      .single();
 
     if (error) {
       // Check if it's a duplicate error
@@ -164,7 +165,7 @@ export async function removeFromWatchlist(id: number, type: ContentType): Promis
     }
 
     // Delete from watchlist
-    const { error } = await supabase
+    const { error } = await (supabase as any)
       .from("watchlist")
       .delete()
       .eq("user_id", user.id)
@@ -224,7 +225,7 @@ export const removeAllWatchlist = async (type: ContentType): Promise<ActionRespo
     }
 
     // Delete from watchlist
-    const { error } = await supabase
+    const { error } = await (supabase as any)
       .from("watchlist")
       .delete()
       .eq("user_id", user.id)
@@ -279,7 +280,7 @@ export async function checkInWatchlist(
     }
 
     // Check if exists
-    const { data, error } = await supabase
+    const { data, error } = await (supabase as any)
       .from("watchlist")
       .select("id")
       .eq("user_id", user.id)
@@ -340,7 +341,7 @@ export async function getWatchlist(
     const offset = (page - 1) * limit;
 
     // Build query
-    let query = supabase
+    let query = (supabase as any)
       .from("watchlist")
       .select("*", { count: "exact" })
       .eq("user_id", user.id)

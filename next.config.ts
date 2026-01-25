@@ -43,6 +43,9 @@ const nextConfig: NextConfig = {
   experimental: {
     optimizePackageImports: ["@heroui/react"],
   },
+  typescript: {
+    ignoreBuildErrors: false, // Temporarily ignore type errors for build
+  },
   webpack: (config, { isServer }) => {
     // Fix for @mediapipe/hands import issue
     if (!isServer) {

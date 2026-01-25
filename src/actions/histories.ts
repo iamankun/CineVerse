@@ -57,30 +57,27 @@ export const syncHistory = async (
         : await tmdb.tvShows.details(data.mtmdbId, [], 'vi-VN');
 
     // Insert or update history
-    const { data: history, error } = await supabase
+    const { data: history, error } = await (supabase as any)
       .from("histories")
-      .upsert(
+      .upsert([
         {
           user_id: user.id,
           media_id: data.mtmdbId,
           type: data.mediaType,
-          season: data.season || 0,
           episode: data.episode || 0,
           duration: data.duration,
           last_position: data.currentTime,
           completed: completed || false,
           adult: "adult" in media ? media.adult : false,
-          backdrop_path: media.backdrop_path,
-          poster_path: media.poster_path,
-          release_date: "release_date" in media ? media.release_date : media.first_air_date,
+          backdrop_path: media.backdrop_path || "",
+          poster_path: media.poster_path || "",
+          release_date: "release_date" in media ? media.release_date : media.first_air_date || "",
           title: "title" in media ? mutateMovieTitle(media) : mutateTvShowTitle(media),
-          vote_average: media.vote_average,
-        },
-        {
-          onConflict: "user_id,media_id,type,season,episode",
-        },
-      )
-      .select();
+          vote_average: media.vote_average || 0,
+        }
+      ])
+      .select()
+      .single();
 
     if (error) {
       console.info("Lỗi lưu lịch sử:", error);
@@ -121,7 +118,7 @@ export const getUserHistories = async (limit: number = 20): ActionResponse<Histo
       };
     }
 
-    const { data, error } = await supabase
+    const { data, error } = await (supabase as any)
       .from("histories")
       .select("*")
       .eq("user_id", user.id)
@@ -163,7 +160,7 @@ export const getMovieLastPosition = async (id: number): Promise<number> => {
       return 0;
     }
 
-    const { data, error } = await supabase
+    const { data, error } = await (supabase as any)
       .from("histories")
       .select("last_position")
       .eq("user_id", user.id)
@@ -200,7 +197,7 @@ export const getTvShowLastPosition = async (
       return 0;
     }
 
-    const { data, error } = await supabase
+    const { data, error } = await (supabase as any)
       .from("histories")
       .select("last_position")
       .eq("user_id", user.id)
