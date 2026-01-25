@@ -22,7 +22,10 @@ const ResumeCard: React.FC<ResumeCardProps> = ({ media }) => {
       return `/movie/${media.media_id}/player`;
     }
     if (media.type === "tv") {
-      return `/tv/${media.media_id}/${media.season}/${media.episode}/player`;
+      // Use season and episode from histories table or defaults
+      const season = (media as any).season || 1;
+      const episode = (media as any).episode || 1;
+      return `/tv/${media.media_id}/${season}/${episode}/player`;
     }
     return "/";
   }, [media]);
@@ -49,7 +52,7 @@ const ResumeCard: React.FC<ResumeCardProps> = ({ media }) => {
               className="absolute right-2 top-2 z-20"
               classNames={{ content: "font-bold" }}
             >
-              S{media.season} E{media.episode}
+              S{(media as any).season || 1} E{(media as any).episode || 1}
             </Chip>
           )}
           <Chip
@@ -73,7 +76,7 @@ const ResumeCard: React.FC<ResumeCardProps> = ({ media }) => {
           <div className="absolute bottom-0 z-3 flex w-full flex-col gap-1 p-3">
             <div className="grid grid-cols-[1fr_auto] items-end justify-between gap-5">
               <h6 className="truncate text-sm font-semibold">{media.title}</h6>
-              <p className="truncate text-xs">{timeAgo(media.updated_at)}</p>
+              <p className="truncate text-xs">{timeAgo((media as any).updated_at || media.created_at)}</p>
             </div>
             <div className="flex justify-between text-xs">
               <p>{releaseYear}</p>

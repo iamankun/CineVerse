@@ -37,7 +37,7 @@ const fetchUser = async (): Promise<AuthUserData | null> => {
   }
 
   if (user) {
-    const { data: username } = await supabase
+    const { data: username } = await (supabase as any)
       .from("profiles")
       .select("username")
       .eq("id", user.id)
@@ -46,7 +46,7 @@ const fetchUser = async (): Promise<AuthUserData | null> => {
     if (username) {
       AuthUser = {
         ...user,
-        username: username.username,
+        username: (username as any).username,
       };
     }
   }
