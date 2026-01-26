@@ -11,7 +11,7 @@ import { addToast, Card, CardBody, CardHeader, Spinner } from "@heroui/react";
 import { useQuery } from "@tanstack/react-query";
 import { AnimatePresence, motion } from "framer-motion";
 import { usePathname } from "next/navigation";
-import { parseAsBoolean, parseAsStringLiteral, useQueryState } from "nuqs";
+import { parseAsBoolean, parseAsString, parseAsStringLiteral, useQueryState } from "nuqs";
 import { useEffect, useMemo } from "react";
 import Image from "next/image";
 import AuthForgotPasswordForm from "./ForgotPassword";
@@ -31,6 +31,7 @@ const AuthForms: React.FC = () => {
 
   const [error, setError] = useQueryState("error", parseAsBoolean.withDefault(false));
   const [success, setSuccess] = useQueryState("success", parseAsBoolean.withDefault(false));
+  const [message, setMessage] = useQueryState("message", parseAsString.withDefault(""));
   const [form, setForm] = useQueryState(
     "form",
     parseAsStringLiteral(ValidForms).withDefault("login"),
@@ -88,6 +89,16 @@ const AuthForms: React.FC = () => {
       }, 1500);
     }
   }, [success]);
+
+  useEffect(() => {
+    if (message) {
+      addToast({
+        title: message,
+        color: "warning",
+      });
+      setMessage("");
+    }
+  }, [message]);
 
   if (isPendingMovies || isPendingTv) {
     return <Spinner size="lg" className="absolute-center" variant="simple" />;

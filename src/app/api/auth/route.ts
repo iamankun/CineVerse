@@ -8,6 +8,9 @@ export const POST = async (request: NextRequest) => {
     const { email, password, action } = body;
 
     if (!email || !password) {
+      if (body?.auth_event || body?.event_message || body?.hook) {
+        return NextResponse.json({ ok: true }, { status: 200 });
+      }
       return NextResponse.json(
         { error: "Email và mật khẩu là bắt buộc" },
         { status: 400 }
