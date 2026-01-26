@@ -1,30 +1,34 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { env } from '@/utils/env';
 
-const SUPABASE_URL = 'https://exsoflgvdreikabvhvkg.supabase.co';
+const SUPABASE_URL = env.NEXT_PUBLIC_SUPABASE_URL;
 const SUPABASE_ANON_KEY = env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
-export async function GET(request: NextRequest, context: { params: Promise<{ path: string[] }> }) {
+type RouteContext = {
+  params: Promise<{ path: string[] }>;
+};
+
+export async function GET(request: NextRequest, context: RouteContext) {
   return handleRequest(request, context);
 }
 
-export async function POST(request: NextRequest, context: { params: Promise<{ path: string[] }> }) {
+export async function POST(request: NextRequest, context: RouteContext) {
   return handleRequest(request, context);
 }
 
-export async function PUT(request: NextRequest, context: { params: Promise<{ path: string[] }> }) {
+export async function PUT(request: NextRequest, context: RouteContext) {
   return handleRequest(request, context);
 }
 
-export async function PATCH(request: NextRequest, context: { params: Promise<{ path: string[] }> }) {
+export async function PATCH(request: NextRequest, context: RouteContext) {
   return handleRequest(request, context);
 }
 
-export async function DELETE(request: NextRequest, context: { params: Promise<{ path: string[] }> }) {
+export async function DELETE(request: NextRequest, context: RouteContext) {
   return handleRequest(request, context);
 }
 
-async function handleRequest(request: NextRequest, context: { params: Promise<{ path: string[] }> }) {
+async function handleRequest(request: NextRequest, context: RouteContext) {
   const params = await context.params;
   const path = params.path.join('/');
   const url = new URL(request.url);

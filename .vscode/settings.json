@@ -4,6 +4,7 @@
   "vscode-edge-devtools.defaultUrl": "process.env.Url",
   "typescript.tsdk": "node_modules/typescript/lib",
   "cSpell.words": [
+    "apikey",
     "appinstalled",
     "bằng",
     "bảng",
