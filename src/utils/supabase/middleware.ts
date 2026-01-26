@@ -5,64 +5,38 @@ import { env } from "../env";
 const PROTECTED_PATHS = env.PROTECTED_PATHS?.split(",").filter(p => p) ?? [];
 
 export async function updateSession(request: NextRequest) {
-  let supabaseResponse = NextResponse.next({ request });
+  let response = NextResponse.next({ request });
 
   const supabase = createServerClient(
     env.NEXT_PUBLIC_SUPABASE_URL,
     env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
     {
       cookies: {
-        getAll() {
-          return request.cookies.getAll();
+        getAll: () => request.cookies.getAll(),
+        setAll: (cookiesToSet) => {
+          cookiesToSet.forEach(({ name, value, options }) => {
+            request.cookies.set(name, value);
+            response.cookies.set(name, value, options);
+          });
         },
-        setAll(cookiesToSet) {
-          cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value));
-          supabaseResponse = NextResponse.next({ request });
-          cookiesToSet.forEach(({ name, value, options }) =>
-            supabaseResponse.cookies.set(name, value, options),
-          );
-        },
-      },
-      auth: {
-        autoRefreshToken: true,
-        persistSession: true,
       },
     },
   );
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
+  const { data: { user } } = await supabase.auth.getUser();
   const pathname = request.nextUrl.pathname;
 
   // if user is not logged in and the current pathname is protected, redirect to login page
-  if (!user && PROTECTED_PATHS.some((url) => pathname.startsWith(url))) {
-    const url = request.nextUrl.clone();
-    url.pathname = "/auth";
-
-    const redirectRes = NextResponse.redirect(url);
-
-    supabaseResponse.cookies.getAll().forEach((cookie) => {
-      redirectRes.cookies.set(cookie.name, cookie.value, cookie);
-    });
-
-    return redirectRes;
+  if (!user && PROTECTED_PATHS.some((path) => pathname.startsWith(path))) {
+    const url = new URL("/auth", request.url);
+    url.searchParams.set("next", pathname);
+    return NextResponse.redirect(url);
   }
 
   // if user is logged in and the current pathname is auth, redirect to home page
   if (user && pathname === "/auth") {
-    const url = request.nextUrl.clone();
-    url.pathname = "/";
-
-    const redirectRes = NextResponse.redirect(url);
-
-    supabaseResponse.cookies.getAll().forEach((cookie) => {
-      redirectRes.cookies.set(cookie.name, cookie.value, cookie);
-    });
-
-    return redirectRes;
+    return NextResponse.redirect(new URL("/", request.url));
   }
 
-  return supabaseResponse;
+  return response;
 }

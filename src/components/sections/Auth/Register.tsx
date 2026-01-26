@@ -15,12 +15,13 @@ import GoogleLoginButton from "@/components/ui/button/GoogleLoginButton";
 const AuthRegisterForm: React.FC<AuthFormProps> = ({ setForm }) => {
   const [isVerifying, setIsVerifying] = useState(false);
 
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const {
     watch,
     register,
     setValue,
     handleSubmit,
-    formState: { errors, isSubmitting },
+    formState: { errors },
   } = useForm({
     resolver: zodResolver(RegisterFormSchema),
     mode: "onChange",
@@ -33,24 +34,34 @@ const AuthRegisterForm: React.FC<AuthFormProps> = ({ setForm }) => {
   });
 
   const onSubmit = handleSubmit(async (data) => {
-    // Only require captcha verification if site key is configured
     if (env.NEXT_PUBLIC_CAPTCHA_SITE_KEY && isEmpty(data.captchaToken)) {
       setIsVerifying(true);
       return;
     }
 
-    const { success, message } = await signUp(data);
+    setIsSubmitting(true);
+    try {
+      const { success, message } = await signUp(data);
 
-    if (!success) {
-      setValue("captchaToken", undefined);
+      addToast({
+        title: message,
+        color: success ? "success" : "danger",
+        timeout: success ? Infinity : undefined,
+      });
+
+      if (!success) {
+        setValue("captchaToken", undefined);
+      }
+    } catch (error) {
+      console.error("Lỗi đăng ký:", error);
+      addToast({
+        title: "Không thể kết nối đến máy chủ. Vui lòng thử lại.",
+        color: "danger",
+      });
+    } finally {
+      setIsSubmitting(false);
       setIsVerifying(false);
     }
-
-    return addToast({
-      title: message,
-      color: success ? "success" : "danger",
-      timeout: success ? Infinity : undefined,
-    });
   });
 
   const onCaptchaSuccess = useCallback(

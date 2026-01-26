@@ -12,7 +12,8 @@ import { useQuery } from "@tanstack/react-query";
 import { AnimatePresence, motion } from "framer-motion";
 import { usePathname } from "next/navigation";
 import { parseAsBoolean, parseAsString, parseAsStringLiteral, useQueryState } from "nuqs";
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState, useCallback } from "react";
+import { useSearchParams } from "next/navigation";
 import Image from "next/image";
 import AuthForgotPasswordForm from "./ForgotPassword";
 import AuthLoginForm from "./Login";
@@ -27,7 +28,22 @@ export interface AuthFormProps {
 
 const AuthForms: React.FC = () => {
   const pathname = usePathname();
-  const reset = pathname === "/auth/reset-password";
+  const [reset, setReset] = useState(false);
+  const searchParams = useSearchParams();
+
+  const handleHashChange = useCallback(() => {
+    if (window.location.hash.includes("type=recovery")) {
+      setReset(true);
+    }
+  }, []);
+
+  useEffect(() => {
+    handleHashChange(); // Check hash on initial load
+    window.addEventListener("hashchange", handleHashChange);
+    return () => {
+      window.removeEventListener("hashchange", handleHashChange);
+    };
+  }, [handleHashChange]);
 
   const [error, setError] = useQueryState("error", parseAsBoolean.withDefault(false));
   const [success, setSuccess] = useQueryState("success", parseAsBoolean.withDefault(false));
@@ -91,14 +107,22 @@ const AuthForms: React.FC = () => {
   }, [success]);
 
   useEffect(() => {
+    const message = searchParams.get("message");
     if (message) {
-      addToast({
-        title: message,
-        color: "warning",
-      });
-      setMessage("");
+      addToast({ title: message, color: "danger" });
+      // Clean the URL
+      window.history.replaceState({}, document.title, window.location.pathname);
     }
-  }, [message]);
+  }, [searchParams]);
+
+  // Also check for error_description in searchParams for OAuth errors
+  useEffect(() => {
+    const error = searchParams.get("error_description");
+    if (error) {
+      addToast({ title: error, color: "danger" });
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+  }, [searchParams]);
 
   if (isPendingMovies || isPendingTv) {
     return <Spinner size="lg" className="absolute-center" variant="simple" />;
