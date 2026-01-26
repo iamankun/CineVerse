@@ -30,6 +30,7 @@ const AuthForms: React.FC = () => {
   const reset = pathname === "/auth/reset-password";
 
   const [error, setError] = useQueryState("error", parseAsBoolean.withDefault(false));
+  const [success, setSuccess] = useQueryState("success", parseAsBoolean.withDefault(false));
   const [form, setForm] = useQueryState(
     "form",
     parseAsStringLiteral(ValidForms).withDefault("login"),
@@ -73,6 +74,20 @@ const AuthForms: React.FC = () => {
       setError(false);
     }
   }, [error]);
+
+  useEffect(() => {
+    if (success) {
+      addToast({
+        title: "Đăng nhập thành công! Đang chuyển hướng...",
+        color: "success",
+      });
+      setSuccess(false);
+      // Redirect to home after successful login
+      setTimeout(() => {
+        window.location.href = "/";
+      }, 1500);
+    }
+  }, [success]);
 
   if (isPendingMovies || isPendingTv) {
     return <Spinner size="lg" className="absolute-center" variant="simple" />;

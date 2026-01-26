@@ -26,5 +26,9 @@ export async function createClient(admin?: boolean) {
         }
       },
     },
+    auth: {
+      autoRefreshToken: true,
+      persistSession: true,
+    },
   });
 }

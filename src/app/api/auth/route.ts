@@ -32,6 +32,10 @@ export const POST = async (request: NextRequest) => {
             );
           },
         },
+        auth: {
+          autoRefreshToken: true,
+          persistSession: true,
+        },
       },
     );
 

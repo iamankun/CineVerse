@@ -125,11 +125,11 @@ const AuthLoginForm: React.FC<AuthFormProps> = ({ setForm }) => {
               Bạn quên mật khẩu hen?
             </Link>
           </div>
-          {isVerifying && env.NEXT_PUBLIC_CAPTCHA_SITE_KEY && !isDevelopment && (
+          {false && isVerifying && env.NEXT_PUBLIC_CAPTCHA_SITE_KEY && !isDevelopment && (
             <div className="relative">
               <Turnstile
                 className="flex h-fit w-full items-center justify-center"
-                siteKey={env.NEXT_PUBLIC_CAPTCHA_SITE_KEY}
+                siteKey={env.NEXT_PUBLIC_CAPTCHA_SITE_KEY || ""}
                 onSuccess={onCaptchaSuccess}
                 onError={(error: any) => {
                   console.error("❌ Captcha lỗi:", error);

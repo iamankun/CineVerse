@@ -23,6 +23,10 @@ export async function updateSession(request: NextRequest) {
           );
         },
       },
+      auth: {
+        autoRefreshToken: true,
+        persistSession: true,
+      },
     },
   );
 

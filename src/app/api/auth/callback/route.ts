@@ -25,7 +25,7 @@ export const GET = async (request: NextRequest) => {
   }
 
   if (code) {
-    console.log("🔄 Processing OAuth code");
+    console.log("🔄 Processing OAuth code with implicit flow");
     let supabaseResponse = NextResponse.next({ request });
 
     const supabase = createServerClient(
@@ -44,20 +44,26 @@ export const GET = async (request: NextRequest) => {
             );
           },
         },
+        auth: {
+          autoRefreshToken: true,
+          persistSession: true,
+        },
       },
     );
 
-    const { data: { user }, error: exchangeError } = await supabase.auth.exchangeCodeForSession(code);
+    // Supabase handles the exchange automatically with auto flow detection
+    // Just check if we have a user after the redirect
+    const { data: { user }, error: userError } = await supabase.auth.getUser();
 
-    console.log("🔄 Code exchange result:", { user: !!user, error: !!exchangeError });
+    console.log("🔄 Session check result:", { user: !!user, error: !!userError });
 
-    if (exchangeError) {
-      console.error("❌ Code exchange error:", exchangeError);
-      return NextResponse.redirect(`${origin}/auth?error=true&message=${encodeURIComponent(exchangeError.message)}`);
+    if (userError) {
+      console.error("❌ User error:", userError);
+      return NextResponse.redirect(`${origin}/auth?error=true&message=${encodeURIComponent(userError.message)}`);
     }
 
     if (!user) {
-      console.error("❌ No user in code exchange");
+      console.error("❌ No user found after OAuth redirect");
       return NextResponse.redirect(`${origin}/auth?error=true&message=${encodeURIComponent("Không tìm thấy user")}`);
     }
 
@@ -79,7 +85,11 @@ export const GET = async (request: NextRequest) => {
     }
 
     console.log("✅ OAuth login successful, redirecting to:", next);
-    return NextResponse.redirect(`${origin}${next}`);
+    const redirectResponse = NextResponse.redirect(`${origin}${next}?success=true`);
+    supabaseResponse.cookies.getAll().forEach((cookie) => {
+      redirectResponse.cookies.set(cookie.name, cookie.value, cookie);
+    });
+    return redirectResponse;
   }
 
   // No code or error
