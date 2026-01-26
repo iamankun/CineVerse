@@ -18,11 +18,12 @@ const AuthLoginForm: React.FC<AuthFormProps> = ({ setForm }) => {
   const [isVerifying, setIsVerifying] = useState(false);
   const isDevelopment = process.env.NODE_ENV === 'development';
 
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const {
     register,
     setValue,
     handleSubmit,
-    formState: { errors, isSubmitting },
+    formState: { errors },
   } = useForm({
     resolver: zodResolver(LoginFormSchema),
     mode: "onChange",
@@ -48,21 +49,30 @@ const AuthLoginForm: React.FC<AuthFormProps> = ({ setForm }) => {
       return;
     }
     
-    // Proceed with login
-    const { success, message } = await signIn(data);
+    setIsSubmitting(true);
+    try {
+      const { success, message } = await signIn(data);
 
-    addToast({
-      title: message,
-      color: success ? "success" : "danger",
-    });
+      addToast({
+        title: message,
+        color: success ? "success" : "danger",
+      });
 
-    if (!success) {
-      setValue("captchaToken", undefined);
+      if (!success) {
+        setValue("captchaToken", undefined);
+      } else {
+        router.push("/");
+      }
+    } catch (error) {
+      console.error("Lỗi đăng nhập:", error);
+      addToast({
+        title: "Không thể kết nối đến máy chủ. Vui lòng thử lại.",
+        color: "danger",
+      });
+    } finally {
+      setIsSubmitting(false);
       setIsVerifying(false);
-      return;
     }
-
-    return router.push("/");
   });
 
   const onCaptchaSuccess = useCallback(
