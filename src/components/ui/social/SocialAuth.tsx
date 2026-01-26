@@ -1,18 +1,14 @@
 "use client";
 
-import { Google } from "@/utils/icons";
+import { Chrome } from "lucide-react";
+import { Button } from "@heroui/react";
 import { createClient } from "@/utils/supabase/client";
-import { addToast, Button } from "@heroui/react";
+import { addToast } from "@heroui/react";
 import { useCallback } from "react";
-
-type GoogleLoginButtonProps = Omit<
-  React.ComponentProps<typeof Button>,
-  "children" | "startContent" | "onPress"
->;
 
 const supabase = createClient();
 
-const GoogleLoginButton: React.FC<GoogleLoginButtonProps> = ({ variant = "faded", ...props }) => {
+const GoogleAuthButton: React.FC = () => {
   const handleGoogleLogin = useCallback(async () => {
     try {
       console.log("🔄 Bắt đầu đăng nhập Google");
@@ -20,7 +16,7 @@ const GoogleLoginButton: React.FC<GoogleLoginButtonProps> = ({ variant = "faded"
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: "google",
         options: {
-          redirectTo: `${window.location.origin}/api/auth/callback`,
+          redirectTo: `https://cineverse.ankun.dev/api/auth/callback`,
           skipBrowserRedirect: false,
           queryParams: {
             access_type: "offline",
@@ -29,10 +25,10 @@ const GoogleLoginButton: React.FC<GoogleLoginButtonProps> = ({ variant = "faded"
         },
       });
       
-      console.log("🔄 Kết quả OAuth:", { data, error });
+      console.log("🔄 Kết quả Google OAuth:", { data, error });
       
       if (error) {
-        console.error("❌ Lỗi OAuth:", error);
+        console.error("❌ Lỗi Google OAuth:", error);
         addToast({
           title: `Lỗi đăng nhập Google: ${error.message}`,
           color: "danger",
@@ -40,19 +36,7 @@ const GoogleLoginButton: React.FC<GoogleLoginButtonProps> = ({ variant = "faded"
         return;
       }
       
-      // OAuth redirect should happen automatically
-      console.log("✅ OAuth redirect initiated");
-      
-      // Check if popup was blocked
-      setTimeout(() => {
-        if (!data?.url) {
-          console.warn("⚠️ No OAuth URL returned - popup might be blocked");
-          addToast({
-            title: "Popup bị chặn. Vui lòng cho phép popup và thử lại.",
-            color: "warning",
-          });
-        }
-      }, 1000);
+      console.log("✅ Google OAuth redirect initiated");
       
     } catch (error) {
       console.error("❌ Lỗi đăng nhập Google:", error);
@@ -65,14 +49,22 @@ const GoogleLoginButton: React.FC<GoogleLoginButtonProps> = ({ variant = "faded"
 
   return (
     <Button
-      startContent={<Google width={24} />}
+      startContent={<Chrome size={20} />}
       onPress={handleGoogleLogin}
-      variant={variant}
-      {...props}
+      variant="faded"
+      className="w-full"
     >
       Đăng nhập với Google
     </Button>
   );
 };
 
-export default GoogleLoginButton;
+const SocialAuth: React.FC = () => {
+  return (
+    <div className="space-y-3">
+      <GoogleAuthButton />
+    </div>
+  );
+};
+
+export default SocialAuth;
