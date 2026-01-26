@@ -62,8 +62,8 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
           </NuqsAdapter>
         </Suspense>
         <PWAUpdatePrompt />
-        <SpeedInsights debug={true} />
-        <Analytics debug={true} />
+        <SpeedInsights />
+        <Analytics />
       </body>
     </html>
   );
