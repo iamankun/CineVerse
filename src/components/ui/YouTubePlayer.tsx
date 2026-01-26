@@ -169,51 +169,6 @@ export const YouTubePlayer: React.FC<YouTubePlayerProps> = ({
     }
   }, [playerState]);
 
-  // Keyboard shortcuts
-  React.useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      // Không xử lý nếu đang focus vào input/textarea
-      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) {
-        return;
-      }
-
-      switch (e.key) {
-        case ' ': // Space - Play/Pause
-          e.preventDefault();
-          togglePlayPause();
-          resetHideTimer();
-          break;
-        
-        case 'ArrowLeft': // Left - Tua lùi 10s
-          e.preventDefault();
-          seekTo(Math.max(0, currentTime - 10));
-          resetHideTimer();
-          break;
-        
-        case 'ArrowRight': // Right - Tua tới 10s
-          e.preventDefault();
-          seekTo(Math.min(duration, currentTime + 10));
-          resetHideTimer();
-          break;
-        
-        case 'ArrowUp': // Up - Tăng volume
-          e.preventDefault();
-          setVolume(Math.min(100, volume + 10));
-          resetHideTimer();
-          break;
-        
-        case 'ArrowDown': // Down - Giảm volume
-          e.preventDefault();
-          setVolume(Math.max(0, volume - 10));
-          resetHideTimer();
-          break;
-      }
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [togglePlayPause, seekTo, setVolume, currentTime, duration, volume, resetHideTimer]);
-
   // Check intro/outro timing
   React.useEffect(() => {
     if (!isReady) return;
@@ -510,6 +465,69 @@ export const YouTubePlayer: React.FC<YouTubePlayerProps> = ({
     }
     setIsFullscreen(!isFullscreen);
   };
+
+  // Keyboard shortcuts
+  React.useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Không xử lý nếu đang focus vào input/textarea
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) {
+        return;
+      }
+
+      switch (e.key) {
+        case ' ': // Space - Play/Pause
+          e.preventDefault();
+          togglePlayPause();
+          resetHideTimer();
+          break;
+        
+        case 'ArrowLeft': // Left - Tua lùi 10s
+          e.preventDefault();
+          seekTo(Math.max(0, currentTime - 10));
+          resetHideTimer();
+          break;
+        
+        case 'ArrowRight': // Right - Tua tới 10s
+          e.preventDefault();
+          seekTo(Math.min(duration, currentTime + 10));
+          resetHideTimer();
+          break;
+        
+        case 'ArrowUp': // Up - Tăng volume
+          e.preventDefault();
+          setVolume(Math.min(100, volume + 10));
+          resetHideTimer();
+          break;
+        
+        case 'ArrowDown': // Down - Giảm volume
+          e.preventDefault();
+          setVolume(Math.max(0, volume - 10));
+          resetHideTimer();
+          break;
+        
+        case 'f':
+        case 'F': // F - Toggle fullscreen
+          e.preventDefault();
+          toggleFullscreen();
+          resetHideTimer();
+          break;
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [togglePlayPause, seekTo, setVolume, currentTime, duration, volume, resetHideTimer, toggleFullscreen]);
+
+  // Listen for fullscreen changes and reset hide timer
+  React.useEffect(() => {
+    const handleFullscreenChange = () => {
+      setIsFullscreen(!!document.fullscreenElement);
+      resetHideTimer();
+    };
+
+    document.addEventListener('fullscreenchange', handleFullscreenChange);
+    return () => document.removeEventListener('fullscreenchange', handleFullscreenChange);
+  }, [resetHideTimer]);
 
   const isPlaying = playerState === PlayerState.PLAYING;
   const progressPercentage = duration > 0 ? (currentTime / duration) * 100 : 0;
