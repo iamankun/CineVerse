@@ -38,20 +38,28 @@ const AuthForms: React.FC = () => {
   const { data: movies, isPending: isPendingMovies } = useQuery({
     queryFn: () => tmdb.trending.trending("movie", "day", { language: 'vi-VN' }),
     queryKey: ["movie-auth-posters"],
+    staleTime: 1000 * 60 * 30, // 30 minutes
+    gcTime: 1000 * 60 * 60, // 1 hour
   });
 
   const { data: tvShows, isPending: isPendingTv } = useQuery({
     queryFn: () => tmdb.trending.trending("tv", "day", { language: 'vi-VN' }),
     queryKey: ["tv-auth-posters"],
+    staleTime: 1000 * 60 * 30, // 30 minutes
+    gcTime: 1000 * 60 * 60, // 1 hour
   });
 
   const IMAGES = useMemo(() => {
     if (!movies?.results || !tvShows?.results) return [];
+    
+    // Limit to 5 items each for better performance
     const moviePosters = movies.results
       .filter((movie) => movie.poster_path)
+      .slice(0, 5)
       .map((movie) => getImageUrl(movie.poster_path, "poster"));
     const tvPosters = tvShows.results
       .filter((show) => show.poster_path)
+      .slice(0, 5)
       .map((show) => getImageUrl(show.poster_path, "poster"));
     return shuffleArray([...moviePosters, ...tvPosters]);
   }, [movies?.results, tvShows?.results]);
@@ -59,7 +67,7 @@ const AuthForms: React.FC = () => {
   useEffect(() => {
     if (error) {
       addToast({
-        title: "An error occurred. Please try again.",
+        title: "Xảy ra lỗi bạn ơi. Thử lại xem sao?",
         color: "danger",
       });
       setError(false);

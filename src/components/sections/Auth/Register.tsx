@@ -3,7 +3,7 @@ import { Google, LockPassword, Mail, User } from "@/utils/icons";
 import { addToast, Button, Divider, Input, Link } from "@heroui/react";
 import { AuthFormProps } from "./Forms";
 import { RegisterFormSchema } from "@/schemas/auth";
-import PasswordInput from "@/components/ui/input/PasswordInput";
+import RegisterPasswordInput from "@/components/ui/input/RegisterPasswordInput";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { Turnstile } from "@marsidev/react-turnstile";
@@ -63,16 +63,16 @@ const AuthRegisterForm: React.FC<AuthFormProps> = ({ setForm }) => {
   );
 
   const getButtonText = useCallback(() => {
-    if (isSubmitting) return "Signing Up...";
-    if (isVerifying) return "Verifying...";
-    return "Sign Up";
+    if (isSubmitting) return "Đang đăng ký...";
+    if (isVerifying) return "Đang xác minh...";
+    return "Đăng ký";
   }, [isSubmitting, isVerifying]);
 
   return (
     <div className="flex flex-col gap-5">
       <form className="flex flex-col gap-3" onSubmit={onSubmit}>
         <p className="text-small text-foreground-500 mb-4 text-center">
-          Join to track your favorites and watch history
+          Tham gia để theo dõi phim yêu thích và lịch sử xem phim
         </p>
         <Input
           {...register("username")}
@@ -80,8 +80,9 @@ const AuthRegisterForm: React.FC<AuthFormProps> = ({ setForm }) => {
           errorMessage={errors.username?.message}
           isRequired
           spellCheck="false"
-          label="Username"
-          placeholder="Enter your username"
+          autoComplete="username"
+          label="Tên người dùng"
+          placeholder="Nhập tên người dùng đi bạn"
           variant="underlined"
           startContent={<User className="text-xl" />}
           isDisabled={isSubmitting || isVerifying}
@@ -92,33 +93,35 @@ const AuthRegisterForm: React.FC<AuthFormProps> = ({ setForm }) => {
           errorMessage={errors.email?.message}
           spellCheck="false"
           isRequired
-          label="Email Address"
-          placeholder="Enter your email"
+          autoComplete="email"
+          label="Email"
+          placeholder="Nhập email đi bạn"
           type="email"
           variant="underlined"
           startContent={<Mail className="text-xl" />}
           isDisabled={isSubmitting || isVerifying}
         />
-        <PasswordInput
+        <RegisterPasswordInput
           value={watch("password")}
           {...register("password")}
           isInvalid={!!errors.password?.message}
           errorMessage={errors.password?.message}
           isRequired
           variant="underlined"
-          label="Password"
-          placeholder="Enter your password"
+          label="Mật khẩu"
+          placeholder="Nhập mật khẩu đi bạn"
           startContent={<LockPassword className="text-xl" />}
           isDisabled={isSubmitting || isVerifying}
         />
-        <PasswordInput
+        <RegisterPasswordInput
           {...register("confirm")}
+          isConfirmPassword={true}
           isInvalid={!!errors.confirm?.message}
           errorMessage={errors.confirm?.message}
           isRequired
           variant="underlined"
-          label="Confirm Password"
-          placeholder="Confirm your password"
+          label="Xác nhận mật khẩu"
+          placeholder="Xác nhận mật khẩu đi bạn"
           startContent={<LockPassword className="text-xl" />}
           isDisabled={isSubmitting || isVerifying}
         />
@@ -127,6 +130,18 @@ const AuthRegisterForm: React.FC<AuthFormProps> = ({ setForm }) => {
             className="flex h-fit w-full items-center justify-center"
             siteKey={env.NEXT_PUBLIC_CAPTCHA_SITE_KEY}
             onSuccess={onCaptchaSuccess}
+            onError={() => {
+              setIsVerifying(false);
+              setValue("captchaToken", undefined);
+              addToast({
+                title: "Captcha xác minh thất bại. Vui lòng thử lại.",
+                color: "danger",
+              });
+            }}
+            onExpire={() => {
+              setIsVerifying(false);
+              setValue("captchaToken", undefined);
+            }}
           />
         )}
         <Button

@@ -33,12 +33,13 @@ const PasswordRequirement = memo(({ meets, label }: { meets: boolean; label: str
   );
 });
 
-type PasswordInputProps = Omit<React.ComponentProps<typeof Input>, "type" | "endContent"> & {
+type RegisterPasswordInputProps = Omit<React.ComponentProps<typeof Input>, "type" | "endContent"> & {
   withStrengthMeter?: boolean;
+  isConfirmPassword?: boolean;
 };
 
-const PasswordInput = forwardRef<HTMLInputElement, PasswordInputProps>(
-  ({ withStrengthMeter, ...props }, ref) => {
+const RegisterPasswordInput = forwardRef<HTMLInputElement, RegisterPasswordInputProps>(
+  ({ withStrengthMeter, isConfirmPassword, ...props }, ref) => {
     const [show, { toggle }] = useDisclosure(false);
     const [meter, { open, close }] = useDisclosure(false);
 
@@ -65,7 +66,7 @@ const PasswordInput = forwardRef<HTMLInputElement, PasswordInputProps>(
           ref={ref}
           spellCheck="false"
           type={show ? "text" : "password"}
-          autoComplete="current-password"
+          autoComplete={isConfirmPassword ? "new-password" : "new-password"}
           endContent={
             <IconButton
               size="sm"
@@ -77,33 +78,26 @@ const PasswordInput = forwardRef<HTMLInputElement, PasswordInputProps>(
           {...props}
         />
         {meter && withStrengthMeter && (
-          <div
-            className={cn(
-              "absolute z-100 w-full rounded-medium border-2 border-foreground-200 bg-secondary-background p-4 shadow-lg",
-              {
-                "top-[5.3rem]": props.isInvalid,
-                "top-18": !props.isInvalid,
-              },
-            )}
-          >
+          <div className="mt-2">
             <Progress
-              aria-label="Password strength meter"
-              color={color}
+              size="sm"
               value={strength}
-              className="mb-4"
+              color={color}
+              className="w-full"
             />
-            <PasswordRequirement
-              label="Includes at least 8 characters"
-              meets={((props.value as string) || "").length > 7}
-            />
-            {checks}
+            <p className="mt-2 text-small text-foreground-500">
+              Password strength: {strength}%
+            </p>
+            <div className="mt-2 space-y-1">
+              {checks}
+            </div>
           </div>
         )}
       </div>
     );
-  },
+  }
 );
 
-PasswordInput.displayName = "PasswordInput";
+RegisterPasswordInput.displayName = "RegisterPasswordInput";
 
-export default PasswordInput;
+export default RegisterPasswordInput;

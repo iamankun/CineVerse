@@ -15,6 +15,8 @@ const supabase = createClient();
 const GoogleLoginButton: React.FC<GoogleLoginButtonProps> = ({ variant = "faded", ...props }) => {
   const handleGoogleLogin = useCallback(async () => {
     try {
+      console.log("🔄 Bắt đầu đăng nhập Google");
+      
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: "google",
         options: {
@@ -27,17 +29,22 @@ const GoogleLoginButton: React.FC<GoogleLoginButtonProps> = ({ variant = "faded"
         },
       });
       
-      console.log("Trả kết quả xác minh:", { data, error });
+      console.log("🔄 Kết quả OAuth:", { data, error });
       
       if (error) {
-        console.error("Lỗi xác minh:", error);
+        console.error("❌ Lỗi OAuth:", error);
         addToast({
-          title: error.message,
+          title: `Lỗi đăng nhập Google: ${error.message}`,
           color: "danger",
         });
+        return;
       }
+      
+      // OAuth redirect should happen automatically
+      console.log("✅ OAuth redirect initiated");
+      
     } catch (error) {
-      console.error("Lỗi đăng nhập Google:", error);
+      console.error("❌ Lỗi đăng nhập Google:", error);
       addToast({
         title: error instanceof Error ? error.message : "Đã xảy ra lỗi. Vui lòng thử lại.",
         color: "danger",
@@ -52,7 +59,7 @@ const GoogleLoginButton: React.FC<GoogleLoginButtonProps> = ({ variant = "faded"
       variant={variant}
       {...props}
     >
-      Continue with Google
+      Đăng nhập với Google
     </Button>
   );
 };

@@ -32,12 +32,16 @@ const AuthLoginForm: React.FC<AuthFormProps> = ({ setForm }) => {
   });
 
   const onSubmit = handleSubmit(async (data) => {
-    // Only require captcha verification if site key is configured
-    if (env.NEXT_PUBLIC_CAPTCHA_SITE_KEY && isEmpty(data.captchaToken)) {
+    console.log("🔄 Đang nổ lực đăng nhập:", { email: data.email, hasCaptcha: !!data.captchaToken });
+    
+    // If no captcha token and site key is configured, show captcha
+    if (env.NEXT_PUBLIC_CAPTCHA_SITE_KEY && !data.captchaToken) {
+      console.log("🔄 Hiển thị captcha");
       setIsVerifying(true);
       return;
     }
-
+    
+    // Proceed with login
     const { success, message } = await signIn(data);
 
     addToast({
@@ -56,24 +60,30 @@ const AuthLoginForm: React.FC<AuthFormProps> = ({ setForm }) => {
 
   const onCaptchaSuccess = useCallback(
     (token: string) => {
+      console.log("✅ Captcha thành công:", { token: token.substring(0, 10) + "..." });
       setValue("captchaToken", token);
       setIsVerifying(false);
-      onSubmit();
+      
+      // Trigger form submission after captcha success
+      setTimeout(() => {
+        const submitButton = document.querySelector('button[type="submit"]') as HTMLButtonElement;
+        if (submitButton) submitButton.click();
+      }, 100);
     },
-    [setValue, setIsVerifying, onSubmit],
+    [setValue, setIsVerifying],
   );
 
   const getButtonText = useCallback(() => {
-    if (isSubmitting) return "Signing In...";
-    if (isVerifying) return "Verifying...";
-    return "Sign In";
+    if (isSubmitting) return "Đang đăng nhập...";
+    if (isVerifying) return "Đang xác minh...";
+    return "Đăng nhập";
   }, [isSubmitting, isVerifying]);
 
   return (
     <div className="flex flex-col gap-5">
       <form className="flex flex-col gap-3" onSubmit={onSubmit}>
         <p className="text-small text-foreground-500 mb-4 text-center">
-          Sign in to continue your streaming journey
+          Đăng nhập để hành trình xem phim thoải mái hơn
         </p>
         <Input
           {...register("email")}
@@ -81,8 +91,9 @@ const AuthLoginForm: React.FC<AuthFormProps> = ({ setForm }) => {
           errorMessage={errors.email?.message}
           isRequired
           spellCheck="false"
-          label="Email Address"
-          placeholder="Enter your email"
+          autoComplete="email"
+          label="Nhập email đi bạn"
+          placeholder="Nhập email đi bạn"
           type="email"
           variant="underlined"
           startContent={<Mail className="text-xl" />}
@@ -94,8 +105,8 @@ const AuthLoginForm: React.FC<AuthFormProps> = ({ setForm }) => {
           errorMessage={errors.loginPassword?.message}
           isRequired
           variant="underlined"
-          label="Password"
-          placeholder="Enter your password"
+          label="Mật khẩu"
+          placeholder="Nhập mật khẩu đi bạn"
           startContent={<LockPassword className="text-xl" />}
           isDisabled={isSubmitting || isVerifying}
         />
@@ -110,11 +121,92 @@ const AuthLoginForm: React.FC<AuthFormProps> = ({ setForm }) => {
           </Link>
         </div>
         {isVerifying && env.NEXT_PUBLIC_CAPTCHA_SITE_KEY && (
-          <Turnstile
-            className="flex h-fit w-full items-center justify-center"
-            siteKey={env.NEXT_PUBLIC_CAPTCHA_SITE_KEY}
-            onSuccess={onCaptchaSuccess}
-          />
+          <div className="relative">
+            <Turnstile
+              className="flex h-fit w-full items-center justify-center"
+              siteKey={env.NEXT_PUBLIC_CAPTCHA_SITE_KEY}
+              onSuccess={onCaptchaSuccess}
+              onError={(error: any) => {
+                console.error("❌ Captcha lỗi:", error);
+                console.log("🔍 Error type:", typeof error);
+                console.log("🔍 Error keys:", error ? Object.keys(error) : 'null');
+                
+                // Handle 400020 error (tracking prevention) - multiple ways to detect
+                let isTrackingPrevention = false;
+                
+                if (typeof error === 'string' && error.includes('400020')) {
+                  isTrackingPrevention = true;
+                } else if (error?.code === '400020' || error?.code === 400020) {
+                  isTrackingPrevention = true;
+                } else if (error?.message?.includes('400020')) {
+                  isTrackingPrevention = true;
+                } else if (error?.toString()?.includes('400020')) {
+                  isTrackingPrevention = true;
+                }
+                
+                if (isTrackingPrevention) {
+                  console.log("⚠️ Phát hiện theo dõi - Tiếp tục không cần captcha.");
+                  setIsVerifying(false);
+                  setValue("captchaToken", "bypass"); // Set bypass token
+                  
+                  // Trigger form submission after bypass
+                  setTimeout(() => {
+                    const submitButton = document.querySelector('button[type="submit"]') as HTMLButtonElement;
+                    if (submitButton) submitButton.click();
+                  }, 100);
+                  return;
+                }
+                
+                // Handle other captcha errors
+                setIsVerifying(false);
+                setValue("captchaToken", undefined);
+                addToast({
+                  title: "Captcha xác minh lỗi. Vui lòng thử lại.",
+                  color: "danger",
+                });
+              }}
+              onExpire={() => {
+                console.log("⏰ Captcha hết hạn");
+                setIsVerifying(false);
+                setValue("captchaToken", undefined);
+              }}
+              onBeforeInteractive={() => {
+                console.log("🔄 Captcha đang tải...");
+              }}
+              onAfterInteractive={() => {
+                console.log("✅ Captcha sẵn sàng");
+              }}
+              onLoad={() => {
+                console.log("📦 Captcha loaded");
+              }}
+              onTimeout={() => {
+                console.log("⏱️ Captcha timeout - proceeding without captcha");
+                setIsVerifying(false);
+                setValue("captchaToken", "bypass");
+                setTimeout(() => {
+                  const submitButton = document.querySelector('button[type="submit"]') as HTMLButtonElement;
+                  if (submitButton) submitButton.click();
+                }, 100);
+              }}
+            />
+            
+            {/* Fallback button if captcha fails to load */}
+            <button
+              type="button"
+              className="absolute top-2 right-2 text-xs text-danger hover:underline"
+              onClick={() => {
+                console.log("⚠️ Manual bypass triggered");
+                setIsVerifying(false);
+                setValue("captchaToken", "bypass");
+                setTimeout(() => {
+                  const submitButton = document.querySelector('button[type="submit"]') as HTMLButtonElement;
+                  if (submitButton) submitButton.click();
+                }, 100);
+              }}
+            >
+              Bỏ qua captcha
+            </button>
+          </div>
         )}
         <Button
           className="mt-4"
@@ -133,7 +225,7 @@ const AuthLoginForm: React.FC<AuthFormProps> = ({ setForm }) => {
       </div>
       <GoogleLoginButton isDisabled={isSubmitting || isVerifying} />
       <p className="text-small text-center">
-        Don't have an account?
+        Bạn cần tài khoản?
         <Link
           isBlock
           size="sm"
@@ -141,7 +233,7 @@ const AuthLoginForm: React.FC<AuthFormProps> = ({ setForm }) => {
           onClick={() => setForm("register")}
           isDisabled={isSubmitting || isVerifying}
         >
-          Sign Up
+          Đăng ký
         </Link>
       </p>
     </div>

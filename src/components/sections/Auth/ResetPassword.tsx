@@ -99,6 +99,18 @@ const AuthResetPasswordForm: React.FC = () => {
           className="flex h-fit w-full items-center justify-center"
           siteKey={env.NEXT_PUBLIC_CAPTCHA_SITE_KEY}
           onSuccess={onCaptchaSuccess}
+          onError={() => {
+            setIsVerifying(false);
+            setValue("captchaToken", undefined);
+            addToast({
+              title: "Captcha verification failed. Please try again.",
+              color: "danger",
+            });
+          }}
+          onExpire={() => {
+            setIsVerifying(false);
+            setValue("captchaToken", undefined);
+          }}
         />
       )}
       <Button

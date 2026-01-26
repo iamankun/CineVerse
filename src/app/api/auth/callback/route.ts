@@ -4,15 +4,28 @@ import { IS_DEVELOPMENT } from "@/utils/constants";
 import { env } from "@/utils/env";
 
 export const GET = async (request: NextRequest) => {
+  console.log("🔄 OAuth callback received");
+  
   const { searchParams, origin } = new URL(request.url);
   const code = searchParams.get("code");
+  const error = searchParams.get("error");
+  const errorDescription = searchParams.get("error_description");
+
+  console.log("🔍 Callback params:", { code: !!code, error, errorDescription });
 
   let next = searchParams.get("next") ?? "/";
   if (!next.startsWith("/")) {
     next = "/";
   }
 
+  // Handle OAuth errors
+  if (error) {
+    console.error("❌ OAuth error:", { error, errorDescription });
+    return NextResponse.redirect(`${origin}/auth?error=true&message=${encodeURIComponent(`Lỗi OAuth: ${errorDescription || error}`)}`);
+  }
+
   if (code) {
+    console.log("🔄 Processing OAuth code");
     let supabaseResponse = NextResponse.next({ request });
 
     const supabase = createServerClient(
@@ -34,25 +47,29 @@ export const GET = async (request: NextRequest) => {
       },
     );
 
-    const {
-      data: { user },
-      error,
-    } = await supabase.auth.exchangeCodeForSession(code);
+    const { data: { user }, error: exchangeError } = await supabase.auth.exchangeCodeForSession(code);
 
-    if (error) {
-      console.error("exchangeCodeForSession error:", error);
-      return NextResponse.redirect(`${origin}/auth?error=true&message=${encodeURIComponent(error.message)}`);
+    console.log("🔄 Code exchange result:", { user: !!user, error: !!exchangeError });
+
+    if (exchangeError) {
+      console.error("❌ Code exchange error:", exchangeError);
+      return NextResponse.redirect(`${origin}/auth?error=true&message=${encodeURIComponent(exchangeError.message)}`);
     }
 
-    if (user) {
-      console.info("User authenticated:", { id: user.id, email: user.email });
+    if (!user) {
+      console.error("❌ No user in code exchange");
+      return NextResponse.redirect(`${origin}/auth?error=true&message=${encodeURIComponent("Không tìm thấy user")}`);
+    }
 
-      const { data: profile } = await supabase
-        .from("profiles")
-        .select("username")
-        .eq("id", user.id)
-        .single();
-
+    // Auto-create profile if doesn't exist
+    const { error: profileError } = await supabase
+      .from("profiles")
+      .upsert({ 
+        id: user.id, 
+        username: user.email?.split('@')[0] || 'user' 
+      }, {
+        onConflict: 'id',
+        ignoreDuplicates: false
         if (!profile) {
           // Get base username dari Google
           const baseUsername =
