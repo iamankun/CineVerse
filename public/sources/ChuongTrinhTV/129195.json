@@ -1,0 +1,281 @@
+{
+  "tmdbId": 129195,
+  "title": "Hiệu Thuốc Ở Dị Giới",
+  "year": 2022,
+  "seasons": {
+    "1": {
+      "1": {
+        "title": "Tập 1",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Hiệu Thuốc Ở Dị Giới",
+            "url": "https://www.youtube.com/watch?v=YAAVrKIH3As&list=PLdM751AKK4aNa2u4VcEF-r6R0IaBVWMi0&index=1&pp=iAQB2Ab8BNIHCQl8CgGHKiGM7w%3D%3D",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ],
+            "intro": {
+              "start": 269,
+              "end": 360
+            },
+            "outro": {
+              "start": 1410,
+              "end": 1421
+            }
+          }
+        ]
+      },
+      "2": {
+        "title": "Tập 2",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Hiệu Thuốc Ở Dị Giới",
+            "url": "https://www.youtube.com/watch?v=f6E32hp535s&list=PLdM751AKK4aNa2u4VcEF-r6R0IaBVWMi0&index=2&pp=iAQB",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ],
+            "intro": {
+              "start": 64,
+              "end": 155
+            },
+            "outro": {
+              "start": 1324,
+              "end": 1421
+            }
+          }
+        ]
+      },
+      "3": {
+        "title": "Tập 3",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Hiệu Thuốc Ở Dị Giới",
+            "url": "https://www.youtube.com/watch?v=eTbzJwVBaX8&list=PLdM751AKK4aNa2u4VcEF-r6R0IaBVWMi0&index=3&pp=iAQB",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ],
+            "intro": {
+              "start": 31,
+              "end": 121
+            },
+            "outro": {
+              "start": 1325,
+              "end": 1421
+            }
+          }
+        ]
+      },
+      "4": {
+        "title": "Tập 4",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Hiệu Thuốc Ở Dị Giới",
+            "url": "https://www.youtube.com/watch?v=N7pVYI_v4BQ&list=PLdM751AKK4aNa2u4VcEF-r6R0IaBVWMi0&index=4&pp=iAQB0gcJCXwKAYcqIYzv",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ],
+            "outro": {
+              "start": 1262,
+              "end": 1421
+            }
+          }
+        ]
+      },
+      "5": {
+        "title": "Tập 5",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Hiệu Thuốc Ở Dị Giới",
+            "url": "https://www.youtube.com/watch?v=ZEKMkk1F8aI&list=PLdM751AKK4aNa2u4VcEF-r6R0IaBVWMi0&index=5&pp=iAQB",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ],
+            "intro": {
+              "start": 48,
+              "end": 138
+            },
+            "outro": {
+              "start": 1217,
+              "end": 1421
+            }
+          }
+        ]
+      },
+      "6": {
+        "title": "Tập 6",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Hiệu Thuốc Ở Dị Giới",
+            "url": "https://www.youtube.com/watch?v=W2aFkZm89ks&list=PLdM751AKK4aNa2u4VcEF-r6R0IaBVWMi0&index=6&pp=iAQB",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ],
+            "intro": {
+              "start": 122,
+              "end": 212
+            },
+            "outro": {
+              "start": 1323,
+              "end": 1421
+            }
+          }
+        ]
+      },
+      "7": {
+        "title": "Tập 7",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Hiệu Thuốc Ở Dị Giới",
+            "url": "https://www.youtube.com/watch?v=nCLokulYC3I&list=PLdM751AKK4aNa2u4VcEF-r6R0IaBVWMi0&index=7&pp=iAQB0gcJCXwKAYcqIYzv",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ],
+            "intro": {
+              "start": 93,
+              "end": 185
+            },
+            "outro": {
+              "start": 1322,
+              "end": 1421
+            }
+          }
+        ]
+      },
+      "8": {
+        "title": "Tập 8",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Hiệu Thuốc Ở Dị Giới",
+            "url": "https://www.youtube.com/watch?v=8EAuzPz3mJc&list=PLdM751AKK4aNa2u4VcEF-r6R0IaBVWMi0&index=8&pp=iAQB",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ],
+            "intro": {
+              "start": 90,
+              "end": 181
+            },
+            "outro": {
+              "start": 1324,
+              "end": 1420
+            }
+          }
+        ]
+      },
+      "9": {
+        "title": "Tập 9",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Hiệu Thuốc Ở Dị Giới",
+            "url": "https://www.youtube.com/watch?v=MayI7slctyw&list=PLdM751AKK4aNa2u4VcEF-r6R0IaBVWMi0&index=9&pp=iAQB",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ],
+            "intro": {
+              "start": 87,
+              "end": 180
+            },
+            "outro": {
+              "start": 1273,
+              "end": 1421
+            }
+          }
+        ]
+      },
+      "10": {
+        "title": "Tập 10",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Hiệu Thuốc Ở Dị Giới",
+            "url": "https://www.youtube.com/watch?v=CrR8R4TAFt0&list=PLdM751AKK4aNa2u4VcEF-r6R0IaBVWMi0&index=10&pp=iAQB",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ],
+            "intro": {
+              "start": 49,
+              "end": 140
+            },
+            "outro": {
+              "start": 1236,
+              "end": 1421
+            }
+          }
+        ]
+      },
+      "11": {
+        "title": "Tập 11",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Hiệu Thuốc Ở Dị Giới",
+            "url": "https://www.youtube.com/watch?v=q9g3HBx2HJ0&list=PLdM751AKK4aNa2u4VcEF-r6R0IaBVWMi0&index=11&pp=iAQB0gcJCXwKAYcqIYzv",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ],
+            "intro": {
+              "start": 104,
+              "end": 196
+            },
+            "outro": {
+              "start": 1321,
+              "end": 1420
+            }
+          }
+        ]
+      },
+      "12": {
+        "title": "Tập 12",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Hiệu Thuốc Ở Dị Giới",
+            "url": "https://www.youtube.com/watch?v=W_FgOVF3fOQ&list=PLdM751AKK4aNa2u4VcEF-r6R0IaBVWMi0&index=12&pp=iAQB",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ],
+            "intro": {
+              "start": 193,
+              "end": 284
+            }
+          }
+        ]
+      }
+    }
+  },
+  "metadata": {
+    "movie-rating": "K",
+    "audioVersion": "PhuDe",
+    "lastUpdate": "2026-01-27T15:39:57.448Z",
+    "genre": [
+      "Phim Hoạt Hình",
+      "Phim Hài",
+      "Sci-Fi & Fantasy"
+    ],
+    "duration": 24,
+    "status": "Ended",
+    "note": "",
+    "studio": "diomedéa",
+    "totalEpisodes": 12,
+    "totalSeasons": 1
+  }
+}
