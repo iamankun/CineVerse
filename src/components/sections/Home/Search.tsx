@@ -6,7 +6,6 @@ import MoviePosterCard from "@/components/sections/Movie/Cards/Poster";
 import { ContentType } from "@/types";
 import { isEmpty } from "@/utils/helpers";
 import { Spinner, Input } from "@heroui/react";
-import { useDebouncedValue } from "@mantine/hooks";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { Movie, Search as SearchType, TV } from "tmdb-ts/dist/types";
@@ -24,18 +23,35 @@ const fetchSearchData = async (
 const HomeSearch = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [contentType, setContentType] = useState<ContentType>("movie");
-  const [debouncedSearchQuery] = useDebouncedValue(searchQuery.trim(), 500);
+  const [searchTerm, setSearchTerm] = useState("");
 
-  const isSearchTriggered = !isEmpty(debouncedSearchQuery);
+  const isSearchTriggered = !isEmpty(searchTerm);
 
   const { data, isPending } = useQuery({
     enabled: isSearchTriggered,
-    queryKey: ["home-search", contentType, debouncedSearchQuery],
-    queryFn: () => fetchSearchData(debouncedSearchQuery, contentType),
+    queryKey: ["home-search", contentType, searchTerm],
+    queryFn: () => fetchSearchData(searchTerm, contentType),
+    staleTime: 30000, // Cache results for 30 seconds
+    gcTime: 60000, // Keep in cache for 1 minute
   });
 
   const handleClear = () => {
     setSearchQuery("");
+    setSearchTerm("");
+  };
+
+  const handleSearch = (e?: React.FormEvent) => {
+    e?.preventDefault();
+    if (searchQuery.trim()) {
+      setSearchTerm(searchQuery.trim());
+    }
+  };
+
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      handleSearch();
+    }
   };
 
   return (
@@ -45,15 +61,30 @@ const HomeSearch = () => {
         <Input
           value={searchQuery}
           onValueChange={setSearchQuery}
+          onKeyPress={handleKeyPress}
           placeholder="Tìm kiếm phim, chương trình TV..."
           size="lg"
+          autoComplete="off"
+          spellCheck="false"
+          autoCorrect="off"
+          autoCapitalize="off"
+          formNoValidate
           startContent={<IoSearchOutline className="text-2xl text-foreground-400" />}
           endContent={
-            searchQuery && (
-              <button onClick={handleClear} className="text-foreground-400 hover:text-foreground">
-                <IoCloseOutline className="text-2xl" />
+            <div className="flex items-center gap-2">
+              {searchQuery && (
+                <button onClick={handleClear} className="text-foreground-400 hover:text-foreground">
+                  <IoCloseOutline className="text-2xl" />
+                </button>
+              )}
+              <button 
+                onClick={handleSearch}
+                className="text-foreground-400 hover:text-foreground"
+                disabled={!searchQuery.trim()}
+              >
+                <IoSearchOutline className="text-2xl" />
               </button>
-            )
+            </div>
           }
           classNames={{
             input: "text-base",
@@ -98,7 +129,7 @@ const HomeSearch = () => {
           ) : isEmpty(data?.results) ? (
             <p className="py-8 text-center text-foreground-500">
               Không tìm thấy {contentType === "movie" ? "phim" : "chương trình TV"} nào với từ khóa "
-              <span className="font-bold text-warning">{debouncedSearchQuery}</span>"
+              <span className="font-bold text-warning">{searchTerm}</span>"
             </p>
           ) : (
             <>
@@ -121,7 +152,7 @@ const HomeSearch = () => {
               </div>
               {data && data.total_results > 12 && (
                 <a
-                  href={`/search?q=${encodeURIComponent(debouncedSearchQuery)}&content=${contentType}`}
+                  href={`/search?q=${encodeURIComponent(searchTerm)}&content=${contentType}`}
                   className="mx-auto rounded-lg bg-primary px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-primary/90"
                 >
                   Xem tất cả {data.total_results} kết quả

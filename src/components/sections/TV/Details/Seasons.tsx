@@ -44,17 +44,35 @@ const TvShowsSeasonsSelection = forwardRef<HTMLElement, Props>(({ id, seasons },
         <CardHeader className="grid grid-cols-1 grid-rows-[1fr_auto] gap-3 md:grid-cols-[1fr_1fr_auto_auto]">
           <Select
             aria-label="Seasons"
+            label="Chọn mùa"
             selectedKeys={[seasonNumber]}
             disallowEmptySelection={true}
-            classNames={{ trigger: "border-2 border-foreground-200" }}
-            onChange={(e) => {
+            classNames={{ 
+              trigger: "border-2 border-white/20 bg-white/10 backdrop-blur-md text-white hover:bg-white/20 hover:border-white/30 transition-all duration-300",
+              value: "text-white",
+              label: "text-white/70 text-sm",
+              selectorIcon: "text-white/70"
+            }}
+            renderValue={(items) => {
+              if (items.length === 0) return "Chọn mùa";
+              const item = items[0];
+              const seasonNumber = Number(item.key);
+              return `Mùa ${seasonNumber}`;
+            }}
+            onSelectionChange={(keys) => {
               close();
               setSearch("");
-              setSeasonNumber(e.target.value);
+              const selectedKey = Array.from(keys)[0] as string;
+              setSeasonNumber(selectedKey);
             }}
           >
             {FILTERED_SEASONS.map(({ season_number }) => (
-              <SelectItem key={season_number.toString()}>Mùa {season_number}</SelectItem>
+              <SelectItem 
+                key={season_number.toString()}
+                className="text-white hover:bg-white/10"
+              >
+                Mùa {season_number}
+              </SelectItem>
             ))}
           </Select>
           <Input

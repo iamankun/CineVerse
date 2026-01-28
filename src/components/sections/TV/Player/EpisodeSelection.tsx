@@ -22,6 +22,8 @@ const TvShowPlayerEpisodeSelection: React.FC<TvShowPlayerEpisodeSelectionProps> 
   currentEpisodeNumber,
 }) => {
   const [selectedSeason, setSelectedSeason] = useState<number | null>(null);
+  const [seasonEpisodes, setSeasonEpisodes] = useState<Episode[]>(episodes);
+  const [isLoadingSeason, setIsLoadingSeason] = useState(false);
 
   // Filter seasons to exclude season 0 (specials)
   const filteredSeasons = seasons?.filter(s => s.season_number > 0) || [];
@@ -36,10 +38,36 @@ const TvShowPlayerEpisodeSelection: React.FC<TvShowPlayerEpisodeSelectionProps> 
     }
   }, [episodes, currentEpisodeNumber, selectedSeason]);
 
+  // Fetch episodes when season changes
+  useEffect(() => {
+    if (selectedSeason && selectedSeason !== episodes[0]?.season_number) {
+      const fetchSeasonEpisodes = async () => {
+        setIsLoadingSeason(true);
+        try {
+          const response = await fetch(`/api/sources/tv/${id}?season=${selectedSeason}`);
+          if (response.ok) {
+            const data = await response.json();
+            if (data.episodes) {
+              setSeasonEpisodes(data.episodes);
+            }
+          }
+        } catch (error) {
+          console.error('Error fetching season episodes:', error);
+        } finally {
+          setIsLoadingSeason(false);
+        }
+      };
+      
+      fetchSeasonEpisodes();
+    } else {
+      setSeasonEpisodes(episodes);
+    }
+  }, [selectedSeason, id, episodes]);
+
   // Filter episodes by selected season
   const filteredEpisodes = selectedSeason 
-    ? episodes.filter(episode => episode.season_number === selectedSeason)
-    : episodes;
+    ? seasonEpisodes.filter(episode => episode.season_number === selectedSeason)
+    : seasonEpisodes;
 
   // Debug logging
   console.log('📺 Episode Selection Debug:', {
@@ -90,8 +118,11 @@ const TvShowPlayerEpisodeSelection: React.FC<TvShowPlayerEpisodeSelectionProps> 
               const seasonNumber = Number(item.key);
               return `Mùa ${seasonNumber}`;
             }}
-            onChange={(e) => {
-              setSelectedSeason(Number(e.target.value));
+            onSelectionChange={(keys) => {
+              const selectedKey = Array.from(keys)[0] as string;
+              if (selectedKey) {
+                setSelectedSeason(Number(selectedKey));
+              }
             }}
           >
             {filteredSeasons.map(({ season_number, name }) => (
@@ -107,7 +138,12 @@ const TvShowPlayerEpisodeSelection: React.FC<TvShowPlayerEpisodeSelectionProps> 
       )}
       
       <div className="grid grid-cols-1 gap-2 p-2 sm:gap-4 sm:p-4 rounded-xl">
-        {Array.isArray(filteredEpisodes) && filteredEpisodes.length > 0 ? (
+        {isLoadingSeason ? (
+          <div className="flex items-center justify-center py-8">
+            <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-white"></div>
+            <span className="ml-3 text-white">Đang tải tập...</span>
+          </div>
+        ) : Array.isArray(filteredEpisodes) && filteredEpisodes.length > 0 ? (
           filteredEpisodes.map((episode: Episode, index: number) => (
             <motion.div
               key={episode.id}
