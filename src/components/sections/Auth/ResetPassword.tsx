@@ -1,5 +1,4 @@
 import { resetPassword } from "@/actions/auth";
-import RegisterPasswordInput from "@/components/ui/input/RegisterPasswordInput";
 import { ResetPasswordFormSchema, ResetPasswordFormInput } from "@/schemas/auth";
 import { LockPassword } from "@/utils/icons";
 import { addToast, Button } from "@heroui/react";
@@ -41,30 +40,30 @@ const AuthResetPasswordForm: React.FC = () => {
       <p className="text-small text-foreground-500 mb-4 text-center">
         Please enter your new password
       </p>
-      <RegisterPasswordInput
-        value={watch("password")}
-        {...register("password")}
-        isInvalid={!!errors.password?.message}
-        errorMessage={errors.password?.message}
-        isRequired
-        variant="underlined"
-        label="New Password"
-        placeholder="Enter your new password"
-        startContent={<LockPassword className="text-xl" />}
-        isDisabled={isPending}
-      />
-      <RegisterPasswordInput
-        {...register("confirm")}
-        isConfirmPassword={true}
-        isInvalid={!!errors.confirm?.message}
-        errorMessage={errors.confirm?.message}
-        isRequired
-        variant="underlined"
-        label="Confirm New Password"
-        placeholder="Confirm your new password"
-        startContent={<LockPassword className="text-xl" />}
-        isDisabled={isPending}
-      />
+      <div className="relative w-full">
+        <LockPassword className="absolute left-3 top-1/2 -translate-y-1/2 text-default-400" />
+        <input
+          placeholder="Mật khẩu mới"
+          type="password"
+          autoComplete="new-password"
+          {...register("password")}
+          disabled={isPending}
+          className="w-full rounded-lg bg-default-100 p-3 pl-10 text-sm outline-none focus:ring-2 focus:ring-primary"
+        />
+        {errors.password && <p className="mt-1 text-xs text-danger">{errors.password.message}</p>}
+      </div>
+      <div className="relative w-full">
+        <LockPassword className="absolute left-3 top-1/2 -translate-y-1/2 text-default-400" />
+        <input
+          placeholder="Xác nhận mật khẩu mới"
+          type="password"
+          autoComplete="new-password"
+          {...register("confirm")}
+          disabled={isPending}
+          className="w-full rounded-lg bg-default-100 p-3 pl-10 text-sm outline-none focus:ring-2 focus:ring-primary"
+        />
+        {errors.confirm && <p className="mt-1 text-xs text-danger">{errors.confirm.message}</p>}
+      </div>
       <Button
         className="mt-3 w-full"
         color="primary"

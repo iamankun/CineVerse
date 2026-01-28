@@ -1,5 +1,5 @@
 import { Mail } from "@/utils/icons";
-import { addToast, Button, Input } from "@heroui/react";
+import { addToast, Button } from "@heroui/react";
 import { AuthFormProps } from "./Forms";
 import { ForgotPasswordFormSchema, ForgotPasswordFormInput } from "@/schemas/auth";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -60,18 +60,18 @@ const AuthForgotPasswordForm: React.FC<AuthFormProps> = ({ setForm }) => {
       <p className="text-small text-foreground-500 mb-4 text-center">
         You'll receive an email with a link to reset your password
       </p>
-      <Input
-        {...register("email")}
-        isInvalid={!!errors.email?.message}
-        errorMessage={errors.email?.message}
-        isRequired
-        label="Email Address"
-        placeholder="Enter your email"
-        type="email"
-        variant="underlined"
-        startContent={<Mail className="text-xl" />}
-        isDisabled={isPending}
-      />
+      <div className="relative w-full">
+        <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-default-400" />
+        <input
+          placeholder="Email"
+          type="email"
+          autoComplete="email"
+          {...register("email")}
+          disabled={isPending}
+          className="w-full rounded-lg bg-default-100 p-3 pl-10 text-sm outline-none focus:ring-2 focus:ring-primary"
+        />
+        {errors.email && <p className="mt-1 text-xs text-danger">{errors.email.message}</p>}
+      </div>
       <Button
         className="mt-3 w-full"
         color="primary"

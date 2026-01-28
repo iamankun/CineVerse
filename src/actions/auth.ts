@@ -166,19 +166,19 @@ const signUpAction: AuthAction<RegisterFormInput> = async (data, supabase) => {
   });
 
   if (signUpError) {
-    console.error("❌ Auth signup error:", signUpError);
+    console.error("❌ Lỗi xác minh đăng ký:", signUpError);
     return { success: false, message: signUpError.message };
   }
   
   if (!authData.user) {
-    console.error("❌ No user data returned");
+    console.error("❌ Không có dữ liệu người dùng được trả về");
     return {
       success: false,
       message: "Bạn không thể tạo tài khoản, có lẽ đã xảy ra vấn đề. Hãy thử lại ngay!",
     };
   }
 
-  console.log("✅ Auth user created:", { userId: authData.user.id, email: authData.user.email });
+  console.log("✅ Người dùng đã được tạo thành công:", { userId: authData.user.id, email: authData.user.email });
 
   // Step 3: Create profile in public.profiles
   const { error: profileError } = await supabase

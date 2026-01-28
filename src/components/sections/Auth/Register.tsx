@@ -1,9 +1,8 @@
 import { signUp } from "@/actions/auth";
 import { LockPassword, Mail, User } from "@/utils/icons";
-import { addToast, Button, Divider, Input, Link } from "@heroui/react";
+import { addToast, Button, Divider, Link } from "@heroui/react";
 import { AuthFormProps } from "./Forms";
 import { RegisterFormSchema, RegisterFormInput } from "@/schemas/auth";
-import RegisterPasswordInput from "@/components/ui/input/RegisterPasswordInput";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { useTransition, useCallback } from "react";
@@ -69,57 +68,53 @@ const AuthRegisterForm: React.FC<AuthFormProps> = ({ setForm }) => {
         <p className="text-small text-foreground-500 mb-4 text-center">
           Tham gia để theo dõi phim yêu thích và lịch sử xem phim
         </p>
-        <Input
-          {...register("username")}
-          isInvalid={!!errors.username?.message}
-          errorMessage={errors.username?.message}
-          isRequired
-          spellCheck="false"
-          autoComplete="username"
-          label="Tên người dùng"
-          placeholder="Nhập tên người dùng đi bạn"
-          variant="underlined"
-          startContent={<User className="text-xl" />}
-          isDisabled={isPending}
-        />
-        <Input
-          {...register("email")}
-          isInvalid={!!errors.email?.message}
-          errorMessage={errors.email?.message}
-          spellCheck="false"
-          isRequired
-          autoComplete="email"
-          label="Email"
-          placeholder="Nhập email đi bạn"
-          type="email"
-          variant="underlined"
-          startContent={<Mail className="text-xl" />}
-          isDisabled={isPending}
-        />
-        <RegisterPasswordInput
-          value={watch("password")}
-          {...register("password")}
-          isInvalid={!!errors.password?.message}
-          errorMessage={errors.password?.message}
-          isRequired
-          variant="underlined"
-          label="Mật khẩu"
-          placeholder="Nhập mật khẩu đi bạn"
-          startContent={<LockPassword className="text-xl" />}
-          isDisabled={isPending}
-        />
-        <RegisterPasswordInput
-          {...register("confirm")}
-          isConfirmPassword={true}
-          isInvalid={!!errors.confirm?.message}
-          errorMessage={errors.confirm?.message}
-          isRequired
-          variant="underlined"
-          label="Xác nhận mật khẩu"
-          placeholder="Xác nhận mật khẩu đi bạn"
-          startContent={<LockPassword className="text-xl" />}
-          isDisabled={isPending}
-        />
+        <div className="relative w-full">
+          <User className="absolute left-3 top-1/2 -translate-y-1/2 text-default-400" />
+          <input
+            placeholder="Tên người dùng"
+            autoComplete="username"
+            {...register("username")}
+            disabled={isPending}
+            className="w-full rounded-lg bg-default-100 p-3 pl-10 text-sm outline-none focus:ring-2 focus:ring-primary"
+          />
+          {errors.username && <p className="mt-1 text-xs text-danger">{errors.username.message}</p>}
+        </div>
+        <div className="relative w-full">
+          <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-default-400" />
+          <input
+            placeholder="Email"
+            type="email"
+            autoComplete="email"
+            {...register("email")}
+            disabled={isPending}
+            className="w-full rounded-lg bg-default-100 p-3 pl-10 text-sm outline-none focus:ring-2 focus:ring-primary"
+          />
+          {errors.email && <p className="mt-1 text-xs text-danger">{errors.email.message}</p>}
+        </div>
+        <div className="relative w-full">
+          <LockPassword className="absolute left-3 top-1/2 -translate-y-1/2 text-default-400" />
+          <input
+            placeholder="Mật khẩu"
+            type="password"
+            autoComplete="new-password"
+            {...register("password")}
+            disabled={isPending}
+            className="w-full rounded-lg bg-default-100 p-3 pl-10 text-sm outline-none focus:ring-2 focus:ring-primary"
+          />
+          {errors.password && <p className="mt-1 text-xs text-danger">{errors.password.message}</p>}
+        </div>
+        <div className="relative w-full">
+          <LockPassword className="absolute left-3 top-1/2 -translate-y-1/2 text-default-400" />
+          <input
+            placeholder="Xác nhận mật khẩu"
+            type="password"
+            autoComplete="new-password"
+            {...register("confirm")}
+            disabled={isPending}
+            className="w-full rounded-lg bg-default-100 p-3 pl-10 text-sm outline-none focus:ring-2 focus:ring-primary"
+          />
+          {errors.confirm && <p className="mt-1 text-xs text-danger">{errors.confirm.message}</p>}
+        </div>
         <Button
           className="mt-3 w-full"
           color="primary"

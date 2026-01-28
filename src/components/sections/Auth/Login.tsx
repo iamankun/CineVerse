@@ -1,8 +1,7 @@
 import { signIn } from "@/actions/auth";
-import PasswordInput from "@/components/ui/input/PasswordInput";
 import { LoginFormSchema, LoginFormInput } from "@/schemas/auth";
 import { LockPassword, Mail } from "@/utils/icons";
-import { addToast, Button, Input, Link } from "@heroui/react";
+import { addToast, Button, Link } from "@heroui/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTransition, useCallback, useEffect } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
@@ -73,27 +72,30 @@ const AuthLoginForm: React.FC<AuthFormProps> = ({ setForm }) => {
         <SocialSection />
         
         <form className="flex flex-col gap-3" onSubmit={handleSubmit(onSubmit)}>
-          <Input
-            label="Email"
-            placeholder="Nhập email của bạn"
-            type="email"
-            autoComplete="email"
-            {...register("email")}
-            isInvalid={!!errors.email}
-            errorMessage={errors.email?.message}
-            isDisabled={isPending}
-            startContent={<Mail />}
-          />
-          <PasswordInput
-            label="Mật khẩu"
-            placeholder="Nhập mật khẩu"
-            autoComplete="current-password"
-            {...register("loginPassword")}
-            isInvalid={!!errors.loginPassword}
-            errorMessage={errors.loginPassword?.message}
-            isDisabled={isPending}
-            startContent={<LockPassword />}
-          />
+          <div className="relative w-full">
+            <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-default-400" />
+            <input
+              placeholder="Email"
+              type="email"
+              autoComplete="email"
+              {...register("email")}
+              disabled={isPending}
+              className="w-full rounded-lg bg-default-100 p-3 pl-10 text-sm outline-none focus:ring-2 focus:ring-primary"
+            />
+            {errors.email && <p className="mt-1 text-xs text-danger">{errors.email.message}</p>}
+          </div>
+          <div className="relative w-full">
+            <LockPassword className="absolute left-3 top-1/2 -translate-y-1/2 text-default-400" />
+            <input
+              placeholder="Mật khẩu"
+              type="password"
+              autoComplete="current-password"
+              {...register("loginPassword")}
+              disabled={isPending}
+              className="w-full rounded-lg bg-default-100 p-3 pl-10 text-sm outline-none focus:ring-2 focus:ring-primary"
+            />
+            {errors.loginPassword && <p className="mt-1 text-xs text-danger">{errors.loginPassword.message}</p>}
+          </div>
           <div className="flex w-full items-center justify-end px-1 py-2">
             <Link
               size="sm"
