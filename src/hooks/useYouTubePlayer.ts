@@ -211,21 +211,31 @@ export const useYouTubePlayer = (
                 options.onStateChange?.(event.data);
 
                 // Update duration khi video thay đổi state
-                if (playerRef.current) {
-                  setDuration(playerRef.current.getDuration());
+                if (playerRef.current && typeof playerRef.current.getDuration === 'function') {
+                  try {
+                    setDuration(playerRef.current.getDuration());
 
-                  // Update quality levels khi video state changes (có thể có thêm quality sau khi load)
-                  const qualities = playerRef.current.getAvailableQualityLevels();
-                  if (qualities.length > 0) {
-                    setAvailableQualities(qualities);
-                    // Ưu tiên chọn chất lượng cao nhất nếu có
-                    const filtered = qualities.filter(q => q !== 'auto' && q !== 'default');
-                    if (filtered.length > 0) {
-                      playerRef.current.setPlaybackQuality(filtered[0]);
-                      setCurrentQuality(filtered[0]);
-                    } else {
-                      setCurrentQuality(playerRef.current.getPlaybackQuality());
+                    // Update quality levels khi video state changes (có thể có thêm quality sau khi load)
+                    if (typeof playerRef.current.getAvailableQualityLevels === 'function') {
+                      const qualities = playerRef.current.getAvailableQualityLevels();
+                      if (qualities.length > 0) {
+                        setAvailableQualities(qualities);
+                        // Ưu tiên chọn chất lượng cao nhất nếu có
+                        const filtered = qualities.filter(q => q !== 'auto' && q !== 'default');
+                        if (filtered.length > 0) {
+                          if (typeof playerRef.current.setPlaybackQuality === 'function') {
+                            playerRef.current.setPlaybackQuality(filtered[0]);
+                          }
+                          setCurrentQuality(filtered[0]);
+                        } else {
+                          if (typeof playerRef.current.getPlaybackQuality === 'function') {
+                            setCurrentQuality(playerRef.current.getPlaybackQuality());
+                          }
+                        }
+                      }
                     }
+                  } catch (error) {
+                    console.error('Error updating player state:', error);
                   }
                 }
               },
@@ -282,7 +292,7 @@ export const useYouTubePlayer = (
       if (intervalRef.current) {
         clearInterval(intervalRef.current);
       }
-      if (playerRef.current) {
+      if (playerRef.current && typeof playerRef.current.destroy === 'function') {
         try {
           playerRef.current.destroy();
         } catch (error) {
@@ -296,8 +306,12 @@ export const useYouTubePlayer = (
   useEffect(() => {
     if (playerState === PlayerState.PLAYING) {
       intervalRef.current = setInterval(() => {
-        if (playerRef.current) {
-          setCurrentTime(playerRef.current.getCurrentTime());
+        if (playerRef.current && typeof playerRef.current.getCurrentTime === 'function') {
+          try {
+            setCurrentTime(playerRef.current.getCurrentTime());
+          } catch (error) {
+            console.error('Error getting current time:', error);
+          }
         }
       }, 100);
     } else {
@@ -316,26 +330,26 @@ export const useYouTubePlayer = (
 
   // Control methods
   const play = useCallback(() => {
-    if (playerRef.current && isReady) {
+    if (playerRef.current && isReady && typeof playerRef.current.playVideo === 'function') {
       playerRef.current.playVideo();
     }
   }, [isReady]);
 
   const pause = useCallback(() => {
-    if (playerRef.current && isReady) {
+    if (playerRef.current && isReady && typeof playerRef.current.pauseVideo === 'function') {
       playerRef.current.pauseVideo();
     }
   }, [isReady]);
 
   const stop = useCallback(() => {
-    if (playerRef.current && isReady) {
+    if (playerRef.current && isReady && typeof playerRef.current.stopVideo === 'function') {
       playerRef.current.stopVideo();
     }
   }, [isReady]);
 
   const seekTo = useCallback(
     (seconds: number) => {
-      if (playerRef.current && isReady) {
+      if (playerRef.current && isReady && typeof playerRef.current.seekTo === 'function') {
         playerRef.current.seekTo(seconds, true);
         setCurrentTime(seconds);
       }
@@ -345,7 +359,7 @@ export const useYouTubePlayer = (
 
   const setVolume = useCallback(
     (vol: number) => {
-      if (playerRef.current && isReady) {
+      if (playerRef.current && isReady && typeof playerRef.current.setVolume === 'function') {
         const clampedVolume = Math.max(0, Math.min(100, vol));
         playerRef.current.setVolume(clampedVolume);
         setVolumeState(clampedVolume);
@@ -355,12 +369,16 @@ export const useYouTubePlayer = (
   );
 
   const toggleMute = useCallback(() => {
-    if (playerRef.current && isReady) {
+    if (playerRef.current && isReady && typeof playerRef.current.isMuted === 'function') {
       if (playerRef.current.isMuted()) {
-        playerRef.current.unMute();
+        if (typeof playerRef.current.unMute === 'function') {
+          playerRef.current.unMute();
+        }
         setIsMuted(false);
       } else {
-        playerRef.current.mute();
+        if (typeof playerRef.current.mute === 'function') {
+          playerRef.current.mute();
+        }
         setIsMuted(true);
       }
     }
@@ -376,7 +394,7 @@ export const useYouTubePlayer = (
 
   const setPlaybackQuality = useCallback(
     (quality: string) => {
-      if (playerRef.current && isReady) {
+      if (playerRef.current && isReady && typeof playerRef.current.setPlaybackQuality === 'function') {
         playerRef.current.setPlaybackQuality(quality);
         setCurrentQuality(quality);
       }

@@ -7,7 +7,7 @@ import { useDisclosure, useDocumentTitle, useIdle, useLocalStorage } from "@mant
 import dynamic from "next/dynamic";
 import { parseAsInteger, useQueryState } from "nuqs";
 import { memo, useEffect, useMemo, useRef, useState } from "react";
-import { Episode, TvShowDetails } from "tmdb-ts";
+import { Episode, Season, TvShowDetails } from "tmdb-ts";
 import useBreakpoints from "@/hooks/useBreakpoints";
 import { ADS_WARNING_STORAGE_KEY, SpacingClasses } from "@/utils/constants";
 import { useVidlinkPlayer } from "@/hooks/useVidlinkPlayer";
@@ -67,6 +67,7 @@ export interface TvShowPlayerProps {
   seasonName: string;
   episode: Episode;
   episodes: Episode[];
+  seasons?: Season[];
   nextEpisodeNumber: number | null;
   prevEpisodeNumber: number | null;
   startAt?: number;
@@ -77,6 +78,9 @@ const TvShowPlayer: React.FC<TvShowPlayerProps> = ({
   id,
   episode,
   episodes,
+  seasons,
+  nextEpisodeNumber,
+  prevEpisodeNumber,
   startAt,
   ...props
 }) => {
@@ -364,32 +368,32 @@ const TvShowPlayer: React.FC<TvShowPlayerProps> = ({
         }
 
         // Kết thúc sự kiện video - Tự động phát tập tiếp theo nếu có
-        if (props.nextEpisodeNumber) {
+        if (nextEpisodeNumber) {
           // YouTube ended event
           if (event.data.event === 'infoDelivery' && event.data.info?.playerState === 0) {
             console.log('🎬 Video ended (YouTube), auto-playing next episode...');
-            window.location.href = `/tv/${id}/${episode.season_number}/${props.nextEpisodeNumber}/player?src=${selectedSource}`;
+            window.location.href = `/tv/${id}/${episode.season_number}/${nextEpisodeNumber}/player?src=${selectedSource}`;
             return;
           }
 
           // Dailymotion kết thúc sự kiện
           if (event.data.event === 'ended' || event.data.event === 'video_end') {
             console.log('🎬 Video ended (Dailymotion), auto-playing next episode...');
-            window.location.href = `/tv/${id}/${episode.season_number}/${props.nextEpisodeNumber}/player?src=${selectedSource}`;
+            window.location.href = `/tv/${id}/${episode.season_number}/${nextEpisodeNumber}/player?src=${selectedSource}`;
             return;
           }
 
           // Sự kiện kết thúc chung
           if (event.data.type === 'ended' || event.data.event === 'ended') {
             console.log('🎬 Video ended, auto-playing next episode...');
-            window.location.href = `/tv/${id}/${episode.season_number}/${props.nextEpisodeNumber}/player?src=${selectedSource}`;
+            window.location.href = `/tv/${id}/${episode.season_number}/${nextEpisodeNumber}/player?src=${selectedSource}`;
             return;
           }
 
           // VidLink kết thúc sự kiện đa phương tiện
           if (event.data.type === 'PLAYER_EVENT' && event.data.data?.event === 'ended') {
             console.log('🎬 Video ended (VidLink), auto-playing next episode...');
-            window.location.href = `/tv/${id}/${episode.season_number}/${props.nextEpisodeNumber}/player?src=${selectedSource}`;
+            window.location.href = `/tv/${id}/${episode.season_number}/${nextEpisodeNumber}/player?src=${selectedSource}`;
             return;
           }
         }
@@ -398,7 +402,7 @@ const TvShowPlayer: React.FC<TvShowPlayerProps> = ({
 
     window.addEventListener('message', handleMessage);
     return () => window.removeEventListener('message', handleMessage);
-  }, [id, episode.season_number, props.nextEpisodeNumber, selectedSource]);
+  }, [id, episode.season_number, nextEpisodeNumber, selectedSource]);
 
   // Fallback: estimate video time if no postMessage (tracks real playback time)
   useEffect(() => {
@@ -583,6 +587,8 @@ const TvShowPlayer: React.FC<TvShowPlayerProps> = ({
           episode={episode}
           hidden={idle && !mobile && !isFullscreen}
           selectedSource={selectedSource}
+          nextEpisodeNumber={nextEpisodeNumber}
+          prevEpisodeNumber={prevEpisodeNumber}
           onOpenSource={sourceHandlers.open}
           onOpenEpisode={episodeHandlers.open}
           {...props}
@@ -593,8 +599,8 @@ const TvShowPlayer: React.FC<TvShowPlayerProps> = ({
           seasonNumber={episode.season_number}
           episodeNumber={episode.episode_number}
           selectedSource={selectedSource}
-          nextEpisodeNumber={props.nextEpisodeNumber}
-          prevEpisodeNumber={props.prevEpisodeNumber}
+          nextEpisodeNumber={nextEpisodeNumber}
+          prevEpisodeNumber={prevEpisodeNumber}
           onOpenSource={sourceHandlers.open}
           onOpenEpisode={episodeHandlers.open}
           onToggleFullscreen={gestureCallbacks.onToggleFullscreen}
@@ -631,14 +637,14 @@ const TvShowPlayer: React.FC<TvShowPlayerProps> = ({
                     // New props for direct navigation
                     id={id}
                     seasonNumber={episode.season_number}
-                    nextEpisodeNumber={props.nextEpisodeNumber}
+                    nextEpisodeNumber={nextEpisodeNumber}
                     selectedSource={selectedSource}
                     onReady={() => console.log('YouTube Player ready!')}
                     onStateChange={(state) => {
                       // State 0 = ENDED
-                      if (state === 0 && props.nextEpisodeNumber) {
+                      if (state === 0 && nextEpisodeNumber) {
                         console.log('🎬 YouTube video ended, auto-playing next episode...');
-                        window.location.href = `/tv/${id}/${episode.season_number}/${props.nextEpisodeNumber}/player?src=${selectedSource}`;
+                        window.location.href = `/tv/${id}/${episode.season_number}/${nextEpisodeNumber}/player?src=${selectedSource}`;
                       }
                     }}
                     onError={(error) => {
@@ -736,6 +742,7 @@ const TvShowPlayer: React.FC<TvShowPlayerProps> = ({
         opened={episodeOpened}
         onClose={episodeHandlers.close}
         episodes={episodes}
+        seasons={seasons}
         currentEpisodeNumber={episode.episode_number}
       />
     </>

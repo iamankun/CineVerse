@@ -28,6 +28,19 @@ const TvShowPlayerPage: NextPage<Params<{ id: number; season: number; episode: n
   });
 
   const {
+    data: seasons,
+    isPending: isPendingSeasons,
+  } = useQuery({
+    queryFn: async () => {
+      const details = await tmdb.tvShows.details(id, [], 'vi-VN');
+      return details.seasons;
+    },
+    queryKey: ["tv-show-seasons", id],
+    staleTime: 86400000, // 24 hours
+    gcTime: 86400000, // 24 hours
+  });
+
+  const {
     data: seasonDetail,
     isPending: isPendingSeason,
     error: errorSeason,
@@ -45,7 +58,7 @@ const TvShowPlayerPage: NextPage<Params<{ id: number; season: number; episode: n
     gcTime: 86400000, // 24 hours
   });
 
-  if (isPendingTv || isPendingSeason || isPendingStartAt) {
+  if (isPendingTv || isPendingSeasons || isPendingSeason || isPendingStartAt) {
     return <Spinner size="lg" className="absolute-center" color="warning" variant="simple" />;
   }
 
@@ -81,6 +94,7 @@ const TvShowPlayerPage: NextPage<Params<{ id: number; season: number; episode: n
       seasonName={seasonDetail.name}
       episode={EPISODE}
       episodes={seasonDetail.episodes}
+      seasons={seasons}
       nextEpisodeNumber={nextEpisodeNumber}
       prevEpisodeNumber={prevEpisodeNumber}
       startAt={startAt}
