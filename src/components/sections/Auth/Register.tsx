@@ -1,87 +1,71 @@
 import { signUp } from "@/actions/auth";
-import { Google, LockPassword, Mail, User } from "@/utils/icons";
+import { LockPassword, Mail, User } from "@/utils/icons";
 import { addToast, Button, Divider, Input, Link } from "@heroui/react";
 import { AuthFormProps } from "./Forms";
-import { RegisterFormSchema } from "@/schemas/auth";
+import { RegisterFormSchema, RegisterFormInput } from "@/schemas/auth";
 import RegisterPasswordInput from "@/components/ui/input/RegisterPasswordInput";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import { Turnstile } from "@marsidev/react-turnstile";
-import { useCallback, useState } from "react";
-import { isEmpty } from "@/utils/helpers";
+import { useForm, SubmitHandler } from "react-hook-form";
+import { useTransition, useCallback } from "react";
 import { env } from "@/utils/env";
 import GoogleLoginButton from "@/components/ui/button/GoogleLoginButton";
+import { useGoogleReCaptcha } from "react-google-recaptcha-v3";
 
 const AuthRegisterForm: React.FC<AuthFormProps> = ({ setForm }) => {
-  const [isVerifying, setIsVerifying] = useState(false);
+  const [isPending, startTransition] = useTransition();
+  const { executeRecaptcha } = useGoogleReCaptcha();
 
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const {
     watch,
     register,
-    setValue,
     handleSubmit,
+    setValue,
     formState: { errors },
-  } = useForm({
+  } = useForm<RegisterFormInput>({
     resolver: zodResolver(RegisterFormSchema),
     mode: "onChange",
-    defaultValues: {
-      username: "",
-      email: "",
-      password: "",
-      confirm: "",
-    },
   });
 
-  const onSubmit = handleSubmit(async (data) => {
-    if (env.NEXT_PUBLIC_CAPTCHA_SITE_KEY && isEmpty(data.captchaToken)) {
-      setIsVerifying(true);
-      return;
+  const handleReCaptchaVerify = useCallback(async () => {
+    if (!executeRecaptcha) {
+      console.error("ReCaptcha not available");
+      return null;
     }
-
-    setIsSubmitting(true);
     try {
-      const { success, message } = await signUp(data);
+      const token = await executeRecaptcha("register");
+      return token;
+    } catch (error) {
+      console.error("ReCaptcha verification error:", error);
+      return null;
+    }
+  }, [executeRecaptcha]);
+
+  const onSubmit: SubmitHandler<RegisterFormInput> = (data) => {
+    startTransition(async () => {
+      let captchaToken: string | null = null;
+      const isDevelopment = process.env.NODE_ENV === 'development';
+
+      if (env.NEXT_PUBLIC_CAPTCHA_SITE_KEY && !isDevelopment) {
+        captchaToken = await handleReCaptchaVerify();
+        if (!captchaToken) {
+          addToast({ title: "Xác minh Captcha thất bại. Vui lòng thử lại.", color: "danger" });
+          return;
+        }
+      }
+
+      const { success, message } = await signUp({ ...data, captchaToken: captchaToken || undefined });
 
       addToast({
         title: message,
         color: success ? "success" : "danger",
         timeout: success ? Infinity : undefined,
       });
-
-      if (!success) {
-        setValue("captchaToken", undefined);
-      }
-    } catch (error) {
-      console.error("Lỗi đăng ký:", error);
-      addToast({
-        title: "Không thể kết nối đến máy chủ. Vui lòng thử lại.",
-        color: "danger",
-      });
-    } finally {
-      setIsSubmitting(false);
-      setIsVerifying(false);
-    }
-  });
-
-  const onCaptchaSuccess = useCallback(
-    (token: string) => {
-      setValue("captchaToken", token);
-      setIsVerifying(false);
-      onSubmit();
-    },
-    [setValue, setIsVerifying, onSubmit],
-  );
-
-  const getButtonText = useCallback(() => {
-    if (isSubmitting) return "Đang đăng ký...";
-    if (isVerifying) return "Đang xác minh...";
-    return "Đăng ký";
-  }, [isSubmitting, isVerifying]);
+    });
+  };
 
   return (
     <div className="flex flex-col gap-5">
-      <form className="flex flex-col gap-3" onSubmit={onSubmit}>
+      <form className="flex flex-col gap-3" onSubmit={handleSubmit(onSubmit)}>
         <p className="text-small text-foreground-500 mb-4 text-center">
           Tham gia để theo dõi phim yêu thích và lịch sử xem phim
         </p>
@@ -96,7 +80,7 @@ const AuthRegisterForm: React.FC<AuthFormProps> = ({ setForm }) => {
           placeholder="Nhập tên người dùng đi bạn"
           variant="underlined"
           startContent={<User className="text-xl" />}
-          isDisabled={isSubmitting || isVerifying}
+          isDisabled={isPending}
         />
         <Input
           {...register("email")}
@@ -110,7 +94,7 @@ const AuthRegisterForm: React.FC<AuthFormProps> = ({ setForm }) => {
           type="email"
           variant="underlined"
           startContent={<Mail className="text-xl" />}
-          isDisabled={isSubmitting || isVerifying}
+          isDisabled={isPending}
         />
         <RegisterPasswordInput
           value={watch("password")}
@@ -122,7 +106,7 @@ const AuthRegisterForm: React.FC<AuthFormProps> = ({ setForm }) => {
           label="Mật khẩu"
           placeholder="Nhập mật khẩu đi bạn"
           startContent={<LockPassword className="text-xl" />}
-          isDisabled={isSubmitting || isVerifying}
+          isDisabled={isPending}
         />
         <RegisterPasswordInput
           {...register("confirm")}
@@ -134,35 +118,16 @@ const AuthRegisterForm: React.FC<AuthFormProps> = ({ setForm }) => {
           label="Xác nhận mật khẩu"
           placeholder="Xác nhận mật khẩu đi bạn"
           startContent={<LockPassword className="text-xl" />}
-          isDisabled={isSubmitting || isVerifying}
+          isDisabled={isPending}
         />
-        {isVerifying && env.NEXT_PUBLIC_CAPTCHA_SITE_KEY && (
-          <Turnstile
-            className="flex h-fit w-full items-center justify-center"
-            siteKey={env.NEXT_PUBLIC_CAPTCHA_SITE_KEY}
-            onSuccess={onCaptchaSuccess}
-            onError={() => {
-              setIsVerifying(false);
-              setValue("captchaToken", undefined);
-              addToast({
-                title: "Captcha xác minh thất bại. Vui lòng thử lại.",
-                color: "danger",
-              });
-            }}
-            onExpire={() => {
-              setIsVerifying(false);
-              setValue("captchaToken", undefined);
-            }}
-          />
-        )}
         <Button
           className="mt-3 w-full"
           color="primary"
           type="submit"
           variant="shadow"
-          isLoading={isSubmitting || isVerifying}
+          isLoading={isPending}
         >
-          {getButtonText()}
+          Đăng ký
         </Button>
       </form>
       <div className="flex items-center gap-4 py-2">
@@ -170,7 +135,7 @@ const AuthRegisterForm: React.FC<AuthFormProps> = ({ setForm }) => {
         <p className="text-tiny text-default-500 shrink-0">OR</p>
         <Divider className="flex-1" />
       </div>
-      <GoogleLoginButton isDisabled={isSubmitting || isVerifying} />
+      <GoogleLoginButton isDisabled={isPending} />
       <p className="text-small text-center">
         Already have an account?
         <Link
@@ -178,7 +143,7 @@ const AuthRegisterForm: React.FC<AuthFormProps> = ({ setForm }) => {
           onClick={() => setForm("login")}
           size="sm"
           className="cursor-pointer"
-          isDisabled={isSubmitting || isVerifying}
+          isDisabled={isPending}
         >
           Sign In
         </Link>

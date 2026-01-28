@@ -44,7 +44,9 @@ const AuthLoginForm: React.FC<AuthFormProps> = ({ setForm }) => {
   const onSubmit: SubmitHandler<LoginFormInput> = (data) => {
     startTransition(async () => {
       let captchaToken: string | null = null;
-      if (env.NEXT_PUBLIC_CAPTCHA_SITE_KEY) {
+      const isDevelopment = process.env.NODE_ENV === 'development';
+
+      if (env.NEXT_PUBLIC_CAPTCHA_SITE_KEY && !isDevelopment) {
         captchaToken = await handleReCaptchaVerify();
         if (!captchaToken) {
           addToast({ title: "Xác minh Captcha thất bại. Vui lòng thử lại.", color: "danger" });
@@ -52,7 +54,7 @@ const AuthLoginForm: React.FC<AuthFormProps> = ({ setForm }) => {
         }
       }
 
-      const { success, message } = await signIn({ ...data, captchaToken: captchaToken || undefined });
+      const { success, message } = await signIn({ ...data, captchaToken: captchaToken === null ? undefined : captchaToken });
 
       addToast({
         title: message,
@@ -110,7 +112,7 @@ const AuthLoginForm: React.FC<AuthFormProps> = ({ setForm }) => {
             variant="shadow"
             isLoading={isPending}
           >
-            Đăng nhập
+            Đăng nhập ngay
           </Button>
         </form>
         
@@ -122,7 +124,7 @@ const AuthLoginForm: React.FC<AuthFormProps> = ({ setForm }) => {
             onClick={() => setForm("register")}
             isDisabled={isPending}
           >
-            Đăng ký
+            Đăng ký ngay bạn ơi!
           </Link>
         </p>
       </div>

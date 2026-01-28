@@ -1,81 +1,49 @@
 import { resetPassword } from "@/actions/auth";
-import PasswordInput from "@/components/ui/input/PasswordInput";
-import { ResetPasswordFormSchema } from "@/schemas/auth";
-import { env } from "@/utils/env";
-import { isEmpty } from "@/utils/helpers";
+import RegisterPasswordInput from "@/components/ui/input/RegisterPasswordInput";
+import { ResetPasswordFormSchema, ResetPasswordFormInput } from "@/schemas/auth";
 import { LockPassword } from "@/utils/icons";
-import { useRouter } from "@bprogress/next/app";
 import { addToast, Button } from "@heroui/react";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Turnstile } from "@marsidev/react-turnstile";
-import { useCallback, useState } from "react";
-import { useForm } from "react-hook-form";
+import { useTransition } from "react";
+import { useForm, SubmitHandler } from "react-hook-form";
 
 const AuthResetPasswordForm: React.FC = () => {
-  const router = useRouter();
-  const [isVerifying, setIsVerifying] = useState(false);
+  const [isPending, startTransition] = useTransition();
 
   const {
     watch,
     register,
-    setValue,
     handleSubmit,
-    formState: { errors, isSubmitting },
-  } = useForm({
+    formState: { errors },
+  } = useForm<ResetPasswordFormInput>({
     resolver: zodResolver(ResetPasswordFormSchema),
     mode: "onChange",
-    defaultValues: {
-      password: "",
-      confirm: "",
-    },
   });
 
-  const onSubmit = handleSubmit(async (data) => {
-    // Only require captcha verification if site key is configured
-    if (env.NEXT_PUBLIC_CAPTCHA_SITE_KEY && isEmpty(data.captchaToken)) {
-      setIsVerifying(true);
-      return;
-    }
+  const onSubmit: SubmitHandler<ResetPasswordFormInput> = (data) => {
+    startTransition(async () => {
+      // Captcha is not needed here as the user is already verified via email link
+      const { success, message } = await resetPassword(data);
 
-    const { success, message } = await resetPassword(data);
+      addToast({ title: message, color: success ? "success" : "danger" });
 
-    addToast({
-      title: message,
-      color: success ? "success" : "danger",
+      if (success) {
+        setTimeout(() => {
+          // Redirect to the login page after a successful password reset
+          window.location.href = "/auth";
+        }, 2000);
+      }
     });
-
-    if (!success) {
-      setValue("captchaToken", undefined);
-      setIsVerifying(false);
-      return;
-    }
-
-    return router.push("/");
-  });
-
-  const onCaptchaSuccess = useCallback(
-    (token: string) => {
-      setValue("captchaToken", token);
-      setIsVerifying(false);
-      onSubmit();
-    },
-    [setValue, setIsVerifying, onSubmit],
-  );
-
-  const getButtonText = useCallback(() => {
-    if (isSubmitting) return "Resetting Password...";
-    if (isVerifying) return "Verifying...";
-    return "Reset Password";
-  }, [isSubmitting, isVerifying]);
+  };
 
   return (
-    <form className="flex flex-col gap-3" onSubmit={onSubmit}>
+    <form className="flex flex-col gap-3" onSubmit={handleSubmit(onSubmit)}>
       <p className="text-small text-foreground-500 mb-4 text-center">
-        Please enter your new password to continue your streaming journey
+        Please enter your new password
       </p>
-      <PasswordInput
-        {...register("password")}
+      <RegisterPasswordInput
         value={watch("password")}
+        {...register("password")}
         isInvalid={!!errors.password?.message}
         errorMessage={errors.password?.message}
         isRequired
@@ -83,44 +51,28 @@ const AuthResetPasswordForm: React.FC = () => {
         label="New Password"
         placeholder="Enter your new password"
         startContent={<LockPassword className="text-xl" />}
+        isDisabled={isPending}
       />
-      <PasswordInput
+      <RegisterPasswordInput
         {...register("confirm")}
+        isConfirmPassword={true}
         isInvalid={!!errors.confirm?.message}
         errorMessage={errors.confirm?.message}
         isRequired
         variant="underlined"
-        label="Confirm Password"
+        label="Confirm New Password"
         placeholder="Confirm your new password"
         startContent={<LockPassword className="text-xl" />}
+        isDisabled={isPending}
       />
-      {isVerifying && env.NEXT_PUBLIC_CAPTCHA_SITE_KEY && (
-        <Turnstile
-          className="flex h-fit w-full items-center justify-center"
-          siteKey={env.NEXT_PUBLIC_CAPTCHA_SITE_KEY}
-          onSuccess={onCaptchaSuccess}
-          onError={() => {
-            setIsVerifying(false);
-            setValue("captchaToken", undefined);
-            addToast({
-              title: "Captcha verification failed. Please try again.",
-              color: "danger",
-            });
-          }}
-          onExpire={() => {
-            setIsVerifying(false);
-            setValue("captchaToken", undefined);
-          }}
-        />
-      )}
       <Button
         className="mt-3 w-full"
         color="primary"
         type="submit"
         variant="shadow"
-        isLoading={isSubmitting || isVerifying}
+        isLoading={isPending}
       >
-        {getButtonText()}
+        Reset Password
       </Button>
     </form>
   );

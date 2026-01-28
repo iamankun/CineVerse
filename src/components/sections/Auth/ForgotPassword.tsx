@@ -1,69 +1,62 @@
 import { Mail } from "@/utils/icons";
 import { addToast, Button, Input } from "@heroui/react";
 import { AuthFormProps } from "./Forms";
-import { ForgotPasswordFormSchema } from "@/schemas/auth";
+import { ForgotPasswordFormSchema, ForgotPasswordFormInput } from "@/schemas/auth";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import { isEmpty } from "@/utils/helpers";
-import { useCallback, useState } from "react";
+import { useForm, SubmitHandler, useForm as useFormType } from "react-hook-form";
+import { useTransition, useCallback } from "react";
 import { sendResetPasswordEmail } from "@/actions/auth";
-import { Turnstile } from "@marsidev/react-turnstile";
+import { useGoogleReCaptcha } from "react-google-recaptcha-v3";
 import { env } from "@/utils/env";
 
 const AuthForgotPasswordForm: React.FC<AuthFormProps> = ({ setForm }) => {
-  const [isVerifying, setIsVerifying] = useState(false);
+  const [isPending, startTransition] = useTransition();
+  const { executeRecaptcha } = useGoogleReCaptcha();
 
   const {
     register,
-    setValue,
     handleSubmit,
-    formState: { errors, isSubmitting },
-  } = useForm({
+    formState: { errors },
+  } = useForm<ForgotPasswordFormInput>({
     resolver: zodResolver(ForgotPasswordFormSchema),
     mode: "onChange",
-    defaultValues: {
-      email: "",
-    },
   });
 
-  const onSubmit = handleSubmit(async (data) => {
-    // Only require captcha verification if site key is configured
-    if (env.NEXT_PUBLIC_CAPTCHA_SITE_KEY && isEmpty(data.captchaToken)) {
-      setIsVerifying(true);
-      return;
+  const handleReCaptchaVerify = useCallback(async () => {
+    if (!executeRecaptcha) {
+      console.error("ReCaptcha not available");
+      return null;
     }
-
-    const { success, message } = await sendResetPasswordEmail(data);
-
-    if (!success) {
-      setValue("captchaToken", undefined);
-      setIsVerifying(false);
+    try {
+      const token = await executeRecaptcha("forgot_password");
+      return token;
+    } catch (error) {
+      console.error("ReCaptcha verification error:", error);
+      return null;
     }
+  }, [executeRecaptcha]);
 
-    return addToast({
-      title: message,
-      color: success ? "success" : "danger",
-      timeout: success ? Infinity : undefined,
+  const onSubmit: SubmitHandler<ForgotPasswordFormInput> = (data) => {
+    startTransition(async () => {
+      let captchaToken: string | null = null;
+      const isDevelopment = process.env.NODE_ENV === 'development';
+
+      if (env.NEXT_PUBLIC_CAPTCHA_SITE_KEY && !isDevelopment) {
+        captchaToken = await handleReCaptchaVerify();
+        if (!captchaToken) {
+          addToast({ title: "Xác minh Captcha thất bại. Vui lòng thử lại.", color: "danger" });
+          return;
+        }
+      }
+
+      const { success, message } = await sendResetPasswordEmail({ ...data, captchaToken: captchaToken || undefined });
+
+      addToast({ title: message, color: success ? "success" : "danger" });
     });
-  });
-
-  const onCaptchaSuccess = useCallback(
-    (token: string) => {
-      setValue("captchaToken", token);
-      setIsVerifying(false);
-      onSubmit();
-    },
-    [setValue, setIsVerifying, onSubmit],
-  );
-
-  const getButtonText = useCallback(() => {
-    if (isSubmitting) return "Sending Email...";
-    if (isVerifying) return "Verifying...";
-    return "Send";
-  }, [isSubmitting, isVerifying]);
+  };
 
   return (
-    <form className="flex flex-col gap-3" onSubmit={onSubmit}>
+    <form className="flex flex-col gap-3" onSubmit={handleSubmit(onSubmit)}>
       <p className="text-small text-foreground-500 mb-4 text-center">
         You'll receive an email with a link to reset your password
       </p>
@@ -73,40 +66,20 @@ const AuthForgotPasswordForm: React.FC<AuthFormProps> = ({ setForm }) => {
         errorMessage={errors.email?.message}
         isRequired
         label="Email Address"
-        name="email"
         placeholder="Enter your email"
         type="email"
         variant="underlined"
         startContent={<Mail className="text-xl" />}
-        isDisabled={isSubmitting || isVerifying}
+        isDisabled={isPending}
       />
-      {isVerifying && env.NEXT_PUBLIC_CAPTCHA_SITE_KEY && (
-        <Turnstile
-          className="flex h-fit w-full items-center justify-center"
-          siteKey={env.NEXT_PUBLIC_CAPTCHA_SITE_KEY}
-          onSuccess={onCaptchaSuccess}
-          onError={() => {
-            setIsVerifying(false);
-            setValue("captchaToken", undefined);
-            addToast({
-              title: "Captcha verification failed. Please try again.",
-              color: "danger",
-            });
-          }}
-          onExpire={() => {
-            setIsVerifying(false);
-            setValue("captchaToken", undefined);
-          }}
-        />
-      )}
       <Button
         className="mt-3 w-full"
         color="primary"
         type="submit"
         variant="shadow"
-        isLoading={isSubmitting || isVerifying}
+        isLoading={isPending}
       >
-        {getButtonText()}
+        Gửi mail cho tôi
       </Button>
     </form>
   );

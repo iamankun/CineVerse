@@ -46,9 +46,10 @@ const createAuthAction = <T extends { captchaToken?: string }>(
 
     // Skip captcha check for development or if bypassed
     const hasCaptchaSiteKey = !!process.env.NEXT_PUBLIC_CAPTCHA_SITE_KEY;
+    const isDevelopment = process.env.NODE_ENV === 'development';
     const hasValidToken = result.data.captchaToken && result.data.captchaToken !== "bypass";
     
-    console.log("🔍 Captcha check:", { 
+    console.log("🔍 Kiểm tra Captcha:", { 
       hasSiteKey: hasCaptchaSiteKey, 
       hasToken: !!result.data.captchaToken, 
       isBypass: result.data.captchaToken === "bypass",
@@ -56,7 +57,7 @@ const createAuthAction = <T extends { captchaToken?: string }>(
     });
 
     // Only require captcha if site key is configured and no valid token
-    if (hasCaptchaSiteKey && !hasValidToken) {
+    if (hasCaptchaSiteKey && !hasValidToken && !isDevelopment) {
       console.log("❌ Yêu cầu Captcha");
       return { success: false, message: "Yêu cầu Captcha" };
     }
@@ -86,7 +87,7 @@ const signInWithEmailAction: AuthAction<LoginFormInput> = async (data, supabase)
 
   if (error) return { success: false, message: error.message };
   
-  console.log("✅ Auth successful:", { userId: user.user.id, email: user.user.email });
+  console.log("✅ Xác minh thành công:", { userId: user.user.id, email: user.user.email });
 
   // Step 2: Check if profile exists (using service role to bypass RLS)
   const { data: username, error: usernameError } = await supabase
@@ -96,14 +97,14 @@ const signInWithEmailAction: AuthAction<LoginFormInput> = async (data, supabase)
     .maybeSingle();
 
   if (usernameError) {
-    console.error("❌ Profile lookup error:", usernameError);
+    console.error("❌ Lỗi truy cập hồ sơ:", usernameError);
     // Try to create profile if it doesn't exist
     const { error: createError } = await supabase
       .from("profiles")
       .insert({ id: user.user.id, username: user.user.email?.split('@')[0] || 'user' });
     
     if (createError) {
-      console.error("❌ Profile creation failed:", createError);
+      console.error("❌ Lỗi tạo hồ sơ:", createError);
       return {
         success: false,
         message: `Lỗi truy cập hồ sơ: ${createError.message}`,
@@ -114,14 +115,14 @@ const signInWithEmailAction: AuthAction<LoginFormInput> = async (data, supabase)
   }
 
   if (!username) {
-    console.error("❌ Profile not found for user:", user.user.id);
+    console.error("❌ Hồ sơ không tìm thấy cho người dùng:", user.user.id);
     // Auto-create profile
     const { error: createError } = await supabase
       .from("profiles")
       .insert({ id: user.user.id, username: user.user.email?.split('@')[0] || 'user' });
     
     if (createError) {
-      console.error("❌ Auto-profile creation failed:", createError);
+      console.error("❌ Lỗi tạo hồ sơ:", createError);
       return {
         success: false,
         message: `Không thể tạo hồ sơ: ${createError.message}`,
@@ -131,12 +132,12 @@ const signInWithEmailAction: AuthAction<LoginFormInput> = async (data, supabase)
     return { success: true, message: `Chào mừng trở lại, ${user.user.email}!` };
   }
 
-  console.log("✅ Profile found:", username);
+  console.log("✅ Đã tìm thấy hồ sơ của bạn:", username);
   return { success: true, message: `Chào mừng trở lại, ${username.username}` };
 };
 
 const signUpAction: AuthAction<RegisterFormInput> = async (data, supabase) => {
-  console.log("🔄 Starting registration for:", data.email);
+  console.log("🔄 Bắt đầu đăng ký cho:", data.email);
   
   // Step 1: Check username availability
   const { data: usernameExists, error: usernameError } = await supabase
@@ -146,12 +147,12 @@ const signUpAction: AuthAction<RegisterFormInput> = async (data, supabase) => {
     .maybeSingle();
 
   if (usernameError) {
-    console.error("❌ Username check error:", usernameError);
+    console.error("❌ Lỗi kiểm tra tên người dùng:", usernameError);
     return { success: false, message: "CineVerse báo lỗi. Tài khoản không khớp." };
   }
 
   if (usernameExists) {
-    console.log("❌ Username already exists:", data.username);
+    console.log("❌ Tên người dùng đã được sử dụng:", data.username);
     return { success: false, message: "Tên người dùng đã được sử dụng." };
   }
 
@@ -190,7 +191,7 @@ const signUpAction: AuthAction<RegisterFormInput> = async (data, supabase) => {
     return { success: false, message: `Không thể tạo hồ sơ người dùng: ${profileError.message}` };
   }
 
-  console.log("✅ Profile created successfully");
+  console.log("✅ Hồ sơ người dùng đã được tạo thành công");
   return {
     success: true,
     message: "Thông tin đăng ký đã ghi nhận thành công rồi bạn ơi, mở hộp thư xem vé xuất hành đến CineVerse (Xác minh)",
@@ -235,16 +236,16 @@ export const sendResetPasswordEmail = createAuthAction(
 export const resetPassword = createAuthAction(ResetPasswordFormSchema, resetPasswordAction);
 
 export const signOut = async (): ActionResponse => {
-  console.log("🔄 Starting sign out process");
+  console.log("🔄 Bắt đầu quá trình đăng xuất");
   
   const supabase = await createClient();
   const { error } = await supabase.auth.signOut();
 
   if (error) {
-    console.error("❌ Sign out error:", error);
+    console.error("❌ Lỗi đăng xuất:", error);
     return { success: false, message: error.message };
   }
 
-  console.log("✅ Sign out successful");
+  console.log("✅ Đăng xuất thành công");
   return { success: true, message: "Bạn đã đăng xuất khỏi vũ trụ" };
 };
