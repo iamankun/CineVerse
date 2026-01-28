@@ -1,4 +1,5 @@
 import AuthForms from "@/components/sections/Auth/Forms";
+import CaptchaProvider from "@/components/providers/CaptchaProvider";
 import { siteConfig } from "@/config/site";
 import { Metadata, NextPage } from "next";
 
@@ -7,7 +8,11 @@ export const metadata: Metadata = {
 };
 
 const AuthPage: NextPage = () => {
-  return <AuthForms />;
+  return (
+    <CaptchaProvider>
+      <AuthForms />
+    </CaptchaProvider>
+  );
 };
 
 export default AuthPage;

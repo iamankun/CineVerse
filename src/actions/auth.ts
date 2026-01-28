@@ -67,6 +67,7 @@ const createAuthAction = <T extends { captchaToken?: string }>(
       return await action(result.data, supabase);
     } catch (error) {
       // Catch potential unhandled errors in actions
+      console.error("🔥🔥🔥 LỖI KHÔNG MONG MUỐN TRONG AUTH ACTION:", error);
       if (error instanceof Error) {
         return { success: false, message: error.message };
       }

@@ -6,7 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useTransition, useCallback, useEffect } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { AuthFormProps } from "./Forms";
-import { useRouter } from "@bprogress/next/app";
+import { useRouter } from "next/navigation";
 import SocialSection from "./SocialSection";
 import { useGoogleReCaptcha } from "react-google-recaptcha-v3";
 import { env } from "@/utils/env";

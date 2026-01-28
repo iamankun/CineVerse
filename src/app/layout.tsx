@@ -4,7 +4,6 @@ import { Mulish } from "@/utils/fonts";
 import "../styles/globals.css";
 import "../styles/lightbox.css";
 import Providers from "./providers";
-import CaptchaProvider from "@/components/providers/CaptchaProvider";
 import RootLayoutContent from "@/components/RootLayoutContent";
 import PWAUpdatePrompt from "@/components/PWAUpdatePrompt";
 import { SpeedInsights } from "@vercel/speed-insights/next";
@@ -58,9 +57,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <Suspense>
           <NuqsAdapter>
             <Providers>
-              <CaptchaProvider>
-                <RootLayoutContent>{children}</RootLayoutContent>
-              </CaptchaProvider>
+              <RootLayoutContent>{children}</RootLayoutContent>
             </Providers>
           </NuqsAdapter>
         </Suspense>
