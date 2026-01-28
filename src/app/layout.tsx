@@ -6,6 +6,7 @@ import "../styles/lightbox.css";
 import Providers from "./providers";
 import RootLayoutContent from "@/components/RootLayoutContent";
 import PWAUpdatePrompt from "@/components/PWAUpdatePrompt";
+import BackToTop from "@/components/ui/BackToTop";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Analytics } from "@vercel/analytics/next";
 import { cn } from "@/utils/helpers";
@@ -62,6 +63,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
           </NuqsAdapter>
         </Suspense>
         <PWAUpdatePrompt />
+        <BackToTop />
         <SpeedInsights />
         <Analytics />
       </body>
