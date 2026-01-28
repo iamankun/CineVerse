@@ -5,8 +5,8 @@ export const env = createEnv({
   server: {
     PROTECTED_PATHS: z.string().optional(),
     SUPABASE_SERVICE_ROLE_KEY: z.string().min(1),
-    ADMIN_ACCOUNT: z.string().min(1),
-    ADMIN_PASSWORD: z.string().min(1),
+    ADMIN_ACCOUNT: z.string().optional(),
+    ADMIN_PASSWORD: z.string().optional(),
     // Storage configuration
     BLOB_READ_WRITE_TOKEN: z.string().optional(),
     GITHUB_TOKEN: z.string().optional(),
