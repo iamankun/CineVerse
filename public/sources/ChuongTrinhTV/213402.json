@@ -294,7 +294,15 @@
             "language": "vi",
             "subtitles": [
               "vi"
-            ]
+            ],
+            "intro": {
+              "start": 32,
+              "end": 126
+            },
+            "outro": {
+              "start": 1315,
+              "end": 1436
+            }
           }
         ]
       },
@@ -365,7 +373,7 @@
   "metadata": {
     "movie-rating": "P",
     "audioVersion": "LongTieng",
-    "lastUpdate": "2026-01-28T12:15:17.680Z",
+    "lastUpdate": "2026-01-28T12:36:24.458Z",
     "genre": [
       "Phim Hoạt Hình",
       "Action & Adventure",
