@@ -1,5 +1,3 @@
-import { signIn } from "@/actions/auth";
-import { LoginFormSchema, LoginFormInput } from "@/schemas/auth";
 import { LockPassword, Mail } from "@/utils/icons";
 import { addToast, Button, Link } from "@heroui/react";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -10,6 +8,7 @@ import { useRouter } from "next/navigation";
 import SocialSection from "./SocialSection";
 import { useGoogleReCaptcha } from "react-google-recaptcha-v3";
 import { env } from "@/utils/env";
+import { LoginFormSchema, LoginFormInput } from "@/schemas/auth";
 
 const AuthLoginForm: React.FC<AuthFormProps> = ({ setForm }) => {
   const router = useRouter();
@@ -40,28 +39,60 @@ const AuthLoginForm: React.FC<AuthFormProps> = ({ setForm }) => {
     }
   }, [executeRecaptcha]);
 
-  const onSubmit: SubmitHandler<LoginFormInput> = (data) => {
+  const onSubmit: SubmitHandler<LoginFormInput> = async (data) => {
     startTransition(async () => {
-      let captchaToken: string | null = null;
-      const isDevelopment = process.env.NODE_ENV === 'development';
+      try {
+        let captchaToken: string | null = null;
+        const isDevelopment = process.env.NODE_ENV === 'development';
 
-      if (env.NEXT_PUBLIC_CAPTCHA_SITE_KEY && !isDevelopment) {
-        captchaToken = await handleReCaptchaVerify();
-        if (!captchaToken) {
-          addToast({ title: "Xác minh Captcha thất bại. Vui lòng thử lại.", color: "danger" });
-          return;
+        if (env.NEXT_PUBLIC_CAPTCHA_SITE_KEY && !isDevelopment) {
+          captchaToken = await handleReCaptchaVerify();
+          if (!captchaToken) {
+            addToast({ title: "Xác minh Captcha thất bại. Vui lòng thử lại.", color: "danger" });
+            return;
+          }
         }
-      }
 
-      const { success, message } = await signIn({ ...data, captchaToken: captchaToken === null ? undefined : captchaToken });
+        console.log("🔍 Sending login request to API...");
+        
+        // Call API route instead of server action
+        const response = await fetch('/api/auth', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            email: data.email,
+            password: data.loginPassword,
+            action: 'login',
+            captchaToken: captchaToken === null ? undefined : captchaToken
+          }),
+        });
 
-      addToast({
-        title: message,
-        color: success ? "success" : "danger",
-      });
+        const result = await response.json();
 
-      if (success) {
-        router.push("/");
+        if (response.ok) {
+          addToast({
+            title: result.message || "Đăng nhập thành công!",
+            color: "success",
+          });
+          
+          // Redirect to home after successful login
+          setTimeout(() => {
+            router.push("/");
+          }, 1500);
+        } else {
+          addToast({
+            title: result.error || "Đăng nhập thất bại",
+            color: "danger",
+          });
+        }
+      } catch (error) {
+        console.error("Login error:", error);
+        addToast({
+          title: "Lỗi kết nối. Vui lòng thử lại.",
+          color: "danger",
+        });
       }
     });
   };

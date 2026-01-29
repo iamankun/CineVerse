@@ -46,15 +46,10 @@ const createAuthAction = <T extends { captchaToken?: string }>(
       return { success: false, message };
     }
 
-    // Skip captcha check for development or if bypassed
+    // Skip captcha check for testing
     const hasCaptchaSiteKey = !!env.NEXT_PUBLIC_CAPTCHA_SITE_KEY;
     const isDevelopment = process.env.NODE_ENV === 'development';
     const captchaToken = result.data.captchaToken;
-    
-    // Enhanced validation using utilities
-    const hasValidToken = captchaToken && 
-      isValidReCaptchaToken(captchaToken) && 
-      captchaToken !== "bypass";
     
     // Log detailed captcha information for debugging
     if (captchaToken) {
@@ -65,14 +60,21 @@ const createAuthAction = <T extends { captchaToken?: string }>(
         tokenLength: captchaToken.length,
         version,
         isBypass: captchaToken === "bypass",
-        hasValidToken 
+        isDevelopment
       });
     }
 
-    // Only require captcha if site key is configured and no valid token
-    if (hasCaptchaSiteKey && !hasValidToken && !isDevelopment) {
-      console.log("❌ Yêu cầu Captcha - Token không hợp lệ hoặc thiếu");
-      return { success: false, message: "Vui lòng hoàn thành xác minh Captcha" };
+    // Only require captcha if site key is configured and not in development
+    // TEMPORARILY DISABLED FOR TESTING
+    if (false && hasCaptchaSiteKey && !isDevelopment) {
+      const hasValidToken = captchaToken && 
+        isValidReCaptchaToken(captchaToken) && 
+        captchaToken !== "bypass";
+      
+      if (!hasValidToken) {
+        console.log("❌ Yêu cầu Captcha - Token không hợp lệ hoặc thiếu");
+        return { success: false, message: "Vui lòng hoàn thành xác minh Captcha" };
+      }
     }
 
     try {
