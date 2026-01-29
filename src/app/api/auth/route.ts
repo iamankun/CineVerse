@@ -18,9 +18,8 @@ export const POST = async (request: NextRequest) => {
       );
     }
 
-    // Validate captcha token if provided and not in development
-    const isDevelopment = process.env.NODE_ENV === 'development';
-    if (captchaToken && env.NEXT_PUBLIC_CAPTCHA_SITE_KEY && !isDevelopment) {
+    // Validate captcha token if provided and secret key is available
+    if (captchaToken && env.NEXT_PUBLIC_CAPTCHA_SITE_KEY && env.CAPTCHA_SECRET_KEY) {
       if (!isValidReCaptchaToken(captchaToken)) {
         const version = getReCaptchaVersion(captchaToken);
         console.log("❌ Invalid captcha token:", { 
@@ -64,7 +63,7 @@ export const POST = async (request: NextRequest) => {
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
-        options: (!isDevelopment && captchaToken) ? { captchaToken } : undefined,
+        options: (captchaToken && env.CAPTCHA_SECRET_KEY) ? { captchaToken } : undefined,
       });
 
       if (error) {
@@ -77,7 +76,7 @@ export const POST = async (request: NextRequest) => {
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
-        options: (!isDevelopment && captchaToken) ? { captchaToken } : undefined,
+        options: (captchaToken && env.CAPTCHA_SECRET_KEY) ? { captchaToken } : undefined,
       });
 
       if (error) {
