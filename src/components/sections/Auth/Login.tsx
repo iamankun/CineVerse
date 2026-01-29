@@ -69,7 +69,37 @@ const AuthLoginForm: React.FC<AuthFormProps> = ({ setForm }) => {
           }),
         });
 
-        const result = await response.json();
+        console.log("📡 Response status:", response.status);
+        console.log("📡 Response headers:", Object.fromEntries(response.headers.entries()));
+
+        // Debug: Check response type before parsing
+        const responseText = await response.text();
+        console.log("📝 Raw response (first 100 chars):", responseText.substring(0, 100));
+
+        // Check if response is HTML
+        if (responseText.startsWith('<!DOCTYPE')) {
+          console.error("❌ Server returned HTML instead of JSON");
+          addToast({
+            title: "Lỗi server: Trả về HTML thay vì JSON",
+            color: "danger",
+          });
+          return;
+        }
+
+        // Parse JSON only if it's actually JSON
+        let result;
+        try {
+          result = JSON.parse(responseText);
+        } catch (parseError) {
+          console.error("❌ JSON parse error:", parseError);
+          addToast({
+            title: "Lỗi parse JSON response",
+            color: "danger",
+          });
+          return;
+        }
+
+        console.log("📝 Response data:", result);
 
         if (response.ok) {
           addToast({

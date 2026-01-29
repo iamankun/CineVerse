@@ -1,8 +1,29 @@
-import { updateSession } from "@/utils/supabase/middleware";
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from 'next/server';
+import type { NextRequest } from 'next/server';
 
-export async function middleware(request: NextRequest) {
-  return await updateSession(request);
+export function middleware(request: NextRequest) {
+  // Skip middleware for static files and API routes
+  if (request.nextUrl.pathname.startsWith('/api/') ||
+      request.nextUrl.pathname.startsWith('/_next/') ||
+      request.nextUrl.pathname.includes('.')) {
+    return NextResponse.next();
+  }
+
+  // Protected paths
+  const protectedPaths = ['/library', '/profile'];
+  const isProtectedPath = protectedPaths.some(path => 
+    request.nextUrl.pathname.startsWith(path)
+  );
+
+  // Check for session cookie (simplified)
+  const hasSession = request.cookies.get('sb-access-token') || 
+                       request.cookies.get('sb-refresh-token');
+
+  if (isProtectedPath && !hasSession) {
+    return NextResponse.redirect(new URL('/auth', request.url));
+  }
+
+  return NextResponse.next();
 }
 
 export const config = {
@@ -12,8 +33,7 @@ export const config = {
      * - _next/static (static files)
      * - _next/image (image optimization files)
      * - favicon.ico (favicon file)
-     * Feel free to modify this pattern to include more paths.
      */
-    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
+    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
   ],
 };
