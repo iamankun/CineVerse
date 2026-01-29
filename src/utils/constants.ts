@@ -18,6 +18,14 @@ const SpacingClasses = {
   reset: "-mx-3 -my-8 sm:-mx-5",
 };
 
+// reCAPTCHA constants (2024-2025 requirements)
+const RECAPTCHA = {
+  MIN_TOKEN_LENGTH: 300, // Minimum for all reCAPTCHA versions
+  MAX_TOKEN_LENGTH: 15000, // Support for v3 Enterprise (~12k chars)
+  VERIFY_ENDPOINT: 'https://www.google.com/recaptcha/api/siteverify',
+  TOKEN_EXPIRY_MS: 2 * 60 * 1000, // 2 minutes
+} as const;
+
 // Exports
 export {
   IS_BROWSER,
@@ -31,4 +39,5 @@ export {
   SEARCH_HISTORY_STORAGE_KEY,
   ITEMS_PER_PAGE,
   SpacingClasses,
+  RECAPTCHA,
 };

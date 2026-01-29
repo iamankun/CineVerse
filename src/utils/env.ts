@@ -13,6 +13,8 @@ export const env = createEnv({
     GITHUB_OWNER: z.string().optional(),
     GITHUB_REPO: z.string().optional(),
     VERCEL_DEPLOY_HOOK: z.string().url().optional(),
+    // reCAPTCHA configuration
+    CAPTCHA_SECRET_KEY: z.string().optional(),
   },
   client: {
     NEXT_PUBLIC_TMDB_ACCESS_TOKEN: z.string().min(1),

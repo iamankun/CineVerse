@@ -1,11 +1,12 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { createServerClient } from "@supabase/ssr";
 import { env } from "@/utils/env";
+import { isValidReCaptchaToken, getReCaptchaVersion } from "@/utils/recaptcha";
 
 export const POST = async (request: NextRequest) => {
   try {
     const body = await request.json();
-    const { email, password, action } = body;
+    const { email, password, action, captchaToken } = body;
 
     if (!email || !password) {
       if (body?.auth_event || body?.event_message || body?.hook) {
@@ -15,6 +16,22 @@ export const POST = async (request: NextRequest) => {
         { error: "Email và mật khẩu là bắt buộc" },
         { status: 400 }
       );
+    }
+
+    // Validate captcha token if provided
+    if (captchaToken && env.NEXT_PUBLIC_CAPTCHA_SITE_KEY) {
+      if (!isValidReCaptchaToken(captchaToken)) {
+        const version = getReCaptchaVersion(captchaToken);
+        console.log("❌ Invalid captcha token:", { 
+          length: captchaToken.length, 
+          version,
+          isValid: isValidReCaptchaToken(captchaToken)
+        });
+        return NextResponse.json(
+          { error: "Token captcha không hợp lệ" },
+          { status: 400 }
+        );
+      }
     }
 
     let supabaseResponse = NextResponse.next({ request });
@@ -46,6 +63,7 @@ export const POST = async (request: NextRequest) => {
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
+        options: captchaToken ? { captchaToken } : undefined,
       });
 
       if (error) {
@@ -58,6 +76,7 @@ export const POST = async (request: NextRequest) => {
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
+        options: captchaToken ? { captchaToken } : undefined,
       });
 
       if (error) {

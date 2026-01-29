@@ -14,6 +14,8 @@ import {
 } from "@/schemas/auth";
 import { z } from "zod";
 import { ActionResponse } from "@/types";
+import { isValidReCaptchaToken, getReCaptchaVersion } from "@/utils/recaptcha";
+import { env } from "@/utils/env";
 
 /**
  * A generic type for our authentication actions.
@@ -45,21 +47,32 @@ const createAuthAction = <T extends { captchaToken?: string }>(
     }
 
     // Skip captcha check for development or if bypassed
-    const hasCaptchaSiteKey = !!process.env.NEXT_PUBLIC_CAPTCHA_SITE_KEY;
+    const hasCaptchaSiteKey = !!env.NEXT_PUBLIC_CAPTCHA_SITE_KEY;
     const isDevelopment = process.env.NODE_ENV === 'development';
-    const hasValidToken = result.data.captchaToken && result.data.captchaToken !== "bypass";
+    const captchaToken = result.data.captchaToken;
     
-    console.log("🔍 Kiểm tra Captcha:", { 
-      hasSiteKey: hasCaptchaSiteKey, 
-      hasToken: !!result.data.captchaToken, 
-      isBypass: result.data.captchaToken === "bypass",
-      hasValidToken 
-    });
+    // Enhanced validation using utilities
+    const hasValidToken = captchaToken && 
+      isValidReCaptchaToken(captchaToken) && 
+      captchaToken !== "bypass";
+    
+    // Log detailed captcha information for debugging
+    if (captchaToken) {
+      const version = getReCaptchaVersion(captchaToken);
+      console.log("🔍 Kiểm tra Captcha:", { 
+        hasSiteKey: hasCaptchaSiteKey, 
+        hasToken: !!captchaToken,
+        tokenLength: captchaToken.length,
+        version,
+        isBypass: captchaToken === "bypass",
+        hasValidToken 
+      });
+    }
 
     // Only require captcha if site key is configured and no valid token
     if (hasCaptchaSiteKey && !hasValidToken && !isDevelopment) {
-      console.log("❌ Yêu cầu Captcha");
-      return { success: false, message: "Yêu cầu Captcha" };
+      console.log("❌ Yêu cầu Captcha - Token không hợp lệ hoặc thiếu");
+      return { success: false, message: "Vui lòng hoàn thành xác minh Captcha" };
     }
 
     try {
