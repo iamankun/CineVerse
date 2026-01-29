@@ -15,6 +15,7 @@ export const env = createEnv({
     VERCEL_DEPLOY_HOOK: z.string().url().optional(),
     // reCAPTCHA configuration
     CAPTCHA_SECRET_KEY: z.string().optional(),
+    CAPTCHA_SITE_KEY: z.string().optional(),
   },
   client: {
     NEXT_PUBLIC_TMDB_ACCESS_TOKEN: z.string().min(1),
