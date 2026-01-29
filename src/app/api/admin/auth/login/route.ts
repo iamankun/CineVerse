@@ -8,8 +8,9 @@ export async function POST(request: NextRequest) {
   try {
     const { username, password, captchaToken } = await request.json();
 
-    // Validate captcha token if site key is configured
-    if (env.NEXT_PUBLIC_CAPTCHA_SITE_KEY) {
+    // Validate captcha token if site key is configured and not in development
+    const isDevelopment = process.env.NODE_ENV === 'development';
+    if (env.NEXT_PUBLIC_CAPTCHA_SITE_KEY && !isDevelopment) {
       if (!captchaToken || !isValidReCaptchaToken(captchaToken)) {
         const version = captchaToken ? getReCaptchaVersion(captchaToken) : 'none';
         console.log("❌ Admin login - Invalid captcha token:", { 

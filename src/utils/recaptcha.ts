@@ -1,6 +1,6 @@
 /**
- * reCAPTCHA verification utilities
- * Supports reCAPTCHA v2, v3, and Enterprise versions
+ * reCAPTCHA v3 verification utilities
+ * Only supports reCAPTCHA v3
  */
 
 import { RECAPTCHA } from './constants';
@@ -21,13 +21,13 @@ export interface ReCaptchaVerificationOptions {
 }
 
 /**
- * Verify reCAPTCHA token with Google API
- * Supports tokens up to 15,000 characters (v3 Enterprise)
+ * Verify reCAPTCHA v3 token with Google API
+ * Supports tokens up to 15,000 characters (v3)
  */
 export async function verifyReCaptchaToken(options: ReCaptchaVerificationOptions): Promise<ReCaptchaVerifyResponse> {
   const { secretKey, token, remoteIp } = options;
 
-  // Validate token length according to new reCAPTCHA requirements
+  // Validate token length according to reCAPTCHA v3 requirements
   if (token.length < RECAPTCHA.MIN_TOKEN_LENGTH || token.length > RECAPTCHA.MAX_TOKEN_LENGTH) {
     return {
       success: false,
@@ -59,7 +59,7 @@ export async function verifyReCaptchaToken(options: ReCaptchaVerificationOptions
     const result = await response.json();
     return result;
   } catch (error) {
-    console.error('reCAPTCHA verification error:', error);
+    console.error('reCAPTCHA v3 verification error:', error);
     return {
       success: false,
       'error-codes': ['network-error']
@@ -68,29 +68,49 @@ export async function verifyReCaptchaToken(options: ReCaptchaVerificationOptions
 }
 
 /**
- * Check if reCAPTCHA token is valid based on length and format
+ * Check if reCAPTCHA v3 token is valid based on length and format
  */
 export function isValidReCaptchaToken(token: string | null | undefined): boolean {
   if (!token) return false;
   
-  // Length validation according to 2024-2025 reCAPTCHA requirements
+  // Length validation according to reCAPTCHA v3 requirements
   return token.length >= RECAPTCHA.MIN_TOKEN_LENGTH && token.length <= RECAPTCHA.MAX_TOKEN_LENGTH;
 }
 
 /**
- * Get reCAPTCHA version based on token characteristics
+ * Get reCAPTCHA v3 token information
  */
-export function getReCaptchaVersion(token: string): 'v2' | 'v3' | 'enterprise' | 'unknown' {
-  if (!token) return 'unknown';
+export function getReCaptchaTokenInfo(token: string): {
+  version: 'v3';
+  isValid: boolean;
+  length: number;
+} {
+  if (!token) {
+    return {
+      version: 'v3',
+      isValid: false,
+      length: 0
+    };
+  }
   
-  // v3 Enterprise tokens are typically 10,000-15,000 characters
-  if (token.length >= 10000) return 'enterprise';
+  const isValid = isValidReCaptchaToken(token);
+  
+  return {
+    version: 'v3',
+    isValid,
+    length: token.length
+  };
+}
+
+/**
+ * Get reCAPTCHA version based on token characteristics
+ * @deprecated Always returns 'v3' since we only support v3
+ */
+export function getReCaptchaVersion(token: string): 'v3' | 'unknown' {
+  if (!token) return 'unknown';
   
   // v3 tokens are typically 1,000-3,000 characters
   if (token.length >= 1000 && token.length < 5000) return 'v3';
-  
-  // v2 tokens are typically 600-2,000 characters
-  if (token.length >= 600 && token.length < 3000) return 'v2';
   
   return 'unknown';
 }
