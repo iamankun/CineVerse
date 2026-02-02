@@ -37,9 +37,7 @@ const nextConfig: NextConfig = {
     ],
   },
   // https://github.com/payloadcms/payload/issues/12550#issuecomment-2939070941
-  turbopack: {
-    resolveExtensions: [".mdx", ".tsx", ".ts", ".jsx", ".js", ".mjs", ".json"],
-  },
+  turbopack: {},
   experimental: {
     optimizePackageImports: ["@heroui/react"],
   },
