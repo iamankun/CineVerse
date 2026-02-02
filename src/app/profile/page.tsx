@@ -152,13 +152,19 @@ export default function ProfilePage() {
       if (formData.location) updateData.location = formData.location;
       if (avatarUrl) updateData.avatar_url = avatarUrl;
       
-      // Update profile using a different approach
-      const updateQuery = supabase
+      // Update profile using workaround for TypeScript issues
+      const supabaseAny = supabase as any;
+      const { error: updateError } = await supabaseAny
         .from("profiles")
-        .update(updateData)
+        .update({
+          full_name: formData.full_name,
+          ...(formData.username && { username: formData.username }),
+          ...(formData.bio && { bio: formData.bio }),
+          ...(formData.website && { website: formData.website }),
+          ...(formData.location && { location: formData.location }),
+          ...(avatarUrl && { avatar_url: avatarUrl })
+        })
         .eq("id", user.id);
-      
-      const { error: updateError } = await updateQuery;
 
       if (updateError) {
         console.error("Lỗi cập nhật thông tin trang cá nhân:", {

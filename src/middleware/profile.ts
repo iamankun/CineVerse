@@ -11,7 +11,7 @@ export async function middleware(request: NextRequest) {
     
     const {
       data: { user },
-    } = await supabase.auth.getUser();
+    } = await (supabase as any).auth.getUser();
 
     if (!user) {
       // Redirect to login if not authenticated
