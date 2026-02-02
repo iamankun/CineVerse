@@ -90,7 +90,7 @@ async function debugAdminAccess() {
         .single();
       
       console.log('✅ RLS test thành công - User có thể truy cập profile của mình');
-    } catch (rlsError) {
+    } catch (rlsError: any) {
       console.log('❌ RLS Error:', rlsError.message);
       console.log('🔍 RLS có thể chặn truy cập profile');
     }
@@ -108,7 +108,7 @@ async function debugAdminAccess() {
         .single();
       
       console.log('✅ Client key test thành công:', clientProfile);
-    } catch (clientError) {
+    } catch (clientError: any) {
       console.log('❌ Client key error:', clientError.message);
       console.log('🔍 Client side có thể bị RLS chặn');
     }
