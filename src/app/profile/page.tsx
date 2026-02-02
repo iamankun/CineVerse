@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { createClient } from "@/utils/supabase/client-new";
 import { addToast, Button, Input, Avatar, Textarea } from "@heroui/react";
 import { Camera, Save, User } from "@/utils/icons";
+import { ProfileRow } from "@/types/database";
 
 export default function ProfilePage() {
   const router = useRouter();
@@ -47,16 +48,17 @@ export default function ProfilePage() {
         .single();
 
       if (profile) {
+        const profileData = profile as any;
         setFormData({
-          username: profile.username || "",
-          full_name: profile.full_name || "",
-          bio: profile.bio || "",
-          website: profile.website || "",
-          location: profile.location || "",
+          username: profileData.username || profileData.email?.split("@")[0] || "",
+          full_name: profileData.full_name || "",
+          bio: profileData.bio || "",
+          website: profileData.website || "",
+          location: profileData.location || "",
         });
         
-        if (profile.avatar_url) {
-          setAvatarPreview(profile.avatar_url);
+        if (profileData.avatar_url) {
+          setAvatarPreview(profileData.avatar_url);
         }
       }
     } catch (error: any) {
@@ -138,24 +140,62 @@ export default function ProfilePage() {
         avatarUrl = publicUrl;
       }
 
-      // Update profile using RPC function
-      const { error: updateError } = await supabase.rpc('upsert_profile', {
-        p_id: user.id,
-        p_username: formData.username,
-        p_full_name: formData.full_name,
-        p_bio: formData.bio,
-        p_website: formData.website,
-        p_location: formData.location,
-        p_avatar_url: avatarUrl,
-        p_public_profile: true
-      });
+      // Update profile using simple update
+      const updateData: any = {
+        full_name: formData.full_name,
+      };
+      
+      // Only add fields that exist in the table
+      if (formData.username) updateData.username = formData.username;
+      if (formData.bio) updateData.bio = formData.bio;
+      if (formData.website) updateData.website = formData.website;
+      if (formData.location) updateData.location = formData.location;
+      if (avatarUrl) updateData.avatar_url = avatarUrl;
+      
+      // Update profile using a different approach
+      const updateQuery = supabase
+        .from("profiles")
+        .update(updateData)
+        .eq("id", user.id);
+      
+      const { error: updateError } = await updateQuery;
 
       if (updateError) {
-        console.error("Lỗi cập nhật trang cá nhân:", updateError);
+        console.error("❌ Lỗi cập nhật trang cá nhân:", {
+          message: updateError.message,
+          details: (updateError as any)?.details,
+          hint: (updateError as any)?.hint,
+          code: (updateError as any)?.code
+        });
         
         // Handle specific RLS errors
         if (updateError.message?.includes('row-level security')) {
+          console.error("🔒 RLS Error Details:", {
+            type: "Row Level Security Violation",
+            cause: "User không có quyền truy cập profile này",
+            solution: "Vui lòng đăng nhập lại hoặc kiểm tra quyền truy cập"
+          });
           throw new Error("Không có quyền truy cập trang cá nhân. Vui lòng đăng nhập lại.");
+        }
+        
+        // Handle specific database errors
+        if (updateError.message?.includes('duplicate key')) {
+          console.error("🔑 Duplicate Key Error:", {
+            type: "Database Constraint Violation",
+            cause: "Username đã tồn tại",
+            solution: "Chọn tên người dùng khác"
+          });
+          throw new Error("Tên người dùng đã tồn tại. Vui lòng chọn tên khác.");
+        }
+        
+        // Handle connection errors
+        if (updateError.message?.includes('connection')) {
+          console.error("🌐 Connection Error:", {
+            type: "Network Connection Issue",
+            cause: "Không thể kết nối đến database",
+            solution: "Kiểm tra kết nối mạng và thử lại"
+          });
+          throw new Error("Lỗi kết nối. Vui lòng kiểm tra mạng và thử lại.");
         }
         
         throw new Error(updateError.message || "Không thể cập nhật trang cá nhân");
@@ -168,7 +208,13 @@ export default function ProfilePage() {
       });
 
     } catch (error: any) {
-      console.error("Lỗi cập nhật trang cá nhân:", error);
+      console.error("❌ Lỗi cập nhật trang cá nhân:", {
+        message: error.message,
+        stack: error.stack,
+        name: error.name,
+        cause: error.cause
+      });
+      
       addToast({
         title: "Lỗi",
         description: error.message || "Không thể cập nhật trang cá nhân",
@@ -188,28 +234,28 @@ export default function ProfilePage() {
 
   if (loading) {
     return (
-      <div className="flex min-h-screen items-center justify-center">
+      <div className="flex min-h-screen items-center justify-center bg-gray-900">
         <div className="text-center">
           <div className="mb-4 h-12 w-12 animate-spin rounded-full border-4 border-solid border-blue-600 border-t-transparent"></div>
-          <p>Đang tải thông tin trang cá nhân...</p>
+          <p className="text-gray-300">Đang tải thông tin trang cá nhân...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-12">
+    <div className="min-h-screen bg-gray-900 py-12">
       <div className="mx-auto max-w-2xl px-4 sm:px-6 lg:px-8">
-        <div className="bg-white shadow-sm rounded-lg">
-          <div className="border-b border-gray-200 px-6 py-4">
-            <h1 className="text-2xl font-bold text-gray-900">Chỉnh Sửa trang cá nhân</h1>
-            <p className="text-gray-600">Cập nhật thông tin cá nhân của bạn</p>
+        <div className="bg-gray-800 shadow-xl rounded-lg border border-gray-700">
+          <div className="border-b border-gray-700 px-6 py-4">
+            <h1 className="text-2xl font-bold text-white">Chỉnh Sửa trang cá nhân</h1>
+            <p className="text-gray-400">Cập nhật thông tin cá nhân của bạn</p>
           </div>
 
           <form onSubmit={handleSubmit} className="px-6 py-6">
             {/* Avatar Section */}
             <div className="mb-8">
-              <label className="block text-sm font-medium text-gray-700 mb-4">
+              <label className="block text-sm font-medium text-gray-300 mb-4">
                 Ảnh Đại Diện
               </label>
               <div className="flex items-center space-x-6">
@@ -218,7 +264,7 @@ export default function ProfilePage() {
                     src={avatarPreview}
                     size="lg"
                     className="h-24 w-24"
-                    fallback={<User className="h-12 w-12" />}
+                    fallback={<User className="h-12 w-12 text-gray-400" />}
                   />
                   <label
                     htmlFor="avatar-upload"
@@ -235,7 +281,7 @@ export default function ProfilePage() {
                   </label>
                 </div>
                 <div className="flex-1">
-                  <p className="text-sm text-gray-600">
+                  <p className="text-sm text-gray-400">
                     Nhấp vào biểu tượng camera để thay đổi ảnh đại diện
                   </p>
                   <p className="text-xs text-gray-500 mt-1">
@@ -254,6 +300,12 @@ export default function ProfilePage() {
                   value={formData.username}
                   onChange={(e) => handleInputChange("username", e.target.value)}
                   variant="bordered"
+                  classNames={{
+                    label: "text-gray-300",
+                    input: "bg-gray-700 text-white border-gray-600",
+                    inputWrapper: "border-gray-600",
+                    helperWrapper: "text-gray-400"
+                  }}
                 />
               </div>
               
@@ -264,6 +316,12 @@ export default function ProfilePage() {
                   value={formData.full_name}
                   onChange={(e) => handleInputChange("full_name", e.target.value)}
                   variant="bordered"
+                  classNames={{
+                    label: "text-gray-300",
+                    input: "bg-gray-700 text-white border-gray-600",
+                    inputWrapper: "border-gray-600",
+                    helperWrapper: "text-gray-400"
+                  }}
                 />
               </div>
             </div>
@@ -278,6 +336,12 @@ export default function ProfilePage() {
                 variant="bordered"
                 minRows={3}
                 maxRows={6}
+                classNames={{
+                  label: "text-gray-300",
+                  input: "bg-gray-700 text-white border-gray-600",
+                  inputWrapper: "border-gray-600",
+                  helperWrapper: "text-gray-400"
+                }}
               />
             </div>
 
@@ -291,6 +355,12 @@ export default function ProfilePage() {
                   onChange={(e) => handleInputChange("website", e.target.value)}
                   variant="bordered"
                   type="url"
+                  classNames={{
+                    label: "text-gray-300",
+                    input: "bg-gray-700 text-white border-gray-600",
+                    inputWrapper: "border-gray-600",
+                    helperWrapper: "text-gray-400"
+                  }}
                 />
               </div>
               
@@ -301,6 +371,12 @@ export default function ProfilePage() {
                   value={formData.location}
                   onChange={(e) => handleInputChange("location", e.target.value)}
                   variant="bordered"
+                  classNames={{
+                    label: "text-gray-300",
+                    input: "bg-gray-700 text-white border-gray-600",
+                    inputWrapper: "border-gray-600",
+                    helperWrapper: "text-gray-400"
+                  }}
                 />
               </div>
             </div>
@@ -313,6 +389,12 @@ export default function ProfilePage() {
                 variant="bordered"
                 isReadOnly
                 description="Email không thể thay đổi"
+                classNames={{
+                  label: "text-gray-300",
+                  input: "bg-gray-700 text-gray-400 border-gray-600",
+                  inputWrapper: "border-gray-600",
+                  helperWrapper: "text-gray-400"
+                }}
               />
             </div>
 
