@@ -1,7 +1,8 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
+import { updateSession } from '@/utils/supabase/middleware-new';
 
-export function middleware(request: NextRequest) {
+export async function middleware(request: NextRequest) {
   // Skip middleware for static files and API routes
   if (request.nextUrl.pathname.startsWith('/api/') ||
       request.nextUrl.pathname.startsWith('/_next/') ||
@@ -9,21 +10,8 @@ export function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // Protected paths
-  const protectedPaths = ['/library', '/profile'];
-  const isProtectedPath = protectedPaths.some(path => 
-    request.nextUrl.pathname.startsWith(path)
-  );
-
-  // Check for session cookie (simplified)
-  const hasSession = request.cookies.get('sb-access-token') || 
-                       request.cookies.get('sb-refresh-token');
-
-  if (isProtectedPath && !hasSession) {
-    return NextResponse.redirect(new URL('/auth', request.url));
-  }
-
-  return NextResponse.next();
+  // Use Supabase middleware to handle session
+  return await updateSession(request);
 }
 
 export const config = {

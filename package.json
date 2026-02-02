@@ -1,6 +1,6 @@
 {
-  "name": "cineverse-beta",
-  "version": "1.3.4",
+  "name": "cineverse",
+  "version": "1.3.5",
   "language-region": "vi-VN",
   "private": true,
   "type": "module",

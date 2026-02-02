@@ -10,7 +10,7 @@ import FullscreenToggleButton from "../button/FullscreenToggleButton";
 import GestureControlToggleButton from "../button/GestureControlToggleButton";
 import { cn } from "@/utils/helpers";
 import BrandLogo from "../other/BrandLogo";
-import UserProfileButton from "../button/UserProfileButton";
+import { UserProfileButton } from "@/components/auth/UserProfileButton";
 import { Next } from "@/utils/icons";
 import useDiscoverFilters from "@/hooks/useDiscoverFilters";
 
@@ -23,9 +23,8 @@ const TopNavbar = () => {
   const show = hrefs.includes(pathName);
   const tv = pathName.includes("/tv/");
   const player = pathName.includes("/player");
-  const auth = pathName.includes("/auth");
 
-  if (auth || player) return null;
+  if (player) return null;
 
   return (
     <Navbar

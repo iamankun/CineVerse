@@ -1,29 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { env } from "@/utils/env";
-import { isValidReCaptchaToken, getReCaptchaVersion } from "@/utils/recaptcha";
 
 export const dynamic = 'force-dynamic';
 
 export async function POST(request: NextRequest) {
   try {
-    const { username, password, captchaToken } = await request.json();
-
-    // Validate captcha token if site key and secret key are configured
-    if (env.NEXT_PUBLIC_CAPTCHA_SITE_KEY && env.CAPTCHA_SECRET_KEY) {
-      if (!captchaToken || !isValidReCaptchaToken(captchaToken)) {
-        const version = captchaToken ? getReCaptchaVersion(captchaToken) : 'none';
-        console.log("❌ Admin login - Invalid captcha token:", { 
-          hasToken: !!captchaToken,
-          length: captchaToken?.length || 0, 
-          version,
-          isValid: captchaToken ? isValidReCaptchaToken(captchaToken) : false
-        });
-        return NextResponse.json(
-          { success: false, message: "Vui lòng hoàn thành xác minh Captcha" },
-          { status: 400 }
-        );
-      }
-    }
+    const { username, password } = await request.json();
 
     const ADMIN_ACCOUNT = process.env.ADMIN_ACCOUNT;
     const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;

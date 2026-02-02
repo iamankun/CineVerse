@@ -15,6 +15,7 @@ import {
   Chip,
   Divider,
   Spinner,
+  addToast,
 } from "@heroui/react";
 import { IoAdd, IoSave, IoTrash, IoCheckmarkCircle, IoLogOut, IoArrowBack } from "react-icons/io5";
 import AdminGuard from "@/components/AdminGuard";
@@ -129,11 +130,28 @@ export default function NotificationAdminPage() {
 
   const handleLogout = async () => {
     try {
-      await fetch("/api/admin/auth/logout", { method: "POST" });
-      router.push("/admin/login");
-      router.refresh();
+      const response = await fetch("/api/admin/auth/logout", { method: "POST" });
+      const result = await response.json();
+      
+      if (result.success) {
+        addToast({
+          title: "Đăng xuất admin thành công",
+          color: "success",
+        });
+        router.push("/admin/login");
+        router.refresh();
+      } else {
+        addToast({
+          title: result.message || "Lỗi đăng xuất",
+          color: "danger",
+        });
+      }
     } catch (error) {
-      console.error("Logout error:", error);
+      console.error("Admin logout error:", error);
+      addToast({
+        title: "Lỗi kết nối. Vui lòng thử lại.",
+        color: "danger",
+      });
     }
   };
 

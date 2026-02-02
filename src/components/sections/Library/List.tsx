@@ -22,10 +22,10 @@ type SortOption = "title" | "release_date" | "vote_average" | "created_at";
 type FilterType = "movie" | "tv" | "all";
 
 const SORT_OPTIONS: { key: SortOption; label: string }[] = [
-  { key: "title", label: "Title" },
-  { key: "release_date", label: "Release Date" },
-  { key: "vote_average", label: "Rating" },
-  { key: "created_at", label: "Date Added" },
+  { key: "title", label: "Tiêu đề" },
+  { key: "release_date", label: "Ngày phát hành" },
+  { key: "vote_average", label: "Xếp hạng" },
+  { key: "created_at", label: "Ngày thêm" },
 ];
 
 const LibraryList = () => {
@@ -62,10 +62,10 @@ const LibraryList = () => {
 
   const clearWatchlistMutation = useMutation({
     mutationFn: async (type: "movie" | "tv") => {
-      if (!user) throw new Error("User not authenticated");
+      if (!user) throw new Error("Người dùng chưa xác thực");
       const result = await removeAllWatchlist(type);
       if (!result.success) {
-        throw new Error(result.error || "Failed to clear watchlist");
+        throw new Error(result.error || "Không thể xóa danh sách theo dõi");
       }
       const allItems = data?.pages.flatMap((page) => page.data || []) || [];
       const count = allItems.filter((item) => item.type === type).length;
@@ -75,7 +75,7 @@ const LibraryList = () => {
       queryClient.invalidateQueries({ queryKey: ["watchlist"] });
 
       addToast({
-        title: `Cleared ${count} ${type === "movie" ? "movies" : "TV shows"} from your watchlist!`,
+        title: `Đã xóa ${count} ${type === "movie" ? "Điện Ảnh" : "Chương Trình TV"} khỏi danh sách theo dõi!`,
         color: "success",
         icon: <Trash />,
       });
@@ -84,11 +84,11 @@ const LibraryList = () => {
     },
     onError: (error) => {
       addToast({
-        title: "Error",
-        description: "Failed to clear watchlist. Please try again.",
+        title: "Lỗi",
+        description: "Xảy ra lỗi trong quá trình dọn dẹp. Vui lòng thử lại",
         color: "danger",
       });
-      console.error("Clear watchlist error:", error);
+      console.error("Lỗi dọn dẹp danh sách xem:", error);
     },
   });
 
@@ -120,9 +120,9 @@ const LibraryList = () => {
   if (status === "error") {
     return (
       <div className="flex h-[50vh] flex-col items-center justify-center gap-4">
-        <p className="text-danger">Failed to load watchlist</p>
+        <p className="text-danger">Không thể tải danh sách theo dõi</p>
         <Button color="primary" onPress={() => refetch()}>
-          Try Again
+          Thử lại
         </Button>
       </div>
     );
@@ -136,9 +136,9 @@ const LibraryList = () => {
         <div className="flex w-full flex-col items-center justify-center gap-2">
           <ContentTypeSelection className="justify-center" />
           <Select
-            label="Sort by"
+            label="Sắp xếp theo"
             size="sm"
-            placeholder="Select sort"
+            placeholder="Chọn cách sắp xếp"
             className="max-w-xs p-4"
             selectedKeys={[sortOption]}
             onChange={({ target }) => setSortOption(target.value as SortOption)}
@@ -157,7 +157,7 @@ const LibraryList = () => {
               }}
               isLoading={clearWatchlistMutation.isPending || isPending}
             >
-              Clear {content === "movie" ? "Movies" : "TV Shows"} from Watchlist
+              Dọn kho {content === "movie" ? "Điện Ảnh" : "Chương trình TV"} từ danh sách xem của nhà ngươi?
             </Button>
           )}
         </div>
@@ -221,7 +221,7 @@ const LibraryList = () => {
               )}
               {!hasNextPage && !isFetchingNextPage && sortedWatchlist.length > 0 && (
                 <p className="text-muted-foreground text-center text-base">
-                  You have reached the end of your watchlist.
+                  Bạn đã xem hết danh sách theo dõi.
                 </p>
               )}
             </div>
@@ -229,7 +229,7 @@ const LibraryList = () => {
         ) : (
           <div className="flex h-[30vh] items-center justify-center">
             <p className="text-default-500">
-              No {content === "movie" ? "movies" : "TV shows"} in your watchlist yet.
+              Không có {content === "movie" ? "Điện Ảnh" : "Chương Trình TV"} trong danh sách của bạn rồi
             </p>
           </div>
         )}
@@ -238,20 +238,19 @@ const LibraryList = () => {
       <BackToTopButton />
 
       <ConfirmationModal
-        title={`Clear ${content === "movie" ? "Movies" : "TV Shows"}?`}
+        title={`Dọn dẹp danh sách ${content === "movie" ? "Điện Ảnh" : "Chương Trình TV"}?`}
         isOpen={opened}
         onClose={close}
         onConfirm={confirmClearWatchlist}
-        confirmLabel="Clear All"
+        confirmLabel="Dọn tất cả"
         isLoading={clearWatchlistMutation.isPending}
       >
         <p>
-          Are you sure you want to remove all {content === "movie" ? "movies" : "TV shows"} from
-          your watchlist? This action cannot be undone.
+          Bạn có muốn xóa bỏ toàn bộ danh sách xem của mình {content === "movie" ? "Điện Ảnh" : "Chương Trình TV"} từ
+          danh sách xem. Thực hiện hành động nếu muốn.
         </p>
         <p className="text-default-500 text-sm">
-          {sortedWatchlist.length} {sortedWatchlist.length === 1 ? "item" : "items"} will be
-          removed.
+          {sortedWatchlist.length} {sortedWatchlist.length === 1 ? "item" : "Điện Ảnh hoặc Chương Trình TV"} đã gỡ bỏ rồi nha
         </p>
       </ConfirmationModal>
     </>

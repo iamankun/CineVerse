@@ -49,6 +49,7 @@ export class PlayerAdBlocker {
   private blockNetworkRequests() {
     // Intercept fetch
     const originalFetch = window.fetch;
+    const self = this; // Preserve 'this' context
     window.fetch = async function(...args: Parameters<typeof fetch>) {
       const input = args[0];
       const url = typeof input === 'string' ? input : input instanceof URL ? input.href : input.url;
@@ -57,7 +58,7 @@ export class PlayerAdBlocker {
       
       if (result.blocked) {
         console.log(`🚫 [Player AdBlock] Blocked fetch: ${url}`);
-        PlayerAdBlocker.instance!.blockedCount++;
+        self.blockedCount++;
         return Promise.resolve(new Response('', { 
           status: 200,
           statusText: 'Blocked by Player AdBlocker'

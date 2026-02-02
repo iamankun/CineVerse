@@ -8,6 +8,49 @@ if (isEmpty(token)) {
   throw new Error("TMDB chưa được cài token API");
 }
 
+// Helper function for retry logic
+async function fetchWithRetry(
+  url: string, 
+  options: RequestInit, 
+  maxRetries: number = 3,
+  timeout: number = 10000
+): Promise<Response> {
+  let lastError: Error;
+  
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), timeout);
+      
+      const response = await fetch(url, {
+        ...options,
+        signal: controller.signal,
+      });
+      
+      clearTimeout(timeoutId);
+      
+      if (response.ok) {
+        return response;
+      }
+      
+      // If response is not ok, throw error to trigger retry
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      
+    } catch (error: any) {
+      lastError = error;
+      
+      // Log retry attempt
+      if (attempt < maxRetries) {
+        console.warn(`TMDB API retry ${attempt}/${maxRetries} for ${url}:`, error.message);
+        // Exponential backoff: wait longer between retries
+        await new Promise(resolve => setTimeout(resolve, Math.pow(2, attempt) * 1000));
+      }
+    }
+  }
+  
+  throw lastError!;
+}
+
 // Khởi tạo TMDB client với cấu hình ngôn ngữ mặc định
 // Sử dụng đúng format ngôn ngữ theo yêu cầu của thư viện
 const defaultConfig = {
@@ -53,7 +96,7 @@ export async function getMovieDetails(
     params.append('include_video_language', 'vi,en,null');
   }
 
-  const response = await fetch(
+  const response = await fetchWithRetry(
     `https://api.themoviedb.org/3/movie/${movieId}?${params.toString()}`,
     {
       headers: {
@@ -101,7 +144,7 @@ export async function getTvShowDetails(
     params.append('include_video_language', 'vi,en,null');
   }
 
-  const response = await fetch(
+  const response = await fetchWithRetry(
     `https://api.themoviedb.org/3/tv/${tvId}?${params.toString()}`,
     {
       headers: {
@@ -140,7 +183,7 @@ export async function getTvSeasonDetails(
     params.append('include_image_language', 'vi,en,null');
   }
 
-  const response = await fetch(
+  const response = await fetchWithRetry(
     `https://api.themoviedb.org/3/tv/${tvId}/season/${seasonNumber}?${params.toString()}`,
     {
       headers: {

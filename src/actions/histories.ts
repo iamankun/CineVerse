@@ -5,7 +5,7 @@ import { VidlinkEventData } from "@/hooks/useVidlinkPlayer";
 import { ActionResponse } from "@/types";
 import { HistoryDetail } from "@/types/movie";
 import { mutateMovieTitle, mutateTvShowTitle } from "@/utils/movies";
-import { createClient } from "@/utils/supabase/server";
+import { createClient } from "@/utils/supabase/server-new";
 
 export const syncHistory = async (
   data: VidlinkEventData["data"],

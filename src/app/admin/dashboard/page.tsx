@@ -57,6 +57,7 @@ import {
   TableBody,
   TableRow,
   TableCell,
+  addToast,
 } from "@heroui/react";
 import { IoSearch, IoSave, IoRefresh, IoAdd, IoTrash, IoList, IoCreate, IoLogOut, IoClipboard, IoArrowBack, IoChevronDown, IoChevronForward } from "react-icons/io5";
 import { searchMovies, searchTV, getMovieDetails, getTvShowDetails } from "@/api/tmdb";
@@ -1268,10 +1269,28 @@ export default function DashboardPage() {
   // Logout handler
   const handleLogout = async () => {
     try {
-      await fetch("/api/admin/auth/logout", { method: "POST" });
-      router.push("/admin/login");
+      const response = await fetch("/api/admin/auth/logout", { method: "POST" });
+      const result = await response.json();
+      
+      if (result.success) {
+        addToast({
+          title: "Đăng xuất admin thành công",
+          color: "success",
+        });
+        router.push("/admin/login");
+        router.refresh();
+      } else {
+        addToast({
+          title: result.message || "Lỗi đăng xuất",
+          color: "danger",
+        });
+      }
     } catch (error) {
-      console.error("Logout error:", error);
+      console.error("Admin logout error:", error);
+      addToast({
+        title: "Lỗi kết nối. Vui lòng thử lại.",
+        color: "danger",
+      });
     }
   };
 
