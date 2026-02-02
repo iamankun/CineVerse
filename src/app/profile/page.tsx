@@ -62,7 +62,7 @@ export default function ProfilePage() {
         }
       }
     } catch (error: any) {
-      console.error("Lỗi tải trang cá nhân:", error);
+      console.error("Lỗi tải thông tin trang cá nhân:", error);
       addToast({
         title: "Lỗi",
         description: "Không thể tải thông tin trang cá nhân",
@@ -112,12 +112,12 @@ export default function ProfilePage() {
             });
             
             if (createError) {
-              console.error("Lỗi tạo bucket:", createError);
-              throw new Error("Không thể tạo ổ lưu trữ. Vui lòng liên hệ admin.");
+              console.error("Lỗi tạo bucket lưu trữ:", createError);
+              throw new Error("Không thể tạo bucket lưu trữ. Vui lòng liên hệ quản trị viên.");
             }
           }
         } catch (bucketError) {
-          console.error("Lỗi kiểm tra bucket:", bucketError);
+          console.error("Lỗi kiểm tra bucket lưu trữ:", bucketError);
         }
 
         // Upload avatar
@@ -161,7 +161,7 @@ export default function ProfilePage() {
       const { error: updateError } = await updateQuery;
 
       if (updateError) {
-        console.error("❌ Lỗi cập nhật trang cá nhân:", {
+        console.error("Lỗi cập nhật thông tin trang cá nhân:", {
           message: updateError.message,
           details: (updateError as any)?.details,
           hint: (updateError as any)?.hint,
@@ -171,19 +171,19 @@ export default function ProfilePage() {
         // Handle specific RLS errors
         if (updateError.message?.includes('row-level security')) {
           console.error("🔒 RLS Error Details:", {
-            type: "Row Level Security Violation",
-            cause: "User không có quyền truy cập profile này",
-            solution: "Vui lòng đăng nhập lại hoặc kiểm tra quyền truy cập"
+            type: "Vi phạm Chính sách Bảo mật Hàng cấp",
+            cause: "Người dùng không có quyền truy cập thông tin trang cá nhân này",
+            solution: "Vui lòng đăng nhập lại hoặc kiểm tra quyền truy cập thông tin"
           });
-          throw new Error("Không có quyền truy cập trang cá nhân. Vui lòng đăng nhập lại.");
+          throw new Error("Không có quyền truy cập thông tin trang cá nhân. Vui lòng đăng nhập lại.");
         }
         
         // Handle specific database errors
         if (updateError.message?.includes('duplicate key')) {
           console.error("🔑 Duplicate Key Error:", {
-            type: "Database Constraint Violation",
-            cause: "Username đã tồn tại",
-            solution: "Chọn tên người dùng khác"
+            type: "Vi phạm Ràng buộc Cơ sở dữ liệu",
+            cause: "Tên người dùng đã tồn tại",
+            solution: "Vui lòng chọn tên người dùng khác"
           });
           throw new Error("Tên người dùng đã tồn tại. Vui lòng chọn tên khác.");
         }
@@ -191,14 +191,14 @@ export default function ProfilePage() {
         // Handle connection errors
         if (updateError.message?.includes('connection')) {
           console.error("🌐 Connection Error:", {
-            type: "Network Connection Issue",
-            cause: "Không thể kết nối đến database",
-            solution: "Kiểm tra kết nối mạng và thử lại"
+            type: "Vấn đề Kết nối Mạng",
+            cause: "Không thể kết nối đến cơ sở dữ liệu",
+            solution: "Vui lòng kiểm tra kết nối mạng và thử lại"
           });
-          throw new Error("Lỗi kết nối. Vui lòng kiểm tra mạng và thử lại.");
+          throw new Error("Lỗi kết nối. Vui lòng kiểm tra kết nối mạng và thử lại.");
         }
         
-        throw new Error(updateError.message || "Không thể cập nhật trang cá nhân");
+        throw new Error(updateError.message || "Không thể cập nhật thông tin trang cá nhân");
       }
 
       addToast({
@@ -208,7 +208,7 @@ export default function ProfilePage() {
       });
 
     } catch (error: any) {
-      console.error("❌ Lỗi cập nhật trang cá nhân:", {
+      console.error("Lỗi cập nhật thông tin trang cá nhân:", {
         message: error.message,
         stack: error.stack,
         name: error.name,
@@ -217,7 +217,7 @@ export default function ProfilePage() {
       
       addToast({
         title: "Lỗi",
-        description: error.message || "Không thể cập nhật trang cá nhân",
+        description: error.message || "Không thể cập nhật thông tin trang cá nhân",
         color: "danger",
       });
     } finally {
