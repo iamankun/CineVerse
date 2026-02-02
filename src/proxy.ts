@@ -1,7 +1,27 @@
 import { type NextRequest } from "next/server";
 import { updateSession } from "@/utils/supabase/middleware-new";
+import { createClient } from "@/utils/supabase/server-new";
+import { NextResponse } from "next/server";
 
 export async function proxy(request: NextRequest) {
+  const { pathname } = request.nextUrl;
+
+  // Protect profile page
+  if (pathname.startsWith("/profile")) {
+    const supabase = createClient();
+    
+    const {
+      data: { user },
+    } = await (supabase as any).auth.getUser();
+
+    if (!user) {
+      // Redirect to login if not authenticated
+      const loginUrl = new URL("/auth/login", request.url);
+      loginUrl.searchParams.set("redirectTo", pathname);
+      return NextResponse.redirect(loginUrl);
+    }
+  }
+
   // update user's auth session
   return await updateSession(request);
 }

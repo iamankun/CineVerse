@@ -24,6 +24,8 @@ const TopNavbar = () => {
   const tv = pathName.includes("/tv/");
   const player = pathName.includes("/player");
 
+  console.log('🔍 TopNavbar: Rendered, pathname:', pathName, 'show:', show, 'player:', player);
+
   if (player) return null;
 
   return (

@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/utils/supabase/client-new";
 import { addToast, Button, Input, Avatar, Textarea } from "@heroui/react";
-import { Camera, Save, User } from "@/utils/icons";
+import { Camera, Save, User, LogOut } from "lucide-react";
 import { ProfileRow } from "@/types/database";
 
 export default function ProfilePage() {
@@ -16,6 +16,13 @@ export default function ProfilePage() {
   const [saving, setSaving] = useState(false);
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [avatarPreview, setAvatarPreview] = useState<string>("");
+  
+  // Password change states
+  const [showPasswordChange, setShowPasswordChange] = useState(false);
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [changingPassword, setChangingPassword] = useState(false);
   
   const [formData, setFormData] = useState({
     username: "",
@@ -238,6 +245,64 @@ export default function ProfilePage() {
     }));
   };
 
+  const handlePasswordChange = async () => {
+    if (newPassword !== confirmPassword) {
+      addToast({
+        title: "Lỗi",
+        description: "Mật khẩu xác nhận không khớp",
+        color: "danger",
+      });
+      return;
+    }
+
+    if (newPassword.length < 6) {
+      addToast({
+        title: "Lỗi", 
+        description: "Mật khẩu mới phải có ít nhất 6 ký tự",
+        color: "danger",
+      });
+      return;
+    }
+
+    setChangingPassword(true);
+
+    try {
+      const { error } = await supabase.auth.updateUser({
+        password: newPassword
+      });
+
+      if (error) {
+        throw error;
+      }
+
+      addToast({
+        title: "Thành công",
+        description: "Mật khẩu đã được thay đổi",
+        color: "success",
+      });
+
+      // Reset password form
+      setCurrentPassword("");
+      setNewPassword("");
+      setConfirmPassword("");
+      setShowPasswordChange(false);
+
+    } catch (error: any) {
+      addToast({
+        title: "Lỗi",
+        description: error.message || "Không thể thay đổi mật khẩu",
+        color: "danger",
+      });
+    } finally {
+      setChangingPassword(false);
+    }
+  };
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    router.push("/");
+  };
+
   if (loading) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-gray-900">
@@ -355,8 +420,8 @@ export default function ProfilePage() {
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 mt-6">
               <div>
                 <Input
-                  label="Website"
-                  placeholder="https://example.com"
+                  label="Trang chủ"
+                  placeholder="https://cineverse.ankun.dev"
                   value={formData.website}
                   onChange={(e) => handleInputChange("website", e.target.value)}
                   variant="bordered"
@@ -404,24 +469,114 @@ export default function ProfilePage() {
               />
             </div>
 
+            {/* Password Change Section */}
+            <div className="border-t border-gray-700 pt-6">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-semibold text-white">Đổi Mật Khẩu</h3>
+                <Button
+                  type="button"
+                  variant="flat"
+                  color="primary"
+                  size="sm"
+                  onPress={() => setShowPasswordChange(!showPasswordChange)}
+                >
+                  {showPasswordChange ? "Hủy" : "Đổi mật khẩu"}
+                </Button>
+              </div>
+
+              {showPasswordChange && (
+                <div className="space-y-4">
+                  <Input
+                    type="password"
+                    label="Mật khẩu hiện tại"
+                    placeholder="Nhập mật khẩu hiện tại"
+                    value={currentPassword}
+                    onChange={(e) => setCurrentPassword(e.target.value)}
+                    variant="bordered"
+                    classNames={{
+                      label: "text-gray-300",
+                      input: "bg-gray-700 text-white border-gray-600",
+                      inputWrapper: "border-gray-600",
+                      helperWrapper: "text-gray-400"
+                    }}
+                  />
+                  
+                  <Input
+                    type="password"
+                    label="Mật khẩu mới"
+                    placeholder="Nhập mật khẩu mới (ít nhất 6 ký tự)"
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                    variant="bordered"
+                    classNames={{
+                      label: "text-gray-300",
+                      input: "bg-gray-700 text-white border-gray-600",
+                      inputWrapper: "border-gray-600",
+                      helperWrapper: "text-gray-400"
+                    }}
+                  />
+                  
+                  <Input
+                    type="password"
+                    label="Xác nhận mật khẩu mới"
+                    placeholder="Nhập lại mật khẩu mới"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    variant="bordered"
+                    classNames={{
+                      label: "text-gray-300",
+                      input: "bg-gray-700 text-white border-gray-600",
+                      inputWrapper: "border-gray-600",
+                      helperWrapper: "text-gray-400"
+                    }}
+                  />
+                  
+                  <Button
+                    type="button"
+                    color="success"
+                    className="w-full"
+                    isLoading={changingPassword}
+                    onPress={handlePasswordChange}
+                    startContent={<Save className="h-4 w-4" />}
+                  >
+                    {changingPassword ? "Đang đổi mật khẩu..." : "Đổi mật khẩu"}
+                  </Button>
+                </div>
+              )}
+            </div>
+
             {/* Action Buttons */}
-            <div className="mt-8 flex justify-end space-x-4">
-              <Button
-                type="button"
-                variant="bordered"
-                onPress={() => router.back()}
-              >
-                Hủy
-              </Button>
+            <div className="mt-8 flex justify-between items-center">
+              <div className="flex space-x-2">
+                <Button
+                  type="button"
+                  variant="flat"
+                  color="danger"
+                  onPress={handleLogout}
+                  startContent={<LogOut className="h-4 w-4" />}
+                >
+                  Đăng xuất
+                </Button>
+              </div>
               
-              <Button
-                type="submit"
-                color="primary"
-                isLoading={saving}
-                startContent={<Save className="h-4 w-4" />}
-              >
-                {saving ? "Đang lưu..." : "Lưu thay đổi"}
-              </Button>
+              <div className="flex space-x-4">
+                <Button
+                  type="button"
+                  variant="bordered"
+                  onPress={() => router.back()}
+                >
+                  Hủy
+                </Button>
+                
+                <Button
+                  type="submit"
+                  color="primary"
+                  isLoading={saving}
+                  startContent={<Save className="h-4 w-4" />}
+                >
+                  {saving ? "Đang lưu..." : "Lưu thay đổi"}
+                </Button>
+              </div>
             </div>
           </form>
         </div>

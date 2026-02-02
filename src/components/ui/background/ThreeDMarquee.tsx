@@ -22,7 +22,7 @@ const ThreeDMarquee: React.FC<ThreeDMarqueeProps> = ({ images, className, aspect
       <div className="flex size-full items-center justify-center overflow-hidden">
         <div className="w-full max-w-[1400px] h-[1400px] shrink-0 -translate-x-16 md:-translate-x-32 scale-[0.6] sm:scale-[0.65] md:scale-75 lg:scale-100">
           <div
-            className="relative right-[50%] top-96 grid size-full origin-top-left grid-cols-4 gap-0"
+            className="relative right-[50%] top-96 grid size-full origin-top-left grid-cols-4 gap-12"
             style={{
               transform: "rotateX(55deg) rotateY(0deg) rotateZ(-45deg)",
               transformStyle: "preserve-3d",
@@ -31,7 +31,7 @@ const ThreeDMarquee: React.FC<ThreeDMarqueeProps> = ({ images, className, aspect
             {chunks.map((subarray, colIndex) => (
               <motion.div
                 key={colIndex + "marquee"}
-                className="flex flex-col items-start gap-4"
+                className="flex flex-col items-start gap-12"
                 animate={{ y: colIndex % 2 === 0 ? 500 : -500 }}
                 transition={{
                   repeat: Infinity,
@@ -54,7 +54,7 @@ const ThreeDMarquee: React.FC<ThreeDMarqueeProps> = ({ images, className, aspect
                       ease: "easeInOut",
                     }}
                     className={cn(
-                      "rounded-lg object-cover hover:shadow-2xl",
+                      "rounded-lg object-cover hover:shadow-2xl mb-6",
                       {
                         "aspect-video": aspect === "video",
                         "aspect-2/3": aspect === "poster",

@@ -27,8 +27,8 @@ export default function RootLayoutContent({ children }: { children: React.ReactN
   // Ensure manifest and icons are refreshed on version change
   useManifestRefresh();
 
+  // Check if body has not-found marker
   useEffect(() => {
-    // Check if body has not-found marker
     const checkNotFound = () => {
       const hasMarker = document.body.getAttribute('data-not-found') === 'true';
       setIsNotFound(hasMarker);
@@ -41,17 +41,16 @@ export default function RootLayoutContent({ children }: { children: React.ReactN
     observer.observe(document.body, { attributes: true });
     
     return () => observer.disconnect();
-  }, [pathname]);
+  }, []);
 
   // Set loading to false after 3 seconds delay
   useEffect(() => {
-    setIsLoading(true);
     const timer = setTimeout(() => {
       setIsLoading(false);
     }, 3000);
 
     return () => clearTimeout(timer);
-  }, [pathname]);
+  }, []);
 
   // For admin, auth routes, and 404 page, render without navbar/footer
   if (isAdminRoute || isAuthRoute || isNotFound) {
