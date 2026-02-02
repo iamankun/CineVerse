@@ -10,7 +10,7 @@
   "scripts": {
     "dev": "next dev --turbopack",
     "prebuild": "node scripts/update-manifest-version.mjs",
-    "build": "next build",
+    "build": "next build --webpack",
     "start": "next start",
     "lint": "next lint",
     "generate-icons": "node scripts/generate-app-icons.mjs",
