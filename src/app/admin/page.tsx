@@ -8,7 +8,7 @@ import {
   IoSettings,
   IoAnalytics,
   IoShieldCheckmark,
-  IoVideocam,
+  IoTv,
 } from "react-icons/io5";
 import AdminGuard from "@/components/AdminGuard";
 import { getVersionString } from "@/utils/version";
@@ -25,10 +25,10 @@ export default function AdminPage() {
       color: "bg-gradient-to-br from-blue-500 to-cyan-500",
     },
     {
-      title: "Live Stream",
-      description: "Quản lý luồng phát trực tiếp",
-      icon: <IoVideocam className="text-6xl" />,
-      path: "/admin/live",
+      title: "TV",
+      description: "Quản lý luồng phát Tivi trực tiếp",
+      icon: <IoTv className="text-6xl" />,
+      path: "/admin/tivi",
       color: "bg-gradient-to-br from-red-500 to-pink-500",
     },
     {
