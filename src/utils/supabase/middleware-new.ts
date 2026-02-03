@@ -2,37 +2,61 @@ import { createServerClient, type CookieOptions } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
 
 export async function updateSession(request: NextRequest) {
-  // This `response` object is mutable and passed by reference to the cookie handlers.
+  // Skip Supabase middleware if no auth cookies
+  const accessToken = request.cookies.get('sb-access-token')?.value;
+  const refreshToken = request.cookies.get('sb-refresh-token')?.value;
+  
+  if (!accessToken && !refreshToken) {
+    return NextResponse.next();
+  }
+
+  // Check if environment variables are available
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  
+  if (!supabaseUrl || !supabaseAnonKey) {
+    console.error("🔍 [MIDDLEWARE] Missing Supabase environment variables:", {
+      url: !!supabaseUrl,
+      key: !!supabaseAnonKey
+    });
+    return NextResponse.next();
+  }
+
   const response = NextResponse.next({
     request: {
       headers: request.headers,
     },
   });
 
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        get(name: string) {
-          return request.cookies.get(name)?.value;
+  try {
+    const supabase = createServerClient(
+      supabaseUrl,
+      supabaseAnonKey,
+      {
+        cookies: {
+          get(name: string) {
+            return request.cookies.get(name)?.value;
+          },
+          set(name: string, value: string, options: CookieOptions) {
+            response.cookies.set({ name, value, ...options });
+          },
+          remove(name: string, options: CookieOptions) {
+            response.cookies.set({ name, value: '', ...options });
+          },
         },
-        set(name: string, value: string, options: CookieOptions) {
-          // The `set` method is called whenever the Supabase client needs to save a cookie.
-          // This happens when signing in, signing out, and when refreshing the session.
-          response.cookies.set({ name, value, ...options });
-        },
-        remove(name: string, options: CookieOptions) {
-          // The `remove` method is called whenever the Supabase client needs to delete a cookie.
-          // This happens when signing out.
-          response.cookies.set({ name, value: '', ...options });
-        },
-      },
-    }
-  );
+      }
+    );
 
-  // This will refresh the session cookie if it's expired.
-  await supabase.auth.getUser();
+    // Only refresh session if we have tokens - use getSession instead of getUser
+    const { data: { session } } = await supabase.auth.getSession();
+    
+    if (session) {
+      // Only call getUser if we have a valid session
+      await supabase.auth.getUser();
+    }
+  } catch (error) {
+    console.error("🔍 [MIDDLEWARE] Session refresh error:", error);
+  }
 
   return response;
 }

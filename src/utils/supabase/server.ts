@@ -6,11 +6,26 @@ import { Database } from "./types";
 export async function createClient(admin?: boolean) {
   const cookieStore = await cookies();
 
-  const key = admin ? env.SUPABASE_SERVICE_ROLE_KEY : env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  // Check environment variables
+  const supabaseUrl = env.NEXT_PUBLIC_SUPABASE_URL;
+  const serviceRoleKey = env.SUPABASE_SERVICE_ROLE_KEY;
+  const anonKey = env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  
+  if (!supabaseUrl) {
+    console.error("🔍 [SERVER] Missing NEXT_PUBLIC_SUPABASE_URL");
+    throw new Error("Missing Supabase URL");
+  }
+  
+  const key = admin ? serviceRoleKey : anonKey;
+  
+  if (!key) {
+    console.error("🔍 [SERVER] Missing Supabase key:", { admin, hasServiceRole: !!serviceRoleKey, hasAnonKey: !!anonKey });
+    throw new Error("Missing Supabase key");
+  }
 
   // Create a server's supabase client with newly configured cookie,
   // which could be used to maintain user's session
-  return createServerClient<Database>(env.NEXT_PUBLIC_SUPABASE_URL, key, {
+  return createServerClient<Database>(supabaseUrl, key, {
     cookies: {
       getAll() {
         return cookieStore.getAll();

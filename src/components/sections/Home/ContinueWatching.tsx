@@ -20,7 +20,7 @@ const ContinueWatching: React.FC = () => {
     <section id="continue-watching" className="min-h-[250px] md:min-h-[300px]">
       <div className="z-3 flex flex-col gap-2">
         <SectionTitle color={content === "movie" ? "primary" : "warning"}>
-          Continue Your Journey
+          Tiếp tục xem
         </SectionTitle>
         <Carousel>
           {data.data.map((media) => {

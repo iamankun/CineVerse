@@ -12,6 +12,8 @@ export async function middleware(request: NextRequest) {
   // Skip only specific API routes that don't need auth
   const skipApiRoutes = [
     '/api/debug-profile',
+    '/api/test-auth',
+    '/api/debug-histories',
     '/api/debug-tmdb', 
     '/api/test-profiles',
     '/api/manifest',
