@@ -12,7 +12,7 @@
     "prebuild": "node scripts/update-manifest-version.mjs",
     "build": "next build --webpack",
     "start": "next start",
-    "lint": "next lint",
+    "lint": "eslint . --fix",
     "generate-icons": "node scripts/generate-app-icons.mjs",
     "update-manifest": "node scripts/update-manifest-version.mjs",
     "sb-start": "supabase start --debug --ignore-health-check",
@@ -74,8 +74,10 @@
     "@types/node": "^25.0.3",
     "@types/react": "19.2.7",
     "@types/react-dom": "19.2.3",
+    "@typescript-eslint/eslint-plugin": "^8.54.0",
     "eslint": "^9.39.2",
     "eslint-config-next": "16.1.1",
+    "eslint-plugin-react": "^7.37.5",
     "imagemin": "^9.0.1",
     "postcss": "^8.5.6",
     "prettier": "^3.7.4",
@@ -84,7 +86,8 @@
     "tailwindcss": "^4.1.18",
     "ts-node": "^10.9.2",
     "typescript": "^5.9.3",
-    "webpack": "^5.104.1"
+    "webpack": "^5.104.1",
+    "workbox-background-sync": "^7.4.0"
   },
   "prettier": {
     "proseWrap": "never",

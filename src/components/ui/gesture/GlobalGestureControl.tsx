@@ -66,11 +66,10 @@ export function GlobalGestureControl() {
 
   const {
     isInitialized,
-    isLoading,
     error,
     currentGesture,
     handDetected,
-    cameraActive,
+    isLoading,
     handPosition,
     startDetection,
     stopDetection,

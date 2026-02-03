@@ -1,10 +1,14 @@
 import { useEffect, useState } from "react";
 import { env } from "@/utils/env";
 
-interface UseMovieLogoOptions {
-  movieId: number;
-  type: "movie" | "tv";
-  originalLanguage?: string;
+interface Logo {
+  iso_639_1: string | null;
+  file_path: string;
+}
+
+interface Logo {
+  iso_639_1: string | null;
+  file_path: string;
 }
 
 export const useMovieLogo = (movieId: number, type: "movie" | "tv", originalLanguage?: string) => {
@@ -39,11 +43,11 @@ export const useMovieLogo = (movieId: number, type: "movie" | "tv", originalLang
         
         // Priority order: vi-VN → en → null → original language → any
         // CHỈ sử dụng original language khi KHÔNG có vi, en, hoặc null
-        const viLogo = data.logos?.find((logo: any) => logo.iso_639_1 === "vi");
-        const enLogo = data.logos?.find((logo: any) => logo.iso_639_1 === "en");
-        const nullLogo = data.logos?.find((logo: any) => logo.iso_639_1 === null);
+        const viLogo = data.logos?.find((logo: Logo) => logo.iso_639_1 === "vi");
+        const enLogo = data.logos?.find((logo: Logo) => logo.iso_639_1 === "en");
+        const nullLogo = data.logos?.find((logo: Logo) => logo.iso_639_1 === null);
         const originalLogo = originalLanguage 
-          ? data.logos?.find((logo: any) => logo.iso_639_1 === originalLanguage)
+          ? data.logos?.find((logo: Logo) => logo.iso_639_1 === originalLanguage)
           : null;
         const anyLogo = data.logos?.[0];
         

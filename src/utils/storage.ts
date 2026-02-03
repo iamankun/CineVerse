@@ -18,7 +18,7 @@ export async function uploadToBlob(
         await del(blobs[0].url, { token });
         console.log('Deleted existing blob:', path);
       }
-    } catch (deleteError) {
+    } catch {
       // Ignore delete errors
     }
 

@@ -8,6 +8,7 @@ import {
   differenceInMonths,
   differenceInYears,
 } from "date-fns";
+import { getTmdbImageUrl } from "@/api/tmdb";
 import { Movie, MovieDetails, TV, TvShowDetails } from "tmdb-ts";
 
 /**
@@ -114,7 +115,10 @@ export const getImageUrl = (
       : type === "backdrop"
         ? "https://wallpapercave.com/wp/wp1945939.jpg"
         : "";
-  return path ? `https://image.tmdb.org/t/p/${size}/${path}` : fallback;
+
+  // Use proxy for TMDB images to avoid CORS issues
+  const proxiedUrl = getTmdbImageUrl(path || null, size);
+  return proxiedUrl || fallback;
 };
 
 /**

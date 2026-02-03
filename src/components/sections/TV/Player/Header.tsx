@@ -12,8 +12,6 @@ interface TvShowPlayerHeaderProps extends Omit<TvShowPlayerProps, "episodes" | "
 
 const TvShowPlayerHeader: React.FC<TvShowPlayerHeaderProps> = ({
   id,
-  seriesName,
-  episode,
   hidden,
 }) => {
   return (

@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { createClient } from "@/utils/supabase/client-new";
 import { addToast, Button, Input, Avatar, Textarea } from "@heroui/react";
 import { Camera, Save, User, LogOut } from "lucide-react";
+import { ProfileRow } from "@/types/database";
 
 export default function ProfilePage() {
   const router = useRouter();
@@ -37,6 +38,7 @@ export default function ProfilePage() {
 
   const fetchUserProfile = async () => {
     try {
+      // Debug: Check environment and connection
       console.log("🔍 Debug: Starting profile fetch...");
       
       const { data: { user } } = await supabase.auth.getUser();
@@ -50,25 +52,22 @@ export default function ProfilePage() {
       console.log("🔍 Debug: User found:", { id: user.id, email: user.email });
       setUser(user);
 
-      // Fetch profile data with error handling for missing columns
-      console.log("🔍 Debug: Fetching profile data...");
-      
-      let profile = null;
-      let profileError = null;
-      
+      // Debug: Test API connection
       try {
-        const result = await supabase
-          .from("profiles")
-          .select("*")
-          .eq("id", user.id)
-          .single();
-        
-        profile = result.data;
-        profileError = result.error;
-      } catch (error: any) {
-        console.error("🔍 Debug: Profile query failed:", error);
-        profileError = error;
+        const debugResponse = await fetch('/api/debug-profile');
+        const debugData = await debugResponse.json();
+        console.log("🔍 Debug: API debug data:", debugData);
+      } catch (debugError) {
+        console.error("🔍 Debug: API debug failed:", debugError);
       }
+
+      // Fetch profile data
+      console.log("🔍 Debug: Fetching profile data...");
+      const { data: profile, error: profileError } = await supabase
+        .from("profiles")
+        .select("*")
+        .eq("id", user.id)
+        .single();
 
       console.log("🔍 Debug: Profile query result:", { profile, error: profileError });
 
@@ -80,37 +79,12 @@ export default function ProfilePage() {
           code: profileError.code
         });
         
-        // Handle specific errors
-        if (profileError.message?.includes('column') && profileError.message?.includes('does not exist')) {
-          // Missing columns - create a basic profile
-          console.log("🔍 Debug: Missing columns detected, creating basic profile...");
-          try {
-            const { data: newProfile, error: createError } = await supabase
-              .from("profiles")
-              .upsert({
-                id: user.id,
-                username: user.email?.split("@")[0] || "",
-                full_name: "",
-                updated_at: new Date().toISOString()
-              })
-              .select()
-              .single();
-            
-            if (createError) {
-              throw createError;
-            }
-            
-            profile = newProfile;
-            profileError = null;
-          } catch (createError: any) {
-            console.error("🔍 Debug: Failed to create basic profile:", createError);
-            throw new Error("Không thể tạo trang cá nhân. Vui lòng liên hệ quản trị viên.");
-          }
-        } else if (profileError.message?.includes('row-level security')) {
+        // Handle specific RLS errors
+        if (profileError.message?.includes('row-level security')) {
           throw new Error("Không có quyền truy cập thông tin trang cá nhân. Vui lòng đăng nhập lại.");
-        } else {
-          throw new Error(`Lỗi database: ${profileError.message}`);
         }
+        
+        throw new Error(`Lỗi database: ${profileError.message}`);
       }
 
       if (profile) {
@@ -211,52 +185,31 @@ export default function ProfilePage() {
         avatarUrl = publicUrl;
       }
 
-      // Update profile with flexible field handling
+      // Update profile using simple update
       const updateData: any = {
         full_name: formData.full_name,
-        updated_at: new Date().toISOString()
       };
       
-      // Only add fields that exist
+      // Only add fields that exist in the table
       if (formData.username) updateData.username = formData.username;
       if (formData.bio) updateData.bio = formData.bio;
       if (formData.website) updateData.website = formData.website;
       if (formData.location) updateData.location = formData.location;
       if (avatarUrl) updateData.avatar_url = avatarUrl;
       
-      // Try to update with all fields first
-      let updateError = null;
-      
-      try {
-        const { error } = await supabase
-          .from("profiles")
-          .update(updateData)
-          .eq("id", user.id);
-        
-        updateError = error;
-      } catch (error: any) {
-        updateError = error;
-      }
-
-      // If there's a column error, try without the problematic fields
-      if (updateError && updateError.message?.includes('column') && updateError.message?.includes('does not exist')) {
-        console.log("🔍 Debug: Column error, retrying with basic fields...");
-        
-        const basicUpdateData: any = {
+      // Update profile using workaround for TypeScript issues
+      const supabaseAny = supabase as any;
+      const { error: updateError } = await supabaseAny
+        .from("profiles")
+        .update({
           full_name: formData.full_name,
-          updated_at: new Date().toISOString()
-        };
-        
-        if (formData.username) basicUpdateData.username = formData.username;
-        if (avatarUrl) basicUpdateData.avatar_url = avatarUrl;
-        
-        const { error: basicError } = await supabase
-          .from("profiles")
-          .update(basicUpdateData)
-          .eq("id", user.id);
-        
-        updateError = basicError;
-      }
+          ...(formData.username && { username: formData.username }),
+          ...(formData.bio && { bio: formData.bio }),
+          ...(formData.website && { website: formData.website }),
+          ...(formData.location && { location: formData.location }),
+          ...(avatarUrl && { avatar_url: avatarUrl })
+        })
+        .eq("id", user.id);
 
       if (updateError) {
         console.error("Lỗi cập nhật thông tin trang cá nhân:", {
@@ -266,12 +219,33 @@ export default function ProfilePage() {
           code: (updateError as any)?.code
         });
         
-        // Handle specific errors
+        // Handle specific RLS errors
         if (updateError.message?.includes('row-level security')) {
+          console.error("🔒 RLS Error Details:", {
+            type: "Vi phạm Chính sách Bảo mật Hàng cấp",
+            cause: "Người dùng không có quyền truy cập thông tin trang cá nhân này",
+            solution: "Vui lòng đăng nhập lại hoặc kiểm tra quyền truy cập thông tin"
+          });
           throw new Error("Không có quyền truy cập thông tin trang cá nhân. Vui lòng đăng nhập lại.");
-        } else if (updateError.message?.includes('duplicate key')) {
+        }
+        
+        // Handle specific database errors
+        if (updateError.message?.includes('duplicate key')) {
+          console.error("🔑 Duplicate Key Error:", {
+            type: "Vi phạm Ràng buộc Cơ sở dữ liệu",
+            cause: "Tên người dùng đã tồn tại",
+            solution: "Vui lòng chọn tên người dùng khác"
+          });
           throw new Error("Tên người dùng đã tồn tại. Vui lòng chọn tên khác.");
-        } else if (updateError.message?.includes('connection')) {
+        }
+        
+        // Handle connection errors
+        if (updateError.message?.includes('connection')) {
+          console.error("🌐 Connection Error:", {
+            type: "Vấn đề Kết nối Mạng",
+            cause: "Không thể kết nối đến cơ sở dữ liệu",
+            solution: "Vui lòng kiểm tra kết nối mạng và thử lại"
+          });
           throw new Error("Lỗi kết nối. Vui lòng kiểm tra kết nối mạng và thử lại.");
         }
         

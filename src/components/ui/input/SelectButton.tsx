@@ -1,6 +1,6 @@
 import { InputWrapperProps } from "@/types/component";
 import { isEmpty } from "@/utils/helpers";
-import { Input, Button, ButtonProps, ButtonGroup, cn } from "@heroui/react";
+import { Button, ButtonProps, ButtonGroup, cn } from "@heroui/react";
 import { useUncontrolled } from "@mantine/hooks";
 import React, { CSSProperties, PropsWithChildren, useCallback } from "react";
 import { kebabCase } from "string-ts";
@@ -34,7 +34,6 @@ export interface SelectButtonProps<T extends string = string> extends WrapperPro
   disabled?: ButtonProps["disabled"];
   size?: ButtonProps["size"];
   color?: ButtonProps["color"];
-  radius?: ButtonProps["radius"];
   gap?: CSSProperties["gap"];
   // baseVariant?: ButtonProps["variant"];
   // selectedVariant?: ButtonProps["variant"];
@@ -54,7 +53,6 @@ const SelectButton = <T extends string = string>({
   disabled,
   size,
   color = "default",
-  radius = "sm",
   gap = "0.8rem",
   // baseVariant = "faded",
   // selectedVariant = "shadow",

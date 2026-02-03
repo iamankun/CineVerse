@@ -10,8 +10,6 @@ import {
   VolumeX,
   SkipBack,
   SkipForward,
-  Maximize,
-  Minimize,
   Settings,
   FastForward,
   ChevronsRight,
@@ -73,7 +71,6 @@ export const YouTubePlayer: React.FC<YouTubePlayerProps> = ({
   const [showUI, setShowUI] = useState(true);
   const [showQualityMenu, setShowQualityMenu] = useState(false);
   const [showSkipIntro, setShowSkipIntro] = useState(false);
-  const [showNextEpisode, setShowNextEpisode] = useState(false);
   const containerRef = React.useRef<HTMLDivElement>(null);
   const hideTimerRef = React.useRef<NodeJS.Timeout | null>(null);
   const progressEventRef = React.useRef<{
@@ -85,15 +82,11 @@ export const YouTubePlayer: React.FC<YouTubePlayerProps> = ({
 
   const {
     isReady,
-    playerState,
     currentTime,
     duration,
     volume,
     isMuted,
     availableQualities,
-    currentQuality,
-    play,
-    pause,
     seekTo,
     setVolume,
     toggleMute,
@@ -128,12 +121,12 @@ export const YouTubePlayer: React.FC<YouTubePlayerProps> = ({
     }
     
     // Chỉ auto-hide khi đang playing
-    if (playerState === PlayerState.PLAYING) {
+    if (isReady && currentTime > 0 && currentTime < duration) {
       hideTimerRef.current = setTimeout(() => {
         setShowUI(false);
       }, 3000);
     }
-  }, [playerState, showQualityMenu]);
+  }, [isReady, currentTime, duration, showQualityMenu]);
 
   // Mouse movement và click hiện controls
   React.useEffect(() => {
@@ -161,13 +154,13 @@ export const YouTubePlayer: React.FC<YouTubePlayerProps> = ({
 
   // Khi pause, luôn hiện controls
   React.useEffect(() => {
-    if (playerState === PlayerState.PAUSED) {
+    if (isReady && currentTime > 0 && currentTime < duration) {
       setShowUI(true);
       if (hideTimerRef.current) {
         clearTimeout(hideTimerRef.current);
       }
     }
-  }, [playerState]);
+  }, [isReady, currentTime, duration]);
 
   // Check intro/outro timing
   React.useEffect(() => {
@@ -182,9 +175,9 @@ export const YouTubePlayer: React.FC<YouTubePlayerProps> = ({
 
     // Check if in outro range
     if (outro && currentTime >= outro.start && currentTime <= outro.end) {
-      setShowNextEpisode(true);
+      // setShowNextEpisode(true);
     } else {
-      setShowNextEpisode(false);
+      // setShowNextEpisode(false);
     }
   }, [currentTime, intro, outro, isReady]);
 
@@ -193,17 +186,6 @@ export const YouTubePlayer: React.FC<YouTubePlayerProps> = ({
     if (intro) {
       seekTo(intro.end);
       setShowSkipIntro(false);
-    }
-  };
-
-  // Next episode handler
-  const handleNextEpisode = () => {
-    // Use direct navigation like ControlMenu if new props are available
-    if (id && seasonNumber && nextEpisodeNumber && selectedSource !== undefined) {
-      window.location.href = `/tv/${id}/${seasonNumber}/${nextEpisodeNumber}/player?src=${selectedSource}`;
-    } else if (onNextEpisode) {
-      // Fallback to callback for backward compatibility
-      onNextEpisode();
     }
   };
 
@@ -611,17 +593,16 @@ export const YouTubePlayer: React.FC<YouTubePlayerProps> = ({
         )}
 
         {/* Next Episode Button */}
-        {showNextEpisode && (nextEpisodeNumber || onNextEpisode) && (
+        {nextEpisodeNumber && (
           <>
-            {id && seasonNumber && nextEpisodeNumber && selectedSource !== undefined ? (
-              <Link
-                href={`/tv/${id}/${seasonNumber}/${nextEpisodeNumber}/player?src=${selectedSource}`}
-                className="absolute bottom-32 right-4 px-4 py-2 border-2 border-primary/90 hover:border-primary hover:scale-105 text-white font-semibold rounded-full transition-all duration-300 flex items-center gap-2 z-50 animate-[slideInRight_0.3s_ease-out,pulse_2s_ease-in-out_infinite]"
-              >
-                Xem tập tiếp theo
-                <ChevronsRight className="w-4 h-4" />
-              </Link>
-            ) : (
+            <Link
+              href={`/tv/${id}/${seasonNumber}/${nextEpisodeNumber}/player?src=${selectedSource}`}
+              className="absolute bottom-32 right-4 px-4 py-2 border-2 border-primary/90 hover:border-primary hover:scale-105 text-white font-semibold rounded-full transition-all duration-300 flex items-center gap-2 z-50 animate-[slideInRight_0.3s_ease-out,pulse_2s_ease-in-out_infinite]"
+            >
+              Xem tập tiếp theo
+              <ChevronsRight className="w-4 h-4" />
+            </Link>
+            {onNextEpisode && (
               <button
                 onClick={onNextEpisode}
                 className="absolute bottom-32 right-4 px-4 py-2 border-2 border-primary/90 hover:border-primary hover:scale-105 text-white font-semibold rounded-full transition-all duration-300 flex items-center gap-2 z-50 animate-[slideInRight_0.3s_ease-out,pulse_2s_ease-in-out_infinite]"

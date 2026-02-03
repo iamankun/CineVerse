@@ -6,13 +6,11 @@ import { fetchCineVerseMovieSources, fetchCineVerseTvSources } from "./cineverse
  * Prioritizes CineVerse internal sources (YouTube/Dailymotion) if available.
  *
  * @param {string | number} id - The ID of the movie to be embedded in the player URLs.
- * @param {number} [startAt] - The start position in seconds to be embedded in the player URLs. Optional.
  * @returns {Promise<PlayersProps[]>} - An array of objects, each containing
  * the title of the player and the corresponding source URL.
  */
 export const getMoviePlayers = async (
-  id: string | number,
-  startAt?: number
+  id: string | number
 ): Promise<PlayersProps[]> => {
   // Try to fetch CineVerse sources first
   const cineVerseSources = await fetchCineVerseMovieSources(id);
@@ -70,17 +68,15 @@ export const getMoviePlayers = async (
  * Prioritizes CineVerse internal sources (YouTube/Dailymotion) if available.
  *
  * @param {string | number} id - The ID of the TV show to be embedded in the player URLs.
- * @param {string | number} [season] - The season number of the TV show episode to be embedded.
- * @param {string | number} [episode] - The episode number of the TV show episode to be embedded.
- * @param {number} [startAt] - The start position in seconds to be embedded in the player URLs. Optional.
+ * @param {string | number} season - The season number of the TV show episode to be embedded.
+ * @param {string | number} episode - The episode number of the TV show episode to be embedded.
  * @returns {Promise<PlayersProps[]>} - An array of objects, each containing
  * the title of the player and the corresponding source URL.
  */
 export const getTvShowPlayers = async (
   id: string | number,
   season: number,
-  episode: number,
-  startAt?: number
+  episode: number
 ): Promise<PlayersProps[]> => {
   // Try to fetch CineVerse sources first
   const cineVerseSources = await fetchCineVerseTvSources(id, season, episode);

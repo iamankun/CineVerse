@@ -7,8 +7,7 @@ import type {
   FilterRule, 
   NetworkFilterRule, 
   CosmeticFilterRule, 
-  ScriptletFilterRule,
-  FilterList 
+  ScriptletFilterRule
 } from '@/types/adblock';
 
 // Common ad domains (similar to EasyList)

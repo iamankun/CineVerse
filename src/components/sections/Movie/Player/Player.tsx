@@ -1,4 +1,4 @@
-import { ADS_WARNING_STORAGE_KEY, SpacingClasses } from "@/utils/constants";
+import { ADS_WARNING_STORAGE_KEY } from "@/utils/constants";
 import { siteConfig } from "@/config/site";
 import BrandLogo from "@/components/ui/other/BrandLogo";
 import useBreakpoints from "@/hooks/useBreakpoints";
@@ -9,7 +9,7 @@ import { Card, Skeleton, addToast } from "@heroui/react";
 import { useDisclosure, useDocumentTitle, useIdle, useLocalStorage } from "@mantine/hooks";
 import dynamic from "next/dynamic";
 import { parseAsInteger, useQueryState } from "nuqs";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { MovieDetails } from "tmdb-ts/dist/types/movies";
 import { useVidlinkPlayer } from "@/hooks/useVidlinkPlayer";
 import { useMovieLogo } from "@/hooks/useMovieLogo";
@@ -74,7 +74,6 @@ const MoviePlayer: React.FC<MoviePlayerProps> = ({ movie, startAt }) => {
   const [players, setPlayers] = useState<PlayersProps[]>([]);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [movieRating, setMovieRating] = useState<{ rating: string; description: string } | null>(null);
-  const [videoCurrentTime, setVideoCurrentTime] = useState(0);
   const [showLoading, setShowLoading] = useState(true);
   const { enabled: gestureEnabled, toggle: toggleGesture } = useGestureContext();
   const logoPath = useMovieLogo(movie.id, "movie", movie.original_language);
@@ -106,20 +105,6 @@ const MoviePlayer: React.FC<MoviePlayerProps> = ({ movie, startAt }) => {
   const idle = useIdle(3000);
   const { mobile } = useBreakpoints();
   const zoom = usePinchToZoom(iframeRef, { enabled: mobile, minZoom: 1, maxZoom: 2 });
-  const zoomRef = useRef<any>(null);
-    // Reset zoom về 1 khi orientation hoặc fullscreen thay đổi (nếu hook hỗ trợ setZoom)
-    useEffect(() => {
-      if (!zoomRef.current) return;
-      const handleResetZoom = () => {
-        if (typeof zoomRef.current === 'function') zoomRef.current(1);
-      };
-      window.addEventListener('orientationchange', handleResetZoom);
-      document.addEventListener('fullscreenchange', handleResetZoom);
-      return () => {
-        window.removeEventListener('orientationchange', handleResetZoom);
-        document.removeEventListener('fullscreenchange', handleResetZoom);
-      };
-    }, []);
   const [opened, handlers] = useDisclosure(false);
   const [selectedSource, setSelectedSource] = useQueryState<number>(
     "src",
@@ -219,9 +204,24 @@ const MoviePlayer: React.FC<MoviePlayerProps> = ({ movie, startAt }) => {
   }, []);
 
   // Suppress react-remove-scroll errors (library bug with modal cleanup)
+interface FullscreenElement extends HTMLElement {
+  webkitRequestFullscreen?(): Promise<void>;
+  mozRequestFullScreen?(): Promise<void>;
+  msRequestFullscreen?(): Promise<void>;
+}
+
+interface FullscreenDocument extends Document {
+  webkitFullscreenElement?: Element;
+  mozFullScreenElement?: Element;
+  msFullscreenElement?: Element;
+  webkitExitFullscreen?(): Promise<void>;
+  mozCancelFullScreen?(): Promise<void>;
+  msExitFullscreen?(): Promise<void>;
+}
+
   useEffect(() => {
     const originalError = console.error;
-    console.error = (...args: any[]) => {
+    console.error = (...args: unknown[]) => {
       if (
         typeof args[0] === 'string' &&
         (args[0].includes("Failed to execute 'contains' on 'Node'") ||
@@ -242,7 +242,7 @@ const MoviePlayer: React.FC<MoviePlayerProps> = ({ movie, startAt }) => {
     console.log(`🎬 Fetching players for movie ID: ${movie.id}`);
     let isMounted = true;
 
-    getMoviePlayers(movie.id, startAt).then((fetchedPlayers) => {
+    getMoviePlayers(movie.id).then((fetchedPlayers) => {
       if (isMounted) {
         console.log(`✅ Players fetched:`, fetchedPlayers.length, fetchedPlayers);
         // Nếu có nguồn với provider vidsrc và url rỗng, tự động thay thế bằng VidSrc external
@@ -334,80 +334,15 @@ const MoviePlayer: React.FC<MoviePlayerProps> = ({ movie, startAt }) => {
     };
   }, [movie.id, startAt]);
 
-  // Listen for video time updates from iframe
-  useEffect(() => {
-    const handleMessage = (event: MessageEvent) => {
-      // Accept messages from player domains
-      if (event.data && typeof event.data === 'object') {
-        // Custom videoTime format
-        if (event.data.type === 'videoTime' && typeof event.data.time === 'number') {
-          setVideoCurrentTime(event.data.time);
-          return;
-        }
-        
-        // Standard video player postMessage formats
-        if (event.data.currentTime !== undefined) {
-          setVideoCurrentTime(event.data.currentTime);
-          return;
-        }
 
-        // YouTube iframe API format
-        if (event.data.event === 'infoDelivery' && event.data.info?.currentTime !== undefined) {
-          setVideoCurrentTime(Math.floor(event.data.info.currentTime));
-          return;
-        }
-
-        // Dailymotion iframe API format
-        if (event.data.event === 'timeupdate' && event.data.time !== undefined) {
-          setVideoCurrentTime(Math.floor(event.data.time));
-          return;
-        }
-
-        // VidLink player format
-        if (event.data.type === 'PLAYER_EVENT' && event.data.data?.currentTime !== undefined) {
-          setVideoCurrentTime(Math.floor(event.data.data.currentTime));
-          return;
-        }
-      }
-    };
-
-    window.addEventListener('message', handleMessage);
-    return () => window.removeEventListener('message', handleMessage);
-  }, []);
-
-  // Fallback: estimate video time if no postMessage (tracks real playback time)
-  useEffect(() => {
-    let startTime = Date.now();
-    let accumulatedTime = 0;
-    let wasIdle = false;
-
-    const interval = setInterval(() => {
-      // Only accumulate time when video is likely playing (not idle)
-      if (!idle) {
-        if (wasIdle) {
-          // Just became active again
-          startTime = Date.now();
-          wasIdle = false;
-        }
-        const elapsed = (Date.now() - startTime) / 1000;
-        accumulatedTime += elapsed;
-        setVideoCurrentTime(Math.floor(accumulatedTime));
-        startTime = Date.now();
-      } else {
-        wasIdle = true;
-      }
-    }, 1000); // Update every second
-
-    return () => clearInterval(interval);
-  }, [idle]);
 
   // Detect fullscreen changes and sync Card or iframe fullscreen
   useEffect(() => {
     const handleFullscreenChange = () => {
-      const fullscreenElement = document.fullscreenElement ||
-        (document as any).webkitFullscreenElement ||
-        (document as any).mozFullScreenElement ||
-        (document as any).msFullscreenElement;
+      const fullscreenElement = (document as FullscreenDocument).fullscreenElement ||
+        (document as FullscreenDocument).webkitFullscreenElement ||
+        (document as FullscreenDocument).mozFullScreenElement ||
+        (document as FullscreenDocument).msFullscreenElement;
 
       // Helper: check if node is or is descendant of target
       const isOrContains = (target: Element | null, node: Element | null) => {
@@ -470,10 +405,10 @@ const MoviePlayer: React.FC<MoviePlayerProps> = ({ movie, startAt }) => {
       
       if (isLandscape && cardRef.current && !isFullscreen) {
         // Enter fullscreen when rotating to landscape
-        const requestFullscreen = cardRef.current.requestFullscreen ||
-          (cardRef.current as any).webkitRequestFullscreen ||
-          (cardRef.current as any).mozRequestFullScreen ||
-          (cardRef.current as any).msRequestFullscreen;
+        const requestFullscreen = (cardRef.current as FullscreenElement).requestFullscreen ||
+          (cardRef.current as FullscreenElement).webkitRequestFullscreen ||
+          (cardRef.current as FullscreenElement).mozRequestFullScreen ||
+          (cardRef.current as FullscreenElement).msRequestFullscreen;
 
         if (requestFullscreen) {
           requestFullscreen.call(cardRef.current).catch((err: Error) => {
@@ -500,10 +435,10 @@ const MoviePlayer: React.FC<MoviePlayerProps> = ({ movie, startAt }) => {
         e.preventDefault();
         if (cardRef.current) {
           if (!isFullscreen) {
-            const requestFullscreen = cardRef.current.requestFullscreen ||
-              (cardRef.current as any).webkitRequestFullscreen ||
-              (cardRef.current as any).mozRequestFullScreen ||
-              (cardRef.current as any).msRequestFullscreen;
+            const requestFullscreen = (cardRef.current as FullscreenElement).requestFullscreen ||
+              (cardRef.current as FullscreenElement).webkitRequestFullscreen ||
+              (cardRef.current as FullscreenElement).mozRequestFullScreen ||
+              (cardRef.current as FullscreenElement).msRequestFullscreen;
 
             if (requestFullscreen) {
               requestFullscreen.call(cardRef.current).catch((err: Error) => {
@@ -511,10 +446,10 @@ const MoviePlayer: React.FC<MoviePlayerProps> = ({ movie, startAt }) => {
               });
             }
           } else {
-            const exitFullscreen = document.exitFullscreen ||
-              (document as any).webkitExitFullscreen ||
-              (document as any).mozCancelFullScreen ||
-              (document as any).msExitFullscreen;
+            const exitFullscreen = (document as FullscreenDocument).exitFullscreen ||
+              (document as FullscreenDocument).webkitExitFullscreen ||
+              (document as FullscreenDocument).mozCancelFullScreen ||
+              (document as FullscreenDocument).msExitFullscreen;
 
             if (exitFullscreen) {
               exitFullscreen.call(document).catch((err: Error) => {
@@ -583,7 +518,6 @@ const MoviePlayer: React.FC<MoviePlayerProps> = ({ movie, startAt }) => {
       <div className="relative overflow-hidden">
         <MoviePlayerHeader
           id={movie.id}
-          movieName={title}
           onOpenSource={handlers.open}
           hidden={idle && !mobile && !isFullscreen}
         />
@@ -701,7 +635,7 @@ const MoviePlayer: React.FC<MoviePlayerProps> = ({ movie, startAt }) => {
 
             {/* CineVerse Logo on the right */}
             <div className="flex-shrink-0 scale-[1.5]">
-              <BrandLogo animate={true} />
+              <BrandLogo />
             </div>
           </div>
 
@@ -716,7 +650,6 @@ const MoviePlayer: React.FC<MoviePlayerProps> = ({ movie, startAt }) => {
                 logoPath={logoPath}
                 posterPath={movie.poster_path}
                 isVisible={!idle || mobile || isFullscreen}
-                videoCurrentTime={videoCurrentTime}
               />
             </div>
           )}

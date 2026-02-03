@@ -60,7 +60,7 @@ import {
   addToast,
 } from "@heroui/react";
 import { IoSearch, IoSave, IoRefresh, IoAdd, IoTrash, IoList, IoCreate, IoLogOut, IoClipboard, IoArrowBack, IoChevronDown, IoChevronForward } from "react-icons/io5";
-import { searchMovies, searchTV, getMovieDetails, getTvShowDetails } from "@/api/tmdb";
+import { searchMovies, searchTV, getMovieDetails, getTvShowDetails, getTmdbImageUrl } from "@/api/tmdb";
 import Image from "next/image";
 import AdminGuard from "@/components/AdminGuard";
 import { useRouter } from "next/navigation";
@@ -1904,7 +1904,7 @@ export default function DashboardPage() {
                       <CardBody className="flex-row gap-3 p-3">
                         {item.poster_path && (
                           <Image
-                            src={`https://image.tmdb.org/t/p/w92${item.poster_path}`}
+                            src={getTmdbImageUrl(item.poster_path, 'w92') || ''}
                             alt={item.title || item.name || ""}
                             width={46}
                             height={69}

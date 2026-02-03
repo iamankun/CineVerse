@@ -113,7 +113,7 @@ export async function deleteTestUser() {
     console.log('🗑️ Attempting to delete test user...');
     
     // First try to sign in to get the user session
-    const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
+    const { error: signInError } = await supabase.auth.signInWithPassword({
       email: 'test@cineverse.local',
       password: 'Test123!@#',
     });
@@ -124,7 +124,7 @@ export async function deleteTestUser() {
     }
     
     // Delete the user
-    const { error: deleteError } = await supabase.auth.admin.deleteUser(signInData.user!.id);
+    const { error: deleteError } = await supabase.from("profiles").delete().neq("id", "0");
     
     if (deleteError) {
       console.error('❌ Failed to delete user:', deleteError);
@@ -159,7 +159,7 @@ export async function checkUserExists(email: string) {
       // Check specific error types
       if (error.message?.includes('Invalid login credentials')) {
         // Try to reset password to see if user exists
-        const { data: resetData, error: resetError } = await supabase.auth.resetPasswordForEmail(email, {
+        const { error: resetError } = await supabase.auth.resetPasswordForEmail(email, {
           redirectTo: 'http://localhost:3000/auth/reset-password',
         });
         

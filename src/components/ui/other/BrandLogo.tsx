@@ -3,17 +3,13 @@
 import Link from "next/link";
 import Image from "next/image";
 import { cn } from "@/utils/helpers";
-import { Next } from "@/utils/icons";
-import useDiscoverFilters from "@/hooks/useDiscoverFilters";
 import { brandLogoConfig } from "@/utils/overlay-config";
 
 export interface BrandLogoProps {
-  animate?: boolean;
   className?: string;
 }
 
-const BrandLogo: React.FC<BrandLogoProps> = ({ animate = true, className }) => {
-  const { content } = useDiscoverFilters();
+const BrandLogo: React.FC<BrandLogoProps> = ({ className }) => {
 
   // Get logo from config (use custom logo if set, otherwise default)
   const logoSrc = brandLogoConfig.logoPath || "/logo-80.gif";

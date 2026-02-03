@@ -1,4 +1,4 @@
-import { CineVerseMovieData, CineVerseTvData, PlayersProps } from "@/types";
+import { PlayersProps } from "@/types";
 
 /**
  * Converts YouTube watch URLs to embed URLs

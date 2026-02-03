@@ -42,7 +42,7 @@ let modelPromise: Promise<any> | null = null;
 
 const preloadModels = () => {
   if (!tfPromise) {
-    tfPromise = import('@tensorflow/tfjs').then(tf => tf.ready().then(() => tf));
+    tfPromise = import('@tensorflow/tfjs').then(() => tfPromise);
   }
   if (!handposePromise) {
     handposePromise = import('@tensorflow-models/handpose');
@@ -382,7 +382,7 @@ export const useGestureControl = (options: UseGestureControlOptions = {}) => {
       const { tfPromise, handposePromise } = preloadModels();
       
       // Wait for both TensorFlow and handpose to load
-      const [tf, handpose] = await Promise.all([tfPromise!, handposePromise!]);
+      const [, handpose] = await Promise.all([tfPromise!, handposePromise!]);
       
       // Load model and start camera in parallel
       if (!modelPromise) {

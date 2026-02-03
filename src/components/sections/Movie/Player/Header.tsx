@@ -4,14 +4,12 @@ import ActionButton from "./ActionButton";
 
 interface MoviePlayerHeaderProps {
   id: number;
-  movieName: string;
   hidden?: boolean;
   onOpenSource: () => void;
 }
 
 const MoviePlayerHeader: React.FC<MoviePlayerHeaderProps> = ({
   id,
-  movieName,
   hidden,
 }) => {
   return (

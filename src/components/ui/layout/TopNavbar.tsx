@@ -4,7 +4,6 @@ import { siteConfig } from "@/config/site";
 import { usePathname } from "next/navigation";
 import { Navbar, NavbarBrand, NavbarContent, NavbarItem } from "@heroui/react";
 import BackButton from "@/components/ui/button/BackButton";
-import { useWindowScroll } from "@mantine/hooks";
 import ThemeSwitchDropdown from "../input/ThemeSwitchDropdown";
 import FullscreenToggleButton from "../button/FullscreenToggleButton";
 import GestureControlToggleButton from "../button/GestureControlToggleButton";
@@ -16,9 +15,7 @@ import useDiscoverFilters from "@/hooks/useDiscoverFilters";
 
 const TopNavbar = () => {
   const pathName = usePathname();
-  const [{ y }] = useWindowScroll();
   const { content } = useDiscoverFilters();
-  const opacity = Math.min((y / 1000) * 5, 1);
   const hrefs = siteConfig.navItems.map((item) => item.href);
   const show = hrefs.includes(pathName);
   const tv = pathName.includes("/tv/");

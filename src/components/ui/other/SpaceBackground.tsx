@@ -10,11 +10,6 @@ interface Star {
   delay: number;
 }
 
-interface ShootingStar {
-  x: number;
-  y: number;
-  delay: number;
-}
 
 export default function SpaceBackground() {
   const starsRef = useRef<HTMLDivElement>(null);

@@ -13,7 +13,7 @@ const SearchHistory: React.FC<SearchHistoryProps> = ({
 }) => {
   return (
     <div className="flex flex-wrap justify-center gap-2">
-      {searchHistories.map((history, index) => {
+      {searchHistories.map((history) => {
         return (
           <Chip
             as="button"

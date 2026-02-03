@@ -28,18 +28,6 @@ export default function SEOAnalyzer({ config, className }: SEOAnalyzerProps) {
     }
   };
 
-  const getSeverityIcon = (severity: string) => {
-    switch (severity) {
-      case "error":
-        return <IoCloseCircle className="text-danger" size={20} />;
-      case "warning":
-        return <IoWarning className="text-warning" size={20} />;
-      case "info":
-        return <IoCheckmarkCircle className="text-success" size={20} />;
-      default:
-        return <IoInformationCircle className="text-default" size={20} />;
-    }
-  };
 
   const getScoreColor = (score: number) => {
     if (score >= 80) return "success";

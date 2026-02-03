@@ -1,4 +1,4 @@
-import { getMovieDetails } from "@/api/tmdb";
+import { tmdb } from "@/api/tmdb";
 import BookmarkButton from "@/components/ui/button/BookmarkButton";
 import Genres from "@/components/ui/other/Genres";
 import Rating from "@/components/ui/other/Rating";
@@ -13,7 +13,7 @@ import { Genre } from "tmdb-ts";
 
 const HoverPosterCard: React.FC<{ id: number; fullWidth?: boolean }> = ({ id, fullWidth }) => {
   const { data: movie, isPending } = useQuery({
-    queryFn: () => getMovieDetails(id, ["images"], true),
+    queryFn: () => tmdb.movies.details(id, ['images', 'videos'], 'vi-VN'),
     queryKey: ["get-movie-detail-on-hover-poster", id],
   });
 

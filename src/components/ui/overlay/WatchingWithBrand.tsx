@@ -1,13 +1,14 @@
 import { useEffect, useState } from "react";
 import { cn } from "@/utils/helpers";
 import { watchingWithBrandConfig } from "@/utils/overlay-config";
+import { getTmdbImageUrl } from "@/api/tmdb";
+import Image from "next/image";
 
 interface WatchingWithBrandProps {
   movieTitle: string;
   logoPath?: string | null;
   posterPath?: string | null;
   isVisible: boolean; // Controlled by parent (idle state)
-  videoCurrentTime?: number; // Video time in seconds from player
 }
 
 // Astronaut Component matching the 404 page design
@@ -417,8 +418,7 @@ const WatchingWithBrand: React.FC<WatchingWithBrandProps> = ({
   movieTitle, 
   logoPath,
   posterPath,
-  isVisible,
-  videoCurrentTime = 0
+  isVisible
 }) => {
   const [showMessage, setShowMessage] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
@@ -436,33 +436,23 @@ const WatchingWithBrand: React.FC<WatchingWithBrandProps> = ({
   }, []);
 
   useEffect(() => {
-    // Special case: repeatInterval = 0 means always show (no animation, no hide)
-    if (watchingWithBrandConfig.repeatInterval === 0) {
-      console.log('🎬 WatchingWithBrand: Always visible mode (repeatInterval = 0)');
-      setShowMessage(true);
-      setIsExpanded(true);
-      setAnimationPhase('floating');
-      return; // Don't set any timers
-    }
+    let initialTimer: NodeJS.Timeout;
+    let recurringTimer: NodeJS.Timer;
 
-    // Normal mode: Show with animation based on config
     const showWithAnimation = () => {
       console.log('🎬 WatchingWithBrand: Showing with astronaut animation');
       setShowMessage(true);
       setAnimationPhase('astronaut-entry');
       
-      // After astronaut flies in, show content
       setTimeout(() => {
         setAnimationPhase('content-show');
         setIsExpanded(true);
-      }, 1000); // Wait for astronaut fly-in animation
+      }, 1000);
 
-      // Start floating animation
       setTimeout(() => {
         setAnimationPhase('floating');
       }, 1600);
 
-      // After configured show duration, start exit animation
       setTimeout(() => {
         setAnimationPhase('exit');
         setIsExpanded(false);
@@ -470,21 +460,32 @@ const WatchingWithBrand: React.FC<WatchingWithBrandProps> = ({
         setTimeout(() => {
           setShowMessage(false);
           setAnimationPhase('hidden');
-        }, 600); // Exit animation duration
+        }, 600);
       }, watchingWithBrandConfig.showDuration);
     };
 
-    // Show after initial delay
-    const initialTimer = setTimeout(showWithAnimation, watchingWithBrandConfig.initialDelay);
-
-    // Show at configured interval
-    const recurringTimer = setInterval(showWithAnimation, watchingWithBrandConfig.repeatInterval);
+    if (isVisible) {
+      // Special case: repeatInterval = 0 means always show
+      if (watchingWithBrandConfig.repeatInterval === 0) {
+        setShowMessage(true);
+        setIsExpanded(true);
+        setAnimationPhase('floating');
+      } else {
+        // Normal mode: Show with animation
+        initialTimer = setTimeout(showWithAnimation, watchingWithBrandConfig.initialDelay);
+        recurringTimer = setInterval(showWithAnimation, watchingWithBrandConfig.repeatInterval);
+      }
+    } else {
+      // Hide immediately if not visible
+      setShowMessage(false);
+      setAnimationPhase('hidden');
+    }
 
     return () => {
       clearTimeout(initialTimer);
       clearInterval(recurringTimer);
     };
-  }, []);
+  }, [isVisible]);
 
   // Don't render if not showing
   if (!showMessage) return null;
@@ -492,9 +493,8 @@ const WatchingWithBrand: React.FC<WatchingWithBrandProps> = ({
   // Debug: Log to see what we're getting
   console.log('WatchingWithBrand:', { logoPath, posterPath, movieTitle, animationPhase });
 
-  // Remove leading slash if exists to avoid double slashes
-  const cleanLogoPath = logoPath?.startsWith('/') ? logoPath.substring(1) : logoPath;
-  const imageUrl = logoPath ? `https://image.tmdb.org/t/p/w500/${cleanLogoPath}` : null;
+  // Use proxy for TMDB images to avoid CORS issues
+  const imageUrl = getTmdbImageUrl(logoPath || null, 'w500');
 
   const getAstronautClass = () => {
     switch (animationPhase) {
@@ -576,27 +576,23 @@ const WatchingWithBrand: React.FC<WatchingWithBrandProps> = ({
                 background: "transparent",
               }}
             >
-              <img
+              <Image
                 src={imageUrl}
                 alt={movieTitle}
                 className="md:hidden"
+                fill
+                sizes="100vw"
                 style={{
-                  maxWidth: "100%",
-                  maxHeight: "100%",
-                  width: "auto",
-                  height: "auto",
                   objectFit: "contain",
                 }}
               />
-              <img
+              <Image
                 src={imageUrl}
                 alt={movieTitle}
                 className="hidden md:block"
+                fill
+                sizes="100vw"
                 style={{
-                  maxWidth: "180px",
-                  maxHeight: "70px",
-                  width: "auto",
-                  height: "auto",
                   objectFit: "contain",
                 }}
               />

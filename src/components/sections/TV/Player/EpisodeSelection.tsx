@@ -2,7 +2,7 @@ import VaulDrawer from "@/components/ui/overlay/VaulDrawer";
 import { HandlerType } from "@/types/component";
 import { Episode, Season } from "tmdb-ts";
 import { EpisodeListCard } from "../Details/Episodes";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { Select, SelectItem } from "@heroui/react";
 import { useState, useEffect } from "react";
 
@@ -125,7 +125,7 @@ const TvShowPlayerEpisodeSelection: React.FC<TvShowPlayerEpisodeSelectionProps> 
               }
             }}
           >
-            {filteredSeasons.map(({ season_number, name }) => (
+            {filteredSeasons.map(({ season_number }) => (
               <SelectItem 
                 key={season_number.toString()}
                 className="text-white hover:bg-white/10"

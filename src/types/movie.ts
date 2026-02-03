@@ -1,6 +1,6 @@
 import { Database } from "@/utils/supabase/types";
 import { ContentType } from ".";
-import { Movie, MovieDetails, TV, TvShowDetails } from 'tmdb-ts';
+import { Movie, TV } from 'tmdb-ts';
 
 export interface MovieResponse {
   page: number;

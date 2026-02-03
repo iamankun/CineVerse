@@ -4,8 +4,6 @@ import { useRef } from "react";
 import { FaSearch } from "react-icons/fa";
 import { Input, InputProps, Spinner } from "@heroui/react";
 import { cn } from "@/utils/helpers";
-import { useRouter } from "@bprogress/next";
-import { usePathname } from "next/navigation";
 
 interface SearchInputProps extends InputProps {
   isLoading?: boolean;

@@ -41,7 +41,7 @@ export async function commitToGitHub(options: GitHubCommitOptions): Promise<any>
         const data = await getResponse.json();
         sha = data.sha;
       }
-    } catch (error) {
+    } catch {
       // File doesn't exist, will create new
       console.log('Tệp không tồn tại, tạo tệp mới');
     }
@@ -66,8 +66,8 @@ export async function commitToGitHub(options: GitHubCommitOptions): Promise<any>
     );
 
     if (!response.ok) {
-      const error = await response.text();
-      throw new Error(`Lỗi API GitHub: ${error}`);
+      const errorText = await response.text();
+      throw new Error(`Lỗi API GitHub: ${errorText}`);
     }
 
     return await response.json();

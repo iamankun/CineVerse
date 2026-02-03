@@ -1,6 +1,5 @@
 "use client";
 
-import { tmdb } from "@/api/tmdb";
 import { Button, Chip } from "@heroui/react";
 import { useQuery } from "@tanstack/react-query";
 import { Movie, TV } from "tmdb-ts/dist/types";
@@ -13,7 +12,17 @@ import Link from "next/link";
 import Image from "next/image";
 import { env } from "@/utils/env";
 
-type ContentItem = (Movie | TV) & { contentType: "movie" | "tv" };
+interface Video {
+  iso_639_1: string;
+  key: string;
+  site: string;
+  type: string;
+}
+
+type ContentItem = (Movie | TV) & { 
+  contentType: "movie" | "tv";
+  videos?: { results: Video[] };
+};
 
 // Đọc tự động IDs từ API - đã được sắp xếp theo năm phát hành
 type HeroItem = { id: number; type: "movie" | "tv"; year: number };
@@ -110,7 +119,6 @@ const fetchCineVerseContent = async () => {
 const CineVerseHero = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isMuted, setIsMuted] = useState(true);
-  const playerRef = useRef<any>(null);
   const iframeRef = useRef<HTMLIFrameElement>(null);
 
   const { data: content, isPending } = useQuery({
@@ -195,21 +203,21 @@ const CineVerseHero = () => {
     : ratingCode || null;
 
   // Lấy trailer/video từ TMDB videos với ưu tiên ngôn ngữ
-  const videos = item ? ((item as any).videos?.results || []) : [];
+  const videos: Video[] = item?.videos?.results || [];
   
   // Ưu tiên: vi → en → ja/ko → bất kỳ ngôn ngữ nào
   const trailer = 
-    videos.find((v: any) => v.type === "Trailer" && v.site === "YouTube" && v.iso_639_1 === "vi") ||
-    videos.find((v: any) => v.type === "Trailer" && v.site === "YouTube" && v.iso_639_1 === "en") ||
-    videos.find((v: any) => v.type === "Trailer" && v.site === "YouTube") ||
-    videos.find((v: any) => v.site === "YouTube");
+    videos.find((v: Video) => v.type === "Trailer" && v.site === "YouTube" && v.iso_639_1 === "vi") ||
+    videos.find((v: Video) => v.type === "Trailer" && v.site === "YouTube" && v.iso_639_1 === "en") ||
+    videos.find((v: Video) => v.type === "Trailer" && v.site === "YouTube") ||
+    videos.find((v: Video) => v.site === "YouTube");
   
   // Debug log
   if (item) {
     console.log(`Slide ${currentIndex + 1} (${title}):`, {
       hasVideos: videos.length > 0,
       videoCount: videos.length,
-      videos: videos.map((v: any) => ({ type: v.type, site: v.site, key: v.key, lang: v.iso_639_1 })),
+      videos: videos.map((v: Video) => ({ type: v.type, site: v.site, key: v.key, lang: v.iso_639_1 })),
       trailerFound: !!trailer,
       trailerKey: trailer?.key,
       trailerLang: trailer?.iso_639_1
@@ -274,6 +282,7 @@ const CineVerseHero = () => {
               src={backdropUrl}
               alt={title}
               fill
+              sizes="100vw"
               className="object-cover"
               priority
               quality={90}
@@ -298,6 +307,7 @@ const CineVerseHero = () => {
                     src={getImageUrl(logoPath, "title", true)}
                     alt={title}
                     fill
+                    sizes="(min-width: 1024px) 192px, (min-width: 768px) 160px, 128px"
                     className="object-contain object-left transition-transform duration-500 ease-in-out group-hover:scale-110 group-hover:translate-x-4 group-hover:-translate-y-2 group-hover:shadow-2xl group-hover:opacity-90"
                     priority
                   />

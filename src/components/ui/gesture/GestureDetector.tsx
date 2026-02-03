@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, forwardRef, useImperativeHandle } from 'react';
+import { useRef, forwardRef, useImperativeHandle } from 'react';
 import { Card, CardBody, Chip, Switch, Button, Tooltip } from '@heroui/react';
 import { IoHandRight, IoVideocam, IoClose, IoCheckmark, IoWarning } from 'react-icons/io5';
 import { useGestureControl } from '@/hooks/useGestureControl';

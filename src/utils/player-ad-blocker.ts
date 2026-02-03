@@ -119,7 +119,7 @@ export class PlayerAdBlocker {
         fn();
         console.log(`💉 [Player AdBlock] Injected: ${name}`);
       } catch (error) {
-        console.warn(`⚠️ [Player AdBlock] Failed to inject ${name}:`, error);
+        console.warn(`⚠️ [Player AdBlock] Failed to inject ${name}:`);
       }
     });
   }
@@ -230,7 +230,7 @@ export class PlayerAdBlocker {
           // Apply cosmetic filters
           this.applyCosmeticFiltersToIframe(iframeDoc);
         }
-      } catch (error) {
+      } catch {
         // Cross-origin iframe - can't access
         console.log('🔒 [Player AdBlock] Cross-origin iframe (expected)');
       }
@@ -286,7 +286,7 @@ export class PlayerAdBlocker {
         if (elements.length > 0) {
           console.log(`👁️ [Player AdBlock] Hidden ${elements.length} elements in iframe: ${rule.selector}`);
         }
-      } catch (error) {
+      } catch {
         console.warn(`⚠️ [Player AdBlock] Invalid selector in iframe: ${rule.selector}`);
       }
     });

@@ -26,9 +26,6 @@ export function VirtualCursor({ x, y, isClicking, visible }: VirtualCursorProps)
       return start + (end - start) * factor;
     };
 
-    // Easing function for smoother motion
-    const easeOutQuad = (t: number) => t * (2 - t);
-
     const animate = () => {
       setSmoothPos(prev => {
         const dx = x - prev.x;

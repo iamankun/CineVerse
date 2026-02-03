@@ -1,4 +1,4 @@
-import { getTvShowDetails } from "@/api/tmdb";
+import { tmdb } from "@/api/tmdb";
 import Genres from "@/components/ui/other/Genres";
 import { cn, isEmpty, getPreferredLogo } from "@/utils/helpers";
 import { Calendar, List, Play, Season } from "@/utils/icons";
@@ -11,7 +11,7 @@ import BookmarkButton from "@/components/ui/button/BookmarkButton";
 
 const TvShowHoverCard: React.FC<{ id: number; fullWidth?: boolean }> = ({ id, fullWidth }) => {
   const { data: tv, isPending } = useQuery({
-    queryFn: () => getTvShowDetails(id, ["images"], true),
+    queryFn: () => tmdb.tvShows.details(id, ['images', 'videos'], 'vi-VN'),
     queryKey: ["get-tv-detail-on-hover-poster", id],
   });
 

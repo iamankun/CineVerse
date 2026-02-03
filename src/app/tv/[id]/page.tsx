@@ -1,6 +1,6 @@
 "use client";
 
-import { getTvShowDetails } from "@/api/tmdb";
+import { tmdb } from "@/api/tmdb";
 import { Params } from "@/types";
 import { Spinner } from "@heroui/react";
 import { useScrollIntoView } from "@mantine/hooks";
@@ -28,17 +28,19 @@ const TVShowDetailPage: NextPage<Params<{ id: number }>> = ({ params }) => {
     error,
   } = useQuery({
     queryFn: () =>
-      getTvShowDetails(id, [
+      tmdb.tvShows.details(id, [
         "images",
         "videos",
         "credits",
-        "keywords",
         "recommendations",
         "similar",
         "reviews",
-        "watch/providers"
-      ], true),
-    queryKey: ["tv-show-detail", id],
+        "alternative_titles",
+        "translations",
+        "keywords",
+        "content_ratings",
+      ], 'vi-VN'),
+    queryKey: ["tv-details", id],
   });
 
   if (isPending) {

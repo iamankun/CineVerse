@@ -1,6 +1,3 @@
-import { tmdb } from '@/api/tmdb';
-import { MovieResponse, TvShowResponse } from '@/types/movie';
-
 // Base configuration for Vietnamese language
 const VI_CONFIG = {
   language: 'vi-VN',
@@ -11,7 +8,7 @@ const VI_CONFIG = {
 const TMDB_BASE_URL = 'https://api.themoviedb.org/3';
 
 // Helper function to make TMDB API requests
-const tmdbFetch = async (endpoint: string, params: Record<string, any> = {}) => {
+export const tmdbFetch = async (url: string, params: any = {}) => {
   try {
     const queryParams = new URLSearchParams({
       ...VI_CONFIG,
@@ -19,7 +16,7 @@ const tmdbFetch = async (endpoint: string, params: Record<string, any> = {}) => 
     }).toString();
     
     const response = await fetch(
-      `${TMDB_BASE_URL}${endpoint}?${queryParams}`,
+      `${TMDB_BASE_URL}${url}?${queryParams}`,
       {
         headers: {
           'Authorization': `Bearer ${process.env.NEXT_PUBLIC_TMDB_ACCESS_TOKEN}`,

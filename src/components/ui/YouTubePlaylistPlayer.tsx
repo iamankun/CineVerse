@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import YouTubePlayer from '@/components/ui/YouTubePlayer';
-import { List, Music2, Play, Pause } from 'lucide-react';
+import { List, Music2, Play } from 'lucide-react';
 
 export interface VideoItem {
   id: string;

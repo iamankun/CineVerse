@@ -31,7 +31,7 @@
         "./supabase/"
       ]
     },
-    "target": "ES2017"
+    "target": "ES2022"
   },
   "include": [
     "next-env.d.ts",

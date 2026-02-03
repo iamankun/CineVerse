@@ -74,7 +74,9 @@ export type Database = {
           username: string | null;
           avatar_url: string | null;
           full_name: string | null;
+          bio: string | null;
           website: string | null;
+          location: string | null;
           updated_at: string;
         };
         Insert: {
@@ -82,7 +84,9 @@ export type Database = {
           username?: string | null;
           avatar_url?: string | null;
           full_name?: string | null;
+          bio?: string | null;
           website?: string | null;
+          location?: string | null;
           updated_at?: string;
         };
         Update: {
@@ -90,7 +94,9 @@ export type Database = {
           username?: string | null;
           avatar_url?: string | null;
           full_name?: string | null;
+          bio?: string | null;
           website?: string | null;
+          location?: string | null;
           updated_at?: string;
         };
       };

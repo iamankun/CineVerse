@@ -8,6 +8,23 @@ if (isEmpty(token)) {
   throw new Error("TMDB chưa được cài token API");
 }
 
+// Khởi tạo TMDB client với cấu hình ngôn ngữ mặc định
+// Ưu tiên: Việt Nam -> Nhật -> Anh -> khác
+const tmdbClient = new TMDB(token);
+
+export const tmdb = tmdbClient;
+
+// Helper function to get proxied TMDB image URL
+export function getTmdbImageUrl(originalPath: string | null, size: string = 'w500'): string | null {
+  if (!originalPath) return null;
+  
+  // Remove leading slash if present and encode
+  const cleanPath = originalPath.startsWith('/') ? originalPath.slice(1) : originalPath;
+  const encodedPath = encodeURIComponent(cleanPath);
+  
+  return `/api/proxy/tmdb-image?path=${size}/${encodedPath}`;
+}
+
 // Helper function for retry logic
 async function fetchWithRetry(
   url: string, 
@@ -51,19 +68,6 @@ async function fetchWithRetry(
   throw lastError!;
 }
 
-// Khởi tạo TMDB client với cấu hình ngôn ngữ mặc định
-// Sử dụng đúng format ngôn ngữ theo yêu cầu của thư viện
-const defaultConfig = {
-  language: "vi-VN" as const, // Type assertion để phù hợp với yêu cầu của thư viện
-};
-
-// Cấu hình cho videos/trailers (giữ nguyên tiếng Anh)
-const videoConfig = {
-  language: "en-US" as const,
-};
-
-export const tmdb = new TMDB(token);
-
 // =======================
 // Helper functions với include_image_language
 // =======================
@@ -86,14 +90,15 @@ export async function getMovieDetails(
   }
 
   // Thêm include_image_language nếu có images trong append_to_response
+  // Ưu tiên: Việt -> Nhật -> Anh -> khác
   if (includeImages || appendToResponse.includes('images')) {
-    params.append('include_image_language', 'vi,en,null');
+    params.append('include_image_language', 'vi,ja,en,null');
   }
 
   // Thêm include_video_language nếu có videos trong append_to_response
-  // Để lấy trailers đa ngôn ngữ (vi, en, và các ngôn ngữ khác)
+  // Ưu tiên: Việt -> Nhật -> Anh -> khác
   if (appendToResponse.includes('videos')) {
-    params.append('include_video_language', 'vi,en,null');
+    params.append('include_video_language', 'vi,ja,en,null');
   }
 
   const response = await fetchWithRetry(
@@ -108,7 +113,7 @@ export async function getMovieDetails(
         revalidate: 86400, // Cache 24 hours (1 ngày) - Tăng từ 1h lên 1 ngày cho xem liên tục
         tags: ['tmdb', 'movies', `movie-${movieId}`, 'images', 'videos', 'trailers', 'logos']
       }
-    }
+    } as any
   );
 
   if (!response.ok) {
@@ -135,13 +140,15 @@ export async function getTvShowDetails(
   }
 
   // Thêm include_image_language nếu có images trong append_to_response
+  // Ưu tiên: Việt -> Nhật -> Anh -> khác
   if (includeImages || appendToResponse.includes('images')) {
-    params.append('include_image_language', 'vi,en,null');
+    params.append('include_image_language', 'vi,ja,en,null');
   }
 
   // Thêm include_video_language nếu có videos trong append_to_response
+  // Ưu tiên: Việt -> Nhật -> Anh -> khác
   if (appendToResponse.includes('videos')) {
-    params.append('include_video_language', 'vi,en,null');
+    params.append('include_video_language', 'vi,ja,en,null');
   }
 
   const response = await fetchWithRetry(
@@ -156,7 +163,7 @@ export async function getTvShowDetails(
         revalidate: 86400, // Cache 24 hours (1 ngày)
         tags: ['tmdb', 'tv-shows', `tv-${tvId}`, 'images', 'videos', 'trailers', 'logos']
       }
-    }
+    } as any
   );
 
   if (!response.ok) {
@@ -179,8 +186,9 @@ export async function getTvSeasonDetails(
   });
 
   // Thêm include_image_language nếu cần
+  // Ưu tiên: Việt -> Nhật -> Anh -> khác
   if (includeImages) {
-    params.append('include_image_language', 'vi,en,null');
+    params.append('include_image_language', 'vi,ja,en,null');
   }
 
   const response = await fetchWithRetry(
@@ -195,7 +203,7 @@ export async function getTvSeasonDetails(
         revalidate: 86400, // Cache 24 hours (1 ngày)
         tags: ['tmdb', 'tv-shows', `tv-${tvId}`, `season-${seasonNumber}`, 'images', 'posters']
       }
-    }
+    } as any
   );
 
   if (!response.ok) {
@@ -283,6 +291,7 @@ export async function searchMovies(query: string, page = 1) {
       query,
       page,
       include_adult: false,
+      language: "vi-VN",
     });
     return results.results;
   } catch (error) {
@@ -348,7 +357,7 @@ export async function getMovieReleaseDates(movieId: number) {
         revalidate: 86400 * 7, // Cache 7 ngày (certification ít thay đổi)
         tags: ['tmdb', 'movies', `movie-${movieId}`, 'release-dates', 'certification']
       }
-    }
+    } as any
   );
 
   if (!response.ok) {
@@ -376,7 +385,7 @@ export async function getTvContentRatings(tvId: number) {
         revalidate: 86400 * 7, // Cache 7 ngày
         tags: ['tmdb', 'tv-shows', `tv-${tvId}`, 'content-ratings', 'certification']
       }
-    }
+    } as any
   );
 
   if (!response.ok) {
