@@ -118,7 +118,7 @@ export class PlayerAdBlocker {
         const fn = new Function(code);
         fn();
         console.log(`💉 [Player AdBlock] Injected: ${name}`);
-      } catch (error) {
+      } catch {
         console.warn(`⚠️ [Player AdBlock] Failed to inject ${name}:`);
       }
     });
@@ -220,26 +220,25 @@ export class PlayerAdBlocker {
     iframe.addEventListener('load', () => {
       try {
         const iframeDoc = iframe.contentDocument || iframe.contentWindow?.document;
-        
+
         if (iframeDoc) {
           console.log('📄 [Player AdBlock] Injecting into iframe document');
-          
+
           // Inject scriptlets into iframe
           this.injectIntoIframe(iframeDoc);
-          
+
           // Apply cosmetic filters
           this.applyCosmeticFiltersToIframe(iframeDoc);
         }
       } catch {
-        // Cross-origin iframe - can't access
-        console.log('🔒 [Player AdBlock] Cross-origin iframe (expected)');
+        // Unsandboxed iframe, cannot attach
       }
     });
 
     // Block iframe src if it's an ad
     const src = iframe.src || '';
     const result = filterEngine.shouldBlockUrl(src);
-    
+
     if (result.blocked) {
       console.log(`🚫 [Player AdBlock] Blocked iframe: ${src}`);
       iframe.src = 'about:blank';
