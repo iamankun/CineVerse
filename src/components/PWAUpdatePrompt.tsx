@@ -11,6 +11,9 @@ export default function PWAUpdatePrompt() {
     if (typeof window === "undefined" || !("serviceWorker" in navigator)) {
       return;
     }
+    if (process.env.NODE_ENV !== "production") {
+      return;
+    }
 
     // Check for updates every 60 seconds
     const interval = setInterval(async () => {

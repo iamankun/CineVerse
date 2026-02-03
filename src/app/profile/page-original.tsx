@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { createClient } from "@/utils/supabase/client-new";
+import { createClient } from "@/utils/supabase/client";
 import { addToast, Button, Input, Avatar, Textarea } from "@heroui/react";
 import { Camera, Save, User, LogOut } from "lucide-react";
 import { ProfileRow } from "@/types/database";

@@ -1,9 +1,9 @@
-import { createClient } from "@/utils/supabase/client-new";
+import { createClient } from "@/utils/supabase/client";
 import { NextResponse } from "next/server";
 
 export async function GET() {
   try {
-    console.log("🔍 [AUTH TEST] Testing client-side auth...");
+    console.log(" [AUTH TEST] Testing client-side auth...");
     
     // Test with browser client (same as profile page)
     const supabase = createClient();

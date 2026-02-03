@@ -1,4 +1,4 @@
-import { createClient } from "@/utils/supabase/client-new";
+import { createClient } from "@/utils/supabase/client";
 
 // Test Supabase connection
 export async function testSupabaseConnection() {

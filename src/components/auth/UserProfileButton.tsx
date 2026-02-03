@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { createClient } from "@/utils/supabase/client-new";
+import { createClient } from "@/utils/supabase/client";
 import { Button } from "@heroui/react";
 import { Dropdown, DropdownItem, DropdownMenu, DropdownTrigger } from "@heroui/react";
 import { User, LogOut, Settings, Crown, Star, Check } from "lucide-react";

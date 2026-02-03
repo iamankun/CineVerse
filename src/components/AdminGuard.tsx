@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Spinner } from "@heroui/react";
-import { createClient } from "@/utils/supabase/client-new";
+import { createClient } from "@/utils/supabase/client";
 
 export default function AdminGuard({ children }: { children: React.ReactNode }) {
   const router = useRouter();

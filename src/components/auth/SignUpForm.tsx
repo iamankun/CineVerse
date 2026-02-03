@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { createClient } from "@/utils/supabase/client-new";
+import { createClient } from "@/utils/supabase/client";
 import { Button } from "@heroui/react";
 import { Input } from "@heroui/react";
 import { addToast } from "@heroui/react";

@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
-import { createClient } from "@/utils/supabase/client-new";
+import { createClient } from "@/utils/supabase/client";
 import { Input, Button, Card, CardHeader, CardBody, addToast } from "@heroui/react";
 import BrandLogo from "@/components/ui/other/BrandLogo";
 import ThreeDMarquee from "@/components/ui/background/ThreeDMarquee";

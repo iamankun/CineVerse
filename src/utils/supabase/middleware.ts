@@ -47,12 +47,26 @@ export async function updateSession(request: NextRequest) {
       }
     );
 
+    if (!supabase?.auth) {
+      console.error("🔍 [MIDDLEWARE] Supabase auth client unavailable");
+      return response;
+    }
+
     // Only refresh session if we have tokens - use getSession instead of getUser
-    const { data: { session } } = await supabase.auth.getSession();
+    const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+    
+    if (sessionError) {
+      console.error("🔍 [MIDDLEWARE] Session error:", sessionError);
+    }
     
     if (session) {
-      // Only call getUser if we have a valid session
-      await supabase.auth.getUser();
+      // session.user contains the user info - no need to call getUser()
+      const user = session.user;
+      
+      // If you still need to call getUser(), guard the method exists
+      if (!user && supabase.auth && typeof supabase.auth.getUser === 'function') {
+        await supabase.auth.getUser();
+      }
     }
   } catch (error) {
     console.error("🔍 [MIDDLEWARE] Session refresh error:", error);
