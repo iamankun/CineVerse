@@ -7,6 +7,7 @@ import Providers from "./providers";
 import RootLayoutContent from "@/components/RootLayoutContent";
 import PWAUpdatePrompt from "@/components/PWAUpdatePrompt";
 import BackToTop from "@/components/ui/BackToTop";
+import CookieConsent from "@/components/ui/CookieConsent";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Analytics } from "@vercel/analytics/next";
 import { cn } from "@/utils/helpers";
@@ -64,6 +65,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         </Suspense>
         <PWAUpdatePrompt />
         <BackToTop />
+        <CookieConsent />
         <SpeedInsights />
         <Analytics />
       </body>
