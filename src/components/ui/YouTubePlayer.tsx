@@ -71,6 +71,7 @@ export const YouTubePlayer: React.FC<YouTubePlayerProps> = ({
   const [showUI, setShowUI] = useState(true);
   const [showQualityMenu, setShowQualityMenu] = useState(false);
   const [showSkipIntro, setShowSkipIntro] = useState(false);
+  const [showNextEpisode, setShowNextEpisode] = useState(false);
   const containerRef = React.useRef<HTMLDivElement>(null);
   const hideTimerRef = React.useRef<NodeJS.Timeout | null>(null);
   const progressEventRef = React.useRef<{
@@ -82,6 +83,7 @@ export const YouTubePlayer: React.FC<YouTubePlayerProps> = ({
 
   const {
     isReady,
+    playerState,
     currentTime,
     duration,
     volume,
@@ -175,9 +177,9 @@ export const YouTubePlayer: React.FC<YouTubePlayerProps> = ({
 
     // Check if in outro range
     if (outro && currentTime >= outro.start && currentTime <= outro.end) {
-      // setShowNextEpisode(true);
+      setShowNextEpisode(true);
     } else {
-      // setShowNextEpisode(false);
+      setShowNextEpisode(false);
     }
   }, [currentTime, intro, outro, isReady]);
 
@@ -593,7 +595,7 @@ export const YouTubePlayer: React.FC<YouTubePlayerProps> = ({
         )}
 
         {/* Next Episode Button */}
-        {nextEpisodeNumber && (
+        {nextEpisodeNumber && showNextEpisode && (
           <>
             <Link
               href={`/tv/${id}/${seasonNumber}/${nextEpisodeNumber}/player?src=${selectedSource}`}

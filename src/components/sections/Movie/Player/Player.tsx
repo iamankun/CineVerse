@@ -649,7 +649,6 @@ interface FullscreenDocument extends Document {
                 movieTitle={title} 
                 logoPath={logoPath}
                 posterPath={movie.poster_path}
-                isVisible={!idle || mobile || isFullscreen}
               />
             </div>
           )}

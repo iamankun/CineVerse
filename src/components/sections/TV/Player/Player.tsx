@@ -710,8 +710,6 @@ const TvShowPlayer: React.FC<TvShowPlayerProps> = ({
                 movieTitle={props.seriesName} 
                 logoPath={logoPath}
                 posterPath={tv.poster_path}
-                isVisible={!idle || mobile || isFullscreen}
-                videoCurrentTime={videoCurrentTime}
               />
             </div>
           )}
