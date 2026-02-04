@@ -128,22 +128,25 @@ const MoviePlayer: React.FC<MoviePlayerProps> = ({ movie, startAt }) => {
     // Initial setup
     resetPlayerIdle();
 
-    // Event listeners for user activity
+    // Event listeners for user activity - only within player container
     const handleActivity = () => {
       resetPlayerIdle();
     };
 
-    document.addEventListener('mousemove', handleActivity);
-    document.addEventListener('keydown', handleActivity);
-    document.addEventListener('click', handleActivity);
+    const playerContainer = cardRef.current;
+    if (!playerContainer) return;
+
+    playerContainer.addEventListener('mousemove', handleActivity);
+    playerContainer.addEventListener('keydown', handleActivity);
+    playerContainer.addEventListener('click', handleActivity);
 
     return () => {
       clearTimeout(timeoutId);
-      document.removeEventListener('mousemove', handleActivity);
-      document.removeEventListener('keydown', handleActivity);
-      document.removeEventListener('click', handleActivity);
+      playerContainer.removeEventListener('mousemove', handleActivity);
+      playerContainer.removeEventListener('keydown', handleActivity);
+      playerContainer.removeEventListener('click', handleActivity);
     };
-  }, []);
+  }, [cardRef]);
 
   // Gesture control callbacks
   const gestureCallbacks = useMemo(() => ({

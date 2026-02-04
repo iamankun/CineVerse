@@ -129,17 +129,14 @@ export const YouTubePlayer: React.FC<YouTubePlayerProps> = ({
 
   // Auto-hide controls và cursor sau 3s
   const resetHideTimer = React.useCallback(() => {
-    // Don't auto-hide if external idle is active
-    if (externalIdle) return;
-    
     setShowUI(true);
     
     if (hideTimerRef.current) {
       clearTimeout(hideTimerRef.current);
     }
     
-    // Không auto-hide khi quality menu đang mở
-    if (showQualityMenu) {
+    // Không auto-hide khi quality menu đang mở hoặc external idle active
+    if (showQualityMenu || externalIdle) {
       return;
     }
     
@@ -554,10 +551,23 @@ export const YouTubePlayer: React.FC<YouTubePlayerProps> = ({
       ref={containerRef}
       className={`relative w-full h-full bg-black overflow-hidden ${className}`}
       style={{ cursor: showUI ? 'default' : 'none' }}
-      onMouseEnter={() => setShowUI(true)}
       onMouseMove={() => {
         if (!externalIdle) {
           resetHideTimer();
+        }
+      }}
+      onMouseEnter={() => {
+        if (!externalIdle) {
+          setShowUI(true);
+          resetHideTimer();
+        }
+      }}
+      onMouseLeave={() => {
+        if (!externalIdle) {
+          setShowUI(false);
+          if (hideTimerRef.current) {
+            clearTimeout(hideTimerRef.current);
+          }
         }
       }}
       onClick={(e) => {

@@ -124,8 +124,6 @@ const TvShowPlayer: React.FC<TvShowPlayerProps> = ({
   const playerContainerRef = useRef<HTMLDivElement>(null);
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const idle = useIdle(3000);
-  const { mobile } = useBreakpoints();
-  const [playerIdle, setPlayerIdle] = useState(false);
   const zoom = usePinchToZoom(playerContainerRef, { enabled: mobile, minZoom: 1, maxZoom: 2 });
   const [sourceOpened, sourceHandlers] = useDisclosure(false);
   const [episodeOpened, episodeHandlers] = useDisclosure(false);
@@ -148,22 +146,25 @@ const TvShowPlayer: React.FC<TvShowPlayerProps> = ({
     // Initial setup
     resetPlayerIdle();
 
-    // Event listeners for user activity
+    // Event listeners for user activity - only within player container
     const handleActivity = () => {
       resetPlayerIdle();
     };
 
-    document.addEventListener('mousemove', handleActivity);
-    document.addEventListener('keydown', handleActivity);
-    document.addEventListener('click', handleActivity);
+    const playerContainer = cardRef.current;
+    if (!playerContainer) return;
+
+    playerContainer.addEventListener('mousemove', handleActivity);
+    playerContainer.addEventListener('keydown', handleActivity);
+    playerContainer.addEventListener('click', handleActivity);
 
     return () => {
       clearTimeout(timeoutId);
-      document.removeEventListener('mousemove', handleActivity);
-      document.removeEventListener('keydown', handleActivity);
-      document.removeEventListener('click', handleActivity);
+      playerContainer.removeEventListener('mousemove', handleActivity);
+      playerContainer.removeEventListener('keydown', handleActivity);
+      playerContainer.removeEventListener('click', handleActivity);
     };
-  }, []);
+  }, [cardRef]);
 
   // Gesture control callbacks
   const gestureCallbacks = useMemo(() => ({
@@ -620,7 +621,7 @@ const TvShowPlayer: React.FC<TvShowPlayerProps> = ({
         <TvShowPlayerHeader
           id={id}
           episode={episode}
-          hidden={idle && !mobile}
+          hidden={playerIdle && !mobile}
           selectedSource={selectedSource}
           nextEpisodeNumber={nextEpisodeNumber}
           prevEpisodeNumber={prevEpisodeNumber}
@@ -641,7 +642,7 @@ const TvShowPlayer: React.FC<TvShowPlayerProps> = ({
           onToggleFullscreen={gestureCallbacks.onToggleFullscreen}
           onReload={gestureCallbacks.onReload}
           isFullscreen={isFullscreen}
-          hidden={idle && !mobile}
+          hidden={playerIdle && !mobile}
         />
 
         <div className="relative h-screen overflow-hidden" ref={cardRef}>
@@ -669,7 +670,7 @@ const TvShowPlayer: React.FC<TvShowPlayerProps> = ({
                     className="h-full w-full"
                     intro={PLAYER.intro}
                     outro={PLAYER.outro}
-                    externalIdle={idle && !mobile}
+                    externalIdle={playerIdle && !mobile}
                     // New props for direct navigation
                     id={id}
                     seasonNumber={episode.season_number}
