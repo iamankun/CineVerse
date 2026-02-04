@@ -38,10 +38,41 @@ export async function updateSession(request: NextRequest) {
             return request.cookies.get(name)?.value;
           },
           set(name: string, value: string, options: CookieOptions) {
-            response.cookies.set({ name, value, ...options });
+            // IMPORTANT: Set proper cookie options for production
+            const cookieOptions = {
+              ...options,
+              // Ensure cookies work in production
+              secure: process.env.NODE_ENV === 'production',
+              httpOnly: true,
+              sameSite: 'lax' as const,
+              path: '/',
+              // Don't set domain explicitly - let browser handle it
+              ...(process.env.NODE_ENV === 'production' && {
+                // For production, ensure cookies are sent over HTTPS
+                secure: true,
+                // Don't set domain to allow subdomain access
+              })
+            };
+            
+            console.log("🔍 [MIDDLEWARE] Setting cookie:", name, {
+              secure: cookieOptions.secure,
+              httpOnly: cookieOptions.httpOnly,
+              sameSite: cookieOptions.sameSite,
+              path: cookieOptions.path
+            });
+            
+            response.cookies.set({ name, value, ...cookieOptions });
           },
           remove(name: string, options: CookieOptions) {
-            response.cookies.set({ name, value: '', ...options });
+            const cookieOptions = {
+              ...options,
+              secure: process.env.NODE_ENV === 'production',
+              httpOnly: true,
+              sameSite: 'lax' as const,
+              path: '/'
+            };
+            
+            response.cookies.set({ name, value: '', ...cookieOptions });
           },
         },
       }
@@ -63,10 +94,14 @@ export async function updateSession(request: NextRequest) {
       // session.user contains the user info - no need to call getUser()
       const user = session.user;
       
+      console.log("🔍 [MIDDLEWARE] Session valid for user:", user.id);
+      
       // If you still need to call getUser(), guard the method exists
       if (!user && supabase.auth && typeof supabase.auth.getUser === 'function') {
         await supabase.auth.getUser();
       }
+    } else {
+      console.log("🔍 [MIDDLEWARE] No session found");
     }
   } catch (error) {
     console.error("🔍 [MIDDLEWARE] Session refresh error:", error);

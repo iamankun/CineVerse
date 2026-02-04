@@ -131,22 +131,24 @@ const TvShowPlayer: React.FC<TvShowPlayerProps> = ({
     "src",
     parseAsInteger.withDefault(0),
   );  const [reloadKey, setReloadKey] = useState<number>(0);
-  // Player idle logic - hide controls after 3s of inactivity
+  // Player idle logic - hide controls after inactivity
   useEffect(() => {
     let timeoutId: NodeJS.Timeout;
 
     const resetPlayerIdle = () => {
       setPlayerIdle(false);
       clearTimeout(timeoutId);
+      // Use 5s for mobile, 3s for desktop
+      const hideDelay = mobile ? 5000 : 3000;
       timeoutId = setTimeout(() => {
         setPlayerIdle(true);
-      }, 3000);
+      }, hideDelay);
     };
 
     // Initial setup
     resetPlayerIdle();
 
-    // Event listeners for user activity - only within player container
+    // Event listeners for user activity
     const handleActivity = () => {
       resetPlayerIdle();
     };
@@ -154,17 +156,32 @@ const TvShowPlayer: React.FC<TvShowPlayerProps> = ({
     const playerContainer = cardRef.current;
     if (!playerContainer) return;
 
-    playerContainer.addEventListener('mousemove', handleActivity);
-    playerContainer.addEventListener('keydown', handleActivity);
-    playerContainer.addEventListener('click', handleActivity);
+    // Listen on both player container and document for desktop
+    if (!mobile) {
+      // Desktop: listen on document for mouse enter from outside
+      document.addEventListener('mousemove', handleActivity);
+      document.addEventListener('keydown', handleActivity);
+      document.addEventListener('click', handleActivity);
+    } else {
+      // Mobile: only listen within player container
+      playerContainer.addEventListener('mousemove', handleActivity);
+      playerContainer.addEventListener('keydown', handleActivity);
+      playerContainer.addEventListener('click', handleActivity);
+    }
 
     return () => {
       clearTimeout(timeoutId);
-      playerContainer.removeEventListener('mousemove', handleActivity);
-      playerContainer.removeEventListener('keydown', handleActivity);
-      playerContainer.removeEventListener('click', handleActivity);
+      if (!mobile) {
+        document.removeEventListener('mousemove', handleActivity);
+        document.removeEventListener('keydown', handleActivity);
+        document.removeEventListener('click', handleActivity);
+      } else {
+        playerContainer.removeEventListener('mousemove', handleActivity);
+        playerContainer.removeEventListener('keydown', handleActivity);
+        playerContainer.removeEventListener('click', handleActivity);
+      }
     };
-  }, [cardRef]);
+  }, [cardRef, mobile]);
 
   // Gesture control callbacks
   const gestureCallbacks = useMemo(() => ({
@@ -621,7 +638,7 @@ const TvShowPlayer: React.FC<TvShowPlayerProps> = ({
         <TvShowPlayerHeader
           id={id}
           episode={episode}
-          hidden={playerIdle && !mobile}
+          hidden={playerIdle}
           selectedSource={selectedSource}
           nextEpisodeNumber={nextEpisodeNumber}
           prevEpisodeNumber={prevEpisodeNumber}
@@ -642,7 +659,7 @@ const TvShowPlayer: React.FC<TvShowPlayerProps> = ({
           onToggleFullscreen={gestureCallbacks.onToggleFullscreen}
           onReload={gestureCallbacks.onReload}
           isFullscreen={isFullscreen}
-          hidden={playerIdle && !mobile}
+          hidden={playerIdle}
         />
 
         <div className="relative h-screen overflow-hidden" ref={cardRef}>
@@ -670,7 +687,8 @@ const TvShowPlayer: React.FC<TvShowPlayerProps> = ({
                     className="h-full w-full"
                     intro={PLAYER.intro}
                     outro={PLAYER.outro}
-                    externalIdle={playerIdle && !mobile}
+                    externalIdle={playerIdle}
+                    isMobile={mobile}
                     // New props for direct navigation
                     id={id}
                     seasonNumber={episode.season_number}

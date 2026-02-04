@@ -40,6 +40,8 @@ interface YouTubePlayerProps {
   selectedSource?: number;
   // Add external idle control
   externalIdle?: boolean;
+  // Add mobile detection
+  isMobile?: boolean;
 }
 
 const formatTime = (seconds: number): string => {
@@ -66,6 +68,8 @@ export const YouTubePlayer: React.FC<YouTubePlayerProps> = ({
   selectedSource,
   // Add external idle control
   externalIdle = false,
+  // Add mobile detection
+  isMobile = false,
 }) => {
   // Sử dụng useId() để tạo ID ổn định cho SSR
   const uniqueId = useId();
@@ -135,18 +139,18 @@ export const YouTubePlayer: React.FC<YouTubePlayerProps> = ({
       clearTimeout(hideTimerRef.current);
     }
     
-    // Không auto-hide khi quality menu đang mở hoặc external idle active
-    if (showQualityMenu || externalIdle) {
+    // Không auto-hide khi quality menu đang mở
+    if (showQualityMenu) {
       return;
     }
     
-    // Chỉ auto-hide khi đang playing
-    if (isReady && currentTime > 0 && currentTime < duration) {
+    // Chỉ auto-hide khi đang playing và không có external idle
+    if (isReady && currentTime > 0 && currentTime < duration && !externalIdle) {
       hideTimerRef.current = setTimeout(() => {
         setShowUI(false);
       }, 3000);
     }
-  }, [isReady, currentTime, duration, showQualityMenu, externalIdle]);
+  }, [isReady, currentTime, duration, showQualityMenu]); // Remove externalIdle from deps
 
   // Mouse movement và click hiện controls
   React.useEffect(() => {
@@ -551,33 +555,28 @@ export const YouTubePlayer: React.FC<YouTubePlayerProps> = ({
       ref={containerRef}
       className={`relative w-full h-full bg-black overflow-hidden ${className}`}
       style={{ cursor: showUI ? 'default' : 'none' }}
-      onMouseMove={() => {
-        if (!externalIdle) {
+      onMouseMove={(e) => {
+        // Force show UI on mouse move within player, regardless of externalIdle
+        if (externalIdle) {
+          setShowUI(true);
+          resetHideTimer();
+        } else {
           resetHideTimer();
         }
       }}
       onMouseEnter={() => {
-        if (!externalIdle) {
-          setShowUI(true);
-          resetHideTimer();
-        }
-      }}
-      onMouseLeave={() => {
-        if (!externalIdle) {
-          setShowUI(false);
-          if (hideTimerRef.current) {
-            clearTimeout(hideTimerRef.current);
-          }
-        }
+        // Force show UI on mouse enter, regardless of externalIdle
+        setShowUI(true);
+        resetHideTimer();
       }}
       onClick={(e) => {
         // Đóng quality menu khi click outside
         if (showQualityMenu && !(e.target as HTMLElement).closest('.quality-menu-container')) {
           setShowQualityMenu(false);
         }
-        if (!externalIdle) {
-          resetHideTimer();
-        }
+        // Force show UI on click within player, regardless of externalIdle
+        setShowUI(true);
+        resetHideTimer();
       }}
     >
       {/* YouTube Player Container */}
@@ -585,12 +584,20 @@ export const YouTubePlayer: React.FC<YouTubePlayerProps> = ({
         <div id={playerId} className="absolute inset-0" />
 
         {/* Invisible overlay để capture mouse events khi controls ẩn */}
-        {!showUI && !externalIdle && (
+        {!showUI && (
           <div 
             className="absolute inset-0 z-50" 
             style={{ cursor: 'none' }}
-            onMouseMove={() => resetHideTimer()}
-            onClick={() => resetHideTimer()}
+            onMouseMove={(e) => {
+              // Force show UI on mouse move within player, regardless of externalIdle
+              setShowUI(true);
+              resetHideTimer();
+            }}
+            onClick={() => {
+              // Force show UI on click within player, regardless of externalIdle
+              setShowUI(true);
+              resetHideTimer();
+            }}
           />
         )}
 
@@ -621,7 +628,7 @@ export const YouTubePlayer: React.FC<YouTubePlayerProps> = ({
         )}
 
         {/* Skip Intro Button */}
-        {showSkipIntro && (
+        {showSkipIntro && !externalIdle && (
           <button
             onClick={handleSkipIntro}
             className="absolute bottom-32 right-4 px-4 py-2 border-2 border-white/90 hover:border-white hover:scale-105 text-white font-semibold rounded-full transition-all duration-300 flex items-center gap-2 z-50 animate-[slideInRight_0.3s_ease-out,pulse_2s_ease-in-out_infinite]"
@@ -632,7 +639,7 @@ export const YouTubePlayer: React.FC<YouTubePlayerProps> = ({
         )}
 
         {/* Next Episode Button */}
-        {nextEpisodeNumber && showNextEpisode && (
+        {nextEpisodeNumber && showNextEpisode && !externalIdle && (
           <>
             <Link
               href={`/tv/${id}/${seasonNumber}/${nextEpisodeNumber}/player?src=${selectedSource}`}
@@ -654,7 +661,7 @@ export const YouTubePlayer: React.FC<YouTubePlayerProps> = ({
         )}
 
         {/* Custom Controls Overlay with Glass Effect */}
-        {showControls && isReady && showUI && (
+        {showControls && isReady && showUI && !externalIdle && (
           <div className="absolute bottom-0 left-0 right-0 glass-morphism p-4 transition-all duration-300">
             {/* Progress Bar */}
             <div className="mb-3">
