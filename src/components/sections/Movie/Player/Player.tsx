@@ -104,6 +104,7 @@ const MoviePlayer: React.FC<MoviePlayerProps> = ({ movie, startAt }) => {
   const title = mutateMovieTitle(movie);
   const idle = useIdle(3000);
   const { mobile } = useBreakpoints();
+  const [playerIdle, setPlayerIdle] = useState(false);
   const zoom = usePinchToZoom(iframeRef, { enabled: mobile, minZoom: 1, maxZoom: 2 });
   const [opened, handlers] = useDisclosure(false);
   const [selectedSource, setSelectedSource] = useQueryState<number>(
@@ -111,6 +112,38 @@ const MoviePlayer: React.FC<MoviePlayerProps> = ({ movie, startAt }) => {
     parseAsInteger.withDefault(0),
   );
   const [reloadKey, setReloadKey] = useState<number>(0);
+
+  // Player idle logic - hide controls after 3s of inactivity
+  useEffect(() => {
+    let timeoutId: NodeJS.Timeout;
+
+    const resetPlayerIdle = () => {
+      setPlayerIdle(false);
+      clearTimeout(timeoutId);
+      timeoutId = setTimeout(() => {
+        setPlayerIdle(true);
+      }, 3000);
+    };
+
+    // Initial setup
+    resetPlayerIdle();
+
+    // Event listeners for user activity
+    const handleActivity = () => {
+      resetPlayerIdle();
+    };
+
+    document.addEventListener('mousemove', handleActivity);
+    document.addEventListener('keydown', handleActivity);
+    document.addEventListener('click', handleActivity);
+
+    return () => {
+      clearTimeout(timeoutId);
+      document.removeEventListener('mousemove', handleActivity);
+      document.removeEventListener('keydown', handleActivity);
+      document.removeEventListener('click', handleActivity);
+    };
+  }, []);
 
   // Gesture control callbacks
   const gestureCallbacks = useMemo(() => ({
@@ -519,7 +552,7 @@ interface FullscreenDocument extends Document {
         <MoviePlayerHeader
           id={movie.id}
           onOpenSource={handlers.open}
-          hidden={idle && !mobile && !isFullscreen}
+          hidden={playerIdle && !mobile}
         />
         
         <ControlMenu
@@ -527,7 +560,7 @@ interface FullscreenDocument extends Document {
           onToggleFullscreen={gestureCallbacks.onToggleFullscreen}
           onReload={gestureCallbacks.onReload}
           isFullscreen={isFullscreen}
-          hidden={idle && !mobile && !isFullscreen}
+          hidden={playerIdle && !mobile}
         />
         
         <div className="relative h-screen overflow-hidden" ref={cardRef}>
@@ -555,6 +588,7 @@ interface FullscreenDocument extends Document {
                     className="h-full w-full"
                     intro={PLAYER.intro}
                     outro={PLAYER.outro}
+                    externalIdle={playerIdle && !mobile}
                     onNextEpisode={() => {
                       // Next episode handler for movies (next part if multi-part)
                       const nextSourceIndex = selectedSource + 1;

@@ -89,6 +89,7 @@ const TvShowPlayer: React.FC<TvShowPlayerProps> = ({
     getInitialValueInEffect: false,
   });
 
+  const [playerIdle, setPlayerIdle] = useState(false);
   const { mobile } = useBreakpoints();
   const [players, setPlayers] = useState<PlayersProps[]>([]);
   const [isFullscreen, setIsFullscreen] = useState(false);
@@ -123,6 +124,8 @@ const TvShowPlayer: React.FC<TvShowPlayerProps> = ({
   const playerContainerRef = useRef<HTMLDivElement>(null);
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const idle = useIdle(3000);
+  const { mobile } = useBreakpoints();
+  const [playerIdle, setPlayerIdle] = useState(false);
   const zoom = usePinchToZoom(playerContainerRef, { enabled: mobile, minZoom: 1, maxZoom: 2 });
   const [sourceOpened, sourceHandlers] = useDisclosure(false);
   const [episodeOpened, episodeHandlers] = useDisclosure(false);
@@ -130,6 +133,38 @@ const TvShowPlayer: React.FC<TvShowPlayerProps> = ({
     "src",
     parseAsInteger.withDefault(0),
   );  const [reloadKey, setReloadKey] = useState<number>(0);
+  // Player idle logic - hide controls after 3s of inactivity
+  useEffect(() => {
+    let timeoutId: NodeJS.Timeout;
+
+    const resetPlayerIdle = () => {
+      setPlayerIdle(false);
+      clearTimeout(timeoutId);
+      timeoutId = setTimeout(() => {
+        setPlayerIdle(true);
+      }, 3000);
+    };
+
+    // Initial setup
+    resetPlayerIdle();
+
+    // Event listeners for user activity
+    const handleActivity = () => {
+      resetPlayerIdle();
+    };
+
+    document.addEventListener('mousemove', handleActivity);
+    document.addEventListener('keydown', handleActivity);
+    document.addEventListener('click', handleActivity);
+
+    return () => {
+      clearTimeout(timeoutId);
+      document.removeEventListener('mousemove', handleActivity);
+      document.removeEventListener('keydown', handleActivity);
+      document.removeEventListener('click', handleActivity);
+    };
+  }, []);
+
   // Gesture control callbacks
   const gestureCallbacks = useMemo(() => ({
     onTogglePlay: () => {
@@ -585,7 +620,7 @@ const TvShowPlayer: React.FC<TvShowPlayerProps> = ({
         <TvShowPlayerHeader
           id={id}
           episode={episode}
-          hidden={idle && !mobile && !isFullscreen}
+          hidden={idle && !mobile}
           selectedSource={selectedSource}
           nextEpisodeNumber={nextEpisodeNumber}
           prevEpisodeNumber={prevEpisodeNumber}
@@ -606,7 +641,7 @@ const TvShowPlayer: React.FC<TvShowPlayerProps> = ({
           onToggleFullscreen={gestureCallbacks.onToggleFullscreen}
           onReload={gestureCallbacks.onReload}
           isFullscreen={isFullscreen}
-          hidden={idle && !mobile && !isFullscreen}
+          hidden={idle && !mobile}
         />
 
         <div className="relative h-screen overflow-hidden" ref={cardRef}>
@@ -634,6 +669,7 @@ const TvShowPlayer: React.FC<TvShowPlayerProps> = ({
                     className="h-full w-full"
                     intro={PLAYER.intro}
                     outro={PLAYER.outro}
+                    externalIdle={idle && !mobile}
                     // New props for direct navigation
                     id={id}
                     seasonNumber={episode.season_number}

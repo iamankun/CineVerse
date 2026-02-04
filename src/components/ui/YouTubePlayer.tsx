@@ -38,6 +38,8 @@ interface YouTubePlayerProps {
   seasonNumber?: number;
   nextEpisodeNumber?: number | null;
   selectedSource?: number;
+  // Add external idle control
+  externalIdle?: boolean;
 }
 
 const formatTime = (seconds: number): string => {
@@ -62,6 +64,8 @@ export const YouTubePlayer: React.FC<YouTubePlayerProps> = ({
   seasonNumber,
   nextEpisodeNumber,
   selectedSource,
+  // Add external idle control
+  externalIdle = false,
 }) => {
   // Sử dụng useId() để tạo ID ổn định cho SSR
   const uniqueId = useId();
@@ -89,6 +93,7 @@ export const YouTubePlayer: React.FC<YouTubePlayerProps> = ({
     volume,
     isMuted,
     availableQualities,
+    currentQuality,
     seekTo,
     setVolume,
     toggleMute,
@@ -109,8 +114,24 @@ export const YouTubePlayer: React.FC<YouTubePlayerProps> = ({
     },
   });
 
+  // Sync with external idle state
+  React.useEffect(() => {
+    if (externalIdle) {
+      setShowUI(false);
+      if (hideTimerRef.current) {
+        clearTimeout(hideTimerRef.current);
+      }
+    } else {
+      setShowUI(true);
+      resetHideTimer();
+    }
+  }, [externalIdle]);
+
   // Auto-hide controls và cursor sau 3s
   const resetHideTimer = React.useCallback(() => {
+    // Don't auto-hide if external idle is active
+    if (externalIdle) return;
+    
     setShowUI(true);
     
     if (hideTimerRef.current) {
@@ -128,7 +149,7 @@ export const YouTubePlayer: React.FC<YouTubePlayerProps> = ({
         setShowUI(false);
       }, 3000);
     }
-  }, [isReady, currentTime, duration, showQualityMenu]);
+  }, [isReady, currentTime, duration, showQualityMenu, externalIdle]);
 
   // Mouse movement và click hiện controls
   React.useEffect(() => {
@@ -534,13 +555,19 @@ export const YouTubePlayer: React.FC<YouTubePlayerProps> = ({
       className={`relative w-full h-full bg-black overflow-hidden ${className}`}
       style={{ cursor: showUI ? 'default' : 'none' }}
       onMouseEnter={() => setShowUI(true)}
-      onMouseMove={() => resetHideTimer()}
+      onMouseMove={() => {
+        if (!externalIdle) {
+          resetHideTimer();
+        }
+      }}
       onClick={(e) => {
         // Đóng quality menu khi click outside
         if (showQualityMenu && !(e.target as HTMLElement).closest('.quality-menu-container')) {
           setShowQualityMenu(false);
         }
-        resetHideTimer();
+        if (!externalIdle) {
+          resetHideTimer();
+        }
       }}
     >
       {/* YouTube Player Container */}
@@ -548,7 +575,7 @@ export const YouTubePlayer: React.FC<YouTubePlayerProps> = ({
         <div id={playerId} className="absolute inset-0" />
 
         {/* Invisible overlay để capture mouse events khi controls ẩn */}
-        {!showUI && (
+        {!showUI && !externalIdle && (
           <div 
             className="absolute inset-0 z-50" 
             style={{ cursor: 'none' }}
