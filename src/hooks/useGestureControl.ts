@@ -21,7 +21,7 @@ interface Callbacks {
   onError?: (error: string) => void;
 }
 
-export function useGestureControl(config: Config, callbacks: Callbacks) {
+export function useGestureControl(config: Config, callbacks: Callbacks = {}) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const detectorRef = useRef<any>(null);
@@ -159,7 +159,7 @@ export function useGestureControl(config: Config, callbacks: Callbacks) {
         }));
 
         // Process gestures safely
-        if (callbacks?.onHandDetected) {
+        if (callbacks.onHandDetected) {
           callbacks.onHandDetected(true);
         }
 
@@ -177,7 +177,7 @@ export function useGestureControl(config: Config, callbacks: Callbacks) {
         }
       } else {
         setState(prev => ({ ...prev, handDetected: false }));
-        if (callbacks?.onHandDetected) {
+        if (callbacks.onHandDetected) {
           callbacks.onHandDetected(false);
         }
       }
@@ -185,7 +185,7 @@ export function useGestureControl(config: Config, callbacks: Callbacks) {
       console.error('Gesture detection failed:', error);
       setState(prev => ({ ...prev, error: (error as Error).message }));
     };
-  }, [state.cameraActive, config.showDebugOverlay, callbacks?.onHandDetected]);
+  }, [state.cameraActive, config.showDebugOverlay, callbacks.onHandDetected]);
 
   // FIXED: Safe camera operations
   const startCamera = useCallback(async () => {
@@ -217,10 +217,10 @@ export function useGestureControl(config: Config, callbacks: Callbacks) {
     
     setState(prev => ({ ...prev, cameraActive: false, handDetected: false }));
     
-    if (callbacks?.onHandDetected) {
+    if (callbacks.onHandDetected) {
       callbacks.onHandDetected(false);
     }
-  }, [callbacks?.onHandDetected]);
+  }, [callbacks.onHandDetected]);
 
   // FIXED: Safe detection loop with proper cleanup
   const startDetection = useCallback(() => {
