@@ -130,7 +130,7 @@ const SearchList = () => {
             {isPending ? (
               <Spinner
                 size="lg"
-                className="absolute-center mt-56"
+                className="absolute-center"
                 color={content === "movie" ? "primary" : "warning"}
                 variant="simple"
               />

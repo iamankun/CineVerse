@@ -165,7 +165,7 @@ const LibraryList = () => {
           <Spinner
             size="lg"
             variant="simple"
-            className="absolute-center mt-[30vh]"
+            className="absolute-center"
             color={content === "movie" ? "primary" : "warning"}
           />
         ) : hasItems ? (
