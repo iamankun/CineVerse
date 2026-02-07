@@ -2,6 +2,8 @@ import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
 import ProfileClientSimple from "./ProfileClientSimple";
 
+export const dynamic = 'force-dynamic';
+
 export default async function ProfilePage() {
   try {
     console.log("🔍 [PROFILE PAGE] Starting profile page...");

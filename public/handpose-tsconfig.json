@@ -1,0 +1,12 @@
+{
+  "modelTopology": {
+    "type": "point-cloud",
+    "maxOutputs": 2
+  },
+  "inputConfig": {
+    "imageShape": [240, 320]
+  },
+  "outputStride": 16,
+  "scaleMobile": 0.125,
+  "scaleDesktop": 0.25
+}

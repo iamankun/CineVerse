@@ -53,18 +53,31 @@ export function LoginForm() {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError("");
-    const supabase = createClient();
+    
+    if (!email || !password) {
+      setError("Vui lòng nhập email và mật khẩu");
+      return;
+    }
+
     setIsLoading(true);
+    setError("");
 
     try {
       console.log('🔐 Login attempt:', { email, hasPassword: !!password });
       console.log('🔑 Supabase URL:', process.env.NEXT_PUBLIC_SUPABASE_URL);
       console.log('🔑 Supabase Key:', process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.substring(0, 20) + '...');
       
+      // Validate email format
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        setError("Email không hợp lệ. Vui lòng kiểm tra lại.");
+        setIsLoading(false);
+        return;
+      }
+      
       const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
+        email: email.trim().toLowerCase(),
+        password: password,
       });
       
       console.log('📊 Supabase response:', { data, error });
@@ -72,29 +85,31 @@ export function LoginForm() {
       if (error) {
         console.error('❌ Login error:', error);
         
-        // Check specific error types
+        // Handle specific error types with better messages
         if (error.message?.includes('Invalid login credentials')) {
-          // Check if user exists
-          const { data: user } = await supabase.auth.getUser();
-          console.log('👤 Current user:', user);
-          
-          if (!user) {
-            setError('Tài khoản không tồn tại. Vui lòng đăng ký trước.');
-            throw new Error('Tài khoản không tồn tại. Vui lòng đăng ký trước.');
+          // Try to get more specific error info
+          try {
+            const { data: user } = await supabase.auth.getUser();
+            console.log('👤 Current user after failed login:', user);
+            
+            if (!user) {
+              setError('Email hoặc mật khẩu không đúng. Vui lòng thử lại.');
+            } else {
+              setError('Mật khẩu không đúng. Vui lòng kiểm tra lại.');
+            }
+          } catch (userCheckError) {
+            console.error('User check failed:', userCheckError);
+            setError('Email hoặc mật khẩu không đúng. Vui lòng thử lại.');
           }
-          
-          // Check if email is verified
-          const { data: userData } = await supabase.auth.getUser();
-          if (userData.user?.email_confirmed_at === null) {
-            setError('Email chưa được xác minh. Vui lòng kiểm tra hộp thư.');
-            throw new Error('Email chưa được xác minh. Vui lòng kiểm tra hộp thư.');
-          }
-          
-          setError('Email hoặc mật khẩu không đúng. Vui lòng thử lại.');
-          throw new Error('Email hoặc mật khẩu không đúng. Vui lòng thử lại.');
+        } else if (error.message?.includes('Email not confirmed')) {
+          setError('Email chưa được xác minh. Vui lòng kiểm tra hộp thư và xác minh email.');
+        } else if (error.message?.includes('Too many requests')) {
+          setError('Quá nhiều lần thử. Vui lòng đợi 5 phút và thử lại.');
+        } else if (error.message?.includes('User already registered')) {
+          setError('Tài khoản đã tồn tại. Vui lòng đăng nhập.');
+        } else {
+          setError(error.message || 'Đăng nhập thất bại. Vui lòng thử lại.');
         }
-        
-        setError(error.message);
         throw error;
       }
       
@@ -105,8 +120,9 @@ export function LoginForm() {
       
       router.push("/");
     } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : "Đăng nhập thất bại";
-      if (!error) setError(errorMessage);
+      console.error('❌ Unexpected login error:', error);
+      const errorMessage = error instanceof Error ? error.message : "Đăng nhập thất bại. Vui lòng thử lại.";
+      setError(errorMessage);
       
       addToast({
         title: errorMessage,
