@@ -1,0 +1,286 @@
+{
+  "tmdbId": 96402,
+  "title": "Vì Mình Chẳng Muốn Bị Đau Nên Mình Sẽ Nâng Tối Đa Lực Phòng Ngự",
+  "year": 2020,
+  "seasons": {
+    "1": {
+      "1": {
+        "title": "Tập 1",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Vì Mình Chẳng Muốn Bị Đau Nên Mình Sẽ Nâng Tối Đa Lực Phòng Ngự",
+            "url": "https://www.youtube.com/watch?v=AVXSv4gqBCM&list=PLdM751AKK4aOWBnXc6K0wZb0zPxG05VJv&index=1&pp=iAQB",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ],
+            "intro": {
+              "start": 59,
+              "end": 159
+            },
+            "outro": {
+              "start": 1328,
+              "end": 1421
+            }
+          }
+        ]
+      },
+      "2": {
+        "title": "Tập 2",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Vì Mình Chẳng Muốn Bị Đau Nên Mình Sẽ Nâng Tối Đa Lực Phòng Ngự",
+            "url": "https://www.youtube.com/watch?v=SGWIKB96flM&list=PLdM751AKK4aOWBnXc6K0wZb0zPxG05VJv&index=2&pp=iAQB0gcJCZEKAYcqIYzv",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ],
+            "intro": {
+              "start": 85,
+              "end": 175
+            },
+            "outro": {
+              "start": 1409,
+              "end": 1421
+            }
+          }
+        ]
+      },
+      "3": {
+        "title": "Tập 3",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Vì Mình Chẳng Muốn Bị Đau Nên Mình Sẽ Nâng Tối Đa Lực Phòng Ngự",
+            "url": "https://www.youtube.com/watch?v=MZ-E6eeB5uA&list=PLdM751AKK4aOWBnXc6K0wZb0zPxG05VJv&index=3&pp=iAQB",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ],
+            "intro": {
+              "start": 96,
+              "end": 187
+            },
+            "outro": {
+              "start": 1322,
+              "end": 1421
+            }
+          }
+        ]
+      },
+      "4": {
+        "title": "Tập 4",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Vì Mình Chẳng Muốn Bị Đau Nên Mình Sẽ Nâng Tối Đa Lực Phòng Ngự",
+            "url": "https://www.youtube.com/watch?v=ISw-VM6nqi0&list=PLdM751AKK4aOWBnXc6K0wZb0zPxG05VJv&index=4&pp=iAQB",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ],
+            "intro": {
+              "start": 33,
+              "end": 125
+            },
+            "outro": {
+              "start": 1322,
+              "end": 1421
+            }
+          }
+        ]
+      },
+      "5": {
+        "title": "Tập 5",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Vì Mình Chẳng Muốn Bị Đau Nên Mình Sẽ Nâng Tối Đa Lực Phòng Ngự",
+            "url": "https://www.youtube.com/watch?v=RJoRI7cEKB0&list=PLdM751AKK4aOWBnXc6K0wZb0zPxG05VJv&index=5&pp=iAQB0gcJCZEKAYcqIYzv",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ],
+            "intro": {
+              "start": 45,
+              "end": 135
+            },
+            "outro": {
+              "start": 1322,
+              "end": 1421
+            }
+          }
+        ]
+      },
+      "6": {
+        "title": "Tập 6",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Vì Mình Chẳng Muốn Bị Đau Nên Mình Sẽ Nâng Tối Đa Lực Phòng Ngự",
+            "url": "https://www.youtube.com/watch?v=Tt7DoOUp0LE&list=PLdM751AKK4aOWBnXc6K0wZb0zPxG05VJv&index=6&pp=iAQB",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ],
+            "intro": {
+              "start": 95,
+              "end": 187
+            },
+            "outro": {
+              "start": 1322,
+              "end": 1421
+            }
+          }
+        ]
+      },
+      "7": {
+        "title": "Tập 7",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Vì Mình Chẳng Muốn Bị Đau Nên Mình Sẽ Nâng Tối Đa Lực Phòng Ngự",
+            "url": "https://www.youtube.com/watch?v=IHiRTh0sI04&list=PLdM751AKK4aOWBnXc6K0wZb0zPxG05VJv&index=7&pp=iAQB",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ],
+            "intro": {
+              "start": 48,
+              "end": 138
+            },
+            "outro": {
+              "start": 1322,
+              "end": 1421
+            }
+          }
+        ]
+      },
+      "8": {
+        "title": "Tập 8",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Vì Mình Chẳng Muốn Bị Đau Nên Mình Sẽ Nâng Tối Đa Lực Phòng Ngự",
+            "url": "https://www.youtube.com/watch?v=-iExiwjoA30&list=PLdM751AKK4aOWBnXc6K0wZb0zPxG05VJv&index=8&pp=iAQB",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ],
+            "intro": {
+              "start": 72,
+              "end": 163
+            },
+            "outro": {
+              "start": 1334,
+              "end": 1421
+            }
+          }
+        ]
+      },
+      "9": {
+        "title": "Tập 9",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Vì Mình Chẳng Muốn Bị Đau Nên Mình Sẽ Nâng Tối Đa Lực Phòng Ngự",
+            "url": "https://www.youtube.com/watch?v=4jE6G8sLqdQ&list=PLdM751AKK4aOWBnXc6K0wZb0zPxG05VJv&index=9&pp=iAQB",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ],
+            "intro": {
+              "start": 64,
+              "end": 154
+            },
+            "outro": {
+              "start": 1322,
+              "end": 1421
+            }
+          }
+        ]
+      },
+      "10": {
+        "title": "Tập 10",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Vì Mình Chẳng Muốn Bị Đau Nên Mình Sẽ Nâng Tối Đa Lực Phòng Ngự",
+            "url": "https://www.youtube.com/watch?v=NkQMu7bD8D4&list=PLdM751AKK4aOWBnXc6K0wZb0zPxG05VJv&index=10&pp=iAQB",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ],
+            "intro": {
+              "start": 85,
+              "end": 175
+            },
+            "outro": {
+              "start": 1321,
+              "end": 1421
+            }
+          }
+        ]
+      },
+      "11": {
+        "title": "Tập 11",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Vì Mình Chẳng Muốn Bị Đau Nên Mình Sẽ Nâng Tối Đa Lực Phòng Ngự",
+            "url": "https://www.youtube.com/watch?v=z7vfJJRkPY4&list=PLdM751AKK4aOWBnXc6K0wZb0zPxG05VJv&index=11&pp=iAQB0gcJCZEKAYcqIYzv",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ],
+            "intro": {
+              "start": 22,
+              "end": 112
+            },
+            "outro": {
+              "start": 1322,
+              "end": 1421
+            }
+          }
+        ]
+      },
+      "12": {
+        "title": "Tập 12",
+        "sources": [
+          {
+            "provider": "youtube",
+            "title": "Vì Mình Chẳng Muốn Bị Đau Nên Mình Sẽ Nâng Tối Đa Lực Phòng Ngự",
+            "url": "https://www.youtube.com/watch?v=49tRjYJ1JTk&list=PLdM751AKK4aOWBnXc6K0wZb0zPxG05VJv&index=12&pp=iAQB",
+            "language": "vi",
+            "subtitles": [
+              "vi"
+            ],
+            "intro": {
+              "start": 58,
+              "end": 64
+            }
+          }
+        ]
+      }
+    }
+  },
+  "metadata": {
+    "movie-rating": "K",
+    "audioVersion": "PhuDe",
+    "lastUpdate": "2026-02-07T13:28:35.797Z",
+    "genre": [
+      "Phim Hoạt Hình",
+      "Action & Adventure",
+      "Sci-Fi & Fantasy",
+      "Phim Hài"
+    ],
+    "duration": 24,
+    "status": "Ended",
+    "note": "",
+    "studio": "SILVER LINK.",
+    "totalEpisodes": 12,
+    "totalSeasons": 1
+  }
+}
