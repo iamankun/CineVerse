@@ -162,12 +162,14 @@ const LibraryList = () => {
           )}
         </div>
         {status === "pending" ? (
-          <Spinner
-            size="lg"
-            variant="simple"
-            className="absolute-center"
-            color={content === "movie" ? "primary" : "warning"}
-          />
+          <div className="relative h-64 w-full">
+            <Spinner
+              size="lg"
+              variant="simple"
+              className="absolute-center"
+              color={content === "movie" ? "primary" : "warning"}
+            />
+          </div>
         ) : hasItems ? (
           <>
             <div className="movie-grid">

@@ -63,15 +63,16 @@ const SearchList = () => {
     }
   }, [inViewport]);
 
-  useEffect(() => {
-    if (debouncedSearchQuery && !searchHistories.includes(debouncedSearchQuery)) {
-      const newHistories = [...searchHistories, debouncedSearchQuery].sort();
+  const handleSearchSubmit = (query: string) => {
+    // Save to history only when user presses Enter
+    if (query && !searchHistories.includes(query)) {
+      const newHistories = [...searchHistories, query].sort();
       if (newHistories.length > 10) {
         newHistories.shift();
       }
       setSearchHistories(newHistories);
     }
-  }, [debouncedSearchQuery]);
+  };
 
   useEffect(() => {
     queryClient.removeQueries({ queryKey: ["search-list"] });
@@ -123,21 +124,24 @@ const SearchList = () => {
         isSearchTriggered={isSearchTriggered}
         setSearchQuery={setSearchQuery}
         setSearchHistories={setSearchHistories}
+        onSearchSubmit={handleSearchSubmit}
       />
       {isSearchTriggered && (
         <>
-          <div className="relative flex flex-col items-center gap-8">
-            {isPending ? (
+          {isPending ? (
+            <div className="relative h-64 w-full">
               <Spinner
                 size="lg"
                 className="absolute-center"
                 color={content === "movie" ? "primary" : "warning"}
                 variant="simple"
               />
-            ) : (
-              renderSearchResults()
-            )}
-          </div>
+            </div>
+          ) : (
+            <div className="flex flex-col items-center gap-8">
+              {renderSearchResults()}
+            </div>
+          )}
           <div ref={ref} className="flex h-24 items-center justify-center">
             {isFetchingNextPage && (
               <Spinner

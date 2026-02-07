@@ -14,6 +14,7 @@ interface SearchFilterProps {
   content: ContentType;
   setSearchQuery: (searchQuery: string) => void;
   setSearchHistories: (histories: string[]) => void;
+  onSearchSubmit?: (query: string) => void;
 }
 
 const SearchFilter: React.FC<SearchFilterProps> = ({
@@ -24,6 +25,7 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
   content,
   setSearchQuery,
   setSearchHistories,
+  onSearchSubmit,
 }) => {
   return (
     <div
@@ -39,6 +41,7 @@ const SearchFilter: React.FC<SearchFilterProps> = ({
         autoFocus
         value={searchQuery}
         onChange={({ target }) => setSearchQuery(target.value)}
+        onSearchSubmit={onSearchSubmit}
       />
       <SearchHistory
         searchHistories={searchHistories}

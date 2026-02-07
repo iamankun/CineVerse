@@ -7,6 +7,7 @@ import { cn } from "@/utils/helpers";
 
 interface SearchInputProps extends InputProps {
   isLoading?: boolean;
+  onSearchSubmit?: (value: string) => void;
 }
 
 const SearchInput = ({
@@ -17,8 +18,15 @@ const SearchInput = ({
   placeholder = "Đang tìm phim cho bạn...",
   isLoading,
   isDisabled,
+  onSearchSubmit,
 }: SearchInputProps) => {
   const inputRef = useRef<HTMLInputElement>(null);
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter' && onSearchSubmit && value) {
+      onSearchSubmit(value);
+    }
+  };
 
   return (
     <Input
@@ -32,6 +40,7 @@ const SearchInput = ({
       value={value}
       radius="full"
       onChange={onChange}
+      onKeyDown={handleKeyDown}
       classNames={{
         inputWrapper: "bg-secondary-background",
         input: "text-sm",
