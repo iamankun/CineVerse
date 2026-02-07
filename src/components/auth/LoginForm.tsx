@@ -17,6 +17,7 @@ export function LoginForm() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const router = useRouter();
+  const supabase = createClient();
 
   // Fetch trending movies for background
   const { data: movies, isPending: isPendingMovies } = useQuery({
