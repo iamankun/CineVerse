@@ -1,7 +1,10 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
-import { updateSession } from '@/utils/supabase/middleware';
 
+/**
+ * Next.js Middleware - Edge Runtime Compatible
+ * Chỉ parse cookie thủ công, không dùng Supabase client
+ */
 export async function middleware(request: NextRequest) {
   // Skip middleware for static files and some API routes
   if (request.nextUrl.pathname.startsWith('/_next/') ||
@@ -34,8 +37,33 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // Use Supabase middleware to handle session
-  return await updateSession(request);
+  // 🔥 EDGE RUNTIME FIX: Parse cookie thủ công
+  const cookieHeader = request.headers.get('cookie') || '';
+  
+  // Check for Supabase auth cookies
+  const hasAccessToken = cookieHeader.includes('sb-access-token=');
+  const hasRefreshToken = cookieHeader.includes('sb-refresh-token=');
+  
+  console.log("🔍 [MIDDLEWARE-EDGE] Cookie check:", {
+    hasAccessToken,
+    hasRefreshToken,
+    path: request.nextUrl.pathname
+  });
+
+  // Nếu không có auth cookies và truy cập protected route, redirect về login
+  const protectedRoutes = ['/profile', '/profiles', '/protected', '/admin'];
+  const isProtectedRoute = protectedRoutes.some(route => 
+    request.nextUrl.pathname.startsWith(route)
+  );
+
+  if (!hasAccessToken && !hasRefreshToken && isProtectedRoute) {
+    console.log("🔍 [MIDDLEWARE-EDGE] No auth cookies, redirecting to login");
+    return NextResponse.redirect(new URL('/auth/login', request.url));
+  }
+
+  // ✅ Cho phép tiếp tục với cookies hiện tại
+  // Server components sẽ xử lý authentication với getServerSession()
+  return NextResponse.next();
 }
 
 export const config = {
