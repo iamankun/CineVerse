@@ -21,6 +21,17 @@ export async function createClient() {
     throw new Error("Missing Supabase environment variables");
   }
 
+  // Environment validation
+  if (!supabaseUrl?.startsWith('https://')) {
+    console.error("🔍 [SERVER-NEW] Invalid Supabase URL:", supabaseUrl);
+    throw new Error("Invalid Supabase URL: must start with https://");
+  }
+
+  if (supabaseAnonKey.length < 100) {
+    console.error("🔍 [SERVER-NEW] Invalid Supabase Anon Key length");
+    throw new Error("Invalid Supabase Anon Key: too short");
+  }
+
   return createServerClient(
     supabaseUrl,
     supabaseAnonKey,
