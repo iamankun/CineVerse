@@ -19,6 +19,15 @@ export function LoginForm() {
   const router = useRouter();
   const supabase = createClient();
 
+  // 🔥 Get redirectTo parameter from URL
+  const redirectTo = useMemo(() => {
+    if (typeof window !== 'undefined') {
+      const urlParams = new URLSearchParams(window.location.search);
+      return urlParams.get('redirectTo') || '/';
+    }
+    return '/';
+  }, []);
+
   // Fetch trending movies for background
   const { data: movies, isPending: isPendingMovies } = useQuery({
     queryFn: () => tmdb.trending.trending("movie", "day", { language: 'vi-VN' }),
@@ -119,7 +128,10 @@ export function LoginForm() {
         color: "success",
       });
       
-      router.push("/");
+      // 🔥 Redirect to intended page or fallback to home
+      console.log("🔀 Login successful, redirecting to:", redirectTo);
+      router.push(redirectTo);
+      router.refresh();
     } catch (error: unknown) {
       console.error('❌ Unexpected login error:', error);
       const errorMessage = error instanceof Error ? error.message : "Đăng nhập thất bại. Vui lòng thử lại.";
@@ -151,7 +163,7 @@ export function LoginForm() {
         >
           <CardHeader className="flex flex-col gap-3 px-6 pt-8 items-center">
             <div className="scale-150">
-              <BrandLogo animate={true} />
+              <BrandLogo />
             </div>
             <h1 className="text-2xl font-bold text-foreground">
               Đăng Nhập
