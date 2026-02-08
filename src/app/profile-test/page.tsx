@@ -1,4 +1,5 @@
 import { createClient } from '@/utils/supabase/server';
+import { getServerSession } from "@/utils/supabase/server-session";
 
 export const dynamic = 'force-dynamic';
 
@@ -16,12 +17,11 @@ export default async function ProfileTest() {
   });
   
   // Test auth check separately
-  const { data: { user }, error: authError } = await supabase.auth.getUser();
+  const { user, error: sessionError } = await getServerSession();
   
-  console.log("🔍 [PROFILE-TEST] Auth result:", {
+  console.log("🔍 [PROFILE-TEST] Session result:", {
     hasUser: !!user,
     userId: user?.id,
-    authError: authError?.message
   });
 
   return (
@@ -37,7 +37,7 @@ export default async function ProfileTest() {
       <div style={{ marginBottom: '20px' }}>
         <h2>Auth Check:</h2>
         <pre>{JSON.stringify({ hasUser: !!user, userId: user?.id, email: user?.email }, null, 2)}</pre>
-        {authError && <pre style={{ color: 'red' }}>Auth Error: {authError.message}</pre>}
+        {sessionError && <pre style={{ color: 'red' }}>Session Error: {sessionError}</pre>}
       </div>
       
       <div>

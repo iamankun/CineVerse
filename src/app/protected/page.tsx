@@ -1,16 +1,16 @@
 import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
+import { getServerSession } from "@/utils/supabase/server-session";
 
 export const dynamic = 'force-dynamic';
 
 export default async function ProtectedPage() {
   try {
-    const supabase = await createClient();
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    const { user, error: sessionError } = await getServerSession();
 
-    if (authError) {
-      console.error("🔍 [PROTECTED] Auth error:", authError);
-      redirect("/auth/login?error=auth_failed");
+    if (sessionError) {
+      console.error("🔍 [PROTECTED] Session error:", sessionError);
+      redirect("/auth/login?error=session_failed");
     }
 
     if (!user) {

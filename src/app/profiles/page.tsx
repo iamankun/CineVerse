@@ -1,5 +1,6 @@
 import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
+import { getServerSession } from "@/utils/supabase/server-session";
 
 export const dynamic = 'force-dynamic';
 
@@ -7,20 +8,17 @@ export default async function ProfilesPage() {
   try {
     console.log("🔍 [PROFILES PAGE] Starting...");
     
-    const supabase = await createClient();
-    console.log("🔍 [PROFILES PAGE] Supabase client created");
+    const { user, error: sessionError } = await getServerSession();
     
-    // Get user
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
-    
-    if (!user || authError) {
-      console.log("🔍 [PROFILES PAGE] No user found:", authError?.message);
+    if (!user || sessionError) {
+      console.log("🔍 [PROFILES PAGE] No user found:", sessionError);
       redirect("/auth/login");
     }
 
     console.log("🔍 [PROFILES PAGE] User authenticated:", { id: user.id, email: user.email });
 
-    // Get profile
+    // Get profile - cần tạo supabase client cho database operations
+    const supabase = await createClient();
     const { data: profile, error: profileError } = await supabase
       .from("profiles")
       .select("*")

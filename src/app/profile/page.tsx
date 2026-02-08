@@ -1,6 +1,7 @@
 import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
 import ProfileClientSimple from "./ProfileClientSimple";
+import { getServerSession } from "@/utils/supabase/server-session";
 
 export const dynamic = 'force-dynamic';
 
@@ -8,25 +9,21 @@ export default async function ProfilePage() {
   try {
     console.log("🔍 [PROFILE PAGE] Starting profile page...");
     
-    const supabase = await createClient();
-    console.log("🔍 [PROFILE PAGE] Supabase client created");
-    
-    // TEMPORARY FIX: Get user from client-side instead of server-side
-    // This bypasses the session sync issue on production
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    // Use getServerSession instead of getUser to avoid conflicts
+    const { user, error: sessionError } = await getServerSession();
     
     console.log("🔍 [PROFILE PAGE] Auth result:", {
       hasUser: !!user,
       userId: user?.id,
       userEmail: user?.email,
-      authError: authError?.message
+      sessionError: sessionError
     });
     
     // TEMPORARY: Don't redirect on auth error, get first profile instead
     // This will show profile data but with wrong user context
     let targetUserId = user?.id;
     
-    if (!user || authError) {
+    if (!user || sessionError) {
       console.log("🔍 [PROFILE PAGE] No user found, getting first profile as fallback");
       const { data: firstProfile } = await supabase
         .from("profiles")

@@ -29,19 +29,37 @@ export function SignUpForm() {
     setIsLoading(true);
 
     try {
-      const { error } = await supabase.auth.signUp({
+      const { data, error } = await supabase.auth.signUp({
         email,
         password,
+        options: {
+          data: {
+            full_name: email.split('@')[0],
+            username: email.split('@')[0],
+          }
+        }
       });
       
-      if (error) throw error;
+      console.log('🔍 [SIGNUP] Supabase response:', { data, error });
+      
+      if (error) {
+        console.error('❌ [SIGNUP] Error:', error);
+        throw error;
+      }
       
       addToast({
         title: "Đăng ký thành công! Vui lòng kiểm tra email để xác minh.",
         color: "success",
       });
       
-      router.push("/auth/login");
+      // Kiểm tra xem có cần xác minh email không
+      if (data?.user?.email_confirmed_at) {
+        console.log('✅ [SIGNUP] Email đã xác minh, chuyển đến login');
+        router.push("/auth/login");
+      } else {
+        console.log('⏳ [SIGNUP] Email cần xác minh, chuyển đến login');
+        router.push("/auth/login?message=please_verify_email");
+      }
     } catch (error: unknown) {
       addToast({
         title: error instanceof Error ? error.message : "Đăng ký thất bại",
