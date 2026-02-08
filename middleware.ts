@@ -40,14 +40,22 @@ export async function middleware(request: NextRequest) {
   // 🔥 EDGE RUNTIME FIX: Parse cookie thủ công
   const cookieHeader = request.headers.get('cookie') || '';
   
-  // Check for Supabase auth cookies
-  const hasAccessToken = cookieHeader.includes('sb-access-token=');
-  const hasRefreshToken = cookieHeader.includes('sb-refresh-token=');
+  // Check for Supabase auth cookies - tên cookies có thể khác
+  const hasAccessToken = cookieHeader.includes('sb-access-token=') || 
+                          cookieHeader.includes('sb:access-token=') ||
+                          cookieHeader.includes('supabase.auth.token=') ||
+                          cookieHeader.includes('auth-token=');
+  
+  const hasRefreshToken = cookieHeader.includes('sb-refresh-token=') || 
+                           cookieHeader.includes('sb:refresh-token=') ||
+                           cookieHeader.includes('supabase.auth.refresh_token=') ||
+                           cookieHeader.includes('refresh-token=');
   
   console.log("🔍 [MIDDLEWARE-EDGE] Cookie check:", {
     hasAccessToken,
     hasRefreshToken,
-    path: request.nextUrl.pathname
+    path: request.nextUrl.pathname,
+    cookiePreview: cookieHeader.substring(0, 100) + '...'
   });
 
   // Nếu không có auth cookies và truy cập protected route, redirect về login
