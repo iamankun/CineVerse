@@ -59,22 +59,22 @@ export async function getServerSession() {
       }
     );
 
-    // 🔥 SECURITY: Use getUser() instead of getSession() for authentication
-    // getUser() authenticates the data by contacting Supabase Auth server
-    const { data: { user }, error } = await supabase.auth.getUser();
+    // 🔥 FIX: Use getSession() instead of getUser() for better compatibility
+    // getSession() works better with cookies and doesn't throw AuthSessionMissingError
+    const { data: { session }, error } = await supabase.auth.getSession();
     
     if (error) {
-      console.error("🔍 [SERVER-SESSION] User error:", error);
+      console.error("🔍 [SERVER-SESSION] Session error:", error);
       return { user: null, session: null, error: error.message };
     }
     
-    if (!user) {
-      console.log("🔍 [SERVER-SESSION] No user found");
+    if (!session) {
+      console.log("🔍 [SERVER-SESSION] No session found");
       return { user: null, session: null, error: null };
     }
     
-    console.log("🔍 [SERVER-SESSION] User authenticated:", user.id);
-    return { user, session: null, error: null };
+    console.log("🔍 [SERVER-SESSION] Session authenticated:", session.user.id);
+    return { user: session.user, session, error: null };
     
   } catch (error) {
     console.error("🔍 [SERVER-SESSION] Error:", error);
@@ -84,7 +84,7 @@ export async function getServerSession() {
 
 /**
  * Cached version để tránh multiple calls trong cùng request
- * 🔥 SECURITY: Uses getUser() for authentication
+ * 🔥 FIX: Uses getSession() for better compatibility
  */
 export const getCachedServerSession = cache(async () => {
   return await getServerSession();
