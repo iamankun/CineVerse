@@ -1,29 +1,36 @@
 import { type NextRequest } from "next/server";
-import { updateSession } from "@/utils/supabase/middleware";
 import { createClient } from "@/utils/supabase/server";
 import { NextResponse } from "next/server";
 
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // Protect profile page
+  // Protect profile page - Edge Runtime compatible
   if (pathname.startsWith("/profile")) {
-    const supabase = createClient();
+    // 🔥 EDGE RUNTIME: Parse cookie thủ công
+    const cookieHeader = request.headers.get('cookie') || '';
+    const hasAccessToken = cookieHeader.includes('sb-access-token=');
+    const hasRefreshToken = cookieHeader.includes('sb-refresh-token=');
     
-    const {
-      data: { user },
-    } = await (supabase as any).auth.getUser();
-
-    if (!user) {
+    console.log("🔍 [PROXY] Profile access check:", {
+      hasAccessToken,
+      hasRefreshToken,
+      pathname
+    });
+    
+    if (!hasAccessToken && !hasRefreshToken) {
       // Redirect to login if not authenticated
       const loginUrl = new URL("/auth/login", request.url);
       loginUrl.searchParams.set("redirectTo", pathname);
       return NextResponse.redirect(loginUrl);
     }
+    
+    // ✅ Cho phép tiếp tục - server components sẽ xử lý auth
+    console.log("🔍 [PROXY] Auth cookies found, allowing access");
   }
 
-  // update user's auth session
-  return await updateSession(request);
+  // ✅ Cho phép tất cả requests khác
+  return NextResponse.next();
 }
 
 export const config = {

@@ -1,4 +1,5 @@
 import { createClient } from '@/utils/supabase/server';
+import { getServerSession } from '@/utils/supabase/server-session';
 import { cookies } from 'next/headers';
 
 export const dynamic = 'force-dynamic';
@@ -20,13 +21,12 @@ export default async function DebugAuth() {
   // Test 1: getSession (recommended)
   let sessionResult = null;
   try {
-    const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+    const { user, error: sessionError } = await getServerSession();
     sessionResult = {
-      hasSession: !!session,
-      userId: session?.user?.id,
-      userEmail: session?.user?.email,
-      error: sessionError?.message,
-      accessToken: session?.access_token ? "present" : "missing"
+      hasSession: !!user,
+      userId: user?.id,
+      userEmail: user?.email,
+      error: sessionError
     };
     console.log("🔍 [DEBUG-AUTH] Session result:", sessionResult);
   } catch (error: any) {
@@ -40,12 +40,12 @@ export default async function DebugAuth() {
   // Test 2: getUser (current method)
   let userResult = null;
   try {
-    const { data: { user }, error: userError } = await supabase.auth.getUser();
+    const { user, error: userError } = await getServerSession();
     userResult = {
       hasUser: !!user,
       userId: user?.id,
       userEmail: user?.email,
-      error: userError?.message
+      error: userError
     };
     console.log("🔍 [DEBUG-AUTH] User result:", userResult);
   } catch (error: any) {

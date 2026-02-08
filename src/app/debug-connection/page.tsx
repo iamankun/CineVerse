@@ -1,4 +1,5 @@
 import { createClient } from '@/utils/supabase/server';
+import { getServerSession } from '@/utils/supabase/server-session';
 
 export const dynamic = 'force-dynamic';
 
@@ -68,16 +69,16 @@ export default async function DebugConnection() {
     console.error("🔍 [DEBUG] Notes test failed:", error);
   }
 
-  // Test 3: Auth test
+  // Test 3: Auth test - dùng getServerSession
   try {
     console.log("🔍 [DEBUG] Test 3: Auth test...");
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    const { user, error: sessionError } = await getServerSession();
     
     results.tests.auth = {
-      success: !authError,
+      success: !sessionError,
       hasUser: !!user,
       userId: user?.id,
-      error: authError?.message
+      error: sessionError
     };
     
     console.log("🔍 [DEBUG] Auth result:", results.tests.auth);
