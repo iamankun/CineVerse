@@ -14,6 +14,11 @@ export async function middleware(request: NextRequest) {
     userAgent: request.headers.get('user-agent')?.substring(0, 30)
   });
   
+  // 🔥 FORCE ERROR TO TEST
+  if (request.nextUrl.pathname.includes('test-middleware')) {
+    throw new Error("🔥 MIDDLEWARE TEST ERROR - This should appear in logs");
+  }
+  
   // Skip middleware for static files and some API routes
   if (request.nextUrl.pathname.startsWith('/_next/') ||
       request.nextUrl.pathname.includes('.')) {
@@ -86,9 +91,9 @@ export async function middleware(request: NextRequest) {
   if (!hasAuthCookie && isProtectedRoute) {
     console.log("🔍 Không có cookie xác minh, chuyển hướng đến đăng nhập", {
       pathname: request.nextUrl.pathname,
-      cookieHeader: cookieHeader.substring(0, 100),
-      redirectTo: request.nextUrl.pathname
+      cookieHeader: cookieHeader.substring(0, 100)
     });
+    
     const redirectUrl = new URL('/auth/login', request.url);
     redirectUrl.searchParams.set('redirectTo', request.nextUrl.pathname);
     return NextResponse.redirect(redirectUrl);

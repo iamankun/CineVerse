@@ -116,7 +116,7 @@ const nextConfig: NextConfig = {
       default-src 'self';
       script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.youtube.com https://vidsrc-embed.ru https://vidsrc.xyz https://vidsrc.to https://vidsrc.icu https://vidsrc.cc https://www.dailymotion.com https://www.dailymotion.net https://www.dailymotion.fr https://va.vercel-scripts.com https://geo.dailymotion.com https://vercel.live vercel.live *.vercel.live *.vercel.app https://www.google.com https://www.gstatic.com https://www.google.com/recaptcha/ https://www.gstatic.com/recaptcha/ https://vercel.analytics.io https://www.themoviedb.org;
       style-src 'self' 'unsafe-inline' fonts.googleapis.com;
-      img-src 'self' data: https: blob: https://image.tmdb.org https://api.themoviedb.org https://www.themoviedb.org http://localhost:3000;
+      img-src 'self' data: https: blob: https://image.tmdb.org https://api.themoviedb.org https://www.themoviedb.org;
       font-src 'self' fonts.gstatic.com;
       connect-src 'self' https://live.fptplay53.net https://ott1.nethubtv.vn *.vercel.live *.vercel.app blob: https://api.themoviedb.org https://www.themoviedb.org https://api.iconify.design https://api.simplesvg.com https://api.unisvg.com https://www.google.com https://www.gstatic.com https://csp.withgoogle.com https://vercel.analytics.io https://exsoflgvdreikabvhvkg.supabase.co;
       media-src 'self' blob: https://live.fptplay53.net https://ott1.nethubtv.vn;
