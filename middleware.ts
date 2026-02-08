@@ -45,15 +45,17 @@ export async function middleware(request: NextRequest) {
                           cookieHeader.includes('sb:access-token=') ||
                           cookieHeader.includes('supabase.auth.token=') ||
                           cookieHeader.includes('auth-token=') ||
-                          cookieHeader.includes('sb-exsoflgvdreikabvhvkg-auth-token.0='); // Cookie name thực tế!
+                          cookieHeader.includes('sb-exsoflgvdreikabvhvkg-auth-token.0=') || // Cookie name thực tế!
+                          cookieHeader.includes('sb-exsoflgvdreikabvhvkg-auth-token.1='); // Cookie name thực tế!
   
   const hasRefreshToken = cookieHeader.includes('sb-refresh-token=') || 
                            cookieHeader.includes('sb:refresh-token=') ||
                            cookieHeader.includes('supabase.auth.refresh_token=') ||
                            cookieHeader.includes('refresh-token=') ||
-                           cookieHeader.includes('sb-exsoflgvdreikabvhvkg-auth-token.0='); // Cookie name thực tế!
+                           cookieHeader.includes('sb-exsoflgvdreikabvhvkg-auth-token.0=') || // Cookie name thực tế!
+                           cookieHeader.includes('sb-exsoflgvdreikabvhvkg-auth-token.1='); // Cookie name thực tế!
   
-  console.log("🔍 [MIDDLEWARE-EDGE] Cookie check:", {
+  console.log("🔍 Kiểm tra cookie", {
     hasAccessToken,
     hasRefreshToken,
     path: request.nextUrl.pathname,
@@ -67,7 +69,7 @@ export async function middleware(request: NextRequest) {
   );
 
   if (!hasAccessToken && !hasRefreshToken && isProtectedRoute) {
-    console.log("🔍 [MIDDLEWARE-EDGE] No auth cookies, redirecting to login");
+    console.log("🔍 Không có cookie xác minh, chuyển hướng đến đăng nhập");
     return NextResponse.redirect(new URL('/auth/login', request.url));
   }
 

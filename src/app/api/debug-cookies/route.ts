@@ -25,9 +25,9 @@ export async function GET(request: NextRequest) {
       key.includes('exsoflgvdreikabvhvkg')
     );
     
-    console.log('🔍 [COOKIE-DEBUG] All cookies:', Object.keys(cookies));
-    console.log('🔍 [COOKIE-DEBUG] Supabase cookies:', supabaseCookies);
-    console.log('🔍 [COOKIE-DEBUG] Cookie header preview:', cookieHeader.substring(0, 200));
+    console.log(' [SỬA LỖI] Tất cả cookies:', Object.keys(cookies));
+    console.log(' [SỬA LỖI] Cookies Supabase:', supabaseCookies);
+    console.log(' [SỬA LỖI] Cookie xem trước thân trang:', cookieHeader.substring(0, 200));
     
     // Check specific patterns
     const patterns = {
@@ -36,6 +36,7 @@ export async function GET(request: NextRequest) {
       'supabase.auth.token': cookieHeader.includes('supabase.auth.token='),
       'auth-token': cookieHeader.includes('auth-token='),
       'sb-exsoflgvdreikabvhvkg-auth-token.0': cookieHeader.includes('sb-exsoflgvdreikabvhvkg-auth-token.0='),
+      'sb-exsoflgvdreikabvhvkg-auth-token.1': cookieHeader.includes('sb-exsoflgvdreikabvhvkg-auth-token.1='),
       'sb-refresh-token': cookieHeader.includes('sb-refresh-token='),
       'sb:refresh-token': cookieHeader.includes('sb:refresh-token='),
       'supabase.auth.refresh_token': cookieHeader.includes('supabase.auth.refresh_token='),
@@ -60,7 +61,7 @@ export async function GET(request: NextRequest) {
     });
     
   } catch (error: any) {
-    console.error('🔍 [COOKIE-DEBUG] Error:', error);
+    console.error('🔍 [SỬA LỖI] Lỗi:', error);
     return NextResponse.json({
       success: false,
       error: error.message,
