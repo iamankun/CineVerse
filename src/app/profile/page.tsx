@@ -92,8 +92,7 @@ export default async function ProfilePage() {
           .upsert({
             id: targetUserId,
             username: user?.email?.split("@")[0] || "user_" + targetUserId?.substring(0, 8),
-            full_name: user?.user_metadata?.full_name || user?.email?.split("@")[0] || "User",
-            updated_at: new Date().toISOString()
+            full_name: user?.user_metadata?.full_name || user?.email?.split("@")[0] || "User"
           })
           .select()
           .single();

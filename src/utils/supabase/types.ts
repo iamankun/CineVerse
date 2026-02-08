@@ -77,7 +77,6 @@ export type Database = {
           bio: string | null;
           website: string | null;
           location: string | null;
-          updated_at: string;
         };
         Insert: {
           id: string;
@@ -87,7 +86,6 @@ export type Database = {
           bio?: string | null;
           website?: string | null;
           location?: string | null;
-          updated_at?: string;
         };
         Update: {
           id?: string;
@@ -97,7 +95,6 @@ export type Database = {
           bio?: string | null;
           website?: string | null;
           location?: string | null;
-          updated_at?: string;
         };
       };
       watchlist: {
