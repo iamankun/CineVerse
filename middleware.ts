@@ -6,9 +6,18 @@ import type { NextRequest } from 'next/server';
  * Chỉ parse cookie thủ công, không dùng Supabase client
  */
 export async function middleware(request: NextRequest) {
+  // 🔥 DEBUG: Ensure middleware runs
+  console.log("🔥 [MIDDLEWARE-START] Middleware triggered:", {
+    url: request.url,
+    pathname: request.nextUrl.pathname,
+    method: request.method,
+    userAgent: request.headers.get('user-agent')?.substring(0, 30)
+  });
+  
   // Skip middleware for static files and some API routes
   if (request.nextUrl.pathname.startsWith('/_next/') ||
       request.nextUrl.pathname.includes('.')) {
+    console.log("🔥 [MIDDLEWARE-START] Skipping static file");
     return NextResponse.next();
   }
 
@@ -40,18 +49,27 @@ export async function middleware(request: NextRequest) {
   // 🔥 EDGE RUNTIME FIX: Simple cookie-presence check (no server-side helpers)
   const cookieHeader = request.headers.get('cookie') || '';
   
-  console.log("🔍 [MIDDLEWARE-EDGE] Cookie presence check:", {
+  console.log("🔍 [MIDDLEWARE-EDGE] Full cookie analysis:", {
+    fullHeader: cookieHeader,
+    headerLength: cookieHeader.length,
     hasAnyCookie: cookieHeader.length > 0,
     pathname: request.nextUrl.pathname,
-    cookiePreview: cookieHeader.substring(0, 100)
+    userAgent: request.headers.get('user-agent')?.substring(0, 50)
   });
   
-  // Check for Supabase auth cookies - simple presence check only
-  const hasAuthCookie = cookieHeader.includes('sb-exsoflgvdreikabvhvkg-auth-token.0=') || 
-                       cookieHeader.includes('sb-exsoflgvdreikabvhvkg-auth-token.1=') ||
-                       cookieHeader.includes('sb-access-token=') ||
-                       cookieHeader.includes('sb:access-token=') ||
-                       cookieHeader.includes('supabase.auth.token=');
+  // Check for Supabase auth cookies - use regex for more reliable matching
+  const hasAuthCookie = /sb-exsoflgvdreikabvhvkg-auth-token\.[01]=/.test(cookieHeader) ||
+                       /sb-access-token=/.test(cookieHeader) ||
+                       /sb:access-token=/.test(cookieHeader) ||
+                       /supabase\.auth\.token=/.test(cookieHeader);
+  
+  console.log("🔍 [MIDDLEWARE-EDGE] Cookie check results:", {
+    hasAuthCookie,
+    cookieStartsWith: cookieHeader.startsWith('sb-exsoflgvdreikabvhvkg'),
+    containsToken0: cookieHeader.includes('sb-exsoflgvdreikabvhvkg-auth-token.0='),
+    containsToken1: cookieHeader.includes('sb-exsoflgvdreikabvhvkg-auth-token.1='),
+    headerPreview: cookieHeader.substring(0, 200)
+  });
   
   console.log("🔍 [MIDDLEWARE-EDGE] Auth cookie check:", {
     hasAuthCookie,

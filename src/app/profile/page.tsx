@@ -1,5 +1,6 @@
 import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
+import { cookies } from "next/headers";
 import ProfileClientSimple from "./ProfileClientSimple";
 import { getServerSession } from "@/utils/supabase/server-session";
 
@@ -8,6 +9,15 @@ export const dynamic = 'force-dynamic';
 export default async function ProfilePage() {
   try {
     console.log("🔍 [PROFILE PAGE] Starting profile page...");
+    
+    // 🔥 DEBUG: Check what cookies server component receives
+    const cookieStore = await cookies();
+    const allCookies = cookieStore.getAll();
+    console.log("🔍 [PROFILE PAGE] Server cookies:", {
+      total: allCookies.length,
+      cookies: allCookies.map(c => ({ name: c.name, value: c.value.substring(0, 50) + '...' })),
+      hasSupabase: allCookies.some(c => c.name.includes('sb-exsoflgvdreikabvhvkg'))
+    });
     
     // Use getServerSession instead of getUser to avoid conflicts
     const { user, error: sessionError } = await getServerSession();
@@ -36,9 +46,10 @@ export default async function ProfilePage() {
         targetUserId = firstProfile.id;
         console.log("🔍 [PROFILE PAGE] Using fallback user:", targetUserId);
       } else {
-        console.log("🔍 [PROFILE PAGE] No profiles found, redirecting");
-        redirect("/auth/login");
-        return;
+        console.log("🔍 [PROFILE PAGE] No profiles found - TEMPORARILY NOT REDIRECTING");
+        // TEMPORARY: Comment out redirect to debug
+        // redirect("/auth/login");
+        return <div>Debug: No user found and no profiles in database</div>;
       }
     }
 
