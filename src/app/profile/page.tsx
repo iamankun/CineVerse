@@ -25,6 +25,7 @@ export default async function ProfilePage() {
     
     if (!user || sessionError) {
       console.log("🔍 [PROFILE PAGE] No user found, getting first profile as fallback");
+      const supabase = await createClient();
       const { data: firstProfile } = await supabase
         .from("profiles")
         .select("*")
@@ -43,6 +44,9 @@ export default async function ProfilePage() {
 
     console.log("🔍 [PROFILE PAGE] Using user ID:", targetUserId);
 
+    // Create Supabase client for database operations
+    const supabase = await createClient();
+    
     // Get profile data
     let profile = null;
     let profileError = null;

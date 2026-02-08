@@ -40,16 +40,18 @@ export async function middleware(request: NextRequest) {
   // 🔥 EDGE RUNTIME FIX: Parse cookie thủ công
   const cookieHeader = request.headers.get('cookie') || '';
   
-  // Check for Supabase auth cookies - tên cookies có thể khác
+  // Check for Supabase auth cookies - dùng cookie name thực tế từ production
   const hasAccessToken = cookieHeader.includes('sb-access-token=') || 
                           cookieHeader.includes('sb:access-token=') ||
                           cookieHeader.includes('supabase.auth.token=') ||
-                          cookieHeader.includes('auth-token=');
+                          cookieHeader.includes('auth-token=') ||
+                          cookieHeader.includes('sb-exsoflgvdreikabvhvkg-auth-token.0='); // Cookie name thực tế!
   
   const hasRefreshToken = cookieHeader.includes('sb-refresh-token=') || 
                            cookieHeader.includes('sb:refresh-token=') ||
                            cookieHeader.includes('supabase.auth.refresh_token=') ||
-                           cookieHeader.includes('refresh-token=');
+                           cookieHeader.includes('refresh-token=') ||
+                           cookieHeader.includes('sb-exsoflgvdreikabvhvkg-auth-token.0='); // Cookie name thực tế!
   
   console.log("🔍 [MIDDLEWARE-EDGE] Cookie check:", {
     hasAccessToken,
