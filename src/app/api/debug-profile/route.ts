@@ -54,15 +54,6 @@ export async function GET() {
       error: authError?.message 
     });
 
-    // Test session
-    console.log("🔍 [API DEBUG] Testing session...");
-    const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-
-    console.log("🔍 [API DEBUG] Session test result:", { 
-      session: session ? "Exists" : "None",
-      error: sessionError?.message 
-    });
-
     return NextResponse.json({
       success: true,
       timestamp: new Date().toISOString(),
@@ -75,11 +66,6 @@ export async function GET() {
       auth: {
         user: user ? { id: user.id, email: user.email } : null,
         error: authError?.message
-      },
-      session: {
-        exists: !!session,
-        error: sessionError?.message,
-        expiresAt: session?.expires_at
       }
     });
 

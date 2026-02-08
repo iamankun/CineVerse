@@ -15,7 +15,9 @@ export async function GET() {
       error: userError?.message 
     });
     
-    // Test getSession
+    // ⚠️ SECURITY WARNING: getSession() is insecure for production use
+    // Only use for testing/debugging purposes
+    // For production, always use getUser() instead
     const { data: { session }, error: sessionError } = await supabase.auth.getSession();
     console.log("🔍 [AUTH TEST] getSession result:", { 
       session: session ? "Exists" : "None",
