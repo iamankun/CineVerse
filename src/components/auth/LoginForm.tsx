@@ -23,10 +23,12 @@ export function LoginForm() {
   const redirectTo = useMemo(() => {
     if (typeof window !== 'undefined') {
       const urlParams = new URLSearchParams(window.location.search);
-      return urlParams.get('redirectTo') || '/';
+      const redirect = urlParams.get('redirectTo');
+      // Decode URL encoded parameter
+      return redirect ? decodeURIComponent(redirect) : '/';
     }
     return '/';
-  }, []);
+  }, []); // Empty dependency array is fine for URL params
 
   // Fetch trending movies for background
   const { data: movies, isPending: isPendingMovies } = useQuery({
@@ -130,8 +132,11 @@ export function LoginForm() {
       
       // 🔥 Redirect to intended page or fallback to home
       console.log("🔀 Login successful, redirecting to:", redirectTo);
-      router.push(redirectTo);
-      router.refresh();
+      
+      // Add small delay to ensure toast is shown
+      setTimeout(() => {
+        router.push(redirectTo);
+      }, 500);
     } catch (error: unknown) {
       console.error('❌ Unexpected login error:', error);
       const errorMessage = error instanceof Error ? error.message : "Đăng nhập thất bại. Vui lòng thử lại.";

@@ -37,36 +37,25 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // 🔥 EDGE RUNTIME FIX: Parse cookie thủ công
+  // 🔥 EDGE RUNTIME FIX: Simple cookie-presence check (no server-side helpers)
   const cookieHeader = request.headers.get('cookie') || '';
   
-  console.log("🔍 [MIDDLEWARE-EDGE] Full cookie analysis:", {
-    fullHeader: cookieHeader,
-    headerLength: cookieHeader.length,
+  console.log("🔍 [MIDDLEWARE-EDGE] Cookie presence check:", {
     hasAnyCookie: cookieHeader.length > 0,
     pathname: request.nextUrl.pathname,
-    userAgent: request.headers.get('user-agent')?.substring(0, 50)
+    cookiePreview: cookieHeader.substring(0, 100)
   });
   
-  // Check for Supabase auth cookies - dùng cookie name thực tế từ production
-  const hasAccessToken = cookieHeader.includes('sb-access-token=') || 
-                          cookieHeader.includes('sb:access-token=') ||
-                          cookieHeader.includes('supabase.auth.token=') ||
-                          cookieHeader.includes('auth-token=') ||
-                          cookieHeader.includes('sb-exsoflgvdreikabvhvkg-auth-token.0=') || // Cookie name thực tế!
-                          cookieHeader.includes('sb-exsoflgvdreikabvhvkg-auth-token.1='); // Cookie name thực tế!
+  // Check for Supabase auth cookies - simple presence check only
+  const hasAuthCookie = cookieHeader.includes('sb-exsoflgvdreikabvhvkg-auth-token.0=') || 
+                       cookieHeader.includes('sb-exsoflgvdreikabvhvkg-auth-token.1=') ||
+                       cookieHeader.includes('sb-access-token=') ||
+                       cookieHeader.includes('sb:access-token=') ||
+                       cookieHeader.includes('supabase.auth.token=');
   
-  const hasRefreshToken = cookieHeader.includes('sb-refresh-token=') || 
-                           cookieHeader.includes('sb:refresh-token=') ||
-                           cookieHeader.includes('supabase.auth.refresh_token=') ||
-                           cookieHeader.includes('refresh-token=') ||
-                           cookieHeader.includes('sb-exsoflgvdreikabvhvkg-auth-token.0=') || // Cookie name thực tế!
-                           cookieHeader.includes('sb-exsoflgvdreikabvhvkg-auth-token.1='); // Cookie name thực tế!
-  
-  console.log("🔍 Kiểm tra cookie", {
-    hasAccessToken,
-    hasRefreshToken,
-    path: request.nextUrl.pathname,
+  console.log("🔍 [MIDDLEWARE-EDGE] Auth cookie check:", {
+    hasAuthCookie,
+    pathname: request.nextUrl.pathname,
     cookiePreview: cookieHeader.substring(0, 100) + '...'
   });
 
@@ -76,9 +65,15 @@ export async function middleware(request: NextRequest) {
     request.nextUrl.pathname.startsWith(route)
   );
 
-  if (!hasAccessToken && !hasRefreshToken && isProtectedRoute) {
-    console.log("🔍 Không có cookie xác minh, chuyển hướng đến đăng nhập");
-    return NextResponse.redirect(new URL('/auth/login', request.url));
+  if (!hasAuthCookie && isProtectedRoute) {
+    console.log("🔍 Không có cookie xác minh, chuyển hướng đến đăng nhập", {
+      pathname: request.nextUrl.pathname,
+      cookieHeader: cookieHeader.substring(0, 100),
+      redirectTo: request.nextUrl.pathname
+    });
+    const redirectUrl = new URL('/auth/login', request.url);
+    redirectUrl.searchParams.set('redirectTo', request.nextUrl.pathname);
+    return NextResponse.redirect(redirectUrl);
   }
 
   // ✅ Cho phép tiếp tục với cookies hiện tại
