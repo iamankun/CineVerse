@@ -8,7 +8,7 @@ export async function POST(request: Request) {
     const file = formData.get("file") as File;
     const userId = formData.get("userId") as string;
 
-    console.log("🔥 [AVATAR-UPLOAD] Upload request:", {
+    console.log("🔥 [ẢNH ĐẠI DIỆN] Yêu cầu tải lên:", {
       hasFile: !!file,
       fileName: file?.name,
       fileSize: file?.size,
@@ -17,27 +17,27 @@ export async function POST(request: Request) {
     });
 
     if (!file || !userId) {
-      console.log("❌ [AVATAR-UPLOAD] Missing file or userId");
+      console.log("❌ [ẢNH ĐẠI DIỆN] Thiếu tệp hoặc ID người dùng");
       return NextResponse.json(
-        { error: "File and userId are required" },
+        { error: "Cần có tệp và ID người dùng." },
         { status: 400 }
       );
     }
 
     // Check file size (max 5MB)
     if (file.size > 5 * 1024 * 1024) {
-      console.log("❌ [AVATAR-UPLOAD] File too large:", file.size);
+      console.log("❌ [ẢNH ĐẠI DIỆN] Tệp lớn hơn 5MB:", file.size);
       return NextResponse.json(
-        { error: "File size must be less than 5MB" },
+        { error: "Tệp phải bằng hoặc dưới 5MB" },
         { status: 400 }
       );
     }
 
     // Check file type
     if (!file.type.startsWith("image/")) {
-      console.log("❌ [AVATAR-UPLOAD] Invalid file type:", file.type);
+      console.log("❌ [ẢNH ĐẠI DIỆN] Loại tệp không hợp lệ:", file.type);
       return NextResponse.json(
-        { error: "File must be an image" },
+        { error: "Tệp của bạn phải là hình ảnh, bạn đừng trêu CineVerse" },
         { status: 400 }
       );
     }
@@ -45,16 +45,16 @@ export async function POST(request: Request) {
     // Check if bucket exists
     const { data: buckets, error: bucketError } = await supabase.storage.listBuckets();
     if (bucketError) {
-      console.error("❌ [AVATAR-UPLOAD] Failed to list buckets:", bucketError);
+      console.error("❌ [ẢNH ĐẠI DIỆN] Không thể liệt kê thư mục:", bucketError);
       return NextResponse.json(
-        { error: "Storage error: " + bucketError.message },
+        { error: "Lỗi lưu trữ: " + bucketError.message },
         { status: 500 }
       );
     }
 
     const avatarsBucket = buckets.find(b => b.name === 'avatars');
     if (!avatarsBucket) {
-      console.log("🔥 [AVATAR-UPLOAD] Creating avatars bucket...");
+      console.log("🔥 [ẢNH ĐẠI DIỆN] Đang tạo thư mục ảnh đại diện của bạn...");
       const { error: createError } = await supabase.storage.createBucket('avatars', {
         public: true,
         allowedMimeTypes: ['image/*'],
@@ -62,14 +62,14 @@ export async function POST(request: Request) {
       });
       
       if (createError) {
-        console.error("❌ [AVATAR-UPLOAD] Failed to create bucket:", createError);
+        console.error("❌ [ẢNH ĐẠI DIỆN] Lỗi khi tạo ra thư mục ảnh đại diện:", createError);
         return NextResponse.json(
-          { error: "Failed to create storage bucket: " + createError.message },
+          { error: "Lỗi khi tạo ra thư mục ảnh đại diện của bạn:" + createError.message },
           { status: 500 }
         );
       }
       
-      console.log("✅ [AVATAR-UPLOAD] Created avatars bucket");
+      console.log("✅ [ẢNH ĐẠI DIỆN] Đã tạo thư mục ảnh đại diện của bạn");
     }
 
     // Upload to Supabase Storage
@@ -77,7 +77,7 @@ export async function POST(request: Request) {
     const fileName = `${userId}-${Date.now()}.${fileExt}`;
     const filePath = `avatars/${fileName}`;
 
-    console.log("🔥 [AVATAR-UPLOAD] Uploading file:", {
+    console.log("🔥 [ẢNH ĐẠI DIỆN] Đang tải ảnh lên:", {
       filePath,
       fileName,
       fileExt
@@ -91,21 +91,21 @@ export async function POST(request: Request) {
       });
 
     if (uploadError) {
-      console.error("❌ [AVATAR-UPLOAD] Upload error:", uploadError);
+      console.error("❌ [ẢNH ĐẠI DIỆN] Lỗi tải lên:", uploadError);
       return NextResponse.json(
-        { error: "Failed to upload image: " + uploadError.message },
+        { error: "Thất bại khi tải ảnh lên: " + uploadError.message },
         { status: 500 }
       );
     }
 
-    console.log("✅ [AVATAR-UPLOAD] Upload successful");
+    console.log("✅ [ẢNH ĐẠI DIỆN] Tải lên thành công");
 
     // Get public URL
     const { data: { publicUrl } } = supabase.storage
       .from("avatars")
       .getPublicUrl(filePath);
 
-    console.log("🔥 [AVATAR-UPLOAD] Public URL:", publicUrl);
+    console.log("🔥 [ẢNH ĐẠI DIỆN] Liên kết công khai:", publicUrl);
 
     // Update profile with avatar URL
     const { error: updateError } = await supabase
@@ -116,24 +116,24 @@ export async function POST(request: Request) {
       .eq("id", userId);
 
     if (updateError) {
-      console.error("❌ [AVATAR-UPLOAD] Profile update error:", updateError);
+      console.error("❌ [ẢNH ĐẠI DIỆN] Lỗi tải lên trang cá nhân:", updateError);
       return NextResponse.json(
-        { error: "Failed to update profile: " + updateError.message },
+        { error: "Lỗi khi cập nhật trang cá nhân: " + updateError.message },
         { status: 500 }
       );
     }
 
-    console.log("✅ [AVATAR-UPLOAD] Profile updated successfully");
+    console.log("✅ [ẢNH ĐẠI DIỆN] Trang cá nhân đã cập nhật ảnh đại diện");
 
     return NextResponse.json({
-      message: "Avatar uploaded successfully",
+      message: "Ảnh đại diện tải lên thành công",
       avatarUrl: publicUrl,
     });
 
   } catch (error: any) {
-    console.error("❌ [AVATAR-UPLOAD] Unexpected error:", error);
+    console.error("❌ [ẢNH ĐẠI DIỆN] Lỗi không mong đợi:", error);
     return NextResponse.json(
-      { error: "Internal server error: " + error.message },
+      { error: "Lỗi máy chủ nội bộ: " + error.message },
       { status: 500 }
     );
   }

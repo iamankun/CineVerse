@@ -15,7 +15,7 @@ export async function getServerSession() {
     const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.NEXT_SUPABASE_ANON_KEY;
     
     if (!supabaseUrl || !supabaseAnonKey) {
-      console.error("🔍 [SERVER-SESSION] Missing Supabase environment variables:", {
+      console.error("🔍 [THÔNG BÁO TỪ CINEVERSE] Thiếu các biến môi trường Supabase:", {
         url: !!supabaseUrl,
         key: !!supabaseAnonKey,
         nextPublicUrl: !!process.env.NEXT_PUBLIC_SUPABASE_URL,
@@ -24,18 +24,18 @@ export async function getServerSession() {
         nextKey: !!process.env.NEXT_SUPABASE_ANON_KEY,
         nodeEnv: process.env.NODE_ENV
       });
-      return { user: null, session: null, error: "Missing environment variables" };
+      return { user: null, session: null, error: "Thiếu các biến môi trường" };
     }
 
     // Validate environment variables format
     if (!supabaseUrl.startsWith('https://')) {
-      console.error("🔍 [SERVER-SESSION] Invalid Supabase URL format:", supabaseUrl);
-      return { user: null, session: null, error: "Invalid Supabase URL format" };
+      console.error("🔍 [THÔNG BÁO TỪ CINEVERSE] Định dạng URL chưa hợp lệ:", supabaseUrl);
+      return { user: null, session: null, error: "Định dạng URL chưa hợp lệ" };
     }
 
     if (supabaseAnonKey.length < 100) {
-      console.error("🔍 [SERVER-SESSION] Invalid Supabase Anon Key length:", supabaseAnonKey.length);
-      return { user: null, session: null, error: "Invalid Supabase Anon Key" };
+      console.error("🔍 [THÔNG BÁO TỪ CINEVERSE] Độ dài khóa ẩn danh Supabase không hợp lệ:", supabaseAnonKey.length);
+      return { user: null, session: null, error: "Độ dài khóa ẩn danh Supabase không hợp lệ" };
     }
 
     const supabase = createServerClient(
@@ -64,21 +64,21 @@ export async function getServerSession() {
     const { data: { session }, error } = await supabase.auth.getSession();
     
     if (error) {
-      console.error("🔍 [SERVER-SESSION] Session error:", error);
+      console.error("🔍 [THÔNG BÁO TỪ CINEVERSE] Phiên làm việc lỗi:", error);
       return { user: null, session: null, error: error.message };
     }
     
     if (!session) {
-      console.log("🔍 [SERVER-SESSION] No session found");
+      console.log("🔍 [THÔNG BÁO TỪ CINEVERSE] Không tìm thấy phiên làm việc");
       return { user: null, session: null, error: null };
     }
     
-    console.log("🔍 [SERVER-SESSION] Session authenticated:", session.user.id);
+    console.log("🔍 [THÔNG BÁO TỪ CINEVERSE] Phiên làm việc đã được xác thực:", session.user.id);
     return { user: session.user, session, error: null };
     
   } catch (error) {
-    console.error("🔍 [SERVER-SESSION] Error:", error);
-    return { user: null, session: null, error: error instanceof Error ? error.message : "Unknown error" };
+    console.error("🔍 [THÔNG BÁO TỪ CINEVERSE] Lỗi:", error);
+    return { user: null, session: null, error: error instanceof Error ? error.message : "Không rõ lỗi đang diễn ra" };
   }
 }
 

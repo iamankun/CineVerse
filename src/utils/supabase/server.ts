@@ -14,7 +14,7 @@ export async function createClient() {
   const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.NEXT_SUPABASE_ANON_KEY;
   
   if (!supabaseUrl || !supabaseAnonKey) {
-    console.error("🔍 [SERVER-NEW] Missing Supabase environment variables:", {
+    console.error("🔍 [MÁY CHỦ CINEVERSE THÔNG BÁO] Missing Supabase environment variables:", {
       url: !!supabaseUrl,
       key: !!supabaseAnonKey,
       nextPublicUrl: !!process.env.NEXT_PUBLIC_SUPABASE_URL,
@@ -27,13 +27,13 @@ export async function createClient() {
 
   // Environment validation
   if (!supabaseUrl?.startsWith('https://')) {
-    console.error("🔍 [SERVER-NEW] Invalid Supabase URL:", supabaseUrl);
-    throw new Error("Invalid Supabase URL: must start with https://");
+    console.error("🔍 [MÁY CHỦ CINEVERSE THÔNG BÁO] URL Supabase không hợp lệ:", supabaseUrl);
+    throw new Error("URL Supabase không hợp lệ: phải bắt đầu bằng https://");
   }
 
   if (supabaseAnonKey.length < 100) {
-    console.error("🔍 [SERVER-NEW] Invalid Supabase Anon Key length");
-    throw new Error("Invalid Supabase Anon Key: too short");
+    console.error("🔍 [MÁY CHỦ CINEVERSE THÔNG BÁO] Độ dài khóa ẩn danh Supabase không hợp lệ");
+    throw new Error("Khóa ẩn danh Supabase không hợp lệ: quá ngắn");
   }
 
   return createServerClient(

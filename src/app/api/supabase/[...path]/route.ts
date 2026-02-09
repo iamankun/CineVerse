@@ -82,9 +82,9 @@ async function handleRequest(request: NextRequest, context: RouteContext) {
     });
 
   } catch (error) {
-    console.error('❌ Proxy error:', error);
+    console.error('❌ Lỗi Proxy hoặc Middleware:', error);
     return NextResponse.json(
-      { error: 'Proxy error', details: error instanceof Error ? error.message : 'Unknown error' },
+      { error: 'Lỗi Proxy hoặc Middleware', details: error instanceof Error ? error.message : 'Unknown error' },
       { status: 500 }
     );
   }
