@@ -9,6 +9,7 @@ import {
   IoAnalytics,
   IoShieldCheckmark,
   IoTv,
+  IoFilm,
 } from "react-icons/io5";
 import AdminGuard from "@/components/AdminGuard";
 import { getVersionString } from "@/utils/version";
@@ -23,6 +24,13 @@ export default function AdminPage() {
       icon: <IoStatsChart className="text-6xl" />,
       path: "/admin/dashboard",
       color: "bg-gradient-to-br from-blue-500 to-cyan-500",
+    },
+    {
+      title: "Media Management",
+      description: "Quản lý phim và chương trình truyền hình",
+      icon: <IoFilm className="text-6xl" />,
+      path: "/admin/media",
+      color: "bg-gradient-to-br from-indigo-500 to-purple-500",
     },
     {
       title: "TV",
