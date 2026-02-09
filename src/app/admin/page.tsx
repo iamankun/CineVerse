@@ -19,14 +19,14 @@ export default function AdminPage() {
 
   const adminOptions = [
     {
-      title: "Dashboard",
+      title: "Bảng điều khiển",
       description: "Xem thống kê và quản lý hệ thống",
       icon: <IoStatsChart className="text-6xl" />,
       path: "/admin/dashboard",
       color: "bg-gradient-to-br from-blue-500 to-cyan-500",
     },
     {
-      title: "Media Management",
+      title: "Quản lý Media",
       description: "Quản lý phim và chương trình truyền hình",
       icon: <IoFilm className="text-6xl" />,
       path: "/admin/media",
@@ -54,7 +54,7 @@ export default function AdminPage() {
       color: "bg-gradient-to-br from-purple-500 to-pink-500",
     },
     {
-      title: "SEO Analyzer",
+      title: "Phân tích SEO",
       description: "Phân tích và tối ưu hóa SEO với Yoast Algorithm",
       icon: <IoAnalytics className="text-6xl" />,
       path: "/admin/seo",
@@ -71,56 +71,61 @@ export default function AdminPage() {
 
   return (
     <AdminGuard>
-      <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-gray-900 via-gray-800 to-black p-4">
-      <div className="w-full max-w-5xl">
-        {/* Header */}
-        <div className="mb-12 text-center">
-          <h1 className="mb-4 text-5xl font-bold text-white">
-            CineVerse by An Kun Studio
-          </h1>
-          <p className="text-xl text-gray-400">
-            Lựa chọn tính năng
-          </p>
-        </div>
+      <div className="flex min-h-screen bg-gray-900">
+        {/* Sidebar */}
+        <div className="w-80 bg-gray-800 border-r border-gray-700 p-6">
+          <div className="mb-8">
+            <h1 className="text-2xl font-bold text-white mb-2">
+              CineVerse Admin
+            </h1>
+            <p className="text-sm text-gray-400">
+              Phiên bản {getVersionString()}
+            </p>
+          </div>
 
-        {/* Options Grid */}
-        <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
-          {adminOptions.map((option) => (
-            <Card
-              key={option.path}
-              isPressable
-              isHoverable
-              onPress={() => router.push(option.path)}
-              className="transform border-2 border-transparent bg-gray-800/50 backdrop-blur-sm transition-all duration-300 hover:scale-105 hover:border-white/20 hover:shadow-2xl"
-            >
-              <CardHeader className="flex-col items-start px-6 pt-6">
+          {/* Navigation */}
+          <div className="space-y-4">
+            {adminOptions.map((option) => (
+              <button
+                key={option.path}
+                onClick={() => router.push(option.path)}
+                className="w-full flex items-center gap-4 p-4 rounded-lg bg-gray-700/50 hover:bg-gray-700 transition-all duration-300 text-left group"
+              >
                 <div
-                  className={`mb-4 flex h-20 w-20 items-center justify-center rounded-2xl ${option.color} text-white shadow-lg`}
+                  className={`flex h-12 w-12 items-center justify-center rounded-lg ${option.color} text-white shrink-0`}
                 >
                   {option.icon}
                 </div>
-                <h2 className="text-3xl font-bold text-white">
-                  {option.title}
-                </h2>
-              </CardHeader>
-              <CardBody className="px-6 pb-6">
-                <p className="text-lg text-gray-400">
-                  {option.description}
-                </p>
-              </CardBody>
-            </Card>
-          ))}
+                <div className="flex-1">
+                  <h3 className="text-white font-semibold group-hover:text-blue-400 transition-colors">
+                    {option.title}
+                  </h3>
+                  <p className="text-xs text-gray-400 group-hover:text-gray-300 transition-colors">
+                    {option.description}
+                  </p>
+                </div>
+              </button>
+            ))}
+          </div>
+
+          {/* Footer */}
+          <div className="mt-auto pt-8 border-t border-gray-700">
+            <p className="text-xs text-gray-500 text-center">
+              Bản quyền CineVerse thuộc An Kun Studio tại Việt Nam
+            </p>
+          </div>
         </div>
 
-        {/* Footer Info */}
-        <div className="mt-12 text-center">
-          <p className="text-sm text-gray-500">
-            Bản quyền CineVerse thuộc An Kun Studio tại Việt Nam
-          </p>
-          <p className="mt-2 text-xs text-gray-600">
-            Phiên bản {getVersionString()}
-          </p>
-        </div>
+        {/* Main Content */}
+        <div className="flex-1 flex items-center justify-center p-8">
+          <div className="text-center">
+            <h2 className="text-3xl font-bold text-white mb-4">
+              Chọn tính năng quản lý
+            </h2>
+            <p className="text-gray-400">
+              Vui lòng chọn một tính năng từ menu bên trái
+            </p>
+          </div>
         </div>
       </div>
     </AdminGuard>
