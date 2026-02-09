@@ -75,9 +75,8 @@ export function LoginForm() {
     setError("");
 
     try {
-      console.log('🔐 Login attempt:', { email, hasPassword: !!password });
-      console.log('🔑 Supabase URL:', process.env.NEXT_PUBLIC_SUPABASE_URL);
-      console.log('🔑 Supabase Key:', process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.substring(0, 20) + '...');
+      console.log('� [ĐĂNG NHẬP] Bắt đầu đăng nhập:', { email: email.substring(0, 10) + '...' });
+      console.log('🔑 [ĐĂNG NHẬP] Supabase Key:', process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.substring(0, 20) + '...');
       
       // Validate email format
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -92,17 +91,17 @@ export function LoginForm() {
         password: password,
       });
       
-      console.log('📊 Supabase response:', { data, error });
+      console.log('📊 [ĐĂNG NHẬP] Phản hồi Supabase:', { data, error });
       
       if (error) {
-        console.error('❌ Login error:', error);
+        console.error('❌ [ĐĂNG NHẬP] Lỗi đăng nhập:', error);
         
         // Handle specific error types with better messages
         if (error.message?.includes('Invalid login credentials')) {
           // Try to get more specific error info
           try {
             const { data: user } = await supabase.auth.getUser();
-            console.log('👤 Current user after failed login:', user);
+            console.log('👤 [ĐĂNG NHẬP] User sau khi đăng nhập thất bại:', user);
             
             if (!user) {
               setError('Email hoặc mật khẩu không đúng. Vui lòng thử lại.');
@@ -110,7 +109,7 @@ export function LoginForm() {
               setError('Mật khẩu không đúng. Vui lòng kiểm tra lại.');
             }
           } catch (userCheckError) {
-            console.error('User check failed:', userCheckError);
+            console.error('❌ [ĐĂNG NHẬP] Kiểm tra user thất bại:', userCheckError);
             setError('Email hoặc mật khẩu không đúng. Vui lòng thử lại.');
           }
         } else if (error.message?.includes('Email not confirmed')) {
@@ -131,14 +130,14 @@ export function LoginForm() {
       });
       
       // 🔥 Redirect to intended page or fallback to home
-      console.log("🔀 Login successful, redirecting to:", redirectTo);
+      console.log("🔀 [ĐĂNG NHẬP] Đăng nhập thành công, chuyển hướng đến:", redirectTo);
       
       // Add small delay to ensure toast is shown
       setTimeout(() => {
         router.push(redirectTo);
       }, 500);
     } catch (error: unknown) {
-      console.error('❌ Unexpected login error:', error);
+      console.error('❌ [ĐĂNG NHẬP] Lỗi đăng nhập không mong muốn:', error);
       const errorMessage = error instanceof Error ? error.message : "Đăng nhập thất bại. Vui lòng thử lại.";
       setError(errorMessage);
       

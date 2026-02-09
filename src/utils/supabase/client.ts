@@ -10,7 +10,17 @@ export function createClient() {
         autoRefreshToken: true,
         persistSession: true,
         detectSessionInUrl: true,
+        flowType: 'pkce',
+        debug: process.env.NODE_ENV === 'development',
       },
+      global: {
+        headers: {
+          'X-Client-Info': 'cineverse-web/1.0.0'
+        }
+      },
+      db: {
+        schema: 'public'
+      }
     }
   );
 }

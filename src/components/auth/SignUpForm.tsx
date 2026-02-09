@@ -81,9 +81,11 @@ export function SignUpForm() {
   }
 
   const handleSignUp = async (e: React.FormEvent) => {
+    console.log('🔍 [ĐĂNG KÝ CINEVERSE] Hàm đăng ký được gọi!');
     e.preventDefault();
     
     if (password !== confirmPassword) {
+      console.log('🔍 [ĐĂNG KÝ CINEVERSE CINEVERSE] Mật khẩu không khớp');
       addToast({
         title: "Mật khẩu không khớp",
         color: "danger",
@@ -95,6 +97,7 @@ export function SignUpForm() {
     const passwordErrors = validatePassword(password);
     
     if (passwordErrors.length > 0) {
+      console.log('🔍 [ĐĂNG KÝ CINEVERSE] Kiểm tra mật khẩu thất bại:', passwordErrors);
       addToast({
         title: "Mật khẩu không đủ mạnh",
         description: passwordErrors.join(" "),
@@ -107,6 +110,10 @@ export function SignUpForm() {
     setIsLoading(true);
 
     try {
+      console.log('🔍 [ĐĂNG KÝ CINEVERSE] Bắt đầu quá trình đăng ký...');
+      console.log('🔍 [ĐĂNG KÝ CINEVERSE] Email:', email);
+      console.log('🔍 [ĐĂNG KÝ CINEVERSE] Độ dài mật khẩu:', password.length);
+      
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
@@ -118,29 +125,137 @@ export function SignUpForm() {
         }
       });
       
-      console.log('🔍 [SIGNUP] Supabase response:', { data, error });
+      console.log('🔍 [ĐĂNG KÝ CINEVERSE] Phản hồi từ Supabase:', { data, error });
       
       if (error) {
-        console.error('❌ [SIGNUP] Error:', error);
-        throw error;
+        console.error('❌ [ĐĂNG KÝ CINEVERSE] Xảy ra lỗi:', error);
+        console.error('❌ [ĐĂNG KÝ CINEVERSE] Thông báo lỗi:', error.message);
+        console.error('❌ [ĐĂNG KÝ CINEVERSE] Mã lỗi:', error.status);
+        console.error('❌ [ĐĂNG KÝ CINEVERSE] Chi tiết lỗi:', JSON.stringify(error, null, 2));
+        
+        // 🔥 Handle specific error cases - more comprehensive detection
+        const errorMessage = (error.message || '').toLowerCase();
+        
+        // Database errors
+        if (errorMessage.includes('database error saving new user') ||
+            errorMessage.includes('database error') ||
+            errorMessage.includes('saving new user') ||
+            errorMessage.includes('constraint violation') ||
+            errorMessage.includes('duplicate key')) {
+          addToast({
+            title: "Lỗi cơ sở dữ liệu",
+            description: "Không thể tạo tài khoản mới. Vui lòng thử lại sau vài phút.",
+            color: "danger",
+          });
+          setIsLoading(false);
+          return;
+        }
+        
+        // Server errors (500, unexpected_failure)
+        if (errorMessage.includes('unexpected_failure') ||
+            errorMessage.includes('status 500') ||
+            errorMessage.includes('internal server error') ||
+            errorMessage.includes('database error saving new user') ||
+            error.status === 500) {
+          addToast({
+            title: "Hệ thống đang bảo trì",
+            description: "Server đang gặp sự cố kỹ thuật. Vui lòng thử lại sau 10 phút hoặc liên hệ hỗ trợ kỹ thuật.",
+            color: "danger",
+            timeout: 15000
+          });
+          setIsLoading(false);
+          return;
+        }
+        
+        // Rate limiting errors
+        if (errorMessage.includes('too many requests') ||
+            errorMessage.includes('rate limit') ||
+            errorMessage.includes('too many signups') ||
+            error.status === 429) {
+          addToast({
+            title: "Quá nhiều lần thử",
+            description: "Vui lòng đợi 10 phút và thử lại.",
+            color: "warning",
+          });
+          setIsLoading(false);
+          return;
+        }
+        
+        // User already exists errors
+        const isUserExists = errorMessage.includes('user already registered') || 
+                           errorMessage.includes('already registered') ||
+                           errorMessage.includes('already been registered') ||
+                           errorMessage.includes('duplicate') ||
+                           errorMessage.includes('user_exists') ||
+                           errorMessage.includes('already in use') ||
+                           errorMessage.includes('user already exists');
+        
+        if (isUserExists) {
+          addToast({
+            title: "Email đã được sử dụng",
+            description: "Tài khoản với email này đã tồn tại. Vui lòng đăng nhập hoặc sử dụng email khác.",
+            color: "warning",
+          });
+          setIsLoading(false);
+          return;
+        }
+        
+        // Email validation errors
+        if (errorMessage.includes('invalid email') ||
+            errorMessage.includes('email format') ||
+            errorMessage.includes('bad email')) {
+          addToast({
+            title: "Email không hợp lệ",
+            description: "Định dạng email không đúng. Vui lòng kiểm tra lại.",
+            color: "danger",
+          });
+          setIsLoading(false);
+          return;
+        }
+        
+        // Password validation errors
+        if (errorMessage.includes('password') ||
+            errorMessage.includes('weak password') ||
+            errorMessage.includes('password too weak')) {
+          addToast({
+            title: "Mật khẩu không đủ mạnh",
+            description: "Mật khẩu phải có ít nhất 8 ký tự, bao gồm chữ hoa, chữ thường, số và ký tự đặc biệt.",
+            color: "danger",
+          });
+          setIsLoading(false);
+          return;
+        }
+        
+        // Generic error with retry option
+        addToast({
+          title: "Đăng ký thất bại",
+          description: `${error.message || "Có lỗi xảy ra"} ${error.status === 500 ? "(Lỗi máy chủ - thử lại sau 5 phút)" : ""}`,
+          color: "danger",
+          timeout: error.status === 500 ? 10000 : 5000
+        });
+        setIsLoading(false);
+        return;
       }
       
       addToast({
-        title: "Đăng ký thành công! Vui lòng kiểm tra email để xác minh.",
-        color: "success",
-      });
-      
-      // Kiểm tra xem có cần xác minh email không
-      if (data?.user?.email_confirmed_at) {
-        console.log('✅ [SIGNUP] Email đã xác minh, chuyển đến login');
-        router.push("/auth/login");
-      } else {
-        console.log('⏳ [SIGNUP] Email cần xác minh, chuyển đến login');
-        router.push("/auth/login?message=please_verify_email");
-      }
+          title: "Đăng ký thành công! Vui lòng kiểm tra email để xác minh.",
+          color: "success",
+        });
+        
+        // Kiểm tra xem có cần xác minh email không
+        if (data?.user?.email_confirmed_at) {
+          console.log('✅ [ĐĂNG KÝ CINEVERSE] Email đã xác minh, chuyển đến trang đăng nhập');
+          router.push("/auth/login");
+        } else {
+          console.log('⏳ [ĐĂNG KÝ CINEVERSE] Email cần xác minh, chuyển đến trang đăng nhập');
+          router.push("/auth/login?message=please_verify_email");
+        }
     } catch (error: unknown) {
+      console.error('❌ [ĐĂNG KÝ CINEVERSE] Lỗi đăng ký không mong muốn:', error);
+      const errorMessage = error instanceof Error ? error.message : "Đăng ký thất bại. Vui lòng thử lại.";
+      
       addToast({
-        title: error instanceof Error ? error.message : "Đăng ký thất bại",
+        title: errorMessage,
         color: "danger",
       });
     } finally {

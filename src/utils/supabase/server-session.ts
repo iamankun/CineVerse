@@ -59,22 +59,25 @@ export async function getServerSession() {
       }
     );
 
-    // 🔥 FIX: Use getSession() instead of getUser() for better compatibility
-    // getSession() works better with cookies and doesn't throw AuthSessionMissingError
-    const { data: { session }, error } = await supabase.auth.getSession();
+    // 🔥 SECURITY FIX: Use getUser() instead of getSession() for security
+    // getUser() authenticates the data by contacting Supabase Auth server
+    const { data: { user }, error } = await supabase.auth.getUser();
     
     if (error) {
-      console.error("🔍 [THÔNG BÁO TỪ CINEVERSE] Phiên làm việc lỗi:", error);
+      console.error("🔍 [THÔNG BÁO TỪ CINEVERSE] Lỗi xác thực thành viên:", error);
       return { user: null, session: null, error: error.message };
     }
     
-    if (!session) {
-      console.log("🔍 [THÔNG BÁO TỪ CINEVERSE] Không tìm thấy phiên làm việc");
+    if (!user) {
+      console.log("🔍 [THÔNG BÁO TỪ CINEVERSE] Không tìm thấy thành viên đã xác thực");
       return { user: null, session: null, error: null };
     }
     
-    console.log("🔍 [THÔNG BÁO TỪ CINEVERSE] Phiên làm việc đã được xác thực:", session.user.id);
-    return { user: session.user, session, error: null };
+    // Get session for additional info but don't rely on it for authentication
+    const { data: { session } } = await supabase.auth.getSession();
+    
+    console.log("🔍 [THÔNG BÁO TỪ CINEVERSE] Thành viên đã được xác thực:", user.id);
+    return { user, session, error: null };
     
   } catch (error) {
     console.error("🔍 [THÔNG BÁO TỪ CINEVERSE] Lỗi:", error);
@@ -84,7 +87,7 @@ export async function getServerSession() {
 
 /**
  * Cached version để tránh multiple calls trong cùng request
- * 🔥 FIX: Uses getSession() for better compatibility
+ * 🔥 SECURITY FIX: Uses getUser() for secure authentication
  */
 export const getCachedServerSession = cache(async () => {
   return await getServerSession();
