@@ -2,12 +2,13 @@ import { cn } from "@/utils/helpers";
 import { List, Next, Prev, Server } from "@/utils/icons";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback, useRef, useEffect } from "react";
 import { HiChevronLeft, HiChevronRight } from "react-icons/hi2";
 import { IoHandRight } from "react-icons/io5";
 import { MdFullscreen, MdFullscreenExit } from "react-icons/md";
 import { IoReload } from "react-icons/io5";
 import { useGestureContext } from "@/contexts/GestureContext";
+import useBreakpoints from "@/hooks/useBreakpoints";
 
 interface ControlMenuProps {
   id: number;
@@ -22,6 +23,7 @@ interface ControlMenuProps {
   onReload?: () => void;
   isFullscreen?: boolean;
   hidden?: boolean;
+  playerContainerRef?: React.RefObject<HTMLDivElement | null>;
 }
 
 const ControlMenu: React.FC<ControlMenuProps> = ({
@@ -37,9 +39,15 @@ const ControlMenu: React.FC<ControlMenuProps> = ({
   onReload,
   isFullscreen = false,
   hidden,
+  playerContainerRef,
 }) => {
   const [isExpanded, setIsExpanded] = useState(false);
+  const [showUI, setShowUI] = useState(true);
+  const { mobile } = useBreakpoints();
   const { enabled: gestureEnabled, toggle: toggleGesture } = useGestureContext();
+  const containerRef = useRef<HTMLDivElement>(null);
+  const hideTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const touchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const handleReload = useCallback(() => {
     if (onReload) {
@@ -53,6 +61,131 @@ const ControlMenu: React.FC<ControlMenuProps> = ({
       window.location.reload();
     }
   }, [onReload]);
+
+  // Auto-hide controls timer
+  const resetHideTimer = useCallback(() => {
+    setShowUI(true);
+    
+    if (hideTimerRef.current) {
+      clearTimeout(hideTimerRef.current);
+    }
+    
+    // Auto-hide after 3 seconds
+    hideTimerRef.current = setTimeout(() => {
+      setShowUI(false);
+    }, 3000);
+  }, []);
+
+  // Desktop mouse events - listen only on player container
+  useEffect(() => {
+    if (mobile) return; // Skip for mobile
+    
+    const targetElement = playerContainerRef?.current;
+    if (!targetElement) return;
+    
+    const handleMouseEnter = () => {
+      console.log('🖱️ TV ControlMenu: Mouse ENTER');
+      setShowUI(true);
+      if (hideTimerRef.current) {
+        clearTimeout(hideTimerRef.current);
+      }
+      // Start auto-hide timer when mouse enters
+      hideTimerRef.current = setTimeout(() => {
+        setShowUI(false);
+      }, 3000);
+    };
+
+    const handleMouseMove = () => {
+      console.log('🖱️ TV ControlMenu: Mouse MOVE');
+      setShowUI(true);
+      resetHideTimer();
+    };
+
+    const handleMouseLeave = () => {
+      console.log('🖱️ TV ControlMenu: Mouse LEAVE');
+      // Hide controls immediately when mouse leaves player area
+      setShowUI(false);
+      if (hideTimerRef.current) {
+        clearTimeout(hideTimerRef.current);
+      }
+    };
+
+    // Listen only on player container
+    targetElement.addEventListener('mousemove', handleMouseMove);
+    targetElement.addEventListener('mouseenter', handleMouseEnter);
+    targetElement.addEventListener('mouseleave', handleMouseLeave);
+
+    return () => {
+      targetElement.removeEventListener('mousemove', handleMouseMove);
+      targetElement.removeEventListener('mouseenter', handleMouseEnter);
+      targetElement.removeEventListener('mouseleave', handleMouseLeave);
+      if (hideTimerRef.current) {
+        clearTimeout(hideTimerRef.current);
+      }
+    };
+  }, [mobile, resetHideTimer, playerContainerRef]);
+
+  // Mobile touch events
+  useEffect(() => {
+    if (!mobile) return; // Skip for desktop
+    
+    const container = containerRef.current;
+    if (!container) return;
+
+    const handleTouchStart = (e: TouchEvent) => {
+      setShowUI(true);
+      if (hideTimerRef.current) {
+        clearTimeout(hideTimerRef.current);
+      }
+      if (touchTimeoutRef.current) {
+        clearTimeout(touchTimeoutRef.current);
+      }
+
+      // Auto-hide after 4 seconds on touch
+      touchTimeoutRef.current = setTimeout(() => {
+        setShowUI(false);
+      }, 4000);
+    };
+
+    const handleTouchEnd = () => {
+      // Keep controls visible briefly after touch ends
+      setShowUI(true);
+      if (touchTimeoutRef.current) {
+        clearTimeout(touchTimeoutRef.current);
+      }
+      
+      // Auto-hide after 3 seconds
+      touchTimeoutRef.current = setTimeout(() => {
+        setShowUI(false);
+      }, 3000);
+    };
+
+    container.addEventListener('touchstart', handleTouchStart, { passive: true });
+    container.addEventListener('touchend', handleTouchEnd, { passive: true });
+
+    return () => {
+      container.removeEventListener('touchstart', handleTouchStart);
+      container.removeEventListener('touchend', handleTouchEnd);
+      if (hideTimerRef.current) {
+        clearTimeout(hideTimerRef.current);
+      }
+      if (touchTimeoutRef.current) {
+        clearTimeout(touchTimeoutRef.current);
+      }
+    };
+  }, [mobile]);
+
+  // Cleanup timers on unmount
+  useEffect(() => {
+    return () => {
+      if (hideTimerRef.current) {
+        clearTimeout(hideTimerRef.current);
+      }
+      if (touchTimeoutRef.current) {
+        clearTimeout(touchTimeoutRef.current);
+      }
+    };
+  }, []);
 
   const handleToggleFullscreen = useCallback(() => {
     if (onToggleFullscreen) {
@@ -116,9 +249,10 @@ const ControlMenu: React.FC<ControlMenuProps> = ({
 
   return (
     <div
+      ref={containerRef}
       className={cn(
         "absolute right-4 top-1/2 z-40 -translate-y-1/2 transition-opacity duration-300",
-        { "opacity-0 pointer-events-none": hidden }
+        { "opacity-0 pointer-events-none": hidden || !showUI }
       )}
     >
       <div className="relative flex items-center gap-2">

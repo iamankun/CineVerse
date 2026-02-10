@@ -249,7 +249,7 @@ const TvShowPlayer: React.FC<TvShowPlayerProps> = ({
   useEffect(() => {
     let isMounted = true;
 
-    getTvShowPlayers(id, episode.season_number, episode.episode_number, startAt).then((fetchedPlayers) => {
+    getTvShowPlayers(id, episode.season_number, episode.episode_number).then((fetchedPlayers) => {
       if (isMounted) {
         // Nếu có nguồn với provider vidsrc và url rỗng, tự động thay thế bằng VidSrc external
         const processedPlayers = fetchedPlayers.map(player => {
@@ -605,6 +605,7 @@ const TvShowPlayer: React.FC<TvShowPlayerProps> = ({
           onToggleFullscreen={gestureCallbacks.onToggleFullscreen}
           onReload={gestureCallbacks.onReload}
           isFullscreen={isFullscreen}
+          playerContainerRef={cardRef}
         />
 
         <div className="relative h-screen overflow-hidden" ref={cardRef}>
@@ -695,7 +696,7 @@ const TvShowPlayer: React.FC<TvShowPlayerProps> = ({
               flexShrink: 0,
               transform: 'scale(1.5)'
             }}>
-              <BrandLogo animate={true} />
+              <BrandLogo />
             </div>
           </div>
 
