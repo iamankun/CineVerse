@@ -19,12 +19,40 @@ type SourceItem = {
   type: "movie" | "tv";
 };
 
-// Fetch danh sách sources từ API
+// Fetch danh sách sources từ Supabase
 const fetchCineVerseSources = async (): Promise<SourceItem[]> => {
-  const response = await fetch("/api/sources/list");
-  if (!response.ok) throw new Error("Failed to fetch sources");
-  const data = await response.json();
-  return data.sources || [];
+  try {
+    // Fetch movies from Supabase
+    const moviesResponse = await fetch('/api/admin/dienanh');
+    const moviesResult = moviesResponse.ok ? await moviesResponse.json() : {};
+    const movies = moviesResult.movies || [];
+
+    // Fetch TV shows from Supabase
+    const tvResponse = await fetch('/api/admin/chuongtrinhtv');
+    const tvResult = tvResponse.ok ? await tvResponse.json() : {};
+    const tvShows = tvResult.tvSeries || [];
+
+    // Combine and convert to SourceItem format
+    const allSources: SourceItem[] = [
+      ...movies.map((item: any) => ({
+        tmdbId: item.tmdb_id,
+        title: item.title,
+        year: item.year,
+        type: "movie" as const
+      })),
+      ...tvShows.map((item: any) => ({
+        tmdbId: item.tmdb_id,
+        title: item.title,
+        year: item.year,
+        type: "tv" as const
+      }))
+    ];
+
+    return allSources;
+  } catch (error) {
+    console.error("Error fetching sources from Supabase:", error);
+    return [];
+  }
 };
 
 // Fetch chi tiết từ TMDB
@@ -57,11 +85,17 @@ const fetchCineVerseContent = async () => {
   const moviePromises = movieSources.map((s) =>
     fetchTMDBDetails(s.tmdbId, "movie")
   );
-  const movies = (await Promise.all(moviePromises)).filter(Boolean) as Movie[];
+  const movieResults = await Promise.all(moviePromises);
+  const movies = movieResults.filter((result): result is Movie => 
+    result !== null && result.id !== undefined
+  );
 
   // Fetch TMDB details cho TV shows
   const tvPromises = tvSources.map((s) => fetchTMDBDetails(s.tmdbId, "tv"));
-  const tvShows = (await Promise.all(tvPromises)).filter(Boolean) as TV[];
+  const tvResults = await Promise.all(tvPromises);
+  const tvShows = tvResults.filter((result): result is TV => 
+    result !== null && result.id !== undefined
+  );
 
   return { movies, tvShows };
 };
@@ -147,30 +181,38 @@ const CineVerseList: React.FC = () => {
                   </div>
                 ))}
               </Carousel>
+              {movies.length === 0 && (
+                <p className="text-center text-default-500 py-8">
+                  Chưa có phim nào từ CineVerse
+                </p>
+              )}
             </Tab>
 
           {/* Tab Chương Trình TV */}
-          {tvShows.length > 0 && (
-            <Tab
-              key="tv"
-              title={
-                <span className="flex items-center gap-2">
-                  <TVIcon className={selectedTab === "tv" ? "text-warning" : "text-default-500"} /> Chương Trình TV
-                </span>
-              }
-            >
-              <Carousel>
-                {tvShows.map((tv) => (
-                  <div
-                    key={tv.id}
-                    className="embla__slide flex min-h-fit max-w-fit items-center px-1 py-2"
-                  >
-                    <TvShowPosterCard tv={tv} />
-                  </div>
-                ))}
-              </Carousel>
-            </Tab>
-          )}
+          <Tab
+            key="tv"
+            title={
+              <span className="flex items-center gap-2">
+                <TVIcon className={selectedTab === "tv" ? "text-warning" : "text-default-500"} /> Chương Trình TV
+              </span>
+            }
+          >
+            <Carousel>
+              {tvShows.map((tv) => (
+                <div
+                  key={tv.id}
+                  className="embla__slide flex min-h-fit max-w-fit items-center px-1 py-2"
+                >
+                  <TvShowPosterCard tv={tv} />
+                </div>
+              ))}
+            </Carousel>
+            {tvShows.length === 0 && (
+              <p className="text-center text-default-500 py-8">
+                Chưa có chương trình TV nào từ CineVerse
+              </p>
+            )}
+          </Tab>
         </Tabs>
       </div>
     </section>

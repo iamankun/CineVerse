@@ -85,11 +85,17 @@ const fetchCineVerseContent = async () => {
   const moviePromises = movieSources.map((s) =>
     fetchTMDBDetails(s.tmdbId, "movie")
   );
-  const movies = (await Promise.all(moviePromises)).filter(Boolean) as Movie[];
+  const movieResults = await Promise.all(moviePromises);
+  const movies = movieResults.filter((result): result is Movie => 
+    result !== null && result.id !== undefined
+  );
 
   // Fetch TMDB details cho TV shows
   const tvPromises = tvSources.map((s) => fetchTMDBDetails(s.tmdbId, "tv"));
-  const tvShows = (await Promise.all(tvPromises)).filter(Boolean) as TV[];
+  const tvResults = await Promise.all(tvPromises);
+  const tvShows = tvResults.filter((result): result is TV => 
+    result !== null && result.id !== undefined
+  );
 
   return { movies, tvShows };
 };
