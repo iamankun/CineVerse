@@ -24,21 +24,43 @@ type ContentItem = (Movie | TV) & {
   videos?: { results: Video[] };
 };
 
-// Đọc tự động IDs từ API - đã được sắp xếp theo năm phát hành
+// Đọc tự động IDs từ Supabase database
 type HeroItem = { id: number; type: "movie" | "tv"; year: number };
 
 const getSourceIds = async (): Promise<{ heroIds: HeroItem[] }> => {
   try {
-    const response = await fetch('/api/sources/list');
-    if (!response.ok) {
-      throw new Error('Failed to fetch source list');
-    }
-    const data = await response.json();
+    // Fetch movies from Supabase
+    const moviesResponse = await fetch('/api/admin/dienanh');
+    const moviesResult = moviesResponse.ok ? await moviesResponse.json() : {};
+    const movies = moviesResult.movies || [];
+
+    // Fetch TV shows from Supabase
+    const tvResponse = await fetch('/api/admin/chuongtrinhtv');
+    const tvResult = tvResponse.ok ? await tvResponse.json() : {};
+    const tvShows = tvResult.tvSeries || [];
+
+    // Combine and sort by year (newest first)
+    const allItems = [
+      ...movies.map((item: any) => ({ 
+        id: item.tmdb_id, 
+        type: "movie" as const, 
+        year: item.year 
+      })),
+      ...tvShows.map((item: any) => ({ 
+        id: item.tmdb_id, 
+        type: "tv" as const, 
+        year: item.year 
+      }))
+    ];
+
+    // Sort by year descending (newest first)
+    allItems.sort((a, b) => b.year - a.year);
+
     return {
-      heroIds: data.heroIds || [] // 20 mục mới nhất theo năm phát hành
+      heroIds: allItems.slice(0, 20) // 20 mục mới nhất theo năm phát hành
     };
   } catch (error) {
-    console.error('Error fetching source IDs:', error);
+    console.error('Error fetching source IDs from Supabase:', error);
     return { heroIds: [] };
   }
 };
@@ -147,20 +169,22 @@ const CineVerseHero = () => {
   // Call hooks unconditionally at top level
   const logoPath = useMovieLogo(currentId, currentContentType, originalLanguage);
 
-  // Fetch metadata từ sources API để lấy movie-rating
+  // Fetch metadata từ Supabase để lấy movie-rating
   const { data: sourceMetadata } = useQuery({
     queryKey: ["source-metadata", currentId, currentContentType],
     queryFn: async () => {
       try {
         const endpoint = currentContentType === "movie" 
-          ? `/api/sources/movie/${currentId}` 
-          : `/api/sources/tv/${currentId}`;
+          ? `/api/admin/dienanh` 
+          : `/api/admin/chuongtrinhtv`;
         const response = await fetch(endpoint);
         if (!response.ok) return null;
         const result = await response.json();
-        return result.success ? result.data : null;
+        const data = currentContentType === "movie" ? result.movies : result.tvSeries;
+        const item = data?.find((item: any) => item.tmdb_id === currentId);
+        return item || null;
       } catch (error) {
-        console.error("Error fetching source metadata:", error);
+        console.error("Error fetching source metadata from Supabase:", error);
         return null;
       }
     },

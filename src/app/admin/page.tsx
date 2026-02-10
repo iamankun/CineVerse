@@ -11,17 +11,10 @@ export default function AdminPage() {
   const adminOptions = [
     {
       title: "Bảng điều khiển",
-      description: "Xem thống kê và quản lý hệ thống",
+      description: "Quản lý phim, chương trình truyền hình và hệ thống",
       icon: "📊",
       path: "/admin/dashboard",
       color: "bg-gradient-to-br from-blue-500 to-cyan-500",
-    },
-    {
-      title: "Quản lý phim và truyền hình",
-      description: "Quản lý phim và chương trình truyền hình",
-      icon: "🎬",
-      path: "/admin/media",
-      color: "bg-gradient-to-br from-indigo-500 to-purple-500",
     },
     {
       title: "TV",

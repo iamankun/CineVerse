@@ -791,10 +791,13 @@ interface SeasonData {
 
 interface ExistingSource {
   tmdbId: number;
+  tmdb_id?: number;
   title: string;
   year: number;
   type: "movie" | "tv";
   mtime: Date;
+  sources?: any[];
+  seasons?: any;
   // Metadata
   metadata?: {
     "movie-rating"?: string;
@@ -865,28 +868,46 @@ export default function DashboardPage() {
   const loadExistingSources = async () => {
     setIsLoadingExisting(true);
     try {
-      const response = await fetch(`/api/sources/list?type=${contentType}`);
+      const response = await fetch(`/api/admin/${contentType === "movie" ? "dienanh" : "chuongtrinhtv"}`);
       if (response.ok) {
-        const data = await response.json();
-        setExistingSources(data.sources || []);
+        const result = await response.json();
+        const data = contentType === "movie" ? (result.movies || []) : (result.tvSeries || []);
+        console.log("📊 Existing sources data:", data);
+        console.log("📊 First item:", data[0]);
+        setExistingSources(data);
       }
     } catch (error) {
-      console.error("Error loading existing sources:", error);
+      console.error("Error loading existing sources from Supabase:", error);
     } finally {
       setIsLoadingExisting(false);
     }
   };
 
-  // Load tất cả sources (không filter theo type)
+  // Load tất cả sources từ Supabase
   const loadAllSources = async () => {
     try {
-      const response = await fetch(`/api/sources/list`);
-      if (response.ok) {
-        const data = await response.json();
-        setAllSources(data.sources || []);
-      }
+      // Fetch movies from DienAnh table
+      const moviesResponse = await fetch(`/api/admin/dienanh`);
+      const moviesResult = moviesResponse.ok ? await moviesResponse.json() : {};
+      const moviesData = moviesResult.movies || [];
+      
+      // Fetch TV shows from ChuongTrinhTV table  
+      const tvResponse = await fetch(`/api/admin/chuongtrinhtv`);
+      const tvResult = tvResponse.ok ? await tvResponse.json() : {};
+      const tvData = tvResult.tvSeries || [];
+      
+      // Merge and format data
+      console.log("📊 Movies data:", moviesData);
+      console.log("📊 TV data:", tvData);
+      const allData = [
+        ...(moviesData || []).map((item: any) => ({ ...item, type: "movie" })),
+        ...(tvData || []).map((item: any) => ({ ...item, type: "tv" }))
+      ];
+      console.log("📊 All data:", allData);
+      
+      setAllSources(allData);
     } catch (error) {
-      console.error("Error loading all sources:", error);
+      console.error("Error loading all sources from Supabase:", error);
     }
   };
 
@@ -972,56 +993,65 @@ export default function DashboardPage() {
     }
   };
 
-  // Load existing source data
+  // Load existing source data from Supabase
   const handleLoadExisting = async (tmdbId: number, sourceType?: "movie" | "tv") => {
     try {
       const typeToLoad = sourceType || contentType;
-      const response = await fetch(`/api/sources/${typeToLoad}/${tmdbId}`);
+      const response = await fetch(`/api/admin/${typeToLoad === "movie" ? "dienanh" : "chuongtrinhtv"}`);
       if (response.ok) {
         const result = await response.json();
-        // API returns { success: true, data: {...} }
-        const data = result.success ? result.data : result;
+        const allData = typeToLoad === "movie" ? (result.movies || []) : (result.tvSeries || []);
+        // Find the specific item by tmdb_id
+        const item = allData.find((data: any) => data.tmdb_id === tmdbId);
         
-        // Set content type nếu khác với hiện tại
-        if (sourceType && sourceType !== contentType) {
-          setContentType(sourceType);
-        }
-        
-        // For TV shows, recalculate totalSeasons and totalEpisodes
-        if (typeToLoad === "tv" && data.seasons) {
-          const totalSeasons = Object.keys(data.seasons).length;
-          let totalEpisodes = 0;
-          Object.values(data.seasons).forEach((season: any) => {
-            totalEpisodes += Object.keys(season).length;
-          });
+        if (item) {
+          // Convert tmdb_id back to tmdbId for form
+          const formData = {
+            ...item,
+            tmdbId: item.tmdb_id || item.id || tmdbId,
+          };
+          
+          // Set content type nếu khác với hiện tại
+          if (sourceType && sourceType !== contentType) {
+            setContentType(sourceType);
+          }
+          
+          // For TV shows, recalculate totalSeasons and totalEpisodes
+          if (typeToLoad === "tv" && formData.seasons) {
+            const totalSeasons = Object.keys(formData.seasons).length;
+            let totalEpisodes = 0;
+            Object.values(formData.seasons).forEach((season: any) => {
+              totalEpisodes += Object.keys(season).length;
+            });
           
           // Update metadata with calculated values
-          data.metadata = {
-            ...data.metadata,
+          formData.metadata = {
+            ...formData.metadata,
             totalSeasons,
             totalEpisodes,
           };
         }
         
-        setFormData(data);
+        setFormData(formData);
         setSelectedItem({ id: tmdbId } as TMDBResult);
         // Hiển thị JSON data
-        setCurrentJsonData(JSON.stringify(data, null, 2));
+        setCurrentJsonData(JSON.stringify(formData, null, 2));
         
         // Chuyển sang chế độ form
         setViewMode("form");
         
         // For TV shows, set initial season and episode
-        if (typeToLoad === "tv" && data.seasons) {
-          const firstSeason = Object.keys(data.seasons)[0];
+        if (typeToLoad === "tv" && formData.seasons) {
+          const firstSeason = Object.keys(formData.seasons)[0];
           if (firstSeason) {
             setSelectedSeason(firstSeason);
-            const firstEpisode = Object.keys(data.seasons[firstSeason])[0];
+            const firstEpisode = Object.keys(formData.seasons[firstSeason])[0];
             if (firstEpisode) {
               setSelectedEpisode(firstEpisode);
             }
           }
         }
+      }
       } else {
         const error = await response.text();
         console.error("Failed to load source:", error);
@@ -1408,7 +1438,7 @@ export default function DashboardPage() {
       
       // Set form data
       setFormData({
-        tmdbId: parsedData.tmdbId,
+        tmdb_id: parsedData.tmdb_id,
         title: parsedData.title,
         year: parsedData.year || new Date().getFullYear(),
         ...(isMovie ? { sources: parsedData.sources } : { seasons: parsedData.seasons }),
@@ -1476,13 +1506,25 @@ export default function DashboardPage() {
     }
 
     // Update lastUpdate timestamp before saving
-    const dataToSave = {
-      ...formData,
+    const dataToSave: any = {
+      tmdb_id: formData.tmdbId,
+      title: formData.title,
+      year: formData.year,
       metadata: {
         ...formData.metadata,
         lastUpdate: new Date().toISOString(),
       },
     };
+
+    if (contentType === "movie") {
+      dataToSave.sources = formData.sources;
+    } else {
+      dataToSave.seasons = formData.seasons;
+      // Add TV-specific metadata
+      dataToSave.metadata.studio = formData.metadata.studio || "";
+      dataToSave.metadata.totalEpisodes = formData.metadata.totalEpisodes || 0;
+      dataToSave.metadata.totalSeasons = formData.metadata.totalSeasons || 0;
+    }
 
     if (contentType === "movie") {
       if (!dataToSave.sources || dataToSave.sources.length === 0) {
@@ -1522,15 +1564,15 @@ export default function DashboardPage() {
     }
 
     try {
-      console.log("🚀 Bắt đầu lưu dữ liệu...", {
+      console.log("🚀 Bắt đầu lưu dữ liệu vào Supabase...", {
         contentType,
-        tmdbId: dataToSave.tmdbId,
+        tmdbId: dataToSave.tmdb_id,
         title: dataToSave.title,
         hasMetadata: !!dataToSave.metadata,
         audioVersion: dataToSave.metadata?.audioVersion,
       });
 
-      const response = await fetch(`/api/sources/${contentType}`, {
+      const response = await fetch(`/api/admin/${contentType === "movie" ? "dienanh" : "chuongtrinhtv"}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(dataToSave),
@@ -1540,25 +1582,25 @@ export default function DashboardPage() {
 
       if (response.ok) {
         const result = await response.json();
-        console.log("✅ Lưu thành công:", result);
-        alert("Lưu thành công!");
+        console.log("✅ Phim hoặc chương trình đã lưu vào cơ sở dữ liệu của CineVerse", result);
+        alert("Phim hoặc chương trình đã lưu thành công vào CineVerse - Vũ Trụ Điện Ảnh");
         loadExistingSources();
         setCurrentJsonData(JSON.stringify(dataToSave, null, 2));
         // Update formData with new timestamp
-        setFormData(dataToSave);
+        setFormData(formData);
       } else {
         const error = await response.text();
-        console.error("❌ Lỗi từ máy chủ:", error);
-        alert(`Lỗi khi lưu dữ liệu: ${error}`);
+        console.error("❌ Lỗi từ Supabase:", error);
+        alert(`Lỗi khi lưu dữ liệu vào Supabase: ${error}`);
       }
     } catch (error: any) {
-      console.error("💥 Lỗi lưu trữ:", error);
+      console.error("💥 Lỗi lưu trữ Supabase:", error);
       console.error("Chi tiết lỗi:", {
         message: error.message,
         stack: error.stack,
         name: error.name,
       });
-      alert(`Lỗi khi lưu dữ liệu: ${error.message || "Không thể kết nối đến máy chủ"}`);
+      alert(`Lỗi khi lưu dữ liệu vào Supabase: ${error.message || "Không thể kết nối đến Supabase"}`);
     }
   };
 
@@ -1635,7 +1677,7 @@ export default function DashboardPage() {
             </CardHeader>
             <CardBody className="space-y-4">
               <Textarea
-                placeholder='{"tmdbId": 123, "title": "Tên phim", "year": 2024, "sources": [...] hoặc "seasons": {...}, "metadata": {...}}'
+                placeholder='{"tmdb_Id": 123, "title": "Tên phim", "year": 2024, "sources": [...] hoặc "seasons": {...}, "metadata": {...}}'
                 value={jsonInput}
                 onChange={(e) => setJsonInput(e.target.value)}
                 minRows={10}
@@ -1668,7 +1710,7 @@ export default function DashboardPage() {
                 <p className="mb-2">💡 <strong>Hướng dẫn:</strong></p>
                 <ul className="list-disc space-y-1 pl-5">
                   <li>Dán toàn bộ JSON từ tệp hoặc nguồn khác</li>
-                  <li>JSON phải chứa: <code className="text-purple-300">tmdbId</code>, <code className="text-purple-300">title</code></li>
+                  <li>JSON phải chứa: <code className="text-purple-300">tmdb_Id</code>, <code className="text-purple-300">title</code></li>
                   <li>Điện Ảnh cần có: <code className="text-purple-300">sources</code> (array)</li>
                   <li>Chương trình TV cần có: <code className="text-purple-300">seasons</code> (object)</li>
                   <li>Siêu dữ liệu sẽ được tự động điền với giá trị mặc định nếu thiếu</li>
@@ -1714,8 +1756,8 @@ export default function DashboardPage() {
                   <TableColumn>Hành động</TableColumn>
                 </TableHeader>
                 <TableBody>
-                  {allSources.map((source) => (
-                    <TableRow key={`${source.type}-${source.tmdbId}`}>
+                  {allSources.map((source, index) => (
+                    <TableRow key={`${source.type}-${index}`}>
                       <TableCell>
                         <Chip
                           color={source.type === "movie" ? "primary" : "warning"}
@@ -1727,7 +1769,7 @@ export default function DashboardPage() {
                       </TableCell>
                       <TableCell>
                         <span className="font-mono text-sm text-gray-300">
-                          {source.tmdbId}
+                          {source.tmdb_id || source.tmdbId}
                         </span>
                       </TableCell>
                       <TableCell>
@@ -1789,20 +1831,23 @@ export default function DashboardPage() {
                       <TableCell>
                         {source.type === "movie" ? (
                           <Chip size="sm" variant="flat" color="success">
-                            {source.sourcesCount || 0} nguồn
+                            {source.sources?.length || 0} nguồn
                           </Chip>
                         ) : (
                           <div className="flex flex-col gap-1">
                             <div className="flex gap-2">
                               <Chip size="sm" variant="flat" color="secondary">
-                                {source.totalSeasons || 0} seasons
+                                {Object.keys(source.seasons || {}).length || 0} seasons
                               </Chip>
                               <Chip size="sm" variant="flat" color="secondary">
-                                {source.totalEpisodes || 0} tập
+                                {Object.values(source.seasons || {}).reduce((total: number, season: any) => 
+                                  total + Object.keys(season || {}).length, 0) || 0} tập
                               </Chip>
                             </div>
                             <Chip size="sm" variant="flat" color="success">
-                              {source.sourcesCount || 0} nguồn
+                              {Object.values(source.seasons || {}).reduce((total: number, season: any) => 
+                                total + Object.values(season || {}).reduce((seasonTotal: number, episode: any) => 
+                                  seasonTotal + (episode.sources?.length || 0), 0), 0) || 0} nguồn
                             </Chip>
                           </div>
                         )}
@@ -1824,7 +1869,7 @@ export default function DashboardPage() {
                           size="sm"
                           color="primary"
                           variant="flat"
-                          onPress={() => handleLoadExisting(source.tmdbId, source.type)}
+                          onPress={() => handleLoadExisting(source.tmdb_id || source.tmdbId, source.type)}
                         >
                           Chỉnh sửa
                         </Button>
@@ -1944,11 +1989,11 @@ export default function DashboardPage() {
               </CardHeader>
               <CardBody>
                 <div className="max-h-96 space-y-2 overflow-y-auto">
-                  {existingSources.map((source) => (
+                  {existingSources.map((source, index) => (
                     <Card
-                      key={source.tmdbId}
+                      key={index}
                       isPressable
-                      onPress={() => handleLoadExisting(source.tmdbId)}
+                      onPress={() => handleLoadExisting(source.tmdb_id || source.tmdbId)}
                       className="bg-gray-700/50 hover:bg-gray-700"
                     >
                       <CardBody className="p-3">
@@ -1960,7 +2005,7 @@ export default function DashboardPage() {
                             {source.year}
                           </Chip>
                           <Chip size="sm" color="warning" variant="flat">
-                            ID: {source.tmdbId}
+                            ID: {source.tmdb_id || source.tmdbId}
                           </Chip>
                         </div>
                       </CardBody>

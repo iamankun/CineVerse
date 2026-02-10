@@ -100,7 +100,7 @@ function processSourceUrl(provider: string, url: string): string {
 }
 
 /**
- * Fetches CineVerse internal movie sources from JSON files
+ * Fetches CineVerse internal movie sources from Supabase
  * @param id - TMDB movie ID
  * @returns Array of player sources or null if not available
  */
@@ -108,81 +108,22 @@ export const fetchCineVerseMovieSources = async (
   id: string | number
 ): Promise<PlayersProps[] | null> => {
   try {
-    const response = await fetch(`/api/sources/movie/${id}`, {
-      cache: "no-store",
-    });
-
+    // Fetch from Supabase instead of JSON
+    const response = await fetch(`/api/admin/dienanh`);
     if (!response.ok) return null;
 
-    const { success, data } = await response.json();
-    if (!success || !data) return null;
-
-    // Support both old format (sources array) and new format (parts object)
-    let sources: any[] = [];
+    const result = await response.json();
+    const movies = result.movies || [];
     
-    if (data.sources) {
-      // Old format: { sources: [...] }
-      sources = data.sources;
-    } else if (data.parts) {
-      // New format: { parts: { main: { sources: [...] }, part1: {...}, ... } }
-      // Flatten all parts into single sources array
-      Object.keys(data.parts).forEach((partKey) => {
-        const partSources = data.parts[partKey].sources || [];
-        sources.push(...partSources.map((s: any) => ({ ...s, part: partKey })));
-      });
-    }
+    // Find the movie by tmdb_id
+    const movie = movies.find((item: any) => item.tmdb_id === parseInt(id.toString()));
+    if (!movie || !movie.sources || movie.sources.length === 0) return null;
 
-    if (sources.length === 0) return null;
-
-    return sources.map((source, index) => {
+    return movie.sources.map((source: any, index: number) => {
       const partLabel = source.part && source.part !== "main" ? ` ${source.part}` : "";
       
       return {
-        title: `CineVerse${partLabel}`.trim(),
-        source: processSourceUrl(source.provider, source.url) as `https://${string}`,
-        recommended: index === 0, // Đánh dấu nguồn đầu tiên là recommended
-        fast: true,
-        ads: false,
-        isCineVerseSource: true,
-        provider: source.provider,
-        ...(source.intro && { intro: source.intro }),
-        ...(source.outro && { outro: source.outro }),
-      };
-    });
-  } catch (error) {
-    console.error("Error fetching CineVerse movie sources:", error);
-    return null;
-  }
-};
-
-/**
- * Fetches CineVerse internal TV show sources from JSON files
- * @param id - TMDB TV show ID
- * @param season - Season number
- * @param episode - Episode number
- * @returns Array of player sources or null if not available
- */
-export const fetchCineVerseTvSources = async (
-  id: string | number,
-  season: number,
-  episode: number
-): Promise<PlayersProps[] | null> => {
-  try {
-    const response = await fetch(
-      `/api/sources/tv/${id}?season=${season}&episode=${episode}`,
-      {
-        cache: "no-store",
-      }
-    );
-
-    if (!response.ok) return null;
-
-    const { success, data } = await response.json();
-    if (!success || !data?.sources) return null;
-
-    return data.sources.map((source: any, index: number) => {
-      return {
-        title: `CineVerse`,
+        title: `An Kun Studio${partLabel}`.trim(),
         source: processSourceUrl(source.provider, source.url) as `https://${string}`,
         recommended: index === 0,
         fast: true,
@@ -194,7 +135,58 @@ export const fetchCineVerseTvSources = async (
       };
     });
   } catch (error) {
-    console.error("Error fetching CineVerse TV sources:", error);
+    console.error("Error fetching movie sources from Supabase:", error);
+    return null;
+  }
+};
+
+/**
+ * Fetches CineVerse internal TV show sources from Supabase
+ * @param id - TMDB TV show ID
+ * @param season - Season number
+ * @param episode - Episode number
+ * @returns Array of player sources or null if not available
+ */
+export const fetchCineVerseTvSources = async (
+  id: string | number,
+  season: number,
+  episode: number
+): Promise<PlayersProps[] | null> => {
+  try {
+    // Fetch from Supabase instead of JSON
+    const response = await fetch(`/api/admin/chuongtrinhtv`);
+    if (!response.ok) return null;
+
+    const result = await response.json();
+    const tvShows = result.tvSeries || [];
+    
+    // Find the TV show by tmdb_id
+    const tvShow = tvShows.find((item: any) => item.tmdb_id === parseInt(id.toString()));
+    if (!tvShow || !tvShow.seasons) return null;
+
+    // Get the specific season
+    const seasonData = tvShow.seasons[season.toString()];
+    if (!seasonData) return null;
+
+    // Get the specific episode
+    const episodeData = seasonData[episode.toString()];
+    if (!episodeData || !episodeData.sources || episodeData.sources.length === 0) return null;
+
+    return episodeData.sources.map((source: any, index: number) => {
+      return {
+        title: `An Kun Studio`,
+        source: processSourceUrl(source.provider, source.url) as `https://${string}`,
+        recommended: index === 0,
+        fast: true,
+        ads: false,
+        isCineVerseSource: true,
+        provider: source.provider,
+        ...(source.intro && { intro: source.intro }),
+        ...(source.outro && { outro: source.outro }),
+      };
+    });
+  } catch (error) {
+    console.error("Error fetching TV sources from Supabase:", error);
     return null;
   }
 };

@@ -19,12 +19,40 @@ type SourceItem = {
   type: "movie" | "tv";
 };
 
-// Fetch danh sách sources từ API
+// Fetch danh sách sources từ Supabase
 const fetchCineVerseSources = async (): Promise<SourceItem[]> => {
-  const response = await fetch("/api/sources/list");
-  if (!response.ok) throw new Error("Failed to fetch sources");
-  const data = await response.json();
-  return data.sources || [];
+  try {
+    // Fetch movies from Supabase
+    const moviesResponse = await fetch('/api/admin/dienanh');
+    const moviesResult = moviesResponse.ok ? await moviesResponse.json() : {};
+    const movies = moviesResult.movies || [];
+
+    // Fetch TV shows from Supabase
+    const tvResponse = await fetch('/api/admin/chuongtrinhtv');
+    const tvResult = tvResponse.ok ? await tvResponse.json() : {};
+    const tvShows = tvResult.tvSeries || [];
+
+    // Combine and convert to SourceItem format
+    const allSources: SourceItem[] = [
+      ...movies.map((item: any) => ({
+        tmdbId: item.tmdb_id,
+        title: item.title,
+        year: item.year,
+        type: "movie" as const
+      })),
+      ...tvShows.map((item: any) => ({
+        tmdbId: item.tmdb_id,
+        title: item.title,
+        year: item.year,
+        type: "tv" as const
+      }))
+    ];
+
+    return allSources;
+  } catch (error) {
+    console.error("Error fetching sources from Supabase:", error);
+    return [];
+  }
 };
 
 // Fetch chi tiết từ TMDB

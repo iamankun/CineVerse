@@ -38,17 +38,45 @@ export async function POST(request: Request) {
       }, { status: 400 });
     }
 
-    const { data: tvSeries, error } = await supabase
+    // Check if TV series already exists
+    const { data: existingTV } = await supabase
       .from('ChuongTrinhTV')
-      .upsert({
-        tmdb_id,
-        title,
-        year,
-        seasons: seasons || {},
-        metadata: metadata || {}
-      })
-      .select()
+      .select('tmdb_id')
+      .eq('tmdb_id', tmdb_id)
       .single();
+
+    let result;
+    if (existingTV) {
+      // Update existing TV series
+      const { data, error } = await supabase
+        .from('ChuongTrinhTV')
+        .update({
+          title,
+          year,
+          seasons: seasons || {},
+          metadata: metadata || {}
+        })
+        .eq('tmdb_id', tmdb_id)
+        .select()
+        .single();
+      result = { tvSeries: data, error };
+    } else {
+      // Insert new TV series
+      const { data, error } = await supabase
+        .from('ChuongTrinhTV')
+        .insert({
+          tmdb_id,
+          title,
+          year,
+          seasons: seasons || {},
+          metadata: metadata || {}
+        })
+        .select()
+        .single();
+      result = { tvSeries: data, error };
+    }
+
+    const { tvSeries, error } = result;
 
     if (error) {
       console.error("❌ [CHUONGTRINHTV-POST] Error:", error);

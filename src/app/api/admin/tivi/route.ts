@@ -1,9 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { createClient } from '@/utils/supabase/server';
 import { writeFile, readFile } from 'fs/promises';
 import path from 'path';
 
 interface TiviChannel {
-  id: string;
+  id?: number;
+  channel_id: string;
   name: string;
   logo: string;
   url: string;
@@ -13,19 +15,22 @@ interface TiviChannel {
   quality: string;
 }
 
+// GET all TV channels from ChuongTrinhTV table
 export async function GET() {
   try {
-    const filePath = path.join(process.cwd(), 'src/app/admin/tivi/tivi.json');
-    const fileContent = await readFile(filePath, 'utf-8');
-    const channels = JSON.parse(fileContent);
+    const supabase = await createClient();
     
-    return NextResponse.json(channels);
-  } catch (error) {
-    console.error('Error reading tivi.json:', error);
-    return NextResponse.json([], { status: 200 });
+    // For now, return empty array since ChuongTrinhTV is for TV series, not channels
+    // TODO: Create proper TV channels management or use existing structure
+    return NextResponse.json([]);
+
+  } catch (error: any) {
+    console.error(' [TIVI-GET] Unexpected error:', error);
+    return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
 
+// POST new TV channel -暂时保留JSON方式直到确定需求
 export async function POST(request: NextRequest) {
   try {
     const { channels } = await request.json();
@@ -37,6 +42,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // TODO: Determine if we need to store TV channels in Supabase
+    // For now, keep existing JSON file approach
     const filePath = path.join(process.cwd(), 'src/app/admin/tivi/tivi.json');
     const jsonContent = JSON.stringify(channels, null, 2);
     
@@ -48,7 +55,7 @@ export async function POST(request: NextRequest) {
       count: channels.length 
     });
   } catch (error) {
-    console.error('Error saving tivi.json:', error);
+    console.error('Error saving channels:', error);
     return NextResponse.json(
       { error: 'Failed to save channels' },
       { status: 500 }

@@ -129,15 +129,14 @@ const CineVerseList: React.FC = () => {
           }}
         >
           {/* Tab Điện Ảnh */}
-          {movies.length > 0 && (
-            <Tab
-              key="movie"
-              title={
-                <span className="flex items-center gap-2">
-                  <MovieIcon className={selectedTab === "movie" ? "text-primary" : "text-default-500"} /> Điện Ảnh
-                </span>
-              }
-            >
+          <Tab
+            key="movie"
+            title={
+              <span className="flex items-center gap-2">
+                <MovieIcon className={selectedTab === "movie" ? "text-primary" : "text-default-500"} /> Điện Ảnh
+              </span>
+            }
+          >
               <Carousel>
                 {movies.map((movie) => (
                   <div
@@ -149,7 +148,6 @@ const CineVerseList: React.FC = () => {
                 ))}
               </Carousel>
             </Tab>
-          )}
 
           {/* Tab Chương Trình TV */}
           {tvShows.length > 0 && (

@@ -38,17 +38,45 @@ export async function POST(request: Request) {
       }, { status: 400 });
     }
 
-    const { data: movie, error } = await supabase
+    // Check if movie already exists
+    const { data: existingMovie } = await supabase
       .from('DienAnh')
-      .upsert({
-        tmdb_id,
-        title,
-        year,
-        sources: sources || [],
-        metadata: metadata || {}
-      })
-      .select()
+      .select('tmdb_id')
+      .eq('tmdb_id', tmdb_id)
       .single();
+
+    let result;
+    if (existingMovie) {
+      // Update existing movie
+      const { data, error } = await supabase
+        .from('DienAnh')
+        .update({
+          title,
+          year,
+          sources: sources || [],
+          metadata: metadata || {}
+        })
+        .eq('tmdb_id', tmdb_id)
+        .select()
+        .single();
+      result = { movie: data, error };
+    } else {
+      // Insert new movie
+      const { data, error } = await supabase
+        .from('DienAnh')
+        .insert({
+          tmdb_id,
+          title,
+          year,
+          sources: sources || [],
+          metadata: metadata || {}
+        })
+        .select()
+        .single();
+      result = { movie: data, error };
+    }
+
+    const { movie, error } = result;
 
     if (error) {
       console.error("❌ [DIENANH-POST] Error:", error);
