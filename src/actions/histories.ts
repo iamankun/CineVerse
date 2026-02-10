@@ -28,7 +28,10 @@ export const syncHistory = async (
       error: userError,
     } = await supabase.auth.getUser();
 
+    console.info("User login status:", { user: !!user, userError });
+
     if (userError || !user) {
+      console.info("User not authenticated, cannot save history");
       return {
         success: false,
         message: "Bạn phải đăng nhập để lưu lịch sử",

@@ -8,6 +8,9 @@ import { useQuery } from "@tanstack/react-query";
 import { getUserHistories } from "@/actions/histories";
 
 const ContinueWatching: React.FC = () => {
+  // Temporarily hidden - will be fixed later
+  return null;
+
   const { content } = useDiscoverFilters();
   const { data } = useQuery({
     queryFn: () => getUserHistories(),

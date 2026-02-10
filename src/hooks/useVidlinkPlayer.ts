@@ -26,6 +26,8 @@ export interface UseVidlinkPlayerOptions {
   metadata?: {
     season?: number;
     episode?: number;
+    tmdbId?: number;
+    mediaType?: "movie" | "tv";
   };
   saveHistory?: boolean;
   onPlay?: (data: Data) => void;
@@ -52,10 +54,13 @@ export function useVidlinkPlayer(options: UseVidlinkPlayerOptions = {}) {
     if (!saveHistory || !user) return;
     if (diff(data.currentTime, lastCurrentTime) <= 5) return; //prevent spam
 
+    // Add metadata from options if not present in data
     const dataToSync: Data = {
       ...data,
       season: seasonRef.current || 0,
       episode: episodeRed.current || 0,
+      mtmdbId: data.mtmdbId || metadata?.tmdbId || 0,
+      mediaType: data.mediaType || metadata?.mediaType || "movie",
     };
 
     const { success, message } = await syncHistory(dataToSync, completed);
@@ -85,6 +90,8 @@ export function useVidlinkPlayer(options: UseVidlinkPlayerOptions = {}) {
           season: seasonRef.current || 0,
           episode: episodeRed.current || 0,
           completed: eventDataRef.current.event === "ended",
+          mtmdbId: eventDataRef.current.mtmdbId || metadata?.tmdbId || 0,
+          mediaType: eventDataRef.current.mediaType || metadata?.mediaType || "movie",
         };
 
         navigator.sendBeacon("/api/player/save-history", JSON.stringify(payload));

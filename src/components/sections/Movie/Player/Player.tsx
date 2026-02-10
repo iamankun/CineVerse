@@ -237,7 +237,13 @@ const MoviePlayer: React.FC<MoviePlayerProps> = ({ movie, startAt }) => {
     },
   }), [isFullscreen, title]);
 
-  useVidlinkPlayer({ saveHistory: true });
+  useVidlinkPlayer({ 
+    saveHistory: true,
+    metadata: {
+      tmdbId: movie.id,
+      mediaType: "movie"
+    }
+  });
   useDocumentTitle(`Bạn đang xem ${title} | ${siteConfig.name}`);
 
   // Initialize ad blocker with iframe reference
@@ -345,22 +351,24 @@ interface FullscreenDocument extends Document {
       }
     };
 
-    console.log(`🎬 Đang lấy đánh giá phim cho ID: ${movie.id}`);
-    fetch(`/sources/Movie/${movie.id}.json`)
+    console.log(`🎬 Đang lấy đánh giá phim từ Supabase cho ID: ${movie.id}`);
+    fetch(`/api/admin/dienanh`)
       .then(res => {
         console.log(`📡 Điện ảnh đang lấy tình trạng:`, res.ok, res.status);
         return res.ok ? res.json() : null;
       })
-      .then(data => {
-        console.log(`📊 Dữ liệu JSON phim:`, data?.metadata?.["movie-rating"]);
-        if (data?.metadata?.["movie-rating"]) {
-          const rating = data.metadata["movie-rating"];
+      .then(result => {
+        const movies = result?.movies || [];
+        const movieData = movies.find((item: any) => item.tmdb_id === movie.id);
+        console.log(`📊 Dữ liệu phim từ Supabase:`, movieData?.metadata?.["movie-rating"]);
+        if (movieData?.metadata?.["movie-rating"]) {
+          const rating = movieData.metadata["movie-rating"];
           // Fetch rating descriptions
           fetch("/sources/movie-rating.json")
             .then(res => res.json())
             .then(ratingData => {
               const description = ratingData["Movie-Rating"][rating];
-              console.log(`✅ Đang tải đánh giá phim (local):`, rating, description);
+              console.log(`✅ Đang tải đánh giá phim (Supabase):`, rating, description);
               if (description && isMounted) {
                 setMovieRating({ rating, description });
               }
@@ -371,14 +379,14 @@ interface FullscreenDocument extends Document {
               fetchTMDBRating();
             });
         } else {
-          // Không có local rating → lấy từ TMDB
-          console.log(`📡 Không có local rating, fallback sang TMDB...`);
+          // Không có Supabase rating → lấy từ TMDB
+          console.log(`📡 Không có Supabase rating, fallback sang TMDB...`);
           fetchTMDBRating();
         }
       })
       .catch((err) => {
-        console.error(`❌ Không tải được phim từ local:`, err);
-        // Fallback sang TMDB nếu local file không tồn tại
+        console.error(`❌ Không tải được phim từ Supabase:`, err);
+        // Fallback sang TMDB nếu Supabase không tồn tại
         fetchTMDBRating();
       });
 
