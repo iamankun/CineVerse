@@ -152,29 +152,106 @@ export const YouTubePlayer: React.FC<YouTubePlayerProps> = ({
     }
   }, [isReady, currentTime, duration, showQualityMenu]); // Remove externalIdle from deps
 
-  // Mouse movement và click hiện controls
+  const isPlaying = playerState === PlayerState.PLAYING;
+  const progressPercentage = duration > 0 ? (currentTime / duration) * 100 : 0;
+
+  // Mobile touch events
   React.useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
 
-    const handleInteraction = () => {
+    let touchTimeout: NodeJS.Timeout | null = null;
+
+    const handleTouchStart = (e: TouchEvent) => {
+      setShowUI(true);
+      if (hideTimerRef.current) {
+        clearTimeout(hideTimerRef.current);
+      }
+      if (touchTimeout) {
+        clearTimeout(touchTimeout);
+      }
+
+      // Auto-hide after 4 seconds on touch
+      if (isReady && currentTime > 0 && currentTime < duration && !externalIdle) {
+        touchTimeout = setTimeout(() => {
+          setShowUI(false);
+        }, 4000);
+      }
+    };
+
+    const handleTouchEnd = () => {
+      // Keep controls visible briefly after touch ends
+      setShowUI(true);
+      if (touchTimeout) {
+        clearTimeout(touchTimeout);
+      }
+      
+      // Auto-hide after 3 seconds
+      if (isReady && currentTime > 0 && currentTime < duration && !externalIdle) {
+        touchTimeout = setTimeout(() => {
+          setShowUI(false);
+        }, 3000);
+      }
+    };
+
+    container.addEventListener('touchstart', handleTouchStart, { passive: true });
+    container.addEventListener('touchend', handleTouchEnd, { passive: true });
+
+    return () => {
+      container.removeEventListener('touchstart', handleTouchStart);
+      container.removeEventListener('touchend', handleTouchEnd);
+      if (touchTimeout) {
+        clearTimeout(touchTimeout);
+      }
+    };
+  }, [isReady, currentTime, duration, externalIdle]);
+
+  // Desktop mouse events
+  React.useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    const handleMouseEnter = () => {
+      setShowUI(true);
+      if (hideTimerRef.current) {
+        clearTimeout(hideTimerRef.current);
+      }
+      // Start auto-hide timer when mouse enters
+      if (isReady && currentTime > 0 && currentTime < duration && !externalIdle) {
+        hideTimerRef.current = setTimeout(() => {
+          setShowUI(false);
+        }, 3000);
+      }
+    };
+
+    const handleMouseLeave = () => {
+      // Hide controls immediately when mouse leaves (only if playing)
+      if (isPlaying && !externalIdle) {
+        setShowUI(false);
+        if (hideTimerRef.current) {
+          clearTimeout(hideTimerRef.current);
+        }
+      }
+    };
+
+    const handleMouseMove = () => {
+      setShowUI(true);
       resetHideTimer();
     };
 
-    container.addEventListener('mousemove', handleInteraction);
-    container.addEventListener('click', handleInteraction);
-    
-    // Initial timer
-    resetHideTimer();
+    container.addEventListener('mouseenter', handleMouseEnter);
+    container.addEventListener('mouseleave', handleMouseLeave);
+    container.addEventListener('mousemove', handleMouseMove);
 
     return () => {
-      container.removeEventListener('mousemove', handleInteraction);
-      container.removeEventListener('click', handleInteraction);
+      container.removeEventListener('mouseenter', handleMouseEnter);
+      container.removeEventListener('mouseleave', handleMouseLeave);
+      container.removeEventListener('mousemove', handleMouseMove);
       if (hideTimerRef.current) {
         clearTimeout(hideTimerRef.current);
       }
     };
-  }, [resetHideTimer]);
+  }, [isPlaying, isReady, currentTime, duration, externalIdle, resetHideTimer]);
 
   // Khi pause, luôn hiện controls
   React.useEffect(() => {
@@ -535,9 +612,6 @@ export const YouTubePlayer: React.FC<YouTubePlayerProps> = ({
     return () => document.removeEventListener('fullscreenchange', handleFullscreenChange);
   }, [resetHideTimer]);
 
-  const isPlaying = playerState === PlayerState.PLAYING;
-  const progressPercentage = duration > 0 ? (currentTime / duration) * 100 : 0;
-
   // Quality label mapping
   const qualityLabels: Record<string, string> = {
     'highres': '4K+',
@@ -555,28 +629,11 @@ export const YouTubePlayer: React.FC<YouTubePlayerProps> = ({
       ref={containerRef}
       className={`relative w-full h-full bg-black overflow-hidden ${className}`}
       style={{ cursor: showUI ? 'default' : 'none' }}
-      onMouseMove={(e) => {
-        // Force show UI on mouse move within player, regardless of externalIdle
-        if (externalIdle) {
-          setShowUI(true);
-          resetHideTimer();
-        } else {
-          resetHideTimer();
-        }
-      }}
-      onMouseEnter={() => {
-        // Force show UI on mouse enter, regardless of externalIdle
-        setShowUI(true);
-        resetHideTimer();
-      }}
       onClick={(e) => {
         // Đóng quality menu khi click outside
         if (showQualityMenu && !(e.target as HTMLElement).closest('.quality-menu-container')) {
           setShowQualityMenu(false);
         }
-        // Force show UI on click within player, regardless of externalIdle
-        setShowUI(true);
-        resetHideTimer();
       }}
     >
       {/* YouTube Player Container */}
@@ -588,16 +645,6 @@ export const YouTubePlayer: React.FC<YouTubePlayerProps> = ({
           <div 
             className="absolute inset-0 z-50" 
             style={{ cursor: 'none' }}
-            onMouseMove={(e) => {
-              // Force show UI on mouse move within player, regardless of externalIdle
-              setShowUI(true);
-              resetHideTimer();
-            }}
-            onClick={() => {
-              // Force show UI on click within player, regardless of externalIdle
-              setShowUI(true);
-              resetHideTimer();
-            }}
           />
         )}
 

@@ -104,7 +104,6 @@ const MoviePlayer: React.FC<MoviePlayerProps> = ({ movie, startAt }) => {
   const title = mutateMovieTitle(movie);
   const idle = useIdle(3000);
   const { mobile } = useBreakpoints();
-  const [playerIdle, setPlayerIdle] = useState(false);
   const zoom = usePinchToZoom(iframeRef, { enabled: mobile, minZoom: 1, maxZoom: 2 });
   const [opened, handlers] = useDisclosure(false);
   const [selectedSource, setSelectedSource] = useQueryState<number>(
@@ -113,59 +112,7 @@ const MoviePlayer: React.FC<MoviePlayerProps> = ({ movie, startAt }) => {
   );
   const [reloadKey, setReloadKey] = useState<number>(0);
 
-  // Player idle logic - hide controls after inactivity
-  useEffect(() => {
-    let timeoutId: NodeJS.Timeout;
-
-    const resetPlayerIdle = () => {
-      setPlayerIdle(false);
-      clearTimeout(timeoutId);
-      // Use 5s for mobile, 3s for desktop
-      const hideDelay = mobile ? 5000 : 3000;
-      timeoutId = setTimeout(() => {
-        setPlayerIdle(true);
-      }, hideDelay);
-    };
-
-    // Initial setup
-    resetPlayerIdle();
-
-    // Event listeners for user activity
-    const handleActivity = () => {
-      resetPlayerIdle();
-    };
-
-    const playerContainer = cardRef.current;
-    if (!playerContainer) return;
-
-    // Listen on both player container and document for desktop
-    if (!mobile) {
-      // Desktop: listen on document for mouse enter from outside
-      document.addEventListener('mousemove', handleActivity);
-      document.addEventListener('keydown', handleActivity);
-      document.addEventListener('click', handleActivity);
-    } else {
-      // Mobile: only listen within player container
-      playerContainer.addEventListener('mousemove', handleActivity);
-      playerContainer.addEventListener('keydown', handleActivity);
-      playerContainer.addEventListener('click', handleActivity);
-    }
-
-    return () => {
-      clearTimeout(timeoutId);
-      if (!mobile) {
-        document.removeEventListener('mousemove', handleActivity);
-        document.removeEventListener('keydown', handleActivity);
-        document.removeEventListener('click', handleActivity);
-      } else {
-        playerContainer.removeEventListener('mousemove', handleActivity);
-        playerContainer.removeEventListener('keydown', handleActivity);
-        playerContainer.removeEventListener('click', handleActivity);
-      }
-    };
-  }, [cardRef, mobile]);
-
-  // Gesture control callbacks
+  // Detect if current player is YouTube
   const gestureCallbacks = useMemo(() => ({
     onTogglePlay: () => {
       // Try to send message to iframe to toggle play
@@ -580,7 +527,6 @@ interface FullscreenDocument extends Document {
         <MoviePlayerHeader
           id={movie.id}
           onOpenSource={handlers.open}
-          hidden={playerIdle}
         />
         
         <ControlMenu
@@ -588,7 +534,7 @@ interface FullscreenDocument extends Document {
           onToggleFullscreen={gestureCallbacks.onToggleFullscreen}
           onReload={gestureCallbacks.onReload}
           isFullscreen={isFullscreen}
-          hidden={playerIdle}
+          playerContainerRef={cardRef}
         />
         
         <div className="relative h-screen overflow-hidden" ref={cardRef}>
@@ -616,7 +562,6 @@ interface FullscreenDocument extends Document {
                     className="h-full w-full"
                     intro={PLAYER.intro}
                     outro={PLAYER.outro}
-                    externalIdle={playerIdle}
                     isMobile={mobile}
                     onNextEpisode={() => {
                       // Next episode handler for movies (next part if multi-part)
@@ -663,9 +608,7 @@ interface FullscreenDocument extends Document {
                     allow="autoplay; fullscreen; encrypted-media; picture-in-picture"
                     key={`${PLAYER.title}-${reloadKey}`}
                     src={PLAYER.source}
-                    className={cn("z-10 h-full w-full", {
-                      'pointer-events-none': idle && !mobile,
-                    })}
+                    className="z-10 h-full w-full"
                     style={{
                       border: 'none',
                       objectFit: 'cover',

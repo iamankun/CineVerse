@@ -89,7 +89,6 @@ const TvShowPlayer: React.FC<TvShowPlayerProps> = ({
     getInitialValueInEffect: false,
   });
 
-  const [playerIdle, setPlayerIdle] = useState(false);
   const { mobile } = useBreakpoints();
   const [players, setPlayers] = useState<PlayersProps[]>([]);
   const [isFullscreen, setIsFullscreen] = useState(false);
@@ -131,59 +130,7 @@ const TvShowPlayer: React.FC<TvShowPlayerProps> = ({
     "src",
     parseAsInteger.withDefault(0),
   );  const [reloadKey, setReloadKey] = useState<number>(0);
-  // Player idle logic - hide controls after inactivity
-  useEffect(() => {
-    let timeoutId: NodeJS.Timeout;
 
-    const resetPlayerIdle = () => {
-      setPlayerIdle(false);
-      clearTimeout(timeoutId);
-      // Use 5s for mobile, 3s for desktop
-      const hideDelay = mobile ? 5000 : 3000;
-      timeoutId = setTimeout(() => {
-        setPlayerIdle(true);
-      }, hideDelay);
-    };
-
-    // Initial setup
-    resetPlayerIdle();
-
-    // Event listeners for user activity
-    const handleActivity = () => {
-      resetPlayerIdle();
-    };
-
-    const playerContainer = cardRef.current;
-    if (!playerContainer) return;
-
-    // Listen on both player container and document for desktop
-    if (!mobile) {
-      // Desktop: listen on document for mouse enter from outside
-      document.addEventListener('mousemove', handleActivity);
-      document.addEventListener('keydown', handleActivity);
-      document.addEventListener('click', handleActivity);
-    } else {
-      // Mobile: only listen within player container
-      playerContainer.addEventListener('mousemove', handleActivity);
-      playerContainer.addEventListener('keydown', handleActivity);
-      playerContainer.addEventListener('click', handleActivity);
-    }
-
-    return () => {
-      clearTimeout(timeoutId);
-      if (!mobile) {
-        document.removeEventListener('mousemove', handleActivity);
-        document.removeEventListener('keydown', handleActivity);
-        document.removeEventListener('click', handleActivity);
-      } else {
-        playerContainer.removeEventListener('mousemove', handleActivity);
-        playerContainer.removeEventListener('keydown', handleActivity);
-        playerContainer.removeEventListener('click', handleActivity);
-      }
-    };
-  }, [cardRef, mobile]);
-
-  // Gesture control callbacks
   const gestureCallbacks = useMemo(() => ({
     onTogglePlay: () => {
       if (iframeRef.current?.contentWindow) {
@@ -638,7 +585,6 @@ const TvShowPlayer: React.FC<TvShowPlayerProps> = ({
         <TvShowPlayerHeader
           id={id}
           episode={episode}
-          hidden={playerIdle}
           selectedSource={selectedSource}
           nextEpisodeNumber={nextEpisodeNumber}
           prevEpisodeNumber={prevEpisodeNumber}
@@ -659,7 +605,6 @@ const TvShowPlayer: React.FC<TvShowPlayerProps> = ({
           onToggleFullscreen={gestureCallbacks.onToggleFullscreen}
           onReload={gestureCallbacks.onReload}
           isFullscreen={isFullscreen}
-          hidden={playerIdle}
         />
 
         <div className="relative h-screen overflow-hidden" ref={cardRef}>
@@ -687,7 +632,6 @@ const TvShowPlayer: React.FC<TvShowPlayerProps> = ({
                     className="h-full w-full"
                     intro={PLAYER.intro}
                     outro={PLAYER.outro}
-                    externalIdle={playerIdle}
                     isMobile={mobile}
                     // New props for direct navigation
                     id={id}
