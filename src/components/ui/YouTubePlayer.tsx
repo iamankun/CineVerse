@@ -145,12 +145,12 @@ export const YouTubePlayer: React.FC<YouTubePlayerProps> = ({
     }
     
     // Chỉ auto-hide khi đang playing và không có external idle
-    if (isReady && currentTime > 0 && currentTime < duration && !externalIdle) {
+    if (isReady && playerState === 1 && !externalIdle) { // YT.PlayerState.PLAYING = 1
       hideTimerRef.current = setTimeout(() => {
         setShowUI(false);
       }, 3000);
     }
-  }, [isReady, currentTime, duration, showQualityMenu]); // Remove externalIdle from deps
+  }, [isReady, playerState, showQualityMenu, externalIdle]); // Dùng playerState thay vì currentTime/duration
 
   const isPlaying = playerState === PlayerState.PLAYING;
   const progressPercentage = duration > 0 ? (currentTime / duration) * 100 : 0;
@@ -172,7 +172,7 @@ export const YouTubePlayer: React.FC<YouTubePlayerProps> = ({
       }
 
       // Auto-hide after 4 seconds on touch
-      if (isReady && currentTime > 0 && currentTime < duration && !externalIdle) {
+      if (isReady && playerState === 1 && !externalIdle) { // YT.PlayerState.PLAYING = 1
         touchTimeout = setTimeout(() => {
           setShowUI(false);
         }, 4000);
@@ -187,7 +187,7 @@ export const YouTubePlayer: React.FC<YouTubePlayerProps> = ({
       }
       
       // Auto-hide after 3 seconds
-      if (isReady && currentTime > 0 && currentTime < duration && !externalIdle) {
+      if (isReady && playerState === 1 && !externalIdle) { // YT.PlayerState.PLAYING = 1
         touchTimeout = setTimeout(() => {
           setShowUI(false);
         }, 3000);
@@ -204,7 +204,7 @@ export const YouTubePlayer: React.FC<YouTubePlayerProps> = ({
         clearTimeout(touchTimeout);
       }
     };
-  }, [isReady, currentTime, duration, externalIdle]);
+  }, [isReady, playerState, externalIdle]); // Loại bỏ currentTime, duration
 
   // Desktop mouse events
   React.useEffect(() => {
@@ -217,7 +217,7 @@ export const YouTubePlayer: React.FC<YouTubePlayerProps> = ({
         clearTimeout(hideTimerRef.current);
       }
       // Start auto-hide timer when mouse enters
-      if (isReady && currentTime > 0 && currentTime < duration && !externalIdle) {
+      if (isReady && playerState === 1 && !externalIdle) { // YT.PlayerState.PLAYING = 1
         hideTimerRef.current = setTimeout(() => {
           setShowUI(false);
         }, 3000);
@@ -251,21 +251,21 @@ export const YouTubePlayer: React.FC<YouTubePlayerProps> = ({
         clearTimeout(hideTimerRef.current);
       }
     };
-  }, [isPlaying, isReady, currentTime, duration, externalIdle, resetHideTimer]);
+  }, [isPlaying, isReady, playerState, externalIdle, resetHideTimer]); // Loại bỏ currentTime, duration
 
   // Khi pause, luôn hiện controls
   React.useEffect(() => {
-    if (isReady && currentTime > 0 && currentTime < duration) {
+    if (isReady && playerState === 2) { // YT.PlayerState.PAUSED = 2
       setShowUI(true);
       if (hideTimerRef.current) {
         clearTimeout(hideTimerRef.current);
       }
     }
-  }, [isReady, currentTime, duration]);
+  }, [isReady, playerState]); // Dùng playerState thay vì currentTime/duration
 
-  // Check intro/outro timing
+  // Check intro/outro timing - chỉ khi video đang playing
   React.useEffect(() => {
-    if (!isReady) return;
+    if (!isReady || playerState !== 1) return; // Chỉ khi playing
 
     // Check if in intro range
     if (intro && currentTime >= intro.start && currentTime <= intro.end) {
@@ -280,7 +280,7 @@ export const YouTubePlayer: React.FC<YouTubePlayerProps> = ({
     } else {
       setShowNextEpisode(false);
     }
-  }, [currentTime, intro, outro, isReady]);
+  }, [currentTime, intro, outro, isReady, playerState]); // Giữ currentTime vì cần check range
 
   // Skip intro handler
   const handleSkipIntro = () => {
@@ -599,7 +599,7 @@ export const YouTubePlayer: React.FC<YouTubePlayerProps> = ({
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [togglePlayPause, seekTo, setVolume, currentTime, duration, volume, resetHideTimer, toggleFullscreen]);
+  }, [togglePlayPause, seekTo, setVolume, volume, resetHideTimer, toggleFullscreen]); // Loại bỏ currentTime, duration
 
   // Listen for fullscreen changes and reset hide timer
   React.useEffect(() => {
