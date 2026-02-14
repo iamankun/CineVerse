@@ -224,13 +224,17 @@ export const YouTubePlayer: React.FC<YouTubePlayerProps> = ({
       }
     };
 
-    const handleMouseLeave = () => {
-      // Hide controls immediately when mouse leaves (only if playing)
+    const handleMouseLeave = (e: MouseEvent) => {
+      // Chỉ ẩn controls khi chuột thực sự rời khỏi video container
+      // nhưng không ẩn ngay lập tức - đợi 3s như bình thường
       if (isPlaying && !externalIdle) {
-        setShowUI(false);
+        // Reset timer và bắt đầu đếm ẩn
         if (hideTimerRef.current) {
           clearTimeout(hideTimerRef.current);
         }
+        hideTimerRef.current = setTimeout(() => {
+          setShowUI(false);
+        }, 3000); // Đợi 3s như bình thường
       }
     };
 
@@ -262,6 +266,19 @@ export const YouTubePlayer: React.FC<YouTubePlayerProps> = ({
       }
     }
   }, [isReady, playerState]); // Dùng playerState thay vì currentTime/duration
+
+  // Khởi động auto-hide timer khi video bắt đầu playing
+  React.useEffect(() => {
+    if (isReady && playerState === 1 && !externalIdle) { // YT.PlayerState.PLAYING = 1
+      // Bắt đầu auto-hide timer 3s
+      if (hideTimerRef.current) {
+        clearTimeout(hideTimerRef.current);
+      }
+      hideTimerRef.current = setTimeout(() => {
+        setShowUI(false);
+      }, 3000);
+    }
+  }, [isReady, playerState, externalIdle]); // Chỉ chạy khi state thay đổi
 
   // Check intro/outro timing - chỉ khi video đang playing
   React.useEffect(() => {
