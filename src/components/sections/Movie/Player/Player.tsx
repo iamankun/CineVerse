@@ -525,8 +525,14 @@ interface FullscreenDocument extends Document {
           playerContainerRef={cardRef}
         />
         
-        <div className="relative h-screen overflow-hidden" ref={cardRef}>
-          <Card shadow="none" radius="none" className="absolute inset-0 bg-black flex items-center justify-center">
+        <div className={cn(
+          "relative overflow-hidden",
+          mobile ? "cineverse-mobile-player h-screen w-screen" : "h-screen"
+        )} ref={cardRef}>
+          <Card shadow="none" radius="none" className={cn(
+            "absolute inset-0 bg-black flex items-center justify-center",
+            mobile && "cineverse-mobile-container landscape:w-full landscape:h-full"
+          )}>
             <Skeleton className="absolute h-full w-full" />
             {seen && PLAYER?.source && (
               <div
@@ -537,8 +543,16 @@ interface FullscreenDocument extends Document {
                 style={{
                   width: '100%',
                   height: '100%',
-                  /* aspectRatio: '16/9', */
+                  aspectRatio: mobile ? undefined : '16/9',
                   overflow: 'hidden',
+                  ...(mobile && {
+                    position: 'absolute',
+                    top: '50%',
+                    left: '50%',
+                    transform: 'translate(-50%, -50%)',
+                    maxWidth: '100vw',
+                    maxHeight: '100vh'
+                  })
                 }}
               >
                 {youtubeVideoId ? (

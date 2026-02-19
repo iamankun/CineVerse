@@ -1,0 +1,53 @@
+/* Force landscape orientation on mobile devices */
+@media (max-width: 768px) and (orientation: portrait) {
+  .cineverse-mobile-player {
+    transform: rotate(90deg);
+    transform-origin: center center;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vh;
+    height: 100vw;
+    z-index: 9999;
+  }
+  
+  .cineverse-mobile-container {
+    transform: rotate(-90deg);
+    transform-origin: center center;
+    width: 100vh;
+    height: 100vw;
+    overflow: hidden;
+  }
+}
+
+/* Ensure proper sizing in landscape */
+@media (max-width: 768px) and (orientation: landscape) {
+  .cineverse-mobile-player {
+    width: 100vw;
+    height: 100vh;
+    position: relative;
+  }
+  
+  .cineverse-mobile-container {
+    width: 100vw;
+    height: 100vh;
+  }
+}
+
+/* Prevent zoom and ensure proper viewport */
+@media (max-width: 768px) {
+  html, body {
+    touch-action: pan-x pan-y;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
+    overscroll-behavior: none;
+  }
+  
+  .cineverse-player-fullscreen {
+    width: 100vw !important;
+    height: 100vh !important;
+    max-width: 100vw !important;
+    max-height: 100vh !important;
+  }
+}
