@@ -78,14 +78,12 @@ const MoviePlayer: React.FC<MoviePlayerProps> = ({ movie, startAt }) => {
   const { enabled: gestureEnabled, toggle: toggleGesture } = useGestureContext();
   const logoPath = useMovieLogo(movie.id, "movie", movie.original_language);
   
-  // Ẩn loading sau 5 giây
+  // Ẩn loading sau khi có PLAYER
   useEffect(() => {
-    const timer = setTimeout(() => {
+    if (PLAYER) {
       setShowLoading(false);
-    }, 5000);
-    
-    return () => clearTimeout(timer);
-  }, []);
+    }
+  }, [PLAYER]);
   
   // Sửa lỗi đăng nhập
   useEffect(() => {
