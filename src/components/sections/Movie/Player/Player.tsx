@@ -78,24 +78,6 @@ const MoviePlayer: React.FC<MoviePlayerProps> = ({ movie, startAt }) => {
   const { enabled: gestureEnabled, toggle: toggleGesture } = useGestureContext();
   const logoPath = useMovieLogo(movie.id, "movie", movie.original_language);
   
-  // Ẩn loading sau khi có PLAYER
-  useEffect(() => {
-    if (PLAYER) {
-      setShowLoading(false);
-    }
-  }, [PLAYER]);
-  
-  // Sửa lỗi đăng nhập
-  useEffect(() => {
-    console.log(`🎭 Sửa lỗi trình đa phương tiện:`, {
-      id: movie.id,
-      movieRating,
-      logoPath,
-      movieOriginalLanguage: movie.original_language,
-      seen,
-    });
-  }, [movie.id, movieRating, logoPath, movie.original_language, seen]);
-  
   const cardRef = useRef<HTMLDivElement>(null);
   const playerContainerRef = useRef<HTMLDivElement>(null);
   const iframeRef = useRef<HTMLIFrameElement>(null);
@@ -109,6 +91,16 @@ const MoviePlayer: React.FC<MoviePlayerProps> = ({ movie, startAt }) => {
     parseAsInteger.withDefault(0),
   );
   const [reloadKey, setReloadKey] = useState<number>(0);
+  
+  // Define PLAYER after selectedSource is declared
+  const PLAYER = useMemo(() => players[selectedSource] || players[0], [players, selectedSource]);
+  
+  // Ẩn loading sau khi có PLAYER
+  useEffect(() => {
+    if (PLAYER) {
+      setShowLoading(false);
+    }
+  }, [PLAYER]);
 
   // Detect if current player is YouTube
   const gestureCallbacks = useMemo(() => ({
@@ -470,8 +462,6 @@ interface FullscreenDocument extends Document {
     window.addEventListener('keydown', handleKeyPress);
     return () => window.removeEventListener('keydown', handleKeyPress);
   }, [isFullscreen]);
-
-  const PLAYER = useMemo(() => players[selectedSource] || players[0], [players, selectedSource]);
 
   // Detect if current player is YouTube
   const youtubeVideoId = useMemo(() => {
