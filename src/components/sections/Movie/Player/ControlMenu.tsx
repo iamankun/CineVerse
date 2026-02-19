@@ -48,16 +48,10 @@ const ControlMenu: React.FC<ControlMenuProps> = ({
     });
   }, [onToggleFullscreen, isFullscreen]);
 
-  // Toggle menu function với logic cải thiện
-  const toggleMenu = useCallback(() => {
-    const nextState = !isExpanded;
-    setIsExpanded(nextState);
-    if (nextState) {
-      setShowUI(true); // Luôn hiện khi mở
-    }
-  }, []);
   // Auto-hide controls timer - FIX TRIỆT ĐỂ NHẤP NHÁY
   const resetHideTimer = useCallback((forceShow = false) => {
+    console.log('🎛️ resetHideTimer:', { forceShow, isExpanded: isExpandedRef.current });
+    
     // Nếu đang mở rộng menu, tuyệt đối không ẩn
     if (isExpandedRef.current) {
       setShowUI(true);
@@ -72,11 +66,25 @@ const ControlMenu: React.FC<ControlMenuProps> = ({
     if (!forceShow) {
       hideTimerRef.current = setTimeout(() => {
         if (!isExpandedRef.current) {
+          console.log('🎛️ Auto-hiding controls');
           setShowUI(false);
         }
       }, 3000);
     }
   }, []);
+
+  // Toggle menu function với logic cải thiện
+  const toggleMenu = useCallback(() => {
+    const nextState = !isExpanded;
+    console.log('🎛️ Toggle menu:', { current: isExpanded, next: nextState });
+    setIsExpanded(nextState);
+    if (nextState) {
+      setShowUI(true); // Luôn hiện khi mở
+    } else {
+      // Khi đóng menu, bắt đầu timer ẩn
+      resetHideTimer(false);
+    }
+  }, [isExpanded, resetHideTimer]);
 
   // Desktop mouse events - Improved logic with ref for performance
   useEffect(() => {
@@ -216,8 +224,9 @@ const ControlMenu: React.FC<ControlMenuProps> = ({
 
   // Khởi động auto-hide timer khi component mount
   useEffect(() => {
-    // Không tự động ẩn khi mount - để người dùng tương tác trước
     console.log('🎛️ ControlMenu mounted - showUI:', showUI);
+    // Bắt đầu timer ẩn sau 3 giây khi mount
+    resetHideTimer(false);
   }, []); // Chỉ chạy một lần khi mount
 
   // Keyboard shortcut for ControlMenu (B key) - DISABLED để test
@@ -332,6 +341,7 @@ const ControlMenu: React.FC<ControlMenuProps> = ({
       }}
       onMouseLeave={(e) => {
         e.stopPropagation();
+        console.log('🎛️ Mouse leaving menu');
         // Khi rời menu, bắt đầu tính timer ẩn như bình thường
         resetHideTimer(false);
       }}
