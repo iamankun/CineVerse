@@ -6,7 +6,7 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const SOURCE_IMAGE = path.join(__dirname, '../public/CineVerse.png');
+const SOURCE_IMAGE = path.join(__dirname, '../public/logo-cineverse.png');
 const ICONS_DIR = path.join(__dirname, '../public/icons');
 
 // Android icon sizes
@@ -182,14 +182,14 @@ async function generateWindowsIcons() {
 
 async function main() {
   try {
-    console.log('🎨 Generate App Icons from CineVerse.png');
+    console.log('🎨 Generate App Icons from logo-cineverse.png');
     console.log('=====================================\n');
     
     // Check if source image exists
     try {
       await fs.access(SOURCE_IMAGE);
     } catch (error) {
-      console.error('❌ Không tìm thấy CineVerse.png tại:', SOURCE_IMAGE);
+      console.error('❌ Không tìm thấy logo-cineverse.png tại:', SOURCE_IMAGE);
       process.exit(1);
     }
     
@@ -204,7 +204,7 @@ async function main() {
     await generateIOSIcons();
     await generateWindowsIcons();
     
-    console.log('\n✨ Hoàn tất! Đã tạo tất cả app icons từ CineVerse.png');
+    console.log('\n✨ Hoàn tất! Đã tạo tất cả app icons từ logo-cineverse.png');
     console.log(`📊 Tổng số icons: ${androidSizes.length + iosSizes.length + windowsIcons.length}`);
     console.log('📽 CineVerse - Vũ Trụ Điện Ảnh | Hoàn tất cài đặt, trải nghiệm ngay.');
 
