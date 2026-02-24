@@ -25,7 +25,7 @@ const AdsWarning = dynamic(() => import("@/components/ui/overlay/AdsWarning"));
 const AgeRating = dynamic(() => import("@/components/ui/overlay/AgeRating"));
 const WatchingWithBrand = dynamic(() => import("@/components/ui/overlay/WatchingWithBrand"));
 const MoviePlayerHeader = dynamic(() => import("./Header"));
-const ControlMenu = dynamic(() => import("./ControlMenu"));
+const TrinhDieuKhien = dynamic(() => import("@/components/ui/other/TrinhDieuKhien"));
 const MoviePlayerSourceSelection = dynamic(() => import("./SourceSelection"));
 const GestureDetector = dynamic(() => import("@/components/ui/gesture/GestureDetector"), { ssr: false });
 
@@ -73,6 +73,7 @@ const MoviePlayer: React.FC<MoviePlayerProps> = ({ movie, startAt }) => {
 
   const [players, setPlayers] = useState<PlayersProps[]>([]);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [isMuted, setIsMuted] = useState(false);
   const [movieRating, setMovieRating] = useState<{ rating: string; description: string } | null>(null);
   const [showLoading, setShowLoading] = useState(true);
   const { enabled: gestureEnabled, toggle: toggleGesture } = useGestureContext();
@@ -517,14 +518,6 @@ interface FullscreenDocument extends Document {
           onOpenSource={handlers.open}
         />
         
-        <ControlMenu
-          onOpenSource={handlers.open}
-          onToggleFullscreen={gestureCallbacks.onToggleFullscreen}
-          onReload={gestureCallbacks.onReload}
-          isFullscreen={isFullscreen}
-          playerContainerRef={cardRef}
-        />
-        
         <div className={cn(
           "relative overflow-hidden",
           mobile ? "cineverse-mobile-player h-screen w-screen" : "h-screen"
@@ -534,6 +527,17 @@ interface FullscreenDocument extends Document {
             mobile && "cineverse-mobile-container landscape:w-full landscape:h-full"
           )}>
             <Skeleton className="absolute h-full w-full" />
+            
+            {/* TrinhDieuKhien - Control mới ở góc trên bên phải */}
+            <TrinhDieuKhien
+              onOpenSource={handlers.open}
+              onToggleFullscreen={gestureCallbacks.onToggleFullscreen}
+              onReload={gestureCallbacks.onReload}
+              isFullscreen={isFullscreen}
+              isMuted={isMuted}
+              playerContainerRef={cardRef}
+            />
+            
             {seen && PLAYER?.source && (
               <div
                 ref={playerContainerRef}

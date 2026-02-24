@@ -24,7 +24,7 @@ const AdsWarning = dynamic(() => import("@/components/ui/overlay/AdsWarning"));
 const AgeRating = dynamic(() => import("@/components/ui/overlay/AgeRating"));
 const WatchingWithBrand = dynamic(() => import("@/components/ui/overlay/WatchingWithBrand"));
 const TvShowPlayerHeader = dynamic(() => import("./Header"));
-const ControlMenu = dynamic(() => import("./ControlMenu"));
+const TrinhDieuKhien = dynamic(() => import("@/components/ui/other/TrinhDieuKhien"));
 const TvShowPlayerSourceSelection = dynamic(() => import("./SourceSelection"));
 const TvShowPlayerEpisodeSelection = dynamic(() => import("./EpisodeSelection"));
 const GestureDetector = dynamic(() => import("@/components/ui/gesture/GestureDetector"), { ssr: false });
@@ -92,6 +92,7 @@ const TvShowPlayer: React.FC<TvShowPlayerProps> = ({
   const { mobile } = useBreakpoints();
   const [players, setPlayers] = useState<PlayersProps[]>([]);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [isMuted, setIsMuted] = useState(false);
   const [movieRating, setMovieRating] = useState<{ rating: string; description: string } | null>(null);
   const [videoCurrentTime, setVideoCurrentTime] = useState(0);
   const [showLoading, setShowLoading] = useState(true);
@@ -593,24 +594,35 @@ const TvShowPlayer: React.FC<TvShowPlayerProps> = ({
           {...props}
         />
 
-        <ControlMenu
-          id={id}
-          seasonNumber={episode.season_number}
-          episodeNumber={episode.episode_number}
-          selectedSource={selectedSource}
-          nextEpisodeNumber={nextEpisodeNumber}
-          prevEpisodeNumber={prevEpisodeNumber}
-          onOpenSource={sourceHandlers.open}
-          onOpenEpisode={episodeHandlers.open}
-          onToggleFullscreen={gestureCallbacks.onToggleFullscreen}
-          onReload={gestureCallbacks.onReload}
-          isFullscreen={isFullscreen}
-          playerContainerRef={cardRef}
-        />
-
         <div className="relative h-screen overflow-hidden" ref={cardRef}>
           <Card shadow="none" radius="none" className="absolute inset-0 bg-black flex items-center justify-center">
             <Skeleton className="absolute h-full w-full" />
+            
+            {/* TrinhDieuKhien - Control mới ở góc trên bên phải */}
+            <TrinhDieuKhien
+              onOpenSource={sourceHandlers.open}
+              onToggleFullscreen={gestureCallbacks.onToggleFullscreen}
+              onReload={gestureCallbacks.onReload}
+              onPrevEpisode={prevEpisodeNumber ? () => {
+                if (prevEpisodeNumber) {
+                  window.location.href = `/tv/${id}/${episode.season_number}/${prevEpisodeNumber}/player?src=${selectedSource}`;
+                }
+              } : undefined}
+              onNextEpisode={nextEpisodeNumber ? () => {
+                if (nextEpisodeNumber) {
+                  window.location.href = `/tv/${id}/${episode.season_number}/${nextEpisodeNumber}/player?src=${selectedSource}`;
+                }
+              } : undefined}
+              onOpenEpisode={episodeHandlers.open}
+              prevEpisodeDisabled={!prevEpisodeNumber}
+              nextEpisodeDisabled={!nextEpisodeNumber}
+              prevEpisodeHref={prevEpisodeNumber ? `/tv/${id}/${episode.season_number}/${prevEpisodeNumber}/player?src=${selectedSource}` : undefined}
+              nextEpisodeHref={nextEpisodeNumber ? `/tv/${id}/${episode.season_number}/${nextEpisodeNumber}/player?src=${selectedSource}` : undefined}
+              isFullscreen={isFullscreen}
+              isMuted={isMuted}
+              playerContainerRef={cardRef}
+            />
+            
             {seen && (
               <div
                 ref={playerContainerRef}
