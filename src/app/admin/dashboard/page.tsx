@@ -657,6 +657,30 @@ function EpisodeItem({
                             e.target.value
                           )
                         }
+                        onPaste={(e) => {
+                          const pastedText = e.clipboardData.getData('text');
+                          if (pastedText && (pastedText.includes('youtube.com') || pastedText.includes('youtu.be'))) {
+                            e.preventDefault();
+                            const norm = normalizeYouTubeUrl(pastedText);
+                            if (norm) {
+                              updateEpisodeSource(
+                                selectedSeason, 
+                                episodeNum, 
+                                srcIdx, 
+                                "url", 
+                                norm.url
+                              );
+                            } else {
+                              updateEpisodeSource(
+                                selectedSeason, 
+                                episodeNum, 
+                                srcIdx, 
+                                "url", 
+                                pastedText
+                              );
+                            }
+                          }
+                        }}
                         classNames={{
                           input: "text-white text-xs",
                           inputWrapper: "bg-gray-500",
@@ -2216,6 +2240,18 @@ export default function DashboardPage() {
                                   placeholder="https://..."
                                   value={source.url}
                                   onChange={(e) => updateSource(index, "url", e.target.value)}
+                                  onPaste={(e) => {
+                                    const pastedText = e.clipboardData.getData('text');
+                                    if (pastedText && (pastedText.includes('youtube.com') || pastedText.includes('youtu.be'))) {
+                                      e.preventDefault();
+                                      const norm = normalizeYouTubeUrl(pastedText);
+                                      if (norm) {
+                                        updateSource(index, "url", norm.url);
+                                      } else {
+                                        updateSource(index, "url", pastedText);
+                                      }
+                                    }
+                                  }}
                                   classNames={{
                                     input: "text-white",
                                     inputWrapper: "bg-gray-600",
