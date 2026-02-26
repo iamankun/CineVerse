@@ -242,17 +242,21 @@ interface FullscreenDocument extends Document {
     getMoviePlayers(movie.id).then((fetchedPlayers) => {
       if (isMounted) {
         console.log(`✅ Players fetched:`, fetchedPlayers.length, fetchedPlayers);
-        // Nếu có nguồn với provider vidsrc và url rỗng, tự động thay thế bằng VidSrc external
+        // Nếu có nguồn với provider vidsrc hoặc kkphim và url rỗng, tự động thay thế bằng external
         const processedPlayers = fetchedPlayers.map(player => {
-          if (player.provider?.toLowerCase() === 'vidsrc' && !player.source) {
-            console.log(`🔄 Chuyển đổi provider vidsrc sang VidSrc external`);
+          if ((player.provider?.toLowerCase() === 'vidsrc' || player.provider?.toLowerCase() === 'kkphim') && !player.source) {
+            const externalSource = player.provider?.toLowerCase() === 'vidsrc' 
+              ? `https://vidsrc-embed.ru/embed/movie?tmdb=${movie.id}&ds_lang=vi&autoplay=1` as `https://${string}`
+              : `https://player.phimapi.com/player/?url=https://s5.phim1280.tv/${movie.id}/index.m3u8` as `https://${string}`;
+            
+            console.log(`🔄 Chuyển đổi provider ${player.provider} sang ${player.provider} external`);
             return {
-              title: "VidSrc",
-              source: `https://vidsrc-embed.ru/embed/movie?tmdb=${movie.id}&ds_lang=vi&autoplay=1` as `https://${string}`,
+              title: player.provider?.toLowerCase() === 'vidsrc' ? "VidSrc" : "KKPhim",
+              source: externalSource,
               recommended: player.recommended,
               fast: true,
               ads: false,
-              provider: 'vidsrc-external',
+              provider: `${player.provider?.toLowerCase()}-external`,
             };
           }
           return player;

@@ -252,17 +252,21 @@ const TvShowPlayer: React.FC<TvShowPlayerProps> = ({
 
     getTvShowPlayers(id, episode.season_number, episode.episode_number).then((fetchedPlayers) => {
       if (isMounted) {
-        // Nếu có nguồn với provider vidsrc và url rỗng, tự động thay thế bằng VidSrc external
+        // Nếu có nguồn với provider vidsrc hoặc kkphim và url rỗng, tự động thay thế bằng external
         const processedPlayers = fetchedPlayers.map(player => {
-          if (player.provider?.toLowerCase() === 'vidsrc' && !player.source) {
-            console.log(`🔄 Chuyển đổi provider vidsrc sang VidSrc external`);
+          if ((player.provider?.toLowerCase() === 'vidsrc' || player.provider?.toLowerCase() === 'kkphim') && !player.source) {
+            const externalSource = player.provider?.toLowerCase() === 'vidsrc' 
+              ? `https://vidsrc-embed.ru/embed/tv?tmdb=${id}&season=${episode.season_number}&episode=${episode.episode_number}&ds_lang=vi&autoplay=1` as `https://${string}`
+              : `https://player.phimapi.com/player/?url=https://s5.phim1280.tv/${id}/index.m3u8` as `https://${string}`;
+            
+            console.log(`🔄 Chuyển đổi provider ${player.provider} sang ${player.provider} external`);
             return {
-              title: "VidSrc",
-              source: `https://vidsrc-embed.ru/embed/tv?tmdb=${id}&season=${episode.season_number}&episode=${episode.episode_number}&ds_lang=vi&autoplay=1` as `https://${string}`,
+              title: player.provider?.toLowerCase() === 'vidsrc' ? "VidSrc" : "KKPhim",
+              source: externalSource,
               recommended: player.recommended,
               fast: true,
               ads: false,
-              provider: 'vidsrc-external',
+              provider: `${player.provider?.toLowerCase()}-external`,
             };
           }
           return player;

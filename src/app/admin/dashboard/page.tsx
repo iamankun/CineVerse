@@ -641,6 +641,7 @@ function EpisodeItem({
                         <SelectItem key="youtube">YouTube</SelectItem>
                         <SelectItem key="dailymotion">DailyMotion</SelectItem>
                         <SelectItem key="vidsrc">VidSrc</SelectItem>
+                        <SelectItem key="kkphim">KKPhim</SelectItem>
                       </Select>
 
                       <Input
@@ -788,7 +789,7 @@ interface TMDBResult {
 }
 
 interface SourceItem {
-  provider: "youtube" | "dailymotion" | "vidsrc";
+  provider: "youtube" | "dailymotion" | "vidsrc" | "kkphim";
   title: string;
   url: string;
   quality?: string;
@@ -1121,6 +1122,10 @@ export default function DashboardPage() {
         if (field === "provider" && value === "vidsrc") {
           return { ...src, provider: value, url: "" };
         }
+        // Nếu chọn kkphim, giữ nguyên URL hiện tại (không set rỗng)
+        if (field === "provider" && value === "kkphim") {
+          return { ...src, provider: value };
+        }
         // Nếu đang là vidsrc, không cho sửa url
         if (src.provider === "vidsrc" && field === "url") {
           return src;
@@ -1131,6 +1136,10 @@ export default function DashboardPage() {
           if (norm) {
             value = norm.url;
           }
+        }
+        // KKPhim cho phép dán link (không như VidSrc)
+        if (src.provider === "kkphim" && field === "url") {
+          return { ...src, [field]: value };
         }
         return { ...src, [field]: value };
       });
@@ -1262,8 +1271,16 @@ export default function DashboardPage() {
               if (field === "provider" && value === "vidsrc") {
                 return { ...src, provider: value, url: "" };
               }
+              // Nếu chọn kkphim, giữ nguyên URL hiện tại (không set rỗng)
+              if (field === "provider" && value === "kkphim") {
+                return { ...src, provider: value };
+              }
               if (src.provider === "vidsrc" && field === "url") {
                 return src;
+              }
+              // KKPhim cho phép dán link (không như VidSrc)
+              if (src.provider === "kkphim" && field === "url") {
+                return { ...src, [field]: value };
               }
               return { ...src, [field]: value };
             }),
@@ -2233,6 +2250,7 @@ export default function DashboardPage() {
                                   <SelectItem key="dailymotion">DailyMotion</SelectItem>
                                   <SelectItem key="youtube">YouTube</SelectItem>
                                   <SelectItem key="vidsrc">VidSrc</SelectItem>
+                                  <SelectItem key="kkphim">KKPhim</SelectItem>
                                 </Select>
 
                                 <Input
