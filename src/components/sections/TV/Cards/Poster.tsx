@@ -3,7 +3,7 @@ import VaulDrawer from "@/components/ui/overlay/VaulDrawer";
 import useBreakpoints from "@/hooks/useBreakpoints";
 import useDeviceVibration from "@/hooks/useDeviceVibration";
 import { getImageUrl, mutateTvShowTitle } from "@/utils/movies";
-import { Card, CardBody, CardFooter, CardHeader, Chip, Image, Tooltip } from "@heroui/react";
+import { Card, CardBody, CardFooter, CardHeader, Chip, Image, Tooltip, Button } from "@heroui/react";
 import { Icon } from "@iconify/react";
 import { useDisclosure, useHover } from "@mantine/hooks";
 import Link from "next/link";
@@ -130,7 +130,19 @@ const TvShowPosterCard: React.FC<TvShowPosterCardProps> = ({ tv, variant = "full
               </CardBody>
               <CardFooter className="justify-between pt-0 text-xs">
                 <p>{releaseYear}</p>
-                <Rating rate={tv.vote_average} />
+                <div className="flex items-center gap-2">
+                  <Rating rate={tv.vote_average} />
+                  <Button
+                    as={Link}
+                    href={`/kkphim?type=tv&id=${tv.id}`}
+                    size="sm"
+                    color="primary"
+                    variant="flat"
+                    className="min-w-[60px] h-6 text-xs"
+                  >
+                    KKPhim
+                  </Button>
+                </div>
               </CardFooter>
             </Card>
           )}

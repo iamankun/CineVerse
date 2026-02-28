@@ -3,6 +3,7 @@
 import { PropsWithChildren } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ThemeProvider as NextThemesProvider } from "next-themes";
+import { HeroUIProvider } from "@heroui/react";
 
 export const queryClient = new QueryClient({
   defaultOptions: {
@@ -15,10 +16,12 @@ export const queryClient = new QueryClient({
 
 export default function Providers({ children }: PropsWithChildren) {
   return (
-    <QueryClientProvider client={queryClient}>
-      <NextThemesProvider attribute="class" defaultTheme="dark" enableSystem>
-        {children}
-      </NextThemesProvider>
-    </QueryClientProvider>
+    <HeroUIProvider>
+      <QueryClientProvider client={queryClient}>
+        <NextThemesProvider attribute="class" defaultTheme="dark" enableSystem>
+          {children}
+        </NextThemesProvider>
+      </QueryClientProvider>
+    </HeroUIProvider>
   );
 }
