@@ -1391,158 +1391,274 @@ export default function DashboardPage() {
     return cleaned;
   };
 
-  // Handle JSON paste with auto-fix
+  // Handle JSON paste or multiple links with auto-fix
   const handleJsonPaste = () => {
     try {
-      // Auto-clean JSON string first
-      let cleanedInput = cleanJsonString(jsonInput);
+      const input = jsonInput.trim();
       
-      // Try to parse cleaned JSON
-      let parsedData;
-      try {
-        parsedData = JSON.parse(cleanedInput);
-      } catch (firstError) {
-        // If still fails, try more aggressive cleaning
-        console.log("First parse failed, trying aggressive cleaning...");
-        
-        // Remove all control characters except newlines and tabs
-        cleanedInput = cleanedInput.replace(/[\x00-\x09\x0B-\x0C\x0E-\x1F\x7F]/g, '');
-        
-        // Try parse again
-        parsedData = JSON.parse(cleanedInput);
+      // Check if input looks like JSON (starts with {)
+      if (input.startsWith('{')) {
+        // Process as JSON
+        processJsonInput(input);
+      } else {
+        // Process as multiple links
+        processMultipleLinks(input);
       }
+    } catch (error: any) {
+      console.error("Lỗi xử lý:", error);
+      alert("⚠️ Không thể xử lý dữ liệu này. Vui lòng kiểm tra lại định dạng.");
+    }
+  };
+
+  // Process JSON input
+  const processJsonInput = (input: string) => {
+    let cleanedInput = cleanJsonString(input);
+    
+    // Try to parse cleaned JSON
+    let parsedData;
+    try {
+      parsedData = JSON.parse(cleanedInput);
+    } catch (firstError) {
+      // If still fails, try more aggressive cleaning
+      console.log("First parse failed, trying aggressive cleaning...");
       
-      // Validate required fields
-      if (!parsedData.tmdbId || !parsedData.title) {
-        alert("JSON phải chứa ít nhất TMDB ID và tiêu đề");
-        return;
+      // Remove all control characters except newlines and tabs
+      cleanedInput = cleanedInput.replace(/[\x00-\x09\x0B-\x0C\x0E-\x1F\x7F]/g, '');
+      
+      // Try parse again
+      parsedData = JSON.parse(cleanedInput);
+    }
+    
+    // Validate required fields
+    if (!parsedData.tmdbId && !parsedData.tmdb_id) {
+      alert("JSON phải chứa ít nhất TMDB ID");
+      return;
+    }
+    
+    // Use tmdb_id if tmdbId doesn't exist
+    const tmdbId = parsedData.tmdbId || parsedData.tmdb_id;
+    
+    // Determine content type from data structure
+    const isMovie = parsedData.sources && Array.isArray(parsedData.sources);
+    const isTv = parsedData.seasons && typeof parsedData.seasons === "object";
+    
+    if (!isMovie && !isTv) {
+      alert("JSON phải chứa nguồn (Phim) hoặc mùa (Chương Trình TV)");
+      return;
+    }
+    
+    // Set content type
+    const detectedType = isMovie ? "movie" : "tv";
+    if (detectedType !== contentType) {
+      setContentType(detectedType);
+    }
+    
+    // Handle lastUpdate/lastUpdated field (support both naming conventions)
+    const lastUpdateValue = parsedData.metadata?.lastUpdate || 
+                           parsedData.metadata?.lastUpdated || 
+                           parsedData.lastUpdated || 
+                           parsedData.lastUpdate || 
+                           new Date().toISOString();
+    
+    // Detect audio version from note or metadata
+    let audioVersion = parsedData.metadata?.audioVersion || "PhuDe";
+    if (!parsedData.metadata?.audioVersion) {
+      const note = parsedData.metadata?.note || "";
+      if (note.toLowerCase().includes("Lồng Tiếng")) {
+        audioVersion = "LongTieng";
+      } else if (note.toLowerCase().includes("Nguyên Bản") || note.toLowerCase().includes("original")) {
+        audioVersion = "Goc";
       }
-      
-      // Determine content type from data structure
-      const isMovie = parsedData.sources && Array.isArray(parsedData.sources);
-      const isTv = parsedData.seasons && typeof parsedData.seasons === "object";
-      
-      if (!isMovie && !isTv) {
-        alert("JSON phải chứa nguồn (Phim) hoặc mùa (Chương Trình TV)");
-        return;
-      }
-      
-      // Set content type
-      const detectedType = isMovie ? "movie" : "tv";
-      if (detectedType !== contentType) {
-        setContentType(detectedType);
-      }
-      
-      // Handle lastUpdate/lastUpdated field (support both naming conventions)
-      const lastUpdateValue = parsedData.metadata?.lastUpdate || 
-                             parsedData.metadata?.lastUpdated || 
-                             parsedData.lastUpdated || 
-                             parsedData.lastUpdate || 
-                             new Date().toISOString();
-      
-      // Detect audio version from note or metadata
-      let audioVersion = parsedData.metadata?.audioVersion || "PhuDe";
-      if (!parsedData.metadata?.audioVersion) {
-        const note = parsedData.metadata?.note || "";
-        if (note.toLowerCase().includes("Lồng Tiếng")) {
-          audioVersion = "LongTieng";
-        } else if (note.toLowerCase().includes("Nguyên Bản") || note.toLowerCase().includes("original")) {
-          audioVersion = "Goc";
+    }
+    
+    // Calculate totalSeasons and totalEpisodes for TV shows
+    let totalSeasons = 0;
+    let totalEpisodes = 0;
+    if (isTv && parsedData.seasons) {
+      totalSeasons = Object.keys(parsedData.seasons).length;
+      Object.values(parsedData.seasons).forEach((season: any) => {
+        totalEpisodes += Object.keys(season).length;
+      });
+    }
+    
+    // Ensure metadata exists with defaults
+    const metadata = {
+      "movie-rating": parsedData.metadata?.["movie-rating"] || "K",
+      audioVersion: audioVersion,
+      lastUpdate: lastUpdateValue,
+      genre: parsedData.metadata?.genre || [],
+      duration: parsedData.metadata?.duration || 0,
+      status: parsedData.metadata?.status || (isMovie ? "Released" : "Returning Series"),
+      note: parsedData.metadata?.note || "",
+      ...(isTv && {
+        studio: parsedData.metadata?.studio || "",
+        totalEpisodes,
+        totalSeasons,
+      }),
+    };
+    
+    // Set form data
+    setFormData({
+      tmdbId: tmdbId,
+      title: parsedData.title,
+      year: parsedData.year || new Date().getFullYear(),
+      ...(isMovie ? { sources: parsedData.sources } : { seasons: parsedData.seasons }),
+      metadata,
+    });
+    
+    // Set selected item for UI
+    setSelectedItem({ 
+      id: tmdbId,
+      title: parsedData.title,
+      name: parsedData.title,
+    } as TMDBResult);
+    
+    // For TV shows, set initial season and episode
+    if (isTv && parsedData.seasons) {
+      const firstSeason = Object.keys(parsedData.seasons)[0];
+      if (firstSeason) {
+        setSelectedSeason(firstSeason);
+        const firstEpisode = Object.keys(parsedData.seasons[firstSeason])[0];
+        if (firstEpisode) {
+          setSelectedEpisode(firstEpisode);
         }
       }
+    }
+    
+    // Show current JSON data (cleaned version)
+    const cleanedData = {
+      tmdbId: tmdbId,
+      title: parsedData.title,
+      year: parsedData.year || new Date().getFullYear(),
+      ...(isMovie ? { sources: parsedData.sources } : { seasons: parsedData.seasons }),
+      metadata,
+    };
+    setCurrentJsonData(JSON.stringify(cleanedData, null, 2));
+    
+    // Clear input and close modal
+    setJsonInput("");
+    setShowJsonInput(false);
+    
+    alert("✅ Đã tải JSON thành công!\n- Loại: " + (isMovie ? "Phim" : "TV Show") + "\n- Rating: " + metadata["movie-rating"] + "\n- Âm thanh: " + audioVersion);
+  };
+
+  // Process multiple links
+  const processMultipleLinks = (input: string) => {
+    // Split input by lines and filter out empty lines
+    const lines = input.split('\n').filter(line => line.trim());
+    
+    if (lines.length === 0) {
+      alert("Vui lòng dán ít nhất một link");
+      return;
+    }
+    
+    // Extract URLs from lines
+    const urls = lines.map(line => {
+      // Remove any extra whitespace and common prefixes
+      let url = line.trim();
       
-      // Calculate totalSeasons and totalEpisodes for TV shows
-      let totalSeasons = 0;
-      let totalEpisodes = 0;
-      if (isTv && parsedData.seasons) {
-        totalSeasons = Object.keys(parsedData.seasons).length;
-        Object.values(parsedData.seasons).forEach((season: any) => {
-          totalEpisodes += Object.keys(season).length;
-        });
-      }
+      // Remove any episode number prefixes like "Tập 1:", "Episode 1:", etc.
+      url = url.replace(/^(Tập\s*\d+[:\s]*|Episode\s*\d+[:\s]*|E\d+[:\s]*)/i, '');
       
-      // Ensure metadata exists with defaults
-      const metadata = {
-        "movie-rating": parsedData.metadata?.["movie-rating"] || "K",
-        audioVersion: audioVersion,
-        lastUpdate: lastUpdateValue,
-        genre: parsedData.metadata?.genre || [],
-        duration: parsedData.metadata?.duration || 0,
-        status: parsedData.metadata?.status || (isMovie ? "Released" : "Returning Series"),
-        note: parsedData.metadata?.note || "",
-        ...(isTv && {
-          studio: parsedData.metadata?.studio || "",
-          totalEpisodes,
-          totalSeasons,
-        }),
+      return url;
+    }).filter(url => url && (url.startsWith('http') || url.startsWith('//')));
+    
+    if (urls.length === 0) {
+      alert("Không tìm thấy link hợp lệ. Vui lòng dán các link bắt đầu bằng http");
+      return;
+    }
+    
+    // Determine if this is a movie or TV show based on current content type
+    const isMovie = contentType === "movie";
+    
+    // Default metadata
+    const metadata = {
+      "movie-rating": "K",
+      audioVersion: "LongTieng", // Default to dubbed for multiple links
+      lastUpdate: new Date().toISOString(),
+      genre: [],
+      duration: 0,
+      status: isMovie ? "Released" : "Returning Series",
+      note: `Thêm từ ${urls.length} link`,
+      ...(isMovie ? {} : {
+        studio: "",
+        totalEpisodes: urls.length,
+        totalSeasons: 1,
+      }),
+    };
+    
+    if (isMovie) {
+      // For movies: create multiple sources
+      const sources = urls.map((url, index) => ({
+        provider: "kkphim",
+        title: `Nguồn ${index + 1}`,
+        url: url,
+        quality: "",
+        language: "vi",
+        subtitles: [],
+      }));
+      
+      setFormData({
+        tmdbId: 0, // User needs to fill this
+        title: "", // User needs to fill this
+        year: new Date().getFullYear(),
+        sources,
+        metadata,
+      });
+    } else {
+      // For TV shows: create episodes in season 1
+      const episodes: any = {};
+      urls.forEach((url, index) => {
+        const episodeNum = (index + 1).toString();
+        episodes[episodeNum] = {
+          title: `Tập ${episodeNum}`,
+          sources: [{
+            provider: "kkphim",
+            title: "KKPhim Player",
+            url: url,
+            quality: "",
+            language: "vi",
+            subtitles: [],
+          }],
+        };
+      });
+      
+      const seasons = {
+        "1": episodes
       };
       
-      // Set form data
       setFormData({
-        tmdb_id: parsedData.tmdb_id,
-        title: parsedData.title,
-        year: parsedData.year || new Date().getFullYear(),
-        ...(isMovie ? { sources: parsedData.sources } : { seasons: parsedData.seasons }),
+        tmdbId: 0, // User needs to fill this
+        title: "", // User needs to fill this
+        year: new Date().getFullYear(),
+        seasons,
         metadata,
       });
       
-      // Set selected item for UI
-      setSelectedItem({ 
-        id: parsedData.tmdbId,
-        title: parsedData.title,
-        name: parsedData.title,
-      } as TMDBResult);
-      
-      // For TV shows, set initial season and episode
-      if (isTv && parsedData.seasons) {
-        const firstSeason = Object.keys(parsedData.seasons)[0];
-        if (firstSeason) {
-          setSelectedSeason(firstSeason);
-          const firstEpisode = Object.keys(parsedData.seasons[firstSeason])[0];
-          if (firstEpisode) {
-            setSelectedEpisode(firstEpisode);
-          }
-        }
-      }
-      
-      // Show current JSON data (cleaned version)
-      const cleanedData = {
-        tmdbId: parsedData.tmdbId,
-        title: parsedData.title,
-        year: parsedData.year || new Date().getFullYear(),
-        ...(isMovie ? { sources: parsedData.sources } : { seasons: parsedData.seasons }),
-        metadata,
-      };
-      setCurrentJsonData(JSON.stringify(cleanedData, null, 2));
-      
-      // Clear input and close modal
-      setJsonInput("");
-      setShowJsonInput(false);
-      
-      alert("✅ Đã tải và tự động sửa JSON thành công!\n- Loại: " + (isMovie ? "Phim" : "TV Show") + "\n- Rating: " + metadata["movie-rating"] + "\n- Âm thanh: " + audioVersion);
-    } catch (error: any) {
-      console.error("Lỗi phân tích Json:", error);
-      
-      // Provide more helpful error message
-      let errorMsg = "⚠️ Không thể tự động sửa JSON này:\n\n";
-      if (error.message) {
-        errorMsg += error.message + "\n\n";
-      }
-      errorMsg += "💡 JSON quá lỗi, vui lòng kiểm tra thủ công:\n";
-      errorMsg += "- Có đóng mở ngoặc {} [] đúng không?\n";
-      errorMsg += "- Các chuỗi text có nằm trong dấu \" không?\n";
-      errorMsg += "- Có dấu phẩy , giữa các trường không?\n";
-      errorMsg += "- Dùng JSON trình xác thực trực tuyến để kiểm tra";
-      
-      alert(errorMsg);
+      // Set first episode as selected
+      setSelectedSeason("1");
+      setSelectedEpisode("1");
     }
+    
+    // Clear input and close modal
+    setJsonInput("");
+    setShowJsonInput(false);
+    
+    // Set a dummy selected item to show the form
+    setSelectedItem({
+      id: 0,
+      title: "Phim mới",
+      name: "Phim mới",
+    } as TMDBResult);
+    
+    alert(`✅ Đã thêm ${urls.length} link${isMovie ? " nguồn" : " tập"} thành công!\n\n⚠️ Vui lòng điền:\n- TMDB ID\n- Tiêu đề phim\n- Các thông tin khác`);
   };
 
   // Save data
   const handleSave = async () => {
     // Validation based on content type
     if (!formData.tmdbId) {
-      alert("Vui lòng chọn Điện Ảnh hoặc Chương Trình TV");
+      alert("Vui lòng nhập TMDB ID");
       return;
     }
 
@@ -1607,7 +1723,7 @@ export default function DashboardPage() {
     try {
       console.log("🚀 Bắt đầu lưu dữ liệu vào Supabase...", {
         contentType,
-        tmdbId: dataToSave.tmdb_id,
+        tmdb_id: dataToSave.tmdb_id,
         title: dataToSave.title,
         hasMetadata: !!dataToSave.metadata,
         audioVersion: dataToSave.metadata?.audioVersion,
@@ -1694,7 +1810,7 @@ export default function DashboardPage() {
                   setViewMode("form");
                 }}
               >
-                Dán JSON
+                Dán Phim
               </Button>
               <Button
                 color="danger"
@@ -1713,12 +1829,12 @@ export default function DashboardPage() {
           <Card className="mb-6 bg-gradient-to-r from-purple-900/50 to-blue-900/50 backdrop-blur-sm">
             <CardHeader>
               <h3 className="text-xl font-semibold text-white">
-                Dán JSON trực tiếp
+                Dán liên kết phim
               </h3>
             </CardHeader>
             <CardBody className="space-y-4">
               <Textarea
-                placeholder='{"tmdb_Id": 123, "title": "Tên phim", "year": 2024, "sources": [...] hoặc "seasons": {...}, "metadata": {...}}'
+                placeholder='Vui lòng dán các liên kết phim vào đây'
                 value={jsonInput}
                 onChange={(e) => setJsonInput(e.target.value)}
                 minRows={10}
@@ -1734,7 +1850,7 @@ export default function DashboardPage() {
                   onPress={handleJsonPaste}
                   isDisabled={!jsonInput.trim()}
                 >
-                  Tải JSON vào form
+                  Xử lý link
                 </Button>
                 <Button
                   color="default"
@@ -1750,11 +1866,11 @@ export default function DashboardPage() {
               <div className="text-sm text-gray-400">
                 <p className="mb-2">💡 <strong>Hướng dẫn:</strong></p>
                 <ul className="list-disc space-y-1 pl-5">
-                  <li>Dán toàn bộ JSON từ tệp hoặc nguồn khác</li>
-                  <li>JSON phải chứa: <code className="text-purple-300">tmdb_Id</code>, <code className="text-purple-300">title</code></li>
-                  <li>Điện Ảnh cần có: <code className="text-purple-300">sources</code> (array)</li>
-                  <li>Chương trình TV cần có: <code className="text-purple-300">seasons</code> (object)</li>
-                  <li>Siêu dữ liệu sẽ được tự động điền với giá trị mặc định nếu thiếu</li>
+                  <li><strong>Cho phim lẻ:</strong> Dán nhiều link, mỗi link trên một dòng</li>
+                  <li><strong>Cho phim bộ:</strong> Dán nhiều link, sẽ tự động tạo tập 1, 2, 3...</li>
+                  <li><strong>Có thể:</strong> Dán JSON có cấu trúc đầy đủ</li>
+                  <li>Link sẽ được tự động gán số tập theo thứ tự</li>
+                  <li>Các trường khác sẽ được điền tự động (TMDB ID, tiêu đề, năm, rating, âm thanh)</li>
                 </ul>
               </div>
             </CardBody>
