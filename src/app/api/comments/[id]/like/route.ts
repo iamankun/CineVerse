@@ -25,44 +25,99 @@ export async function POST(
       .select('*')
       .eq('comment_id', id)
       .eq('user_id', user.id)
-      .eq('type', 'like')
+      .eq('reaction_type', 'like')
+      .single();
+
+    // Check if user disliked this comment (to remove it)
+    const { data: existingDislike } = await supabase
+      .from('comment_reactions')
+      .select('*')
+      .eq('comment_id', id)
+      .eq('user_id', user.id)
+      .eq('reaction_type', 'dislike')
       .single();
 
     if (existingLike) {
-      // Remove like (unlike)
-      await supabase
+      // User already liked - remove the like (unlike)
+      const { error: deleteError } = await supabase
         .from('comment_reactions')
         .delete()
         .eq('comment_id', id)
         .eq('user_id', user.id)
-        .eq('type', 'like');
+        .eq('reaction_type', 'like');
 
-      // Update comment likes count
-      await supabase.rpc('decrement_comment_likes', { comment_id: id });
+      if (deleteError) {
+        console.error('Error removing like:', deleteError);
+        return NextResponse.json<{ success: boolean; error?: string }>({
+          success: false,
+          error: 'Failed to remove like'
+        }, { status: 500 });
+      }
 
-      return NextResponse.json({
-        success: true,
-        liked: false
+      // Decrement likes count
+      const { error: decrementError } = await supabase.rpc('decrement_comment_likes', { 
+        comment_id: id 
       });
-    } else {
-      // Add like
-      await supabase
-        .from('comment_reactions')
-        .insert({
-          comment_id: id,
-          user_id: user.id,
-          type: 'like'
-        });
 
-      // Update comment likes count
-      await supabase.rpc('increment_comment_likes', { comment_id: id });
+      if (decrementError) {
+        console.error('Error decrementing likes:', decrementError);
+      }
 
       return NextResponse.json({
         success: true,
-        liked: true
+        action: 'unliked'
       });
     }
 
+    // Remove dislike if exists (switching from dislike to like)
+    if (existingDislike) {
+      const { error: deleteDislikeError } = await supabase
+        .from('comment_reactions')
+        .delete()
+        .eq('comment_id', id)
+        .eq('user_id', user.id)
+        .eq('reaction_type', 'dislike');
+
+      if (deleteDislikeError) {
+        console.error('Error removing dislike:', deleteDislikeError);
+      } else {
+        // Decrement dislikes count
+        await supabase.rpc('decrement_comment_dislikes', { 
+          comment_id: id 
+        });
+      }
+    }
+
+    // Add the like
+    const { error: insertError } = await supabase
+      .from('comment_reactions')
+      .insert({
+        comment_id: id,
+        user_id: user.id,
+        reaction_type: 'like'
+      });
+
+    if (insertError) {
+      console.error('Error adding like:', insertError);
+      return NextResponse.json<{ success: boolean; error?: string }>({
+        success: false,
+        error: 'Failed to like comment'
+      }, { status: 500 });
+    }
+
+    // Increment likes count
+    const { error: incrementError } = await supabase.rpc('increment_comment_likes', { 
+      comment_id: id 
+    });
+
+    if (incrementError) {
+      console.error('Error incrementing likes:', incrementError);
+    }
+
+    return NextResponse.json({
+      success: true,
+      action: existingDislike ? 'switched_to_like' : 'liked'
+    });
   } catch (error) {
     console.error('Error in like comment:', error);
     return NextResponse.json<{ success: boolean; error?: string }>({

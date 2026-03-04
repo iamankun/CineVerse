@@ -39,6 +39,61 @@ export default function Comment({
   const isOwner = currentUserId === comment.user_id;
   const hasReplies = 'replies' in comment && comment.replies && comment.replies.length > 0;
 
+  // Render Facebook-style verified badge
+  const renderVerifiedBadge = (userProfile: any) => {
+    if (!userProfile || userProfile.verify !== 'true') return null;
+    
+    if (userProfile.role === 'admin') {
+      return (
+        <span title="Quản trị viên" className="ml-1">
+          <svg 
+            width="14" 
+            height="14" 
+            viewBox="0 0 24 24" 
+            fill="none"
+            className="inline-block"
+          >
+            <circle cx="12" cy="12" r="11" fill="#FFD700"/>
+            <path 
+              d="M8 12L11 15L16 9" 
+              stroke="white" 
+              strokeWidth="2.5" 
+              strokeLinecap="round" 
+              strokeLinejoin="round"
+              fill="none"
+            />
+          </svg>
+        </span>
+      );
+    }
+    
+    if (userProfile.role === 'member') {
+      return (
+        <span title="Nghiện phim ưu tú" className="ml-1">
+          <svg 
+            width="14" 
+            height="14" 
+            viewBox="0 0 24 24" 
+            fill="none"
+            className="inline-block"
+          >
+            <circle cx="12" cy="12" r="11" fill="#1877F2"/>
+            <path 
+              d="M8 12L11 15L16 9" 
+              stroke="white" 
+              strokeWidth="2.5" 
+              strokeLinecap="round" 
+              strokeLinejoin="round"
+              fill="none"
+            />
+          </svg>
+        </span>
+      );
+    }
+    
+    return null;
+  };
+
   const formatTimeAgo = (dateString: string) => {
     try {
       return formatDistanceToNow(new Date(dateString), {
@@ -89,6 +144,7 @@ export default function Comment({
           <div className="flex items-center gap-2 mb-1">
             <span className="font-semibold text-sm text-gray-900 dark:text-gray-100 hover:text-blue-600 dark:hover:text-blue-400 cursor-pointer">
               {comment.username || 'NO_USERNAME'}
+              {comment.user_profile && renderVerifiedBadge(comment.user_profile)}
             </span>
             <span className="text-xs text-gray-500">{formatTimeAgo(comment.created_at)}</span>
             {comment.is_pinned && (

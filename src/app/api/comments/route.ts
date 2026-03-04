@@ -29,7 +29,7 @@ export async function GET(request: NextRequest) {
       .from('comments')
       .select(`
         *,
-        user:profiles(username, avatar_url)
+        user:profiles(username, avatar_url, role, verify)
       `)
       .eq('is_deleted', false)
       .is('parent_id', null)
@@ -60,7 +60,7 @@ export async function GET(request: NextRequest) {
           .from('comments')
           .select(`
             *,
-            user:profiles(username, avatar_url)
+            user:profiles(username, avatar_url, role, verify)
           `)
           .eq('parent_id', comment.id)
           .eq('is_deleted', false)
@@ -68,7 +68,11 @@ export async function GET(request: NextRequest) {
 
         return {
           ...comment,
-          replies: replies || []
+          user_profile: comment.user || null,
+          replies: (replies || []).map((reply: any) => ({
+            ...reply,
+            user_profile: reply.user || null
+          }))
         };
       })
     );
