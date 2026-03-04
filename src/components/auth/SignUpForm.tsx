@@ -128,13 +128,24 @@ export function SignUpForm() {
       console.log('🔍 [ĐĂNG KÝ CINEVERSE] Phản hồi từ Supabase:', { data, error });
       
       if (error) {
-        console.error('❌ [ĐĂNG KÝ CINEVERSE] Xảy ra lỗi:', error);
-        console.error('❌ [ĐĂNG KÝ CINEVERSE] Thông báo lỗi:', error.message);
-        console.error('❌ [ĐĂNG KÝ CINEVERSE] Mã lỗi:', error.status);
-        console.error('❌ [ĐĂNG KÝ CINEVERSE] Chi tiết lỗi:', JSON.stringify(error, null, 2));
+        const errorMessage = error?.message ?? '';
+        const status = error?.status ?? null;
         
-        // 🔥 Handle specific error cases - more comprehensive detection
-        const errorMessage = (error.message || '').toLowerCase();
+        console.error('❌ [ĐĂNG KÝ CINEVERSE] Xảy ra lỗi:', errorMessage);
+        console.error('❌ [ĐĂNG KÝ CINEVERSE] Mã lỗi:', status);
+        
+        // Debug details - only log safe information
+        try {
+          console.error('❌ [ĐĂNG KÝ CINEVERSE] Chi tiết:', 
+            JSON.stringify({
+              status: error.status,
+              message: error.message,
+              code: error.code
+            }, null, 2)
+          );
+        } catch (e) {
+          console.error('❌ [ĐĂNG KÝ CINEVERSE] Chi tiết: (cannot stringify)');
+        }
         
         // Database errors
         if (errorMessage.includes('database error saving new user') ||
@@ -152,11 +163,9 @@ export function SignUpForm() {
         }
         
         // Server errors (500, unexpected_failure)
-        if (errorMessage.includes('unexpected_failure') ||
-            errorMessage.includes('status 500') ||
-            errorMessage.includes('internal server error') ||
-            errorMessage.includes('database error saving new user') ||
-            error.status === 500) {
+        if (status === 500 ||
+            errorMessage.includes('unexpected_failure') ||
+            errorMessage.includes('internal server error')) {
           addToast({
             title: "Hệ thống đang bảo trì",
             description: "Server đang gặp sự cố kỹ thuật. Vui lòng thử lại sau 10 phút hoặc liên hệ hỗ trợ kỹ thuật.",
@@ -167,11 +176,22 @@ export function SignUpForm() {
           return;
         }
         
+        // Validation errors
+        if (status === 422 || errorMessage.toLowerCase().includes('invalid')) {
+          addToast({
+            title: "Dữ liệu không hợp lệ",
+            description: "Vui lòng kiểm tra lại thông tin đăng ký.",
+            color: "danger",
+          });
+          setIsLoading(false);
+          return;
+        }
+        
         // Rate limiting errors
         if (errorMessage.includes('too many requests') ||
             errorMessage.includes('rate limit') ||
             errorMessage.includes('too many signups') ||
-            error.status === 429) {
+            status === 429) {
           addToast({
             title: "Quá nhiều lần thử",
             description: "Vui lòng đợi 10 phút và thử lại.",
@@ -229,27 +249,30 @@ export function SignUpForm() {
         // Generic error with retry option
         addToast({
           title: "Đăng ký thất bại",
-          description: `${error.message || "Có lỗi xảy ra"} ${error.status === 500 ? "(Lỗi máy chủ - thử lại sau 5 phút)" : ""}`,
+          description: `${errorMessage} ${status === 500 ? "(Lỗi máy chủ - thử lại sau 5 phút)" : ""}`,
           color: "danger",
-          timeout: error.status === 500 ? 10000 : 5000
+          timeout: status === 500 ? 10000 : 5000
         });
         setIsLoading(false);
         return;
       }
       
-      addToast({
+      // Success handling
+      if (data?.user) {
+        addToast({
           title: "Đăng ký thành công! Vui lòng kiểm tra email để xác minh.",
           color: "success",
         });
         
         // Kiểm tra xem có cần xác minh email không
-        if (data?.user?.email_confirmed_at) {
+        if (data.user.email_confirmed_at) {
           console.log('✅ [ĐĂNG KÝ CINEVERSE] Email đã xác minh, chuyển đến trang đăng nhập');
           router.push("/auth/login");
         } else {
           console.log('⏳ [ĐĂNG KÝ CINEVERSE] Email cần xác minh, chuyển đến trang đăng nhập');
           router.push("/auth/login?message=please_verify_email");
         }
+      }
     } catch (error: unknown) {
       console.error('❌ [ĐĂNG KÝ CINEVERSE] Lỗi đăng ký không mong muốn:', error);
       const errorMessage = error instanceof Error ? error.message : "Đăng ký thất bại. Vui lòng thử lại.";
