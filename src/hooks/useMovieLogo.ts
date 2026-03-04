@@ -23,7 +23,7 @@ export const useMovieLogo = (movieId: number, type: "movie" | "tv", originalLang
     const fetchLogo = async () => {
       try {
         const response = await fetch(
-          `https://api.themoviedb.org/3/${type}/${movieId}/images`,
+          `https://api.themoviedb.org/3/${type}/${movieId}/images?include_image_language=vi,ja,en,null`,
           {
             headers: {
               Authorization: `Bearer ${env.NEXT_PUBLIC_TMDB_ACCESS_TOKEN}`,

@@ -11,7 +11,7 @@ const BackdropSection: React.FC<{
   const [{ y }] = useWindowScroll();
   const opacity = Math.min((y / 1000) * 2, 1);
   const backdropImage = getImageUrl(movie?.backdrop_path, "backdrop", true);
-  const preferredLogo = movie?.images.logos ? getPreferredLogo(movie.images.logos) : undefined;
+  const preferredLogo = movie?.images.logos ? getPreferredLogo(movie.images.logos, movie.original_language) : undefined;
   const titleImage = getImageUrl(preferredLogo?.file_path, "title");
 
   return (

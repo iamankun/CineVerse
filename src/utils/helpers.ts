@@ -146,12 +146,17 @@ export const diff = (a: number, b: number): number => {
 };
 
 /**
- * Tìm logo ưu tiên theo ngôn ngữ (vi-VN trước, sau đó en-US, cuối cùng là ngôn ngữ khác)
+ * Lấy logo ưu tiên từ danh sách logos theo thứ tự: vi → en → null → original language → any
+ * Tương tự như logic trong useMovieLogo hook
  * 
  * @param logos - Mảng các logo từ TMDB
+ * @param originalLanguage - Ngôn ngữ gốc của movie (tùy chọn)
  * @returns Logo phù hợp nhất hoặc undefined
  */
-export const getPreferredLogo = <T extends { iso_639_1: string | null; file_path?: string }>(logos: T[]): T | undefined => {
+export const getPreferredLogo = <T extends { iso_639_1: string | null; file_path?: string }>(
+  logos: T[], 
+  originalLanguage?: string
+): T | undefined => {
   if (!logos || logos.length === 0) return undefined;
   
   // Ưu tiên tiếng Việt
@@ -166,7 +171,13 @@ export const getPreferredLogo = <T extends { iso_639_1: string | null; file_path
   const nullLogo = logos.find((logo) => logo.iso_639_1 === null);
   if (nullLogo) return nullLogo;
   
-  // Cuối cùng, nếu không có vi/en/null, sử dụng logo đầu tiên (ngôn ngữ khác)
+  // Sau đó là logo ngôn ngữ gốc (nếu có)
+  if (originalLanguage) {
+    const originalLogo = logos.find((logo) => logo.iso_639_1 === originalLanguage);
+    if (originalLogo) return originalLogo;
+  }
+  
+  // Cuối cùng, sử dụng logo đầu tiên (ngôn ngữ khác)
   return logos[0];
 };
 

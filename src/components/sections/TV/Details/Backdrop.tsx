@@ -12,7 +12,7 @@ const TvShowBackdropSection: React.FC<{
   const title = mutateTvShowTitle(tv);
   const opacity = Math.min((y / 1000) * 2, 1);
   const backdropImage = getImageUrl(tv.backdrop_path, "backdrop", true);
-  const preferredLogo = getPreferredLogo(tv.images.logos);
+  const preferredLogo = getPreferredLogo(tv.images.logos, tv.original_language);
   const titleImage = getImageUrl(preferredLogo?.file_path, "title");
 
   return (

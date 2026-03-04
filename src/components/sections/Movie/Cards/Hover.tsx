@@ -1,4 +1,4 @@
-import { tmdb } from "@/api/tmdb";
+import { tmdb, getMovieDetails } from "@/api/tmdb";
 import BookmarkButton from "@/components/ui/button/BookmarkButton";
 import Genres from "@/components/ui/other/Genres";
 import Rating from "@/components/ui/other/Rating";
@@ -13,7 +13,7 @@ import { Genre } from "tmdb-ts";
 
 const HoverPosterCard: React.FC<{ id: number; fullWidth?: boolean }> = ({ id, fullWidth }) => {
   const { data: movie, isPending } = useQuery({
-    queryFn: () => tmdb.movies.details(id, ['images', 'videos'], 'vi-VN'),
+    queryFn: () => getMovieDetails(id, ['images', 'videos'], true),
     queryKey: ["get-movie-detail-on-hover-poster", id],
   });
 
@@ -31,7 +31,7 @@ const HoverPosterCard: React.FC<{ id: number; fullWidth?: boolean }> = ({ id, fu
   const releaseYear = movie.release_date ? new Date(movie.release_date).getFullYear() : undefined;
   const fullTitle = title;
   const backdropImage = getImageUrl(movie.backdrop_path, "backdrop");
-  const preferredLogo = getPreferredLogo(movie.images.logos);
+  const preferredLogo = getPreferredLogo(movie.images.logos, movie.original_language);
   const titleImage = getImageUrl(preferredLogo?.file_path, "title");
   const bookmarkData: SavedMovieDetails = {
     type: "movie",
@@ -53,11 +53,11 @@ const HoverPosterCard: React.FC<{ id: number; fullWidth?: boolean }> = ({ id, fu
         })}
       >
         {/* Gradient overlay kéo dài toàn bộ card */}
-        <div className="absolute inset-0 z-1 bg-linear-to-b from-black/100 from-40% via-black/100 via-20% via-black/100 via-50% to-transparent to-80% rounded-lg pointer-events-none"></div>
+        <div className="absolute inset-0 z-1 bg-linear-to-b from-black/60 from-40% via-black/40 via-20% via-black/30 via-50% to-transparent to-80% rounded-lg pointer-events-none"></div>
         <div className="relative">
           <div className="absolute aspect-video h-fit w-full">
             {/* Gradient tối ở cuối backdrop */}
-            <div className="absolute z-2 h-full w-full bg-linear-to-b from-transparent from-0% to-black/100 to-100%"></div>
+            <div className="absolute z-2 h-full w-full bg-linear-to-b from-transparent from-0% to-black/60 to-100%"></div>
             {!isEmpty(titleImage) && (
               <Image
                 isBlurred
