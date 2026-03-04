@@ -15,6 +15,32 @@ export interface Profile {
   updated_at?: string;
 }
 
+// Comment types
+export interface Comment {
+  id: string;
+  movie_id: number | null;
+  tv_id: number | null;
+  user_id: string;
+  username: string;
+  user_avatar: string | null;
+  content: string;
+  created_at: string;
+  updated_at: string;
+  likes: number;
+  dislikes: number;
+  parent_id: string | null;
+  is_deleted: boolean;
+  is_pinned: boolean;
+}
+
+export type CommentRow = Comment;
+export type CommentInsert = Omit<Comment, 'id' | 'created_at' | 'updated_at'> & {
+  id?: string;
+  created_at?: string;
+  updated_at?: string;
+};
+export type CommentUpdate = Partial<Comment>;
+
 // Supabase types
 export type ProfileRow = Profile;
 export type ProfileInsert = Omit<Profile, 'id' | 'created_at' | 'updated_at'>;
@@ -29,7 +55,11 @@ export interface Database {
         Insert: ProfileInsert;
         Update: ProfileUpdate;
       };
-      // Add other tables here as needed
+      comments: {
+        Row: CommentRow;
+        Insert: CommentInsert;
+        Update: CommentUpdate;
+      };
     };
   };
 }

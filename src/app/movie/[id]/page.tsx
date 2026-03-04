@@ -15,6 +15,7 @@ const BackdropSection = dynamic(() => import("@/components/sections/Movie/Detail
 const OverviewSection = dynamic(() => import("@/components/sections/Movie/Detail/Overview"));
 const CastsSection = dynamic(() => import("@/components/sections/Movie/Detail/Casts"));
 const RelatedSection = dynamic(() => import("@/components/sections/Movie/Detail/Related"));
+const CommentsSection = dynamic(() => import("@/components/sections/Movie/Detail/Comments"));
 
 const MovieDetailPage: NextPage<Params<{ id: number }>> = ({ params }) => {
   const { id } = use(params);
@@ -47,14 +48,19 @@ const MovieDetailPage: NextPage<Params<{ id: number }>> = ({ params }) => {
   if (error) notFound();
 
   return (
-    <div className="mx-auto max-w-5xl px-3 sm:px-5">
+    <div className="mx-auto max-w-5xl px-3 sm:px-5 relative z-20">
       <Suspense fallback={<Spinner size="lg" className="absolute-center" variant="simple" />}>
         <div className="flex flex-col gap-10">
           <BackdropSection movie={movie} />
-          <OverviewSection movie={movie} />
-          <CastsSection casts={movie.credits.cast as Cast[]} />
-          <PhotosSection images={movie.images.backdrops as Image[]} />
-          <RelatedSection movie={movie} />
+          <div className="mt-8 md:mt-12 lg:mt-16">
+            <OverviewSection movie={movie} />
+            <CastsSection casts={movie.credits.cast as Cast[]} />
+            <PhotosSection images={movie.images.backdrops as Image[]} />
+            <div className="relative z-30 mt-10">
+              <CommentsSection movieId={id} />
+            </div>
+            <RelatedSection movie={movie} />
+          </div>
         </div>
       </Suspense>
     </div>
