@@ -2,8 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 import { readFile } from "fs/promises";
 import { join } from "path";
 
-export const dynamic = 'force-dynamic';
-
 // Helper function to convert Movie parts format to TV seasons format
 function convertPartsToSeasons(movieData: any) {
   if (!movieData.parts) return null;

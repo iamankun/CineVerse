@@ -35,10 +35,8 @@ export async function GET(request: NextRequest) {
       status: 200,
       headers: {
         "Content-Type": "application/manifest+json",
-        // Force revalidation on every request
-        "Cache-Control": "no-cache, no-store, must-revalidate",
-        "Pragma": "no-cache",
-        "Expires": "0",
+        // Icons have version query param for cache busting, so manifest can be cached
+        "Cache-Control": "public, max-age=86400, s-maxage=86400, stale-while-revalidate=604800",
       },
     });
   } catch (error) {

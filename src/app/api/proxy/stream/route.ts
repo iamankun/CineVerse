@@ -28,26 +28,10 @@ export async function GET(request: NextRequest) {
       redirect: 'follow',
     });
 
-    // Log chi tiết response
-    console.log('--- Proxy Stream Debug ---');
-    console.log('Request URL:', streamUrl);
-    console.log('Response status:', response.status);
-    console.log('Response statusText:', response.statusText);
-    console.log('Response headers:');
-    for (const [key, value] of response.headers.entries()) {
-      console.log(`  ${key}: ${value}`);
-    }
-
     if (!response.ok) {
-      let errorText = '';
-      try {
-        errorText = await response.text();
-      } catch (e) {
-        errorText = '[Không đọc được nội dung lỗi]';
-      }
-      console.error('Stream proxy error:', response.status, response.statusText, errorText);
+      console.error('Stream proxy error:', streamUrl, response.status, response.statusText);
       return NextResponse.json(
-        { error: `Failed to fetch stream: ${response.status} ${response.statusText}`, detail: errorText },
+        { error: `Failed to fetch stream: ${response.status}` },
         { status: response.status }
       );
     }
@@ -68,54 +52,36 @@ export async function GET(request: NextRequest) {
           'Access-Control-Allow-Origin': '*',
           'Access-Control-Allow-Methods': 'GET, HEAD, OPTIONS',
           'Access-Control-Allow-Headers': 'Content-Type',
-          'Cache-Control': 'max-age=3600',
+          'Cache-Control': 'public, max-age=86400, immutable', // 24 hours for video segments
         },
       });
     }
 
     // For text data (M3U8 files, etc.)
     const streamData = await response.text();
-    console.log('Response status:', response.status);
-    console.log('Content type:', contentType);
-    console.log('Stream URL:', streamUrl);
-    console.log('Response data length:', streamData.length);
 
     // For M3U8 files, we need to rewrite URLs to use our proxy
     if (contentType.includes('mpegurl') || streamUrl.includes('.m3u8')) {
-      console.log('Processing M3U8 file:', streamUrl);
-      
       // Parse M3U8 and rewrite URLs
       const lines = streamData.split('\n');
       const rewrittenLines = lines.map(line => {
         const trimmedLine = line.trim();
-        
-        // Skip comments and empty lines
-        if (!trimmedLine || trimmedLine.startsWith('#')) {
-          return line;
-        }
-        
-        // Check if it's a URL
+        if (!trimmedLine || trimmedLine.startsWith('#')) return line;
+
         if (trimmedLine.startsWith('http://') || trimmedLine.startsWith('https://')) {
-          const rewrittenUrl = `/api/proxy/stream?url=${encodeURIComponent(trimmedLine)}`;
-          console.log('Rewriting URL:', trimmedLine, '->', rewrittenUrl);
-          return rewrittenUrl;
+          return `/api/proxy/stream?url=${encodeURIComponent(trimmedLine)}`;
         }
-        
-        // Handle relative URLs
+
         if (trimmedLine.includes('.ts') || trimmedLine.includes('.m3u8')) {
           const baseUrl = new URL(streamUrl);
           const absoluteUrl = new URL(trimmedLine, baseUrl).toString();
-          const rewrittenUrl = `/api/proxy/stream?url=${encodeURIComponent(absoluteUrl)}`;
-          console.log('Rewriting relative URL:', trimmedLine, '->', rewrittenUrl);
-          return rewrittenUrl;
+          return `/api/proxy/stream?url=${encodeURIComponent(absoluteUrl)}`;
         }
-        
+
         return line;
       });
       
       const rewrittenData = rewrittenLines.join('\n');
-      console.log('M3U8 processing completed');
-      console.log('First few lines:', rewrittenData.split('\n').slice(0, 5));
 
       return new NextResponse(rewrittenData, {
         status: 200,
@@ -124,7 +90,7 @@ export async function GET(request: NextRequest) {
           'Access-Control-Allow-Origin': '*',
           'Access-Control-Allow-Methods': 'GET, HEAD, OPTIONS',
           'Access-Control-Allow-Headers': 'Content-Type',
-          'Cache-Control': 'no-cache, no-store, must-revalidate',
+          'Cache-Control': 'public, max-age=300, s-maxage=300', // 5 min at edge
         },
       });
     }

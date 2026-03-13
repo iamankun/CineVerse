@@ -2,8 +2,6 @@ import { NextResponse } from "next/server";
 import { promises as fs } from "fs";
 import path from "path";
 
-export const dynamic = 'force-dynamic';
-
 interface Notification {
   id: string;
   title: string;
@@ -47,7 +45,9 @@ export async function GET() {
         return priorityOrder[b.priority] - priorityOrder[a.priority];
       });
 
-    return NextResponse.json({ notifications: activeNotifications });
+    return NextResponse.json({ notifications: activeNotifications }, {
+      headers: { 'Cache-Control': 'public, s-maxage=300, stale-while-revalidate=600' },
+    });
   } catch (error) {
     console.error("Error reading notifications:", error);
     return NextResponse.json({ notifications: [] });

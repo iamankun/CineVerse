@@ -36,23 +36,18 @@ const AgeRating: React.FC<AgeRatingProps> = ({ rating, ratingDescription, isLoad
 
       const audioFile = audioFiles[ratingCode];
       if (audioFile) {
-        console.log(`🔊 Playing rating audio for ${ratingCode}: ${audioFile}`);
-        
-        // Create and play audio
         const audio = new Audio(audioFile);
-        audio.volume = 0.8; // Set volume to 80%
+        audio.volume = 0.8;
         audioRef.current = audio;
-        
-        audio.play().catch(error => {
-          console.warn(`⚠️ Could not play rating audio:`, error);
-          audioRef.current = null;
-        }).then(() => {
-          console.log(`✅ Successfully played rating audio for ${ratingCode}`);
-          setHasPlayedAudio(true);
-          audioRef.current = null;
-        });
-      } else {
-        console.warn(`⚠️ No audio file found for rating: ${ratingCode}`);
+
+        audio.play()
+          .then(() => {
+            setHasPlayedAudio(true);
+            audioRef.current = null;
+          })
+          .catch(() => {
+            audioRef.current = null;
+          });
       }
     }, 100);
 
@@ -62,9 +57,8 @@ const AgeRating: React.FC<AgeRatingProps> = ({ rating, ratingDescription, isLoad
   useEffect(() => {
     // Special case: repeatInterval = 0 means always show expanded
     if (ageRatingConfig.repeatInterval === 0) {
-      console.log('ℹ️ AgeRating: Always visible mode (repeatInterval = 0)');
       setIsExpanded(true);
-      return; // Don't set any timers
+      return;
     }
 
     // Normal mode: Show expanded rating notification based on config

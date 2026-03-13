@@ -149,36 +149,33 @@ export const useYouTubePlayer = (
       if (!element) {
         retryCount++;
         if (retryCount < MAX_RETRIES) {
-          console.warn(`Element with id "${elementId}" not found, retry ${retryCount}/${MAX_RETRIES}...`);
           initTimer = setTimeout(initPlayer, 100);
         } else {
-          console.error(`Element with id "${elementId}" not found after ${MAX_RETRIES} retries`);
+          console.error(`Element "${elementId}" not found after ${MAX_RETRIES} retries`);
         }
         return;
       }
 
       if (window.YT && window.YT.Player) {
         try {
-          console.log(`Initializing YouTube Player with video: ${options.videoId}`);
           playerRef.current = new window.YT.Player(elementId, {
             height: '100%',
             width: '100%',
             videoId: options.videoId,
             playerVars: {
-              controls: 0, // Luôn ẩn YouTube controls, chỉ dùng custom controls
+              controls: 0,
               disablekb: 1,
-              rel: 0, // Không hiển thị video liên quan
-              modestbranding: 1, // Ẩn logo YouTube
+              rel: 0,
+              modestbranding: 1,
               autoplay: options.autoplay ? 1 : 0,
-              fs: 1, // Cho phép fullscreen
+              fs: 1,
               playsinline: 1,
-              showinfo: 0, // Ẩn title (deprecated nhưng vẫn hoạt động)
-              iv_load_policy: 3, // Ẩn annotations
+              showinfo: 0,
+              iv_load_policy: 3,
             },
             events: {
               onReady: (event: YTPlayerEvent) => {
                 if (!isMounted) return;
-                console.log('YouTube Player ready!');
                 setIsReady(true);
                 setDuration(event.target.getDuration());
                 setVolumeState(event.target.getVolume());
@@ -186,7 +183,6 @@ export const useYouTubePlayer = (
 
                 // Get available qualities
                 const qualities = event.target.getAvailableQualityLevels();
-                console.log('Available quality levels:', qualities);
                 setAvailableQualities(qualities);
 
                 // Ưu tiên chọn chất lượng cao nhất nếu có
@@ -257,27 +253,23 @@ export const useYouTubePlayer = (
     // Load API nếu chưa có
     const loadAPI = () => {
       if (!document.querySelector('script[src*="youtube.com/iframe_api"]')) {
-        console.log('Loading YouTube IFrame API...');
         const tag = document.createElement('script');
         tag.src = 'https://www.youtube.com/iframe_api';
         const firstScriptTag = document.getElementsByTagName('script')[0];
         firstScriptTag.parentNode?.insertBefore(tag, firstScriptTag);
-      } else {
-        console.log('YouTube IFrame API script already exists');
       }
     };
 
     // Kiểm tra và khởi tạo
     if (window.YT && window.YT.Player) {
       // API đã sẵn sàng, init ngay
-      console.log('YouTube API already loaded, initializing player...');
       initTimer = setTimeout(initPlayer, 100);
     } else {
-      // Load API và đợi callback
-      console.log('YouTube API not loaded yet, loading...');
+      // Load API và đợi callback — dùng queue để tránh ghi đè khi có nhiều player
       loadAPI();
+      const prevCallback = window.onYouTubeIframeAPIReady;
       window.onYouTubeIframeAPIReady = () => {
-        console.log('YouTube API ready callback triggered');
+        prevCallback?.();
         if (isMounted) {
           initTimer = setTimeout(initPlayer, 100);
         }

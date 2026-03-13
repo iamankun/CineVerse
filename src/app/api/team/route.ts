@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/utils/supabase/server'
 
-export const dynamic = 'force-dynamic'
-
 interface TeamMember {
   id: string
   name: string
@@ -73,7 +71,9 @@ export async function GET(request: NextRequest) {
       return NextResponse.json(getDemoTeamMembers())
     }
 
-    return NextResponse.json(teamMembers)
+    return NextResponse.json(teamMembers, {
+      headers: { 'Cache-Control': 'public, s-maxage=3600, stale-while-revalidate=86400' },
+    })
   } catch (error) {
     console.error('Error in team API:', error)
     return NextResponse.json(getDemoTeamMembers()) // Return demo data on error

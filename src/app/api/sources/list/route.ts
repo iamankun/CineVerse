@@ -152,7 +152,9 @@ export async function GET(request: Request) {
       total: sortedSources.length,
       movieIds: movieIds,
       tvIds: tvIds,
-      heroIds: heroIds // 20 mục mới nhất theo năm phát hành
+      heroIds: heroIds
+    }, {
+      headers: { 'Cache-Control': 'public, s-maxage=3600, stale-while-revalidate=86400' },
     });
   } catch (error) {
     console.error('Error listing sources:', error);

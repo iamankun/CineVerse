@@ -21,6 +21,21 @@ import { getVietnamRatingFromReleaseDates } from "@/utils/rating-converter";
 import { useGestureContext } from "@/contexts/GestureContext";
 import YouTubePlayer from "@/components/ui/YouTubePlayer";
 import "@/styles/youtube-player.css";
+
+interface FullscreenElement extends HTMLElement {
+  webkitRequestFullscreen?(): Promise<void>;
+  mozRequestFullScreen?(): Promise<void>;
+  msRequestFullscreen?(): Promise<void>;
+}
+
+interface FullscreenDocument extends Document {
+  webkitFullscreenElement?: Element;
+  mozFullScreenElement?: Element;
+  msFullscreenElement?: Element;
+  webkitExitFullscreen?(): Promise<void>;
+  mozCancelFullScreen?(): Promise<void>;
+  msExitFullscreen?(): Promise<void>;
+}
 const AdsWarning = dynamic(() => import("@/components/ui/overlay/AdsWarning"));
 const AgeRating = dynamic(() => import("@/components/ui/overlay/AgeRating"));
 const WatchingWithBrand = dynamic(() => import("@/components/ui/overlay/WatchingWithBrand"));
@@ -201,21 +216,6 @@ const MoviePlayer: React.FC<MoviePlayerProps> = ({ movie, startAt }) => {
   }, []);
 
   // Suppress react-remove-scroll errors (library bug with modal cleanup)
-interface FullscreenElement extends HTMLElement {
-  webkitRequestFullscreen?(): Promise<void>;
-  mozRequestFullScreen?(): Promise<void>;
-  msRequestFullscreen?(): Promise<void>;
-}
-
-interface FullscreenDocument extends Document {
-  webkitFullscreenElement?: Element;
-  mozFullScreenElement?: Element;
-  msFullscreenElement?: Element;
-  webkitExitFullscreen?(): Promise<void>;
-  mozCancelFullScreen?(): Promise<void>;
-  msExitFullscreen?(): Promise<void>;
-}
-
   useEffect(() => {
     const originalError = console.error;
     console.error = (...args: unknown[]) => {
@@ -236,20 +236,15 @@ interface FullscreenDocument extends Document {
   }, []);
 
   useEffect(() => {
-    console.log(`🎬 Fetching players for movie ID: ${movie.id}`);
     let isMounted = true;
 
     getMoviePlayers(movie.id).then((fetchedPlayers) => {
       if (isMounted) {
-        console.log(`✅ Players fetched:`, fetchedPlayers.length, fetchedPlayers);
-        // Nếu có nguồn với provider vidsrc hoặc kkphim và url rỗng, tự động thay thế bằng external
         const processedPlayers = fetchedPlayers.map(player => {
           if ((player.provider?.toLowerCase() === 'vidsrc' || player.provider?.toLowerCase() === 'kkphim') && !player.source) {
-            const externalSource = player.provider?.toLowerCase() === 'vidsrc' 
+            const externalSource = player.provider?.toLowerCase() === 'vidsrc'
               ? `https://vidsrc-embed.ru/embed/movie?tmdb=${movie.id}&ds_lang=vi&autoplay=1` as `https://${string}`
               : `https://player.phimapi.com/player/?url=https://s5.phim1280.tv/${movie.id}/index.m3u8` as `https://${string}`;
-            
-            console.log(`🔄 Chuyển đổi provider ${player.provider} sang ${player.provider} external`);
             return {
               title: player.provider?.toLowerCase() === 'vidsrc' ? "VidSrc" : "KKPhim",
               source: externalSource,
@@ -261,7 +256,7 @@ interface FullscreenDocument extends Document {
           }
           return player;
         });
-        
+
         setPlayers(processedPlayers);
         if (processedPlayers.length === 1) {
           setSelectedSource(0);
@@ -270,67 +265,37 @@ interface FullscreenDocument extends Document {
         }
       }
     }).catch((err) => {
-      if (isMounted) {
-        console.error(`❌ Error fetching players:`, err);
-      }
+      if (isMounted) console.error('Error fetching players:', err);
     });
 
-    // Hàm lấy rating từ TMDB và convert sang Việt Nam
+    // Fetch movie rating
     const fetchTMDBRating = async () => {
       try {
-        console.log(`🌐 Đang lấy rating từ TMDB cho movie ID: ${movie.id}`);
         const releaseDates = await getMovieReleaseDates(movie.id);
         const vietnamRating = getVietnamRatingFromReleaseDates(releaseDates);
-        
-        if (vietnamRating && isMounted) {
-          console.log(`✅ TMDB Rating converted:`, vietnamRating);
-          setMovieRating(vietnamRating);
-        } else {
-          console.log(`⚠️ Không tìm thấy rating phù hợp từ TMDB`);
-        }
-      } catch (err) {
-        console.error(`❌ Lỗi khi lấy rating từ TMDB:`, err);
-      }
+        if (vietnamRating && isMounted) setMovieRating(vietnamRating);
+      } catch {}
     };
 
-    console.log(`🎬 Đang lấy đánh giá phim từ Supabase cho ID: ${movie.id}`);
-    fetch(`/api/admin/dienanh`)
-      .then(res => {
-        console.log(`📡 Điện ảnh đang lấy tình trạng:`, res.ok, res.status);
-        return res.ok ? res.json() : null;
-      })
+    fetch(`/api/admin/dienanh`, { next: { revalidate: 3600 } } as RequestInit)
+      .then(res => res.ok ? res.json() : null)
       .then(result => {
         const movies = result?.movies || [];
         const movieData = movies.find((item: any) => item.tmdb_id === movie.id);
-        console.log(`📊 Dữ liệu phim từ Supabase:`, movieData?.metadata?.["movie-rating"]);
         if (movieData?.metadata?.["movie-rating"]) {
           const rating = movieData.metadata["movie-rating"];
-          // Fetch rating descriptions
-          fetch("/sources/movie-rating.json")
+          fetch("/sources/movie-rating.json", { next: { revalidate: 86400 } } as RequestInit)
             .then(res => res.json())
             .then(ratingData => {
               const description = ratingData["Movie-Rating"][rating];
-              console.log(`✅ Đang tải đánh giá phim (Supabase):`, rating, description);
-              if (description && isMounted) {
-                setMovieRating({ rating, description });
-              }
+              if (description && isMounted) setMovieRating({ rating, description });
             })
-            .catch((err) => {
-              console.error(`❌ Không tải được mô tả đánh giá phim:`, err);
-              // Fallback sang TMDB nếu local không có description
-              fetchTMDBRating();
-            });
+            .catch(() => fetchTMDBRating());
         } else {
-          // Không có Supabase rating → lấy từ TMDB
-          console.log(`📡 Không có Supabase rating, fallback sang TMDB...`);
           fetchTMDBRating();
         }
       })
-      .catch((err) => {
-        console.error(`❌ Không tải được phim từ Supabase:`, err);
-        // Fallback sang TMDB nếu Supabase không tồn tại
-        fetchTMDBRating();
-      });
+      .catch(() => fetchTMDBRating());
 
     return () => {
       isMounted = false;
@@ -485,15 +450,7 @@ interface FullscreenDocument extends Document {
     return null;
   }, [PLAYER]);
 
-  // Debug log
-  useEffect(() => {
-    console.log(`🎯 Current PLAYER:`, PLAYER, `| Players count: ${players.length} | Selected: ${selectedSource}`);
-    console.log(`📺 YouTube Video ID:`, youtubeVideoId);
-  }, [PLAYER, players, selectedSource, youtubeVideoId]);
-
-  // Show loading while fetching players or for 5 seconds
   if (!PLAYER || showLoading) {
-    console.log(`⏳ No PLAYER found or showing loading...`);
     return (
       <div className="relative w-full h-screen bg-black overflow-hidden">
         <div className="absolute-center">
@@ -574,35 +531,21 @@ interface FullscreenDocument extends Document {
                     outro={PLAYER.outro}
                     isMobile={mobile}
                     onNextEpisode={() => {
-                      // Next episode handler for movies (next part if multi-part)
                       const nextSourceIndex = selectedSource + 1;
-                      if (nextSourceIndex < players.length) {
-                        const nextPlayer = players[nextSourceIndex];
-                        if (nextPlayer?.isCineVerseSource) {
-                          console.log(`🎬 User clicked next part: ${nextPlayer.title}`);
+                      if (nextSourceIndex < players.length && players[nextSourceIndex]?.isCineVerseSource) {
+                        setSelectedSource(nextSourceIndex);
+                      }
+                    }}
+                    onReady={() => {}}
+                    onStateChange={(state) => {
+                      if (state === 0) {
+                        const nextSourceIndex = selectedSource + 1;
+                        if (nextSourceIndex < players.length && players[nextSourceIndex]?.isCineVerseSource) {
                           setSelectedSource(nextSourceIndex);
                         }
                       }
                     }}
-                    onReady={() => console.log('YouTube Player ready!')}
-                    onStateChange={(state) => {
-                      // State 0 = ENDED
-                      if (state === 0) {
-                        console.log('🎬 YouTube video ended');
-                        // Nếu có phần tiếp theo (multi-part movie), chuyển sang phần đó
-                        const nextSourceIndex = selectedSource + 1;
-                        if (nextSourceIndex < players.length) {
-                          const nextPlayer = players[nextSourceIndex];
-                          // Chỉ auto-next nếu là CineVerse source (cùng bộ phim)
-                          if (nextPlayer?.isCineVerseSource) {
-                            console.log(`🎬 Auto-playing next part: ${nextPlayer.title}`);
-                            setSelectedSource(nextSourceIndex);
-                          }
-                        }
-                      }
-                    }}
-                    onError={(error) => {
-                      console.error('YouTube Player Error:', error);
+                    onError={(_error) => {
                       addToast({
                         title: 'Lỗi phát video',
                         description: 'Không thể phát video YouTube này. Thử nguồn khác.',

@@ -2,6 +2,7 @@
 
 import React, { useState, useId } from 'react';
 import Link from "next/link";
+import { motion, AnimatePresence } from 'framer-motion';
 import { useYouTubePlayer, PlayerState } from '@/hooks/useYouTubePlayer';
 import {
   Play,
@@ -11,6 +12,8 @@ import {
   SkipBack,
   SkipForward,
   Settings,
+  Maximize,
+  Minimize,
   FastForward,
   ChevronsRight,
 } from 'lucide-react';
@@ -686,8 +689,11 @@ export const YouTubePlayer: React.FC<YouTubePlayerProps> = ({
         {/* Loading Overlay */}
         {!isReady && !hasError && (
           <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/80">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary mb-4"></div>
-            <p className="text-white text-sm">Đang tải video...</p>
+            <div className="relative h-12 w-12 mb-4">
+              <div className="absolute inset-0 rounded-full border-2 border-white/10" />
+              <div className="absolute inset-0 rounded-full border-t-2 border-red-500 animate-spin" />
+            </div>
+            <p className="text-white/60 text-xs tracking-widest uppercase">Đang tải video...</p>
           </div>
         )}
 
@@ -724,183 +730,193 @@ export const YouTubePlayer: React.FC<YouTubePlayerProps> = ({
           </>
         )}
 
-        {/* Custom Controls Overlay with Glass Effect */}
-        {showControls && isReady && showUI && !externalIdle && (
-          <div className="absolute bottom-0 left-0 right-0 glass-morphism p-4 transition-all duration-300">
-            {/* Progress Bar */}
-            <div className="mb-3">
-              <input
-                type="range"
-                min="0"
-                max={duration || 100}
-                value={currentTime}
-                onChange={handleProgressChange}
-                onMouseDown={handleProgressMouseDown}
-                onTouchStart={handleProgressTouchStart}
-                className="w-full h-2 rounded-lg appearance-none cursor-pointer slider-thumb progress-bar glass-slider"
-                style={{
-                  '--progress': `${progressPercentage}%`
-                } as React.CSSProperties}
-              />
-              <div className="flex justify-between text-xs text-white/80 mt-1">
-                <span>{formatTime(currentTime)}</span>
-                <span>{formatTime(duration)}</span>
-              </div>
-            </div>
-
-            {/* Control Buttons */}
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                {/* Play/Pause Button */}
-                <button
-                  onClick={togglePlayPause}
-                  className="p-3 glass-button control-button"
-                  aria-label={isPlaying ? 'Pause' : 'Play'}
-                >
-                  {isPlaying ? (
-                    <Pause className="w-6 h-6 text-white" fill="white" />
-                  ) : (
-                    <Play className="w-6 h-6 text-white" fill="white" />
-                  )}
-                </button>
-
-                {/* Skip Backward */}
-                <button
-                  onClick={handleSkipBackward}
-                  className="p-2 glass-button control-button"
-                  aria-label="Skip backward 10 seconds"
-                >
-                  <SkipBack className="w-5 h-5 text-white" />
-                </button>
-
-                {/* Skip Forward */}
-                <button
-                  onClick={handleSkipForward}
-                  className="p-2 glass-button control-button"
-                  aria-label="Skip forward 10 seconds"
-                >
-                  <SkipForward className="w-5 h-5 text-white" />
-                </button>
-
-                {/* Volume Controls */}
-                <div className="flex items-center gap-2 group">
-                  <button
-                    onClick={toggleMute}
-                    className="p-2 glass-button control-button"
-                    aria-label={isMuted ? 'Unmute' : 'Mute'}
-                  >
-                    {isMuted ? (
-                      <VolumeX className="w-5 h-5 text-white" />
-                    ) : (
-                      <Volume2 className="w-5 h-5 text-white" />
-                    )}
-                  </button>
-                  <input
-                    type="range"
-                    min="0"
-                    max="100"
-                    value={isMuted ? 0 : volume}
-                    onChange={handleVolumeChange}
-                    onMouseDown={handleVolumeMouseDown}
-                    onTouchStart={handleVolumeTouchStart}
-                    className="w-0 group-hover:w-28 transition-all duration-300 h-2 rounded-lg appearance-none cursor-pointer slider-thumb volume-slider glass-slider"
-                    style={{
-                      '--progress': `${volume}%`
-                    } as React.CSSProperties}
-                  />
+        {/* Custom Controls Overlay */}
+        {showControls && isReady && !externalIdle && (
+          <AnimatePresence>
+            {showUI && (
+              <motion.div
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 8 }}
+                transition={{ duration: 0.2 }}
+                className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-4"
+              >
+                {/* Progress Bar */}
+                <div className="mb-3">
+                  <div className="relative h-1 bg-white/30 rounded-full overflow-hidden group/progress">
+                    <motion.div
+                      className="absolute left-0 top-0 h-full bg-gradient-to-r from-red-500 to-red-600 rounded-full pointer-events-none"
+                      style={{ width: `${progressPercentage}%` }}
+                    />
+                    <input
+                      type="range"
+                      min="0"
+                      max={duration || 100}
+                      value={currentTime}
+                      onChange={handleProgressChange}
+                      onMouseDown={handleProgressMouseDown}
+                      onTouchStart={handleProgressTouchStart}
+                      className="absolute inset-0 w-full opacity-0 cursor-pointer"
+                    />
+                  </div>
+                  <div className="flex justify-between text-xs text-white/80 mt-1">
+                    <span>{formatTime(currentTime)}</span>
+                    <span>{formatTime(duration)}</span>
+                  </div>
                 </div>
-              </div>
 
-              {/* Right Side Controls */}
-              <div className="flex items-center gap-2">
-                {/* Quality Selector */}
-                <div className="relative z-50 quality-menu-container">
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setShowQualityMenu(!showQualityMenu);
-                    }}
-                    className="p-2 glass-button control-button"
-                    aria-label="Chất lượng video"
-                  >
-                    <Settings className="w-5 h-5 text-white/80 hover:text-white transition-colors" />
-                  </button>
-
-                  {/* Quality Menu Dropdown */}
-                  {showQualityMenu && (
-                    <div 
-                      className="absolute bottom-full right-0 mb-2 glass-morphism rounded-lg shadow-2xl overflow-hidden min-w-[140px] z-[100]"
-                      onClick={(e) => e.stopPropagation()}
+                {/* Control Buttons */}
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    {/* Play/Pause */}
+                    <motion.button
+                      whileHover={{ scale: 1.1 }}
+                      whileTap={{ scale: 0.9 }}
+                      onClick={togglePlayPause}
+                      className="p-2 text-white hover:bg-white/20 rounded-lg transition-colors"
+                      aria-label={isPlaying ? 'Pause' : 'Play'}
                     >
-                      <div className="px-3 py-2 border-b border-white/10 text-xs text-white/60 font-semibold">
-                        Chất lượng
-                      </div>
-                      <div className="py-1">
-                        {/* Auto quality option */}
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setPlaybackQuality('default');
-                            setShowQualityMenu(false);
-                          }}
-                          className={`w-full px-3 py-2 text-left text-sm hover:bg-white/10 transition-colors flex items-center justify-between ${
-                            currentQuality === 'auto' || currentQuality === 'default' || !currentQuality ? 'text-primary font-semibold' : 'text-white'
-                          }`}
-                        >
-                          <span>Tự động</span>
-                          {(currentQuality === 'auto' || currentQuality === 'default' || !currentQuality) && (
-                            <span className="text-primary">✓</span>
-                          )}
-                        </button>
-                        
-                        {/* Debug: Show available qualities count */}
-                        {availableQualities.length === 0 && (
-                          <div className="px-3 py-2 text-xs text-white/40 italic">
-                            Đang tải chất lượng...
-                          </div>
-                        )}
-                        
-                        {/* Available qualities - Filter out 'auto' and 'default' */}
-                        {availableQualities.length > 0 && availableQualities
-                          .filter(quality => quality !== 'auto' && quality !== 'default')
-                          .map((quality) => (
-                          <button
-                            key={quality}
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setPlaybackQuality(quality);
-                              setShowQualityMenu(false);
-                            }}
-                            className={`w-full px-3 py-2 text-left text-sm hover:bg-white/10 transition-colors flex items-center justify-between ${
-                              currentQuality === quality ? 'text-primary font-semibold' : 'text-white'
-                            }`}
-                          >
-                            <span>{qualityLabels[quality] || quality}</span>
-                            {currentQuality === quality && (
-                              <span className="text-primary">✓</span>
-                            )}
-                          </button>
-                        ))}
+                      {isPlaying ? <Pause className="w-5 h-5" fill="white" /> : <Play className="w-5 h-5" fill="white" />}
+                    </motion.button>
+
+                    {/* Skip Backward */}
+                    <motion.button
+                      whileHover={{ scale: 1.1 }}
+                      whileTap={{ scale: 0.9 }}
+                      onClick={handleSkipBackward}
+                      className="p-2 text-white hover:bg-white/20 rounded-lg transition-colors"
+                      aria-label="Skip backward 10 seconds"
+                    >
+                      <SkipBack className="w-4 h-4" />
+                    </motion.button>
+
+                    {/* Skip Forward */}
+                    <motion.button
+                      whileHover={{ scale: 1.1 }}
+                      whileTap={{ scale: 0.9 }}
+                      onClick={handleSkipForward}
+                      className="p-2 text-white hover:bg-white/20 rounded-lg transition-colors"
+                      aria-label="Skip forward 10 seconds"
+                    >
+                      <SkipForward className="w-4 h-4" />
+                    </motion.button>
+
+                    {/* Volume */}
+                    <div className="flex items-center gap-2 group">
+                      <motion.button
+                        whileHover={{ scale: 1.1 }}
+                        whileTap={{ scale: 0.9 }}
+                        onClick={toggleMute}
+                        className="p-2 text-white hover:bg-white/20 rounded-lg transition-colors"
+                        aria-label={isMuted ? 'Unmute' : 'Mute'}
+                      >
+                        {isMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+                      </motion.button>
+                      <div className="w-0 group-hover:w-20 transition-all duration-300 h-1 bg-white/30 rounded-full overflow-hidden relative">
+                        <div
+                          className="h-full bg-white rounded-full pointer-events-none"
+                          style={{ width: `${isMuted ? 0 : volume}%` }}
+                        />
+                        <input
+                          type="range"
+                          min="0"
+                          max="100"
+                          value={isMuted ? 0 : volume}
+                          onChange={handleVolumeChange}
+                          onMouseDown={handleVolumeMouseDown}
+                          onTouchStart={handleVolumeTouchStart}
+                          className="absolute inset-0 w-full opacity-0 cursor-pointer"
+                        />
                       </div>
                     </div>
-                  )}
-                </div>
+                  </div>
 
-                {/* Fullscreen Button - Temporarily Hidden */}
-                {/* <button
-                  onClick={toggleFullscreen}
-                  className="p-2 rounded-full hover:bg-white/10 transition-colors"
-                  aria-label={isFullscreen ? 'Exit fullscreen' : 'Fullscreen'}
-                >
-                  {isFullscreen ? (
-                    <Minimize className="w-5 h-5 text-white" />
-                  ) : (
-                    <Maximize className="w-5 h-5 text-white" />
-                  )}
-                </button> */}
-              </div>
-            </div>
-          </div>
+                  {/* Right Side Controls */}
+                  <div className="flex items-center gap-2">
+                    {/* Quality Selector */}
+                    <div className="relative z-50 quality-menu-container">
+                      <motion.button
+                        whileHover={{ scale: 1.1 }}
+                        whileTap={{ scale: 0.9 }}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setShowQualityMenu(!showQualityMenu);
+                        }}
+                        className="p-2 text-white hover:bg-white/20 rounded-lg transition-colors"
+                        aria-label="Chất lượng video"
+                      >
+                        <Settings className="w-4 h-4" />
+                      </motion.button>
+
+                      {showQualityMenu && (
+                        <div
+                          className="absolute bottom-full right-0 mb-2 bg-black/90 backdrop-blur-md rounded-lg shadow-2xl overflow-hidden min-w-[140px] z-[100] border border-white/20"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          <div className="px-3 py-2 border-b border-white/10 text-xs text-white/60 font-semibold">
+                            Chất lượng
+                          </div>
+                          <div className="py-1">
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setPlaybackQuality('default');
+                                setShowQualityMenu(false);
+                              }}
+                              className={`w-full px-3 py-2 text-left text-sm hover:bg-white/10 transition-colors flex items-center justify-between ${
+                                currentQuality === 'auto' || currentQuality === 'default' || !currentQuality ? 'text-primary font-semibold' : 'text-white'
+                              }`}
+                            >
+                              <span>Tự động</span>
+                              {(currentQuality === 'auto' || currentQuality === 'default' || !currentQuality) && (
+                                <span className="text-primary">✓</span>
+                              )}
+                            </button>
+
+                            {availableQualities.length === 0 && (
+                              <div className="px-3 py-2 text-xs text-white/40 italic">
+                                Đang tải chất lượng...
+                              </div>
+                            )}
+
+                            {availableQualities.length > 0 && availableQualities
+                              .filter(q => q !== 'auto' && q !== 'default')
+                              .map((q) => (
+                                <button
+                                  key={q}
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    setPlaybackQuality(q);
+                                    setShowQualityMenu(false);
+                                  }}
+                                  className={`w-full px-3 py-2 text-left text-sm hover:bg-white/10 transition-colors flex items-center justify-between ${
+                                    currentQuality === q ? 'text-primary font-semibold' : 'text-white'
+                                  }`}
+                                >
+                                  <span>{qualityLabels[q] || q}</span>
+                                  {currentQuality === q && <span className="text-primary">✓</span>}
+                                </button>
+                              ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Fullscreen */}
+                    <motion.button
+                      whileHover={{ scale: 1.1 }}
+                      whileTap={{ scale: 0.9 }}
+                      onClick={toggleFullscreen}
+                      className="p-2 text-white hover:bg-white/20 rounded-lg transition-colors"
+                      aria-label={isFullscreen ? 'Exit fullscreen' : 'Fullscreen'}
+                    >
+                      {isFullscreen ? <Minimize className="w-5 h-5" /> : <Maximize className="w-5 h-5" />}
+                    </motion.button>
+                  </div>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         )}
       </div>
 
