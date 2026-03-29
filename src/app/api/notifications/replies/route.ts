@@ -8,10 +8,12 @@ export async function GET(request: NextRequest) {
     // Get current user
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) {
+      // Trả về 0 thông báo cho người dùng chưa đăng nhập
       return NextResponse.json({ 
-        success: false, 
-        error: 'Authentication required' 
-      }, { status: 401 });
+        success: true, 
+        count: 0,
+        replies: []
+      });
     }
 
     // Get user's comments to find replies

@@ -1,0 +1,28 @@
+{
+  "Movie-Rating": {
+    "P": "Phù hợp mọi lứa tuổi",
+    "G": "Phù hợp mọi lứa tuổi",
+    "PG": "Phụ huynh hướng dẫn",
+    "PG-13": "Phụ huynh hướng dẫn - 13+",
+    "R": "Hạn chế - 17+",
+    "NC-17": "Không dành cho trẻ em dưới 17",
+    "TV-Y": "Phù hợp trẻ em",
+    "TV-Y7": "Phù hợp trẻ em 7+",
+    "TV-G": "Phù hợp mọi lứa tuổi",
+    "TV-PG": "Phụ huynh hướng dẫn",
+    "TV-14": "Phụ huynh hướng dẫn - 14+",
+    "TV-MA": "Chỉ dành cho người lớn",
+    "K": "Phù hợp mọi lứa tuổi",
+    "T13": "Cấm trẻ em dưới 13 tuổi",
+    "T16": "Cấm trẻ em dưới 16 tuổi",
+    "T18": "Cấm người dưới 18 tuổi",
+    "C13": "Cấm trẻ em dưới 13 tuổi",
+    "C16": "Cấm trẻ em dưới 16 tuổi",
+    "C18": "Cấm người dưới 18 tuổi",
+    "0+": "Phù hợp mọi lứa tuổi",
+    "6+": "Phù hợp trẻ em 6+",
+    "12+": "Phù hợp 12+",
+    "16+": "Phù hợp 16+",
+    "18+": "Chỉ dành cho người lớn"
+  }
+}

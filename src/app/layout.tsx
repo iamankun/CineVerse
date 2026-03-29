@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import Script from "next/script";
+import { headers } from "next/headers";
 import { siteConfig } from "@/config/site";
 import { Mulish } from "@/utils/fonts";
 import "../styles/globals.css";
@@ -53,7 +54,10 @@ export const viewport: Viewport = {
   viewportFit: "cover",
 };
 
-export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+export default async function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+  // Get CSP nonce from middleware
+  const headersList = await headers();
+  const nonce = headersList.get('x-csp-nonce') || '';
   return (
     <html suppressHydrationWarning lang="vi">
       <head>
@@ -70,10 +74,12 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <Script
           strategy="lazyOnload"
           src={`https://www.googletagmanager.com/gtag/js?id=G-PWNGH2BG33`}
+          nonce={nonce}
         />
         <Script
           id="gtag-init"
           strategy="lazyOnload"
+          nonce={nonce}
           dangerouslySetInnerHTML={{
             __html: `
               window.dataLayer = window.dataLayer || [];
@@ -83,7 +89,6 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
                 page_path: window.location.pathname,
                 send_page_view: false
               });
-              // Gửi page view sau khi page load xong
               window.addEventListener('load', function() {
                 gtag('event', 'page_view');
               });
