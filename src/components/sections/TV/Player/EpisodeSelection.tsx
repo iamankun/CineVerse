@@ -44,11 +44,35 @@ const TvShowPlayerEpisodeSelection: React.FC<TvShowPlayerEpisodeSelectionProps> 
       const fetchSeasonEpisodes = async () => {
         setIsLoadingSeason(true);
         try {
-          const response = await fetch(`/api/sources/tv/${id}?season=${selectedSeason}`);
+          // Fetch from database API instead of local files
+          const response = await fetch(`/api/admin/chuongtrinhtv`);
           if (response.ok) {
-            const data = await response.json();
-            if (data.episodes) {
-              setSeasonEpisodes(data.episodes);
+            const result = await response.json();
+            const tvData = result.tvSeries || [];
+            const tvShow = tvData.find((item: any) => item.tmdb_id === id);
+            
+            if (tvShow?.seasons?.[selectedSeason]) {
+              const seasonData = tvShow.seasons[selectedSeason];
+              const episodes = Object.entries(seasonData).map(([episodeNum, episodeData]: [string, any]) => ({
+                id: id * 1000 + parseInt(selectedSeason) * 100 + parseInt(episodeNum),
+                episode_number: parseInt(episodeNum),
+                name: episodeData.title || `Tập ${episodeNum}`,
+                overview: episodeData.description || '',
+                still_path: null as string | null,
+                air_date: new Date().toISOString().split('T')[0],
+                runtime: 24,
+                season_number: parseInt(selectedSeason),
+                show_id: id,
+                production_code: '',
+                crew: [],
+                guest_stars: [],
+                networks: [],
+                images: {},
+                vote_average: 0,
+                vote_count: 0,
+                order: parseInt(episodeNum)
+              } as unknown as Episode));
+              setSeasonEpisodes(episodes);
             }
           }
         } catch (error) {

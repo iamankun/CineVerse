@@ -17,7 +17,7 @@ import { PlayersProps } from "@/types";
 import { playerAdBlocker } from "@/utils/player-ad-blocker";
 import { usePinchToZoom } from "@/hooks/usePinchToZoom";
 import { getMovieReleaseDates } from "@/api/tmdb";
-import { getVietnamRatingFromReleaseDates } from "@/utils/rating-converter";
+import { getVietnamRatingFromReleaseDates, vietnamRatingDienAnh } from "@/utils/rating-converter";
 import { useGestureContext } from "@/contexts/GestureContext";
 import YouTubePlayer from "@/components/ui/YouTubePlayer";
 import "@/styles/youtube-player.css";
@@ -111,12 +111,14 @@ const MoviePlayer: React.FC<MoviePlayerProps> = ({ movie, startAt }) => {
   // Define PLAYER after selectedSource is declared
   const PLAYER = useMemo(() => players[selectedSource] || players[0], [players, selectedSource]);
   
-  // Ẩn loading sau khi có PLAYER
+  // Ẩn loading sau 5 giây để age rating audio kịp chơi
   useEffect(() => {
-    if (PLAYER) {
+    const timer = setTimeout(() => {
       setShowLoading(false);
-    }
-  }, [PLAYER]);
+    }, 5000);
+    
+    return () => clearTimeout(timer);
+  }, []);
 
   // Detect if current player is YouTube
   const gestureCallbacks = useMemo(() => ({
@@ -268,34 +270,68 @@ const MoviePlayer: React.FC<MoviePlayerProps> = ({ movie, startAt }) => {
       if (isMounted) console.error('Error fetching players:', err);
     });
 
-    // Fetch movie rating
-    const fetchTMDBRating = async () => {
+    // Fetch movie rating from database
+    const fetchMovieRating = async () => {
       try {
-        const releaseDates = await getMovieReleaseDates(movie.id);
-        const vietnamRating = getVietnamRatingFromReleaseDates(releaseDates);
-        if (vietnamRating && isMounted) setMovieRating(vietnamRating);
-      } catch {}
-    };
-
-    fetch(`/api/admin/dienanh`, { next: { revalidate: 3600 } } as RequestInit)
-      .then(res => res.ok ? res.json() : null)
-      .then(result => {
+        console.log(`🎬 Đang tải movie rating từ database cho ID: ${movie.id}`);
+        console.log(`🎬 ID type:`, typeof movie.id, `ID value:`, movie.id);
+        const response = await fetch(`/api/admin/dienanh`, { next: { revalidate: 3600 } } as RequestInit);
+        console.log(`📡 Database response status:`, response.status, response.ok);
+        const result = response.ok ? await response.json() : null;
+        console.log(`📊 Database response data:`, result);
         const movies = result?.movies || [];
-        const movieData = movies.find((item: any) => item.tmdb_id === movie.id);
+        console.log(`🎬 Movies count:`, movies.length);
+        
+        // Log tất cả IDs để debug
+        console.log(`🔍 All Movie IDs in database:`, movies.map((item: any) => ({
+          tmdb_id: item.tmdb_id,
+          title: item.title,
+          id_type: typeof item.tmdb_id
+        })));
+        
+        const movieData = movies.find((item: any) => {
+          // Try both string and number comparison
+          const itemId = String(item.tmdb_id);
+          const searchId = String(movie.id);
+          return itemId === searchId || item.tmdb_id === parseInt(movie.id);
+        });
+        
+        console.log(`🎯 Found movie:`, !!movieData, movieData?.title);
+        console.log(`🎯 ID comparison:`, {
+          search_id: movie.id,
+          search_type: typeof movie.id,
+          found_id: movieData?.tmdb_id,
+          found_type: typeof movieData?.tmdb_id,
+          strict_equal: movieData?.tmdb_id === movie.id,
+          loose_equal: movieData?.tmdb_id == movie.id
+        });
+        
         if (movieData?.metadata?.["movie-rating"]) {
           const rating = movieData.metadata["movie-rating"];
-          fetch("/sources/movie-rating.json", { next: { revalidate: 86400 } } as RequestInit)
-            .then(res => res.json())
-            .then(ratingData => {
-              const description = ratingData["Movie-Rating"][rating];
-              if (description && isMounted) setMovieRating({ rating, description });
-            })
-            .catch(() => fetchTMDBRating());
+          console.log(`✅ Movie Rating loaded (database):`, rating);
+          if (isMounted) setMovieRating({ 
+            rating, 
+            description: vietnamRatingDienAnh[rating as keyof typeof vietnamRatingDienAnh] || "Phim phân loại độ tuổi" 
+          });
         } else {
-          fetchTMDBRating();
+          console.log(`⚠️ Movie found but no rating metadata`);
         }
-      })
-      .catch(() => fetchTMDBRating());
+      } catch (err) {
+        console.error('Error fetching movie rating:', err);
+        // Fallback to TMDB if database fails
+        const fetchTMDBRating = async () => {
+          try {
+            console.log(`🌐 Đang lấy rating từ TMDB cho movie ID: ${movie.id}`);
+            const releaseDates = await getMovieReleaseDates(movie.id);
+            const vietnamRating = getVietnamRatingFromReleaseDates(releaseDates);
+            if (vietnamRating && isMounted) setMovieRating(vietnamRating);
+          } catch {}
+        };
+        fetchTMDBRating();
+      }
+    };
+
+    fetchMovieRating();
 
     return () => {
       isMounted = false;
@@ -421,7 +457,7 @@ const MoviePlayer: React.FC<MoviePlayerProps> = ({ movie, startAt }) => {
 
             if (exitFullscreen) {
               exitFullscreen.call(document).catch((err: Error) => {
-                console.warn('Failed to exit fullscreen:', err);
+                console.warn('Thất bại khi thoát toàn màn hình:', err);
               });
             }
           }
@@ -593,7 +629,7 @@ const MoviePlayer: React.FC<MoviePlayerProps> = ({ movie, startAt }) => {
             )}
 
             {/* CineVerse Logo on the right */}
-            <div className="flex-shrink-0 scale-[1.5]">
+            <div className="flex-shrink:0 scale-[1.5]">
               <BrandLogo />
             </div>
           </div>

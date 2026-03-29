@@ -93,7 +93,7 @@ const AgeRating: React.FC<AgeRatingProps> = ({ rating, ratingDescription, isLoad
     <div className="flex items-center gap-1.5">
       {/* Green "I" icon - Always visible */}
       <div
-        className="flex h-8 w-8 flex-shrink-0 items-center justify-center text-xl font-black text-green-500"
+        className="flex h-8 w-8 flex-shrink:0 items-center justify-center text-xl font-black text-green-500"
         style={{
           textShadow: "0 2px 4px rgba(0, 0, 0, 0.8)",
         }}
@@ -102,7 +102,7 @@ const AgeRating: React.FC<AgeRatingProps> = ({ rating, ratingDescription, isLoad
       </div>
 
       {/* Rating (K/T13/T16/T18) */}
-      <div className="flex-shrink-0 text-xl font-black text-white">
+      <div className="flex-shrink:0 text-xl font-black text-white">
         {rating.split('').map((char, idx) => (
           <span
             key={idx}

@@ -18,13 +18,22 @@ export interface RatingInfo {
 }
 
 // Mô tả cho các rating Việt Nam
-export const vietnamRatingDescriptions: Record<VietnamRating, string> = {
+export const vietnamRatingDienAnh: Record<VietnamRating, string> = {
   'P': 'Phim dành cho mọi lứa tuổi',
   'K': 'Phim dành cho khán giả dưới 13 tuổi xem cùng phụ huynh',
   'T13': 'Phim dành cho khán giả từ 13 tuổi trở lên',
   'T16': 'Phim dành cho khán giả từ 16 tuổi trở lên',
   'T18': 'Phim dành cho khán giả từ 18 tuổi trở lên',
   'C': 'Phim bị cấm chiếu trên mọi nền tảng',
+};
+
+export const vietnamRatingTV: Record<VietnamRating, string> = {
+  'P': 'Chương trình dành cho mọi lứa tuổi',
+  'K': 'Chương trình dành cho khán giả dưới 13 tuổi xem cùng phụ huynh',
+  'T13': 'Chương trình dành cho khán giả từ 13 tuổi trở lên',
+  'T16': 'Chương trình dành cho khán giả từ 16 tuổi trở lên',
+  'T18': 'Chương trình dành cho khán giả từ 18 tuổi trở lên',
+  'C': 'Chương trình bị cấm chiếu trên mọi nền tảng',
 };
 
 /**
@@ -240,7 +249,7 @@ export function getVietnamRatingFromReleaseDates(
       if (vietnamRating) {
         return {
           rating: vietnamRating,
-          description: vietnamRatingDescriptions[vietnamRating],
+          description: vietnamRatingDienAnh[vietnamRating],
         };
       }
     }
@@ -257,7 +266,7 @@ export function getVietnamRatingFromReleaseDates(
       if (vietnamRating) {
         return {
           rating: vietnamRating,
-          description: vietnamRatingDescriptions[vietnamRating],
+          description: vietnamRatingDienAnh[vietnamRating],
         };
       }
     }
@@ -294,7 +303,7 @@ export function getVietnamRatingFromContentRatings(
       if (vietnamRating) {
         return {
           rating: vietnamRating,
-          description: vietnamRatingDescriptions[vietnamRating],
+          description: vietnamRatingDienAnh[vietnamRating],
         };
       }
     }
@@ -310,7 +319,7 @@ export function getVietnamRatingFromContentRatings(
       if (vietnamRating) {
         return {
           rating: vietnamRating,
-          description: vietnamRatingDescriptions[vietnamRating],
+          description: vietnamRatingDienAnh[vietnamRating],
         };
       }
     }
@@ -332,6 +341,6 @@ export function isValidVietnamRating(rating: string): rating is VietnamRating {
 export function getRatingInfo(rating: VietnamRating): RatingInfo {
   return {
     rating,
-    description: vietnamRatingDescriptions[rating],
+    description: vietnamRatingDienAnh[rating],
   };
 }
