@@ -37,9 +37,23 @@ export async function GET(request: NextRequest) {
     });
 
     if (!response.ok) {
-      const errorData = await response.json();
+      let errorMessage = 'Failed to fetch PageSpeed data';
+      
+      if (response.status === 403) {
+        errorMessage = 'API key không hợp lệ hoặc đã đạt giới hạn quota. Vui lòng kiểm tra SPEED_API_KEY trong Google Cloud Console.';
+      } else if (response.status === 429) {
+        errorMessage = 'Đã đạt giới hạn request. Vui lòng thử lại sau.';
+      } else {
+        try {
+          const errorData = await response.json();
+          errorMessage = errorData.error?.message || `Lỗi ${response.status}: ${response.statusText}`;
+        } catch {
+          errorMessage = `Lỗi ${response.status}: ${response.statusText}`;
+        }
+      }
+      
       return NextResponse.json(
-        { error: errorData.error?.message || 'Failed to fetch PageSpeed data' },
+        { error: errorMessage },
         { status: response.status }
       );
     }

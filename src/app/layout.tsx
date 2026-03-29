@@ -73,9 +73,12 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
     <html suppressHydrationWarning lang="vi">
       <head>
         {/* Resource hints - Tối ưu PageSpeed Insights */}
-        <link rel="preconnect" href="https://image.tmdb.org" />
-        <link rel="preconnect" href="https://api.themoviedb.org" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        {/* Chỉ giữ preconnect cho origins thực sự cần ngay lập tức */}
+        {/* TMDB images - dns-prefetch thay vì preconnect vì không dùng ngay */}
+        <link rel="dns-prefetch" href="https://image.tmdb.org" />
+        <link rel="dns-prefetch" href="https://api.themoviedb.org" />
+        {/* Fonts được self-host bởi Next.js nên không cần preconnect */}
+        {/* Google Analytics - dns-prefetch là đủ vì load lazy */}
         <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
         <link rel="dns-prefetch" href="https://www.google-analytics.com" />
         <link rel="dns-prefetch" href="https://va.vercel-scripts.com" />

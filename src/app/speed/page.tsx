@@ -46,7 +46,7 @@ interface PageSpeedData {
   }>;
 }
 
-function getScoreColor(score: number): string {
+function getScoreColor(score: number): 'success' | 'warning' | 'danger' {
   if (score >= 90) return 'success';
   if (score >= 50) return 'warning';
   return 'danger';
@@ -206,9 +206,26 @@ export default function SpeedPage() {
 
         {/* Error State */}
         {error && (
-          <Card className="mb-6" classNames={{ base: 'border-danger' }}>
+          <Card className="mb-6" classNames={{ base: 'border-danger bg-danger-50' }}>
             <CardBody className="p-6">
-              <p className="text-danger">Lỗi: {error}</p>
+              <div className="flex items-start gap-3">
+                <div className="text-danger text-2xl">⚠️</div>
+                <div>
+                  <p className="text-danger font-medium">{error}</p>
+                  {error.includes('API key') && (
+                    <div className="mt-3 text-sm text-foreground-600">
+                      <p className="font-medium">Cách khắc phục:</p>
+                      <ol className="list-decimal list-inside mt-2 space-y-1">
+                        <li>Truy cập <a href="https://console.cloud.google.com/" target="_blank" rel="noopener" className="text-primary underline">Google Cloud Console</a></li>
+                        <li>Kiểm tra API key trong Credentials</li>
+                        <li>Đảm bảo PageSpeed Insights API đã được bật</li>
+                        <li>Kiểm tra domain restrictions (nếu có)</li>
+                        <li>Hoặc tạo API key mới và cập nhật SPEED_API_KEY</li>
+                      </ol>
+                    </div>
+                  )}
+                </div>
+              </div>
             </CardBody>
           </Card>
         )}
