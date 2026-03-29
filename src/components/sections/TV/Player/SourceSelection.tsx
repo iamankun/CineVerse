@@ -30,7 +30,7 @@ const TvShowPlayerSourceSelection: React.FC<TvShowPlayerSourceSelectionProps> = 
     >
       <div className="flex flex-col gap-5 p-6">
         <motion.div 
-          className="space-y-3 px-5 py-4 rounded-2xl bg-gradient-to-br from-white/15 via-white/10 to-white/5 backdrop-blur-md border border-white/20 shadow-xl shadow-black/20"
+          className="space-y-3 px-5 py-4 rounded-2xl Argument of type 'number' is not assignable to parameter of type 'string'. from-white/15 via-white/10 to-white/5 backdrop-blur-md border border-white/20 shadow-xl shadow-black/20"
           initial={{ opacity: 0, scale: 0.9, filter: "blur(10px)" }}
           animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
           transition={{ 

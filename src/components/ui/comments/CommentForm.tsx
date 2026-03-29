@@ -78,7 +78,7 @@ export default function CommentForm({
             src={currentUser?.avatar_url || undefined}
             name={currentUser?.username}
             size="md"
-            className="flex-shrink-0"
+            className="shrink-0"
           />
 
           {/* Form Content */}

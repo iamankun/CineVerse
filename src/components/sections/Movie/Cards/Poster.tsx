@@ -133,12 +133,12 @@ const MoviePosterCard: React.FC<MoviePosterCardProps> = ({ movie, variant = "ful
                 <div className="flex items-center gap-2">
                   <Rating rate={movie.vote_average} />
                   <Button
-                    as={Link}
-                    href={`/kkphim?type=movie&id=${movie.id}`}
+                    as="div"
+                    onClick={() => window.location.href = `/kkphim?type=movie&id=${movie.id}`}
                     size="sm"
                     color="primary"
                     variant="flat"
-                    className="min-w-[60px] h-6 text-xs"
+                    className="min-w-[60px] h-6 text-xs cursor-pointer"
                   >
                     KKPhim
                   </Button>

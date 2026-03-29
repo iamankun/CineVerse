@@ -492,7 +492,7 @@ const WatchingWithBrand: React.FC<WatchingWithBrandProps> = ({
   console.log('WatchingWithBrand:', { logoPath, posterPath, movieTitle, animationPhase });
 
   // Use proxy for TMDB images to avoid CSP issues
-  const cleanLogoPath = logoPath?.startsWith('/') ? logoPath.substring(1) : logoPath;
+  const cleanLogoPath = logoPath?.startsWith('/') ? logoPath.substring(1) : logoPath || '';
   const imageUrl = logoPath ? `/api/proxy/tmdb-image?path=w500/${encodeURIComponent(cleanLogoPath)}` : null;
   
   console.log('🎬 WatchingWithBrand Debug:', { 
@@ -523,7 +523,7 @@ const WatchingWithBrand: React.FC<WatchingWithBrandProps> = ({
       {/* Astronaut */}
       <div 
         className={cn(
-          "flex-shrink-0",
+          "shrink-0",
           getAstronautClass()
         )}
       >

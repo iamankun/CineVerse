@@ -349,7 +349,7 @@ export default function KKPhimPage() {
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
               {tmdbResults.map((result, index) => (
                 <div key={index} className="relative group">
-                  <div className="aspect-[2/3] rounded-lg overflow-hidden bg-content2/50">
+                  <div className="aspect-2/3 rounded-lg overflow-hidden bg-content2/50">
                     <Image
                       isBlurred
                       alt={result.name}
@@ -357,7 +357,7 @@ export default function KKPhimPage() {
                       className="w-full h-full object-cover object-center group-hover:scale-110 transition-transform duration-300"
                       fallbackSrc="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='60' viewBox='0 0 40 60'%3E%3Crect width='40' height='60' fill='%23333'/%3E%3Ctext x='20' y='35' text-anchor='middle' fill='%23666' font-size='8'%3ENo Image%3C/text%3E%3C/svg%3E"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                    <div className="absolute inset-0 bg-linear-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                   </div>
                   <div className="mt-2">
                     <p className="text-white text-sm font-medium line-clamp-2">{result.name}</p>
@@ -395,7 +395,7 @@ export default function KKPhimPage() {
         <Card key={index} className="mb-6">
           <CardHeader>
             <div className="flex items-center gap-4">
-              <div className="flex-shrink-0">
+              <div className="shrink-0">
                 <div className="w-[60px] h-[90px] rounded-lg overflow-hidden bg-content2/50">
                   {result.data.movie.poster_url ? (
                     <Image

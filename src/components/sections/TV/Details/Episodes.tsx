@@ -8,6 +8,8 @@ import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import { memo } from "react";
 import { Episode } from "tmdb-ts/dist/types/tv-episode";
+import { useLazyLoad } from "@/hooks/useLazyLoad";
+import { useChunkedLoading } from "@/hooks/useVirtualScroll";
 
 interface TvShowEpisodesSelectionProps {
   id: number;
@@ -37,6 +39,12 @@ const TvShowEpisodesSelection: React.FC<TvShowEpisodesSelectionProps> = ({
     queryKey: ["tv-show-episodes-merged", id, seasonNumber],
   });
 
+  // Chunked loading cho episodes
+  const { getVisibleItems, loadedChunks, totalChunks } = useChunkedLoading<Episode>(
+    data?.episodes || [],
+    50 // 50 episodes per chunk
+  );
+
   if (isPending) {
     return (
       <div className="flex h-full items-center justify-center">
@@ -47,11 +55,14 @@ const TvShowEpisodesSelection: React.FC<TvShowEpisodesSelectionProps> = ({
 
   if (!data) return null;
 
-  const EPISODES = data.episodes
-    .filter((episode: { name: string }) =>
+  // Get visible episodes based on loaded chunks
+  const visibleEpisodes = getVisibleItems(0, 100); // Load first 100 initially
+
+  const EPISODES = visibleEpisodes
+    .filter((episode: Episode) =>
       searchQuery ? episode.name.toLowerCase().includes(searchQuery.toLowerCase()) : true,
     )
-    .sort((a: { name: string }, b: { name: string }) => (sortedByName ? a.name.localeCompare(b.name) : 0));
+    .sort((a: Episode, b: Episode) => (sortedByName ? a.name.localeCompare(b.name) : 0));
 
   if (isEmpty(EPISODES)) {
     return (
@@ -89,6 +100,7 @@ export const EpisodeListCard: React.FC<EpisodeCardProps> = ({
 }) => {
   const imageUrl = getImageUrl(episode.still_path);
   const { mobile } = useBreakpoints();
+  const { elementRef, isVisible } = useLazyLoad({ rootMargin: '100px' });
   const isNotReleased = !episode.air_date || new Date(episode.air_date) > new Date();
   const isOdd = order % 2 !== 0;
   const href = !isNotReleased
@@ -124,14 +136,21 @@ export const EpisodeListCard: React.FC<EpisodeCardProps> = ({
         },
       )}
     >
-      <div className="relative">
-        <Image
-          alt={episode.name}
-          src={imageUrl}
-          height={120}
-          width={mobile ? 180 : 220}
-          className="rounded-r-none object-cover"
-        />
+      <div ref={elementRef as any} className="relative">
+        {isVisible ? (
+          <Image
+            alt={episode.name}
+            src={imageUrl}
+            height={120}
+            width={mobile ? 180 : 220}
+            className="rounded-r-none object-cover"
+          />
+        ) : (
+          <div 
+            className={`rounded-r-none object-cover bg-gray-300 animate-pulse`}
+            style={{ height: 120, width: mobile ? 180 : 220 }}
+          />
+        )}
         {!isNotReleased && (
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="z-10 flex h-12 w-12 items-center justify-center rounded-full bg-black/35 opacity-0 backdrop-blur-xs transition-opacity group-hover:opacity-100">
@@ -181,6 +200,7 @@ export const EpisodeListCard: React.FC<EpisodeCardProps> = ({
 
 const EpisodeGridCard: React.FC<EpisodeCardProps> = ({ episode, id }) => {
   const imageUrl = getImageUrl(episode.still_path);
+  const { elementRef, isVisible } = useLazyLoad({ rootMargin: '100px' });
   const isNotReleased = !episode.air_date || new Date(episode.air_date) > new Date();
   const href = !isNotReleased
     ? `/tv/${id}/${episode.season_number}/${episode.episode_number}/player`
@@ -201,12 +221,18 @@ const EpisodeGridCard: React.FC<EpisodeCardProps> = ({ episode, id }) => {
       )}
     >
       <CardBody className="overflow-visible p-0">
-        <div className="relative">
-          <Image
-            alt={episode.name}
-            src={imageUrl}
-            className="aspect-video w-full rounded-b-none object-cover"
-          />
+        <div ref={elementRef as any} className="relative">
+          {isVisible ? (
+            <Image
+              alt={episode.name}
+              src={imageUrl}
+              className="aspect-video w-full rounded-b-none object-cover"
+            />
+          ) : (
+            <div 
+              className="aspect-video w-full rounded-b-none object-cover bg-gray-300 animate-pulse"
+            />
+          )}
           {!isNotReleased && (
             <div className="absolute inset-0 flex items-center justify-center">
               <div className="z-10 flex h-12 w-12 items-center justify-center rounded-full bg-black/35 opacity-0 backdrop-blur-xs transition-opacity group-hover:opacity-100">

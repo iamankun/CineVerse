@@ -1,6 +1,7 @@
 import { Tooltip, Button, ButtonProps, TooltipProps } from "@heroui/react";
 import { Icon } from "@iconify/react";
 import Link from "next/link";
+import { useEffect, useState } from "react";
 
 export interface IconButtonProps extends Omit<ButtonProps, "isIconOnly"> {
   icon: string | React.ReactNode;
@@ -17,10 +18,20 @@ const IconButton: React.FC<IconButtonProps> = ({
   tooltipProps,
   ...props
 }) => {
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
   return (
     <Tooltip isDisabled={!tooltip} content={tooltip} {...tooltipProps}>
       <Button as={as || (props.href ? Link : "button")} isIconOnly {...props}>
-        {typeof icon === "string" ? <Icon icon={icon} fontSize={iconSize} /> : icon}
+        {typeof icon === "string" ? (
+          isClient ? <Icon icon={icon} fontSize={iconSize} /> : <div style={{ width: iconSize, height: iconSize }} />
+        ) : (
+          icon
+        )}
       </Button>
     </Tooltip>
   );

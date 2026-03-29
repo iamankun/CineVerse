@@ -135,7 +135,7 @@ export default function Comment({
           src={comment.user_avatar || undefined}
           name={comment.username}
           size={isReply ? "sm" : "md"}
-          className="flex-shrink-0"
+          className="shrink-0"
         />
 
         {/* Comment Content */}
@@ -155,7 +155,7 @@ export default function Comment({
           </div>
 
           {/* Content */}
-          <div className="text-sm text-gray-900 dark:text-gray-100 whitespace-pre-wrap break-words leading-relaxed">
+          <div className="text-sm text-gray-900 dark:text-gray-100 whitespace-pre-wrap wrap-break-words leading-relaxed">
             {isExpanded || comment.content.length <= 300 ? (
               comment.content || 'NO_CONTENT_DISPLAY'
             ) : (

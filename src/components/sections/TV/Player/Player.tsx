@@ -118,7 +118,7 @@ const TvShowPlayer: React.FC<TvShowPlayerProps> = ({
       seen,
       hasMovieRating: !!movieRating,
     });
-  }, [id, movieRating, logoPath, tv.original_language, seen]);
+  }, [id, movieRating?.rating, logoPath, tv.original_language, seen]);
   
   const cardRef = useRef<HTMLDivElement>(null);
   const playerContainerRef = useRef<HTMLDivElement>(null);
@@ -299,7 +299,8 @@ const TvShowPlayer: React.FC<TvShowPlayerProps> = ({
           // Try both string and number comparison
           const itemId = String(item.tmdb_id);
           const searchId = String(id);
-          return itemId === searchId || item.tmdb_id === parseInt(id);
+          const tvIdNum = Number(id);
+          return itemId === searchId || item.tmdb_id === tvIdNum;
         });
         console.log(`🎯 Found TV show:`, !!tvShowData, tvShowData?.title);
         console.log(`🎯 ID comparison:`, {

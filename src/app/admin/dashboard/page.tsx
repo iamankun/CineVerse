@@ -1763,7 +1763,7 @@ export default function DashboardPage() {
 
   return (
     <AdminGuard>
-      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black p-4">
+      <div className="min-h-screen bg-linear-to-br from-gray-900 via-gray-800 to-black p-4">
         <div className="mx-auto max-w-7xl">
         {/* Header */}
         <div className="mb-8">
@@ -1826,7 +1826,7 @@ export default function DashboardPage() {
 
         {/* JSON Paste Input */}
         {showJsonInput && (
-          <Card className="mb-6 bg-gradient-to-r from-purple-900/50 to-blue-900/50 backdrop-blur-sm">
+          <Card className="mb-6 bg-linear-to-br from-purple-900/50 to-blue-900/50 backdrop-blur-sm">
             <CardHeader>
               <h3 className="text-xl font-semibold text-white">
                 Dán liên kết phim

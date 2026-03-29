@@ -739,13 +739,13 @@ export const YouTubePlayer: React.FC<YouTubePlayerProps> = ({
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: 8 }}
                 transition={{ duration: 0.2 }}
-                className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-4"
+                className="absolute bottom-0 left-0 right-0 bg-linear-to-t from-black/80 to-transparent p-4"
               >
                 {/* Progress Bar */}
                 <div className="mb-3">
                   <div className="relative h-1 bg-white/30 rounded-full overflow-hidden group/progress">
                     <motion.div
-                      className="absolute left-0 top-0 h-full bg-gradient-to-r from-red-500 to-red-600 rounded-full pointer-events-none"
+                      className="absolute left-0 top-0 h-full bg-linear-to-r from-red-500 to-red-600 rounded-full pointer-events-none"
                       style={{ width: `${progressPercentage}%` }}
                     />
                     <input
@@ -850,7 +850,7 @@ export const YouTubePlayer: React.FC<YouTubePlayerProps> = ({
 
                       {showQualityMenu && (
                         <div
-                          className="absolute bottom-full right-0 mb-2 bg-black/90 backdrop-blur-md rounded-lg shadow-2xl overflow-hidden min-w-[140px] z-[100] border border-white/20"
+                          className="absolute bottom-full right-0 mb-2 bg-black/90 backdrop-blur-md rounded-lg shadow-2xl overflow-hidden min-w-[140px] z-100 border border-white/20"
                           onClick={(e) => e.stopPropagation()}
                         >
                           <div className="px-3 py-2 border-b border-white/10 text-xs text-white/60 font-semibold">

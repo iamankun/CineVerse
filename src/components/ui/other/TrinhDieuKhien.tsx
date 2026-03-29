@@ -329,7 +329,7 @@ const TrinhDieuKhien: React.FC<TrinhDieuKhienProps> = ({
                     className={cn(
                       "group relative flex h-11 w-11 items-center justify-center rounded-2xl",
                       "backdrop-blur-xl shadow-2xl border transition-all duration-300",
-                      `bg-gradient-to-br ${control.color}`,
+                      `bg-linear-to-br ${control.color}`,
                       {
                         "hover:scale-110 hover:shadow-3xl hover:rotate-3": !control.disabled,
                         "opacity-40 cursor-not-allowed": control.disabled,
@@ -386,7 +386,7 @@ const TrinhDieuKhien: React.FC<TrinhDieuKhienProps> = ({
           className={cn(
             "relative flex h-12 w-12 items-center justify-center rounded-2xl",
             "backdrop-blur-xl shadow-2xl border transition-all duration-300",
-            "bg-gradient-to-br from-indigo-500/20 via-purple-500/20 to-pink-500/20",
+            "bg-linear-to-br from-indigo-500/20 via-purple-500/20 to-pink-500/20",
             "border-indigo-400/30 hover:from-indigo-500/40 hover:via-purple-500/40 hover:to-pink-500/40",
             "hover:border-indigo-400/60 hover:scale-110 hover:shadow-3xl hover:rotate-6",
             "active:scale-95 active:rotate-0"
@@ -401,7 +401,7 @@ const TrinhDieuKhien: React.FC<TrinhDieuKhienProps> = ({
           }}
         >
           {/* Animated background gradient */}
-          <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-white/10 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-500" />
+          <div className="absolute inset-0 rounded-2xl bg-linear-to-br from-white/10 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-500" />
           
           {/* Pulsing ring effect */}
           <motion.div

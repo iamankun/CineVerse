@@ -40,7 +40,7 @@ const TvShowPlayerEpisodeSelection: React.FC<TvShowPlayerEpisodeSelectionProps> 
 
   // Fetch episodes when season changes
   useEffect(() => {
-    if (selectedSeason && selectedSeason !== episodes[0]?.season_number) {
+    if (selectedSeason) {
       const fetchSeasonEpisodes = async () => {
         setIsLoadingSeason(true);
         try {
@@ -54,14 +54,14 @@ const TvShowPlayerEpisodeSelection: React.FC<TvShowPlayerEpisodeSelectionProps> 
             if (tvShow?.seasons?.[selectedSeason]) {
               const seasonData = tvShow.seasons[selectedSeason];
               const episodes = Object.entries(seasonData).map(([episodeNum, episodeData]: [string, any]) => ({
-                id: id * 1000 + parseInt(selectedSeason) * 100 + parseInt(episodeNum),
-                episode_number: parseInt(episodeNum),
+                id: id * 1000 + Number(selectedSeason) * 100 + Number(episodeNum),
+                episode_number: Number(episodeNum),
                 name: episodeData.title || `Tập ${episodeNum}`,
                 overview: episodeData.description || '',
                 still_path: null as string | null,
                 air_date: new Date().toISOString().split('T')[0],
                 runtime: 24,
-                season_number: parseInt(selectedSeason),
+                season_number: Number(selectedSeason),
                 show_id: id,
                 production_code: '',
                 crew: [],
@@ -70,7 +70,7 @@ const TvShowPlayerEpisodeSelection: React.FC<TvShowPlayerEpisodeSelectionProps> 
                 images: {},
                 vote_average: 0,
                 vote_count: 0,
-                order: parseInt(episodeNum)
+                order: Number(episodeNum)
               } as unknown as Episode));
               setSeasonEpisodes(episodes);
             }
@@ -83,10 +83,8 @@ const TvShowPlayerEpisodeSelection: React.FC<TvShowPlayerEpisodeSelectionProps> 
       };
       
       fetchSeasonEpisodes();
-    } else {
-      setSeasonEpisodes(episodes);
     }
-  }, [selectedSeason, id, episodes]);
+  }, [selectedSeason, id]);
 
   // Filter episodes by selected season
   const filteredEpisodes = selectedSeason 

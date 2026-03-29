@@ -293,7 +293,8 @@ const MoviePlayer: React.FC<MoviePlayerProps> = ({ movie, startAt }) => {
           // Try both string and number comparison
           const itemId = String(item.tmdb_id);
           const searchId = String(movie.id);
-          return itemId === searchId || item.tmdb_id === parseInt(movie.id);
+          const movieIdNum = Number(movie.id);
+          return itemId === searchId || item.tmdb_id === movieIdNum;
         });
         
         console.log(`🎯 Found movie:`, !!movieData, movieData?.title);

@@ -132,7 +132,7 @@ export function TeamPage() {
       <div className="min-h-screen bg-background flex items-center justify-center relative" style={{
         background: 'linear-gradient(to bottom right, hsl(var(--background)), hsl(var(--background) / 0.95), hsl(var(--background)))'
       }}>
-        <div className="absolute inset-0 bg-gradient-to-br from-purple-500/10 via-pink-500/10 to-blue-500/10" />
+        <div className="absolute inset-0 bg-linear-to-br from-purple-500/10 via-pink-500/10 to-blue-500/10" />
         <motion.div
           animate={{ rotate: 360 }}
           transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
@@ -175,7 +175,7 @@ export function TeamPage() {
           </div>
         </motion.div>
         
-        <h1 className="text-6xl font-bold text-white mb-4 bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-400">
+        <h1 className="text-6xl font-bold mb-4 bg-clip-text text-transparent bg-linear-to-r from-purple-400 to-pink-400">
           Đội ngũ của CineVerse
         </h1>
         <p className="text-muted-foreground max-w-2xl mx-auto px-4">
@@ -220,7 +220,7 @@ export function TeamPage() {
                 {hoveredCard === member.id && (
                   <motion.div
                     layoutId={`glow-${member.id}`}
-                    className="absolute inset-0 bg-gradient-to-r from-purple-600 to-pink-600 rounded-2xl blur-xl opacity-50"
+                    className="absolute inset-0 bg-linear-to-r from-purple-600 to-pink-600 rounded-2xl blur-xl opacity-50"
                   />
                 )}
                 
@@ -235,8 +235,8 @@ export function TeamPage() {
                       className="absolute -top-2 -right-2 z-10"
                     >
                       <div className="relative">
-                        <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full blur-md" />
-                        <div className="relative bg-gradient-to-r from-blue-500 to-purple-500 p-1 rounded-full">
+                        <div className="absolute inset-0 bg-linear-to-r from-blue-500 to-purple-500 rounded-full blur-md" />
+                        <div className="relative bg-linear-to-r from-blue-500 to-purple-500 p-1 rounded-full">
                           <Shield className="w-5 h-5 text-white" />
                         </div>
                       </div>
@@ -257,7 +257,7 @@ export function TeamPage() {
                           className="w-full h-full rounded-full object-cover border-3 border-white/30"
                         />
                       ) : (
-                        <div className="w-full h-full rounded-full bg-gradient-to-br from-purple-400 to-pink-400 flex items-center justify-center">
+                        <div className="w-full h-full rounded-full bg-linear-to-br from-purple-400 to-pink-400 flex items-center justify-center">
                           <span className="text-2xl font-bold text-white">
                             {member.name.charAt(0).toUpperCase()}
                           </span>
@@ -384,7 +384,7 @@ export function TeamPage() {
                     <motion.div
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
-                      className="absolute inset-0 bg-gradient-to-t from-purple-600/20 to-transparent rounded-2xl pointer-events-none"
+                      className="absolute inset-0 bg-linear-to-t from-purple-600/20 to-transparent rounded-2xl pointer-events-none"
                     />
                   )}
                 </div>

@@ -87,7 +87,7 @@ const FullscreenPrompt = () => {
           </Button>
           <Button 
             color="primary" 
-            className="bg-gradient-to-r from-primary-500 to-primary-600 shadow-lg shadow-primary-500/30"
+            className="bg-linear-to-r from-primary-500 to-primary-600 shadow-lg shadow-primary-500/30"
             onPress={handleEnterFullscreen}
             startContent={<MdFullscreen />}
           >
