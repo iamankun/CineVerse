@@ -16,7 +16,7 @@
     "alwaysVisible": true,
     "logoPath": "/logo-cineverse.webp",
     "scale": 1.5,
-    "description": "CineVerse Logo - logoPath: nếu không dùng logo mặc định, hoặc đường dẫn tùy chỉnh"
+    "description": "CineVerse Logo"
   },
   "descriptions": {
     "initialDelay": "Thời gian chờ trước khi hiển thị lần đầu (ms)",
