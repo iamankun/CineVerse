@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import Script from "next/script";
 import { siteConfig } from "@/config/site";
 import { Mulish } from "@/utils/fonts";
 import "../styles/globals.css";
@@ -56,6 +57,26 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
   return (
     <html suppressHydrationWarning lang="vi">
       <body className={cn("bg-background min-h-dvh antialiased select-none flex flex-col overflow-x-hidden", Mulish.className)}>
+        {/* Khởi tạo Google Analytics */}
+        <Script
+          strategy="afterInteractive"
+          src={`https://www.googletagmanager.com/gtag/js?id=G-PWNGH2BG33`}
+        />
+        <Script
+          id="gtag-init"
+          strategy="afterInteractive"
+          dangerouslySetInnerHTML={{
+            __html: `
+              window.dataLayer = window.dataLayer || [];
+              function gtag(){dataLayer.push(arguments);}
+              gtag('js', new Date());
+              gtag('config', 'G-PWNGH2BG33', {
+                page_path: window.location.pathname,
+              });
+            `,
+          }}
+        />
+
         <Suspense>
           <NuqsAdapter>
             <Providers>
