@@ -84,27 +84,53 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
         <link rel="dns-prefetch" href="https://va.vercel-scripts.com" />
       </head>
       <body className={cn("bg-background min-h-dvh antialiased select-none flex flex-col overflow-x-hidden", Mulish.className)}>
-        {/* Google Analytics - Lazy load để không chặn render */}
+        {/* Google Analytics - Lazy load với low priority */}
         <Script
           strategy="lazyOnload"
           src={`https://www.googletagmanager.com/gtag/js?id=G-PWNGH2BG33`}
           nonce={nonce}
+          fetchPriority="low"
         />
         <Script
           id="gtag-init"
           strategy="lazyOnload"
           nonce={nonce}
+          fetchPriority="low"
           dangerouslySetInnerHTML={{
             __html: `
-              window.dataLayer = window.dataLayer || [];
-              function gtag(){dataLayer.push(arguments);}
-              gtag('js', new Date());
-              gtag('config', 'G-PWNGH2BG33', {
-                page_path: window.location.pathname,
-                send_page_view: false
-              });
+              // Trì hoãn khởi tạo GTM để ưu tiên nội dung chính
+              if ('requestIdleCallback' in window) {
+                requestIdleCallback(function() {
+                  window.dataLayer = window.dataLayer || [];
+                  function gtag(){dataLayer.push(arguments);}
+                  gtag('js', new Date());
+                  gtag('config', 'G-PWNGH2BG33', {
+                    page_path: window.location.pathname,
+                    send_page_view: false
+                  });
+                }, { timeout: 2000 });
+              } else {
+                setTimeout(function() {
+                  window.dataLayer = window.dataLayer || [];
+                  function gtag(){dataLayer.push(arguments);}
+                  gtag('js', new Date());
+                  gtag('config', 'G-PWNGH2BG33', {
+                    page_path: window.location.pathname,
+                    send_page_view: false
+                  });
+                }, 2000);
+              }
+              // Gửi page_view sau khi trang ổn định
               window.addEventListener('load', function() {
-                gtag('event', 'page_view');
+                if ('requestIdleCallback' in window) {
+                  requestIdleCallback(function() {
+                    gtag('event', 'page_view');
+                  }, { timeout: 1000 });
+                } else {
+                  setTimeout(function() {
+                    gtag('event', 'page_view');
+                  }, 1000);
+                }
               });
             `,
           }}
