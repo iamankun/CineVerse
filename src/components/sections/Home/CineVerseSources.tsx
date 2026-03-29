@@ -298,8 +298,8 @@ const CineVerseHero = () => {
                 style={{ border: 'none', pointerEvents: 'none' }}
               />
             </div>
-            <div className="absolute inset-0 bg-gradient-to-r from-white/95 via-white/60 to-transparent dark:from-black/90 dark:via-black/50 dark:to-transparent" />
-            <div className="absolute inset-0 bg-gradient-to-b from-white/80 via-transparent to-white/95 dark:from-black/70 dark:via-transparent dark:to-black/90" />
+            <div className="absolute inset-0 bg-linear-to-r from-white/95 via-white/60 to-transparent dark:from-black/90 dark:via-black/50 dark:to-transparent" />
+            <div className="absolute inset-0 bg-linear-to-b from-white/80 via-transparent to-white/95 dark:from-black/70 dark:via-transparent dark:to-black/90" />
           </>
         ) : (
           <>
@@ -312,8 +312,8 @@ const CineVerseHero = () => {
               priority
               quality={90}
             />
-            <div className="absolute inset-0 bg-gradient-to-r from-white/95 via-white/60 to-transparent dark:from-black/90 dark:via-black/50 dark:to-transparent" />
-            <div className="absolute inset-0 bg-gradient-to-b from-white/80 via-transparent to-white/95 dark:from-black/70 dark:via-transparent dark:to-black/90" />
+            <div className="absolute inset-0 bg-linear-to-r from-white/95 via-white/60 to-transparent dark:from-black/90 dark:via-black/50 dark:to-transparent" />
+            <div className="absolute inset-0 bg-linear-to-b from-white/80 via-transparent to-white/95 dark:from-black/70 dark:via-transparent dark:to-black/90" />
           </>
         )}
       </div>
@@ -327,7 +327,7 @@ const CineVerseHero = () => {
           <div className="flex items-center gap-2 md:gap-3 md:ml-0 ml-0">
             {logoPath ? (
               <div className="inline-flex flex-col items-center relative group">
-                <div className="relative flex-shrink-0 h-16 w-32 md:h-20 md:w-40 lg:h-24 lg:w-48">
+                <div className="relative shrink-0 h-16 w-32 md:h-20 md:w-40 lg:h-24 lg:w-48">
                   <Image
                     src={getImageUrl(logoPath, "title", true)}
                     alt={title}

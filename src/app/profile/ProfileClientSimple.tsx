@@ -460,7 +460,7 @@ export default function ProfileClientSimple({ user, profile }: ProfileClientProp
 
           <div className="px-6 py-6">
             <div className="flex items-start space-x-6">
-              <div className="flex-shrink-0">
+              <div className="shrink-0">
                 <img
                   src={profile?.avatar_url || `https://ui-avatars.com/api/?name=${profile?.full_name || user?.email}&background=1f2937&color=fff&size=120`}
                   alt="Avatar"

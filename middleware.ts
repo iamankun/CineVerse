@@ -111,6 +111,9 @@ function getCSPPolicy(nonce: string): string {
     'base-uri': ["'self'"],
     'manifest-src': ["'self'"],
     'upgrade-insecure-requests': [],
+    // Trusted Types để giảm thiểu XSS dựa trên DOM
+    'require-trusted-types-for': ["'script'"],
+    'trusted-types': ["'allow-duplicates'", 'nextjs'],
   };
 
   return Object.entries(policies)
@@ -155,6 +158,19 @@ export async function middleware(request: NextRequest) {
   const cspPolicy = getCSPPolicy(nonce);
   response.headers.set('Content-Security-Policy', cspPolicy);
   response.headers.set('X-CSP-Nonce', nonce);
+  
+  // Add HSTS header for HTTPS enforcement
+  // max-age: 2 years (63072000 seconds) for production
+  // includeSubDomains: apply to all subdomains
+  // preload: allow browser preload list inclusion
+  response.headers.set(
+    'Strict-Transport-Security', 
+    'max-age=63072000; includeSubDomains; preload'
+  );
+
+  // Add COOP header for cross-origin isolation
+  // same-origin: Chỉ cho phép truy cập từ cùng origin
+  response.headers.set('Cross-Origin-Opener-Policy', 'same-origin');
 
   return response;
 }

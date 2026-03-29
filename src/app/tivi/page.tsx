@@ -373,7 +373,7 @@ const TiviStreamPage: NextPage = () => {
         <Card className="bg-yellow-50 dark:bg-yellow-900/20 border-yellow-200 dark:border-yellow-800">
           <CardBody className="p-6">
             <div className="flex items-start gap-3">
-              <Settings className="w-6 h-6 text-yellow-500 mt-1 flex-shrink-0" />
+              <Settings className="w-6 h-6 text-yellow-500 mt-1 shrink-0" />
               <div>
                 <h3 className="font-semibold text-yellow-900 dark:text-yellow-100 mb-2">
                   Chưa có kênh nào
@@ -543,7 +543,7 @@ const TiviStreamPage: NextPage = () => {
         <Card className="bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800">
           <CardBody className="p-6">
             <div className="flex items-start gap-3">
-              <Tv className="w-6 h-6 text-blue-500 mt-1 flex-shrink-0" />
+              <Tv className="w-6 h-6 text-blue-500 mt-1 shrink-0" />
               <div>
                 <h3 className="font-semibold text-blue-900 dark:text-blue-100 mb-2">
                   Hướng dẫn xem TV trực tuyến

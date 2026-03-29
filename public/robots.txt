@@ -15,7 +15,6 @@ Disallow: /api/admin/
 
 # Sitemap
 Sitemap: https://cineverse.ankun.dev/sitemap.xml
-Sitemap: https://cineverse.ankun.dev/sitemap-styled.xml
 
 # Crawl-delay (optional, tùy bot)
 # Crawl-delay: 1
