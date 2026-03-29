@@ -248,7 +248,8 @@ const CineVerseHero = () => {
     });
   }
   
-  const trailerUrl = trailer ? `https://www.youtube.com/embed/${trailer.key}?autoplay=1&mute=${isMuted ? 1 : 0}&controls=0&loop=1&playlist=${trailer.key}&playsinline=1&modestbranding=1&rel=0&showinfo=0` : null;
+  // Sử dụng youtube-nocookie.com để tránh third-party cookies
+  const trailerUrl = trailer ? `https://www.youtube-nocookie.com/embed/${trailer.key}?autoplay=1&mute=${isMuted ? 1 : 0}&controls=0&loop=1&playlist=${trailer.key}&playsinline=1&modestbranding=1&rel=0&showinfo=0` : null;
 
   // Auto-advance to next trailer after video duration - MUST be before any return
   useEffect(() => {

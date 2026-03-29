@@ -39,6 +39,7 @@ const BrandLogo: React.FC<BrandLogoProps> = ({ className }) => {
               height: `${mobileSize * scale}px`,
             }}
             priority
+            fetchPriority="high"
             unoptimized
           />
           <style jsx>{`
@@ -66,6 +67,7 @@ const BrandLogo: React.FC<BrandLogoProps> = ({ className }) => {
               height: `${mobileSize * scale}px`,
             }}
             priority
+            fetchPriority="high"
             unoptimized
           />
           <style jsx>{`

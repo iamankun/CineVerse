@@ -48,6 +48,9 @@ const withPWA = withPWAInit({
 
 const nextConfig: NextConfig = {
   images: {
+    formats: ["image/webp", "image/avif"],
+    deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
+    imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
     remotePatterns: [
       {
         protocol: "http",
@@ -89,6 +92,7 @@ const nextConfig: NextConfig = {
         pathname: "/icons/**",
       },
     ],
+    minimumCacheTTL: 60 * 60 * 24 * 7, // 7 days cache
   },
   // https://github.com/payloadcms/payload/issues/12550#issuecomment-2939070941
   // turbopack: {},

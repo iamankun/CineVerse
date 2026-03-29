@@ -53,7 +53,7 @@ const Footer: React.FC<FooterProps> = ({ className }) => {
   return (
     <footer
       className={cn(
-        "relative w-full border-t border-divider bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 pb-safe-bottom-nav",
+        "relative w-full border-t border-divider bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60 pb-safe-bottom-nav",
         className,
       )}
     >
@@ -71,7 +71,7 @@ const Footer: React.FC<FooterProps> = ({ className }) => {
               aria-label="Làm mới cache"
             >
               <div className="scale-150 pointer-events-none">
-                <BrandLogo animate={true} />
+                <BrandLogo />
               </div>
             </button>
             <p className="mb-4 text-sm text-foreground-600">
@@ -191,6 +191,7 @@ const Footer: React.FC<FooterProps> = ({ className }) => {
               width={80}
               height={20}
               className="h-5 w-auto"
+              loading="lazy"
             />
           </Link>
         </div>

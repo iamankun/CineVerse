@@ -56,15 +56,24 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html suppressHydrationWarning lang="vi">
+      <head>
+        {/* Resource hints - Tối ưu PageSpeed Insights */}
+        <link rel="preconnect" href="https://image.tmdb.org" />
+        <link rel="preconnect" href="https://api.themoviedb.org" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
+        <link rel="dns-prefetch" href="https://www.google-analytics.com" />
+        <link rel="dns-prefetch" href="https://va.vercel-scripts.com" />
+      </head>
       <body className={cn("bg-background min-h-dvh antialiased select-none flex flex-col overflow-x-hidden", Mulish.className)}>
-        {/* Khởi tạo Google Analytics */}
+        {/* Google Analytics - Lazy load để không chặn render */}
         <Script
-          strategy="afterInteractive"
+          strategy="lazyOnload"
           src={`https://www.googletagmanager.com/gtag/js?id=G-PWNGH2BG33`}
         />
         <Script
           id="gtag-init"
-          strategy="afterInteractive"
+          strategy="lazyOnload"
           dangerouslySetInnerHTML={{
             __html: `
               window.dataLayer = window.dataLayer || [];
@@ -72,6 +81,11 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
               gtag('js', new Date());
               gtag('config', 'G-PWNGH2BG33', {
                 page_path: window.location.pathname,
+                send_page_view: false
+              });
+              // Gửi page view sau khi page load xong
+              window.addEventListener('load', function() {
+                gtag('event', 'page_view');
               });
             `,
           }}
