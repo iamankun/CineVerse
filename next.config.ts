@@ -98,6 +98,7 @@ const nextConfig: NextConfig = {
   // turbopack: {},
   experimental: {
     optimizePackageImports: ["@heroui/react"],
+    optimizeCss: true, // Tối ưu CSS - inline critical CSS
   },
   typescript: {
     ignoreBuildErrors: true, // Temporarily ignore type errors for build

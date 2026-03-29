@@ -141,9 +141,7 @@ const fetchCineVerseContent = async () => {
 const CineVerseHero = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isMuted, setIsMuted] = useState(true);
-  const [isVisible, setIsVisible] = useState(false); // Lazy load YouTube
   const iframeRef = useRef<HTMLIFrameElement>(null);
-  const heroRef = useRef<HTMLDivElement>(null);
 
   const { data: content, isPending } = useQuery({
     queryKey: ["cineverse-sources", "vi-VN"],
@@ -161,24 +159,6 @@ const CineVerseHero = () => {
     if (!content) return;
     setCurrentIndex((prev) => (prev === 0 ? content.length - 1 : prev - 1));
   }, [content]);
-
-  // Lazy load YouTube iframe chỉ khi hero visible
-  useEffect(() => {
-    if (!heroRef.current) return;
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setIsVisible(true);
-          observer.disconnect();
-        }
-      },
-      { threshold: 0.1, rootMargin: '100px' }
-    );
-
-    observer.observe(heroRef.current);
-    return () => observer.disconnect();
-  }, []);
 
   // Get current item first for hooks
   const currentItem = content?.[currentIndex];
@@ -302,10 +282,10 @@ const CineVerseHero = () => {
   }
 
   return (
-    <div ref={heroRef} className="relative h-[600px] w-screen overflow-hidden md:h-[800px] [@media(max-width:500px)_and_(orientation:landscape)]:h-[60vw]">
+    <div className="relative h-[600px] w-screen overflow-hidden md:h-[800px] [@media(max-width:500px)_and_(orientation:landscape)]:h-[60vw]">
       {/* Background - Trailer Video hoặc Backdrop Image */}
       <div className="absolute inset-0 z-0">
-        {trailerUrl && isVisible ? (
+        {trailerUrl ? (
           <>
             <div className="absolute inset-0 overflow-hidden">
               <iframe
@@ -316,7 +296,6 @@ const CineVerseHero = () => {
                 allow="autoplay; encrypted-media"
                 allowFullScreen
                 style={{ border: 'none', pointerEvents: 'none' }}
-                loading="lazy"
               />
             </div>
             <div className="absolute inset-0 bg-linear-to-r from-white/95 via-white/60 to-transparent dark:from-black/90 dark:via-black/50 dark:to-transparent" />

@@ -82,6 +82,8 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
         <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
         <link rel="dns-prefetch" href="https://www.google-analytics.com" />
         <link rel="dns-prefetch" href="https://va.vercel-scripts.com" />
+        {/* Preload critical CSS để giảm render-blocking */}
+        <link rel="preload" href="/_next/static/css/app/layout.css" as="style" />
       </head>
       <body className={cn("bg-background min-h-dvh antialiased select-none flex flex-col overflow-x-hidden", Mulish.className)}>
         {/* Google Analytics - Lazy load với low priority */}
