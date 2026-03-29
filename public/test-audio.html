@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Audio - K Rating</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            text-align: center;
+        }
+        .test-button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            margin: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .test-button:hover {
+            background: #0056b3;
+        }
+        .status {
+            margin: 20px 0;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+    </style>
+</head>
+<body>
+    <h1>🔊 Test Audio File</h1>
+    
+    <h2>Test K.m4a Rating</h2>
+    <button class="test-button" onclick="testDirectAudio()">▶️ Play K.m4a Direct</button>
+    <button class="test-button" onclick="testAudioElement()">🎵 Play with Audio Element</button>
+    <button class="test-button" onclick="testFetchAudio()">📡 Test Fetch + Play</button>
+    
+    <div id="status" class="status" style="display: none;"></div>
+    
+    <audio id="audioPlayer" style="display: none;"></audio>
+
+    <script>
+        function showStatus(message, isError = false) {
+            const status = document.getElementById('status');
+            status.textContent = message;
+            status.className = `status ${isError ? 'error' : 'success'}`;
+            status.style.display = 'block';
+        }
+
+        function testDirectAudio() {
+            showStatus('🔗 Testing direct audio link...');
+            const audio = new Audio('/agerating/13.m4a');
+            
+            audio.addEventListener('play', () => showStatus('✅ Audio playing successfully!'));
+            audio.addEventListener('error', (e) => {
+                console.error('Audio error:', e);
+                showStatus(`❌ Audio error: ${e.message || 'Unknown error'}`, true);
+            });
+            audio.addEventListener('ended', () => showStatus('🏁 Audio finished playing'));
+            
+            audio.play().catch(error => {
+                console.error('Play error:', error);
+                showStatus(`❌ Play failed: ${error.message}`, true);
+            });
+        }
+
+        function testAudioElement() {
+            showStatus('🎵 Testing with HTML5 Audio element...');
+            const player = document.getElementById('audioPlayer');
+            player.src = '/agerating/K.m4a';
+            player.style.display = 'block';
+            player.controls = true;
+            
+            player.addEventListener('loadeddata', () => showStatus('✅ Audio data loaded!'));
+            player.addEventListener('error', (e) => {
+                showStatus(`❌ Audio element error: ${e.message || 'Unknown error'}`, true);
+            });
+        }
+
+        async function testFetchAudio() {
+            showStatus('📡 Testing fetch + play...');
+            try {
+                const response = await fetch('/agerating/K.m4a');
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const blob = await response.blob();
+                const audioUrl = URL.createObjectURL(blob);
+                
+                const audio = new Audio(audioUrl);
+                audio.addEventListener('play', () => showStatus('✅ Fetched audio playing!'));
+                audio.addEventListener('error', (e) => showStatus(`❌ Fetched audio error: ${e.message}`, true));
+                
+                await audio.play();
+                showStatus('✅ Fetch + play successful!');
+                
+            } catch (error) {
+                console.error('Fetch error:', error);
+                showStatus(`❌ Fetch failed: ${error.message}`, true);
+            }
+        }
+
+        // Auto-check file existence on load
+        window.addEventListener('load', () => {
+            fetch('/agerating/K.m4a', { method: 'HEAD' })
+                .then(response => {
+                    if (response.ok) {
+                        showStatus('✅ K.m4a file exists and accessible!');
+                    } else {
+                        showStatus(`❌ K.m4a not found: HTTP ${response.status}`, true);
+                    }
+                })
+                .catch(error => {
+                    showStatus(`❌ Network error checking file: ${error.message}`, true);
+                });
+        });
+    </script>
+</body>
+</html>
