@@ -138,7 +138,7 @@ const CineVerseList: React.FC = () => {
               title: "bg-[linear-gradient(90deg,#c4b5fd,#93c5fd,#67e8f9,#86efac,#fde047,#fca5a5,#f9a8d4,#c4b5fd,#93c5fd,#67e8f9)] bg-[length:200%] animate-gradient bg-clip-text text-transparent"
             }}
           >
-            Từ CineVerse - Vũ Trụ Điện Ảnh
+            CineVerse - Vũ Trụ Điện Ảnh
           </SectionTitle>
           <Link
             size="sm"
