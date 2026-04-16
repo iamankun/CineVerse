@@ -4,7 +4,8 @@ import TvShowHomeCard from "@/components/sections/TV/Cards/Poster";
 import SectionTitle from "@/components/ui/other/SectionTitle";
 import Carousel from "@/components/ui/wrapper/Carousel";
 import { QueryList } from "@/types";
-import { Link, Skeleton } from "@heroui/react";
+import { Skeleton } from "@heroui/react";
+import Link from "next/link";
 import { useInViewport } from "@mantine/hooks";
 import { useQuery } from "@tanstack/react-query";
 import { kebabCase } from "string-ts";
@@ -35,11 +36,8 @@ const TvShowHomeList: React.FC<QueryList<TV>> = ({ query, name, param }) => {
           <div className="flex grow items-center justify-between">
             <SectionTitle color="warning">{name}</SectionTitle>
             <Link
-              size="sm"
               href={`/discover?type=${param}&content=tv`}
-              isBlock
-              color="foreground"
-              className="rounded-full flex items-center gap-1"
+              className="text-foreground bg-default-100 hover:bg-default-200 flex items-center gap-1 rounded-full px-3 py-1 text-sm transition-colors"
             >
               Xem tất cả <IoChevronForward />
             </Link>

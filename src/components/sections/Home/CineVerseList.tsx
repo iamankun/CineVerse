@@ -4,7 +4,8 @@ import MoviePosterCard from "@/components/sections/Movie/Cards/Poster";
 import TvShowPosterCard from "@/components/sections/TV/Cards/Poster";
 import SectionTitle from "@/components/ui/other/SectionTitle";
 import Carousel from "@/components/ui/wrapper/Carousel";
-import { Link, Skeleton, Tab, Tabs } from "@heroui/react";
+import { Skeleton, Tab, Tabs } from "@heroui/react";
+import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
 import { Movie, TV } from "tmdb-ts/dist/types";
 import { IoChevronForward } from "react-icons/io5";
@@ -23,12 +24,12 @@ type SourceItem = {
 const fetchCineVerseSources = async (): Promise<SourceItem[]> => {
   try {
     // Fetch movies from Supabase
-    const moviesResponse = await fetch('/api/admin/dienanh');
+    const moviesResponse = await fetch("/api/admin/dienanh");
     const moviesResult = moviesResponse.ok ? await moviesResponse.json() : {};
     const movies = moviesResult.movies || [];
 
     // Fetch TV shows from Supabase
-    const tvResponse = await fetch('/api/admin/chuongtrinhtv');
+    const tvResponse = await fetch("/api/admin/chuongtrinhtv");
     const tvResult = tvResponse.ok ? await tvResponse.json() : {};
     const tvShows = tvResult.tvSeries || [];
 
@@ -38,14 +39,14 @@ const fetchCineVerseSources = async (): Promise<SourceItem[]> => {
         tmdbId: item.tmdb_id,
         title: item.title,
         year: item.year,
-        type: "movie" as const
+        type: "movie" as const,
       })),
       ...tvShows.map((item: any) => ({
         tmdbId: item.tmdb_id,
         title: item.title,
         year: item.year,
-        type: "tv" as const
-      }))
+        type: "tv" as const,
+      })),
     ];
 
     return allSources;
@@ -59,17 +60,14 @@ const fetchCineVerseSources = async (): Promise<SourceItem[]> => {
 const fetchTMDBDetails = async (id: number, type: "movie" | "tv") => {
   const token = env.NEXT_PUBLIC_TMDB_ACCESS_TOKEN;
   const endpoint = type === "movie" ? "movie" : "tv";
-  
-  const response = await fetch(
-    `https://api.themoviedb.org/3/${endpoint}/${id}?language=vi-VN`,
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-    }
-  );
-  
+
+  const response = await fetch(`https://api.themoviedb.org/3/${endpoint}/${id}?language=vi-VN`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+  });
+
   if (!response.ok) return null;
   return response.json();
 };
@@ -77,24 +75,22 @@ const fetchTMDBDetails = async (id: number, type: "movie" | "tv") => {
 // Fetch tất cả content với TMDB details
 const fetchCineVerseContent = async () => {
   const sources = await fetchCineVerseSources();
-  
+
   const movieSources = sources.filter((s) => s.type === "movie");
   const tvSources = sources.filter((s) => s.type === "tv");
 
   // Fetch TMDB details cho movies
-  const moviePromises = movieSources.map((s) =>
-    fetchTMDBDetails(s.tmdbId, "movie")
-  );
+  const moviePromises = movieSources.map((s) => fetchTMDBDetails(s.tmdbId, "movie"));
   const movieResults = await Promise.all(moviePromises);
-  const movies = movieResults.filter((result): result is Movie => 
-    result !== null && result.id !== undefined
+  const movies = movieResults.filter(
+    (result): result is Movie => result !== null && result.id !== undefined,
   );
 
   // Fetch TMDB details cho TV shows
   const tvPromises = tvSources.map((s) => fetchTMDBDetails(s.tmdbId, "tv"));
   const tvResults = await Promise.all(tvPromises);
-  const tvShows = tvResults.filter((result): result is TV => 
-    result !== null && result.id !== undefined
+  const tvShows = tvResults.filter(
+    (result): result is TV => result !== null && result.id !== undefined,
   );
 
   return { movies, tvShows };
@@ -132,20 +128,18 @@ const CineVerseList: React.FC = () => {
     <section className="min-h-[250px] md:min-h-[300px]">
       <div className="z-3 flex flex-col gap-2">
         <div className="flex grow items-center justify-between">
-          <SectionTitle 
+          <SectionTitle
             color="secondary"
             classNames={{
-              title: "bg-[linear-gradient(90deg,#c4b5fd,#93c5fd,#67e8f9,#86efac,#fde047,#fca5a5,#f9a8d4,#c4b5fd,#93c5fd,#67e8f9)] bg-[length:200%] animate-gradient bg-clip-text text-transparent"
+              title:
+                "bg-[linear-gradient(90deg,#c4b5fd,#93c5fd,#67e8f9,#86efac,#fde047,#fca5a5,#f9a8d4,#c4b5fd,#93c5fd,#67e8f9)] bg-[length:200%] animate-gradient bg-clip-text text-transparent",
             }}
           >
             CineVerse - Vũ Trụ Điện Ảnh
           </SectionTitle>
           <Link
-            size="sm"
             href="/cineverse"
-            isBlock
-            color="foreground"
-            className="rounded-full flex items-center gap-1"
+            className="text-foreground bg-default-100 hover:bg-default-200 flex items-center gap-1 rounded-full px-3 py-1 text-sm transition-colors"
           >
             Xem tất cả <IoChevronForward />
           </Link>
@@ -157,7 +151,8 @@ const CineVerseList: React.FC = () => {
           selectedKey={selectedTab}
           onSelectionChange={(key) => setSelectedTab(key as string)}
           classNames={{
-            cursor: "bg-[linear-gradient(90deg,#c4b5fd,#93c5fd,#67e8f9,#86efac,#fde047,#fca5a5,#f9a8d4,#c4b5fd,#93c5fd,#67e8f9)] bg-[length:200%] animate-gradient h-1 rounded-full",
+            cursor:
+              "bg-[linear-gradient(90deg,#c4b5fd,#93c5fd,#67e8f9,#86efac,#fde047,#fca5a5,#f9a8d4,#c4b5fd,#93c5fd,#67e8f9)] bg-[length:200%] animate-gradient h-1 rounded-full",
             tabList: "gap-4",
             tab: "px-0 h-10 data-[selected=true]:text-transparent data-[selected=true]:bg-[linear-gradient(90deg,#c4b5fd,#93c5fd,#67e8f9,#86efac,#fde047,#fca5a5,#f9a8d4,#c4b5fd,#93c5fd,#67e8f9)] data-[selected=true]:bg-[length:200%] data-[selected=true]:animate-gradient data-[selected=true]:bg-clip-text",
           }}
@@ -167,33 +162,35 @@ const CineVerseList: React.FC = () => {
             key="movie"
             title={
               <span className="flex items-center gap-2">
-                <MovieIcon className={selectedTab === "movie" ? "text-primary" : "text-default-500"} /> Điện Ảnh
+                <MovieIcon
+                  className={selectedTab === "movie" ? "text-primary" : "text-default-500"}
+                />{" "}
+                Điện Ảnh
               </span>
             }
           >
-              <Carousel>
-                {movies.map((movie) => (
-                  <div
-                    key={movie.id}
-                    className="embla__slide flex min-h-fit max-w-fit items-center px-1 py-2"
-                  >
-                    <MoviePosterCard movie={movie} />
-                  </div>
-                ))}
-              </Carousel>
-              {movies.length === 0 && (
-                <p className="text-center text-default-500 py-8">
-                  Chưa có phim nào từ CineVerse
-                </p>
-              )}
-            </Tab>
+            <Carousel>
+              {movies.map((movie) => (
+                <div
+                  key={movie.id}
+                  className="embla__slide flex min-h-fit max-w-fit items-center px-1 py-2"
+                >
+                  <MoviePosterCard movie={movie} />
+                </div>
+              ))}
+            </Carousel>
+            {movies.length === 0 && (
+              <p className="text-default-500 py-8 text-center">Chưa có phim nào từ CineVerse</p>
+            )}
+          </Tab>
 
           {/* Tab Chương Trình TV */}
           <Tab
             key="tv"
             title={
               <span className="flex items-center gap-2">
-                <TVIcon className={selectedTab === "tv" ? "text-warning" : "text-default-500"} /> Chương Trình TV
+                <TVIcon className={selectedTab === "tv" ? "text-warning" : "text-default-500"} />{" "}
+                Chương Trình TV
               </span>
             }
           >
@@ -208,8 +205,8 @@ const CineVerseList: React.FC = () => {
               ))}
             </Carousel>
             {tvShows.length === 0 && (
-              <p className="text-center text-default-500 py-8">
-                Chưa có chương trình TV nào từ CineVerse
+              <p className="text-default-500 py-8 text-center">
+                Chương trình hoặc điện ảnh chưa có trên CineVerse
               </p>
             )}
           </Tab>
