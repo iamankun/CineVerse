@@ -42,7 +42,7 @@
     "date-fns": "^4.1.0",
     "dotenv": "^17.2.3",
     "embla-carousel-react": "^8.6.0",
-    "framer-motion": "^12.23.26",
+    "framer-motion": "^12.24.11",
     "glob": "^11.1.0",
     "hint": "^2.0.0",
     "hls.js": "^1.6.15",
