@@ -74,56 +74,56 @@ export const siteConfig: SiteConfigType = {
         param: "todayTrending",
       },
       {
-        name: "Phim ảnh - Tuần này",
+        name: "Phim ảnh tuần này",
         query: () => tmdb.trending.trending("movie", "week", { language: 'vi-VN' }),
         param: "thisWeekTrending",
       },
       {
-        name: "Phim ảnh - Toàn cầu",
+        name: "Phim ảnh toàn cầu",
         query: () => tmdb.movies.popular({ language: 'vi-VN' }),
         param: "popular",
       },
       {
-        name: "Phim ảnh - Đáng xem",
+        name: "Phim ảnh đáng xem",
         query: () => tmdb.movies.nowPlaying({ language: 'vi-VN' }),
         param: "nowPlaying",
       },
       {
-        name: "Phim ảnh - Sắp ra mắt",
+        name: "Phim ảnh sắp ra mắt",
         query: () => tmdb.movies.upcoming({ language: 'vi-VN' }),
         param: "upcoming",
       },
       {
-        name: "Điện Ảnh - Do bạn bình chọn ",
+        name: "Phim ảnh đề xuất ",
         query: () => tmdb.movies.topRated({ language: 'vi-VN' }),
         param: "topRated",
       },
     ],
     tvShows: [
       {
-        name: "Chương trình - Hôm nay",
+        name: "Chương trình hôm nay",
         query: () => tmdb.trending.trending("tv", "day", { language: 'vi-VN' }),
         param: "todayTrending",
       },
       {
-        name: "Chương trình - Tuần này",
+        name: "Chương trình tuần này",
         query: () => tmdb.trending.trending("tv", "week", { language: 'vi-VN' }),
         param: "thisWeekTrending",
       },
       {
-        name: "Chương trình - Toàn cầu",
+        name: "Chương trình toàn cầu",
         // @ts-expect-error: Property 'adult' is missing in type 'PopularTvShowResult' but required in type 'TV'.
         query: () => tmdb.tvShows.popular({ language: 'vi-VN' }),
         param: "popular",
       },
       {
-        name: "Chương trình - Đang phát sóng",
+        name: "Chương trình đang phát sóng",
         // @ts-expect-error: Property 'adult' is missing in type 'OnTheAirResult' but required in type 'TV'.
         query: () => tmdb.tvShows.onTheAir({ language: 'vi-VN' }),
         param: "onTheAir",
       },
       {
-        name: "Chương trình - Đề xuất",
+        name: "Chương trình đề xuất",
         // @ts-expect-error: Property 'adult' is missing in type 'TopRatedTvShowResult' but required in type 'TV'.
         query: () => tmdb.tvShows.topRated({ language: 'vi-VN' }),
         param: "topRated",
