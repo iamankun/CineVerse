@@ -15,7 +15,7 @@ import { TbFolder, TbFolderFilled } from "react-icons/tb";
 
 export const siteConfig: SiteConfigType = {
   name: "CineVerse",
-  description: "Vũ trụ Điện Ảnh dành cho bạn",
+  description: "Vũ trụ điện ảnh của bạn",
   favicon: "/favicon.ico",
   navItems: [
     {
@@ -69,27 +69,27 @@ export const siteConfig: SiteConfigType = {
   queryLists: {
     movies: [
       {
-        name: "Tóp tren-đì (Trendy)",
+        name: "Đề xuất trong ngày",
         query: () => tmdb.trending.trending("movie", "day", { language: 'vi-VN' }),
         param: "todayTrending",
       },
       {
-        name: "Điện Ảnh - Tuần này",
+        name: "Phim ảnh - Tuần này",
         query: () => tmdb.trending.trending("movie", "week", { language: 'vi-VN' }),
         param: "thisWeekTrending",
       },
       {
-        name: "Điện Ảnh - Phổ biến",
+        name: "Phim ảnh - Toàn cầu",
         query: () => tmdb.movies.popular({ language: 'vi-VN' }),
         param: "popular",
       },
       {
-        name: "Điện Ảnh - Xem ngay",
+        name: "Phim ảnh - Đáng xem",
         query: () => tmdb.movies.nowPlaying({ language: 'vi-VN' }),
         param: "nowPlaying",
       },
       {
-        name: "Điện Ảnh - Sắp tới",
+        name: "Phim ảnh - Sắp ra mắt",
         query: () => tmdb.movies.upcoming({ language: 'vi-VN' }),
         param: "upcoming",
       },
@@ -101,29 +101,29 @@ export const siteConfig: SiteConfigType = {
     ],
     tvShows: [
       {
-        name: "Chương trình TV - Hôm nay",
+        name: "Chương trình - Hôm nay",
         query: () => tmdb.trending.trending("tv", "day", { language: 'vi-VN' }),
         param: "todayTrending",
       },
       {
-        name: "Chương trình TV - Tuần này",
+        name: "Chương trình - Tuần này",
         query: () => tmdb.trending.trending("tv", "week", { language: 'vi-VN' }),
         param: "thisWeekTrending",
       },
       {
-        name: "Chương trình TV - Phổ biến",
+        name: "Chương trình - Toàn cầu",
         // @ts-expect-error: Property 'adult' is missing in type 'PopularTvShowResult' but required in type 'TV'.
         query: () => tmdb.tvShows.popular({ language: 'vi-VN' }),
         param: "popular",
       },
       {
-        name: "Chương trình TV - On Air",
+        name: "Chương trình - Đang phát sóng",
         // @ts-expect-error: Property 'adult' is missing in type 'OnTheAirResult' but required in type 'TV'.
         query: () => tmdb.tvShows.onTheAir({ language: 'vi-VN' }),
         param: "onTheAir",
       },
       {
-        name: "Chương trình Tv - Do bạn lựa chọn",
+        name: "Chương trình - Đề xuất",
         // @ts-expect-error: Property 'adult' is missing in type 'TopRatedTvShowResult' but required in type 'TV'.
         query: () => tmdb.tvShows.topRated({ language: 'vi-VN' }),
         param: "topRated",
