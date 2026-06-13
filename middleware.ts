@@ -8,13 +8,13 @@ function generateNonce(): string {
   return Buffer.from(array).toString('base64');
 }
 
-// Giữ nguyên hệ thống chính sách bảo mật, chỉ tinh chỉnh mắt xích gây lỗi phát phim
+// Hệ thống chính sách bảo mật tối ưu cho cả Desktop & Mobile
 function getCSPPolicy(nonce: string): string {
   const policies = {
     'default-src': ["'self'"],
     'script-src': [
       "'self'",
-      "'unsafe-inline'", // Cho phép inline script của PWA hoạt động song song với strict-dynamic
+      "'unsafe-inline'", // Cần thiết để PWA và inline script của Next.js không bị Desktop crash
       "'unsafe-eval'",
       `'nonce-${nonce}'`,
       "'strict-dynamic'",
@@ -74,7 +74,7 @@ function getCSPPolicy(nonce: string): string {
     'media-src': [
       "'self'",
       'blob:',
-      'data:', // Bổ sung data: để hỗ trợ Service Worker truyền dữ liệu media cache
+      'data:',
       'https://live.fptplay53.net',
       'https://ott1.nethubtv.vn',
       'https://tmstr4.wanderlynest.com',
@@ -114,7 +114,6 @@ function getCSPPolicy(nonce: string): string {
     'manifest-src': ["'self'"],
     'upgrade-insecure-requests': [],
     'require-trusted-types-for': ["'script'"],
-    // Cải tiến: Nới lỏng Trusted Types để không chặn luồng khởi tạo ngầm của Workbox/PWA
     'trusted-types': ["'allow-duplicates'", 'nextjs', 'workbox', "'allow-all'"],
   };
 
@@ -162,9 +161,9 @@ export async function middleware(request: NextRequest) {
     'max-age=63072000; includeSubDomains; preload'
   );
 
-  // 🛠️ ĐIỀU CHỈNH CHÍ MẠNG: Đổi từ 'same-origin' sang 'same-origin-allow-popups'
-  // Điều này cho phép các iframe trình phát phim bên thứ ba hoạt động mà không bị cô lập hoàn toàn gây trắng màn hình.
-  response.headers.set('Cross-Origin-Opener-Policy', 'same-origin-allow-popups');
+  // 🛠️ ĐIỀU CHỈNH QUYẾT ĐỊNH CHO DESKTOP:
+  // Đưa COOP về 'unsafe-none' để trình duyệt máy tính mở luồng kết nối chéo cho các iframe player nhúng.
+  response.headers.set('Cross-Origin-Opener-Policy', 'unsafe-none');
 
   return response;
 }
