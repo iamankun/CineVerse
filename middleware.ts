@@ -44,7 +44,7 @@ function getCSPPolicy(nonce: string): string {
       'https://phimapi.com',
       'https://phimimg.com',
     ],
-    'font-src': ["'self'", 'fonts.gstatic.com'],
+    'font-src': ["'self'", 'data:', 'fonts.gstatic.com', 'https://cdn.mathpix.com'],
     'connect-src': [
       "'self'",
       'https://live.fptplay53.net',
