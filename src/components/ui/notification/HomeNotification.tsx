@@ -45,6 +45,10 @@ export default function HomeNotification() {
   const fetchNotifications = async () => {
     try {
       const response = await fetch("/api/notifications");
+      if (!response.ok) {
+        console.warn("Failed to fetch notifications:", response.status);
+        return;
+      }
       const data = await response.json();
       
       // Filter out dismissed notifications

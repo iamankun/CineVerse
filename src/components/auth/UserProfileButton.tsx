@@ -198,6 +198,7 @@ export function UserProfileButton() {
       <DropdownMenu aria-label="User menu">
         <DropdownItem
           key="profile"
+          textValue="Chỉnh sửa profile"
           startContent={<Settings size={16} />}
           onClick={() => router.push("/profile")}
         >
@@ -207,6 +208,7 @@ export function UserProfileButton() {
         {profile?.role === 'admin' ? (
           <DropdownItem
             key="admin"
+            textValue="Quản trị viên"
             startContent={<Settings size={16} />}
             onClick={() => router.push("/admin")}
           >
@@ -215,6 +217,7 @@ export function UserProfileButton() {
         ) : (
           <DropdownItem
             key="admin-denied"
+            textValue="Quản trị viên (Không có quyền)"
             startContent={<Settings size={16} />}
             isDisabled
             className="opacity-50"
@@ -225,6 +228,7 @@ export function UserProfileButton() {
         
         <DropdownItem
           key="logout"
+          textValue="Đăng xuất"
           startContent={<LogOut size={16} />}
           onClick={handleLogout}
           color="danger"

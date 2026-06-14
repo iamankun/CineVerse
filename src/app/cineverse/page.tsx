@@ -150,6 +150,7 @@ const CineVerseSourcesPage: NextPage = () => {
         {/* Tab Điện Ảnh */}
         <Tab
           key="movie"
+          textValue="Điện Ảnh"
           title={
             <span className="flex items-center gap-2 text-base">
               <MovieIcon className={selectedTab === "movie" ? "text-primary" : "text-default-500"} /> Điện Ảnh ({movies.length})
@@ -171,6 +172,7 @@ const CineVerseSourcesPage: NextPage = () => {
         {/* Tab Chương Trình TV */}
         <Tab
           key="tv"
+          textValue="Chương Trình TV"
           title={
             <span className="flex items-center gap-2 text-base">
               <TVIcon className={selectedTab === "tv" ? "text-warning" : "text-default-500"} /> Chương Trình TV ({tvShows.length})

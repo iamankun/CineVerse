@@ -191,6 +191,7 @@ const Footer: React.FC<FooterProps> = ({ className }) => {
               width={80}
               height={20}
               className="h-5 w-auto"
+              style={{ width: 'auto' }}
               loading="lazy"
             />
           </Link>

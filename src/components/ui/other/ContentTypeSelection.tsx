@@ -34,6 +34,7 @@ const ContentTypeSelection: React.FC<ContentTypeSelectionProps> = ({ onTypeChang
     >
       <Tab
         key="movie"
+        textValue="Điện Ảnh"
         title={
           <div className="flex items-center space-x-2">
             <Movie />
@@ -43,6 +44,7 @@ const ContentTypeSelection: React.FC<ContentTypeSelectionProps> = ({ onTypeChang
       />
       <Tab
         key="tv"
+        textValue="Chương trình TV"
         title={
           <div className="flex items-center space-x-2">
             <TV />

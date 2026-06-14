@@ -1,55 +1,56 @@
 import { NextResponse } from "next/server";
-import { promises as fs } from "fs";
-import path from "path";
+
+export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
 
 interface Notification {
   id: string;
   title: string;
   message: string;
-  type: 'info' | 'success' | 'warning' | 'error';
+  type: string;
   priority: 'high' | 'medium' | 'low';
   active: boolean;
-  dismissible: boolean;
   createdAt: string;
-  expiresAt?: string;
 }
 
 export async function GET() {
   try {
-    const notificationsDir = path.join(process.cwd(), "src", "app", "admin", "notifications");
-    
-    // Check if directory exists
-    try {
-      await fs.access(notificationsDir);
-    } catch {
-      return NextResponse.json({ notifications: [] });
+    const { promises: fs } = await import("fs");
+    const path = await import("path");
+
+    const possibleDirs = [
+      path.join(process.cwd(), "public", "notifications"),
+      path.join(process.cwd(), "src", "app", "admin", "notifications"),
+    ];
+
+    for (const dir of possibleDirs) {
+      try {
+        await fs.access(dir);
+        const files = await fs.readdir(dir);
+        const jsonFiles = files.filter((f: string) => f.endsWith('.json'));
+
+        const allNotifications: Notification[] = await Promise.all(
+          jsonFiles.map(async (file: string) => {
+            const content = await fs.readFile(path.join(dir, file), 'utf-8');
+            return JSON.parse(content);
+          })
+        );
+
+        const activeNotifications = allNotifications
+          .filter((n: Notification) => n.active)
+          .sort((a: Notification, b: Notification) => {
+            const order: Record<string, number> = { high: 3, medium: 2, low: 1 };
+            return (order[b.priority] || 0) - (order[a.priority] || 0);
+          });
+
+        return NextResponse.json({ notifications: activeNotifications });
+      } catch {
+        continue;
+      }
     }
 
-    const files = await fs.readdir(notificationsDir);
-    const jsonFiles = files.filter(file => file.endsWith('.json'));
-    
-    const notifications: Notification[] = await Promise.all(
-      jsonFiles.map(async (file) => {
-        const filePath = path.join(notificationsDir, file);
-        const content = await fs.readFile(filePath, 'utf-8');
-        return JSON.parse(content);
-      })
-    );
-
-    // Filter active notifications only and sort by priority
-    const activeNotifications = notifications
-      .filter(n => n.active)
-      .sort((a, b) => {
-        // Sort by priority: high > medium > low
-        const priorityOrder: Record<'high' | 'medium' | 'low', number> = { high: 3, medium: 2, low: 1 };
-        return priorityOrder[b.priority] - priorityOrder[a.priority];
-      });
-
-    return NextResponse.json({ notifications: activeNotifications }, {
-      headers: { 'Cache-Control': 'public, s-maxage=300, stale-while-revalidate=600' },
-    });
-  } catch (error) {
-    console.error("Error reading notifications:", error);
+    return NextResponse.json({ notifications: [] });
+  } catch {
     return NextResponse.json({ notifications: [] });
   }
 }

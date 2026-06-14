@@ -1,20 +1,18 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
-// Khởi tạo mã ngẫu nhiên nonce cho CSP
 function generateNonce(): string {
   const array = new Uint8Array(16);
   crypto.getRandomValues(array);
   return Buffer.from(array).toString('base64');
 }
 
-// Hệ thống chính sách bảo mật tối ưu cho cả Desktop & Mobile
 function getCSPPolicy(nonce: string): string {
   const policies = {
     'default-src': ["'self'"],
     'script-src': [
       "'self'",
-      "'unsafe-inline'", // Cần thiết để PWA và inline script của Next.js không bị Desktop crash
+      "'unsafe-inline'",
       "'unsafe-eval'",
       `'nonce-${nonce}'`,
       "'strict-dynamic'",
@@ -113,8 +111,8 @@ function getCSPPolicy(nonce: string): string {
     'base-uri': ["'self'"],
     'manifest-src': ["'self'"],
     'upgrade-insecure-requests': [],
-    'require-trusted-types-for': ["'script'"],
-    'trusted-types': ["'allow-duplicates'", 'nextjs', 'workbox', "'allow-all'"],
+    // 'require-trusted-types-for': ["'script'"],
+    // 'trusted-types': ["'allow-duplicates'", 'nextjs', 'workbox', "'allow-all'"],
   };
 
   return Object.entries(policies)
@@ -161,8 +159,6 @@ export async function middleware(request: NextRequest) {
     'max-age=63072000; includeSubDomains; preload'
   );
 
-  // 🛠️ ĐIỀU CHỈNH QUYẾT ĐỊNH CHO DESKTOP:
-  // Đưa COOP về 'unsafe-none' để trình duyệt máy tính mở luồng kết nối chéo cho các iframe player nhúng.
   response.headers.set('Cross-Origin-Opener-Policy', 'unsafe-none');
 
   return response;

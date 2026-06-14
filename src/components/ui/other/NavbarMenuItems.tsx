@@ -46,7 +46,7 @@ const NavbarMenuItems: React.FC<NavbarMenuItemsProps> = ({
         }
 
         return (
-          <Tab as={Link} href={item.href} key={item.href} className="text-start" title={title} />
+          <Tab as={Link} href={item.href} key={item.href} textValue={item.label} className="text-start" title={title} />
         );
       })}
     </Tabs>

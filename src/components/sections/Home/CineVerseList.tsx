@@ -160,6 +160,7 @@ const CineVerseList: React.FC = () => {
           {/* Tab Điện Ảnh */}
           <Tab
             key="movie"
+            textValue="Điện Ảnh"
             title={
               <span className="flex items-center gap-2">
                 <MovieIcon
@@ -187,6 +188,7 @@ const CineVerseList: React.FC = () => {
           {/* Tab Chương Trình TV */}
           <Tab
             key="tv"
+            textValue="Chương Trình TV"
             title={
               <span className="flex items-center gap-2">
                 <TVIcon className={selectedTab === "tv" ? "text-warning" : "text-default-500"} />{" "}

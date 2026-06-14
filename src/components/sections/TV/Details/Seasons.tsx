@@ -91,8 +91,8 @@ const TvShowsSeasonsSelection = forwardRef<HTMLElement, Props>(({ id, seasons },
               onSelectionChange={(value) => setLayout(value as typeof layout)}
               selectedKey={layout}
             >
-              <Tab key="list" title={<List />} />
-              <Tab key="grid" title={<Grid />} />
+              <Tab key="list" textValue="List" title={<List />} />
+              <Tab key="grid" textValue="Grid" title={<Grid />} />
             </Tabs>
           </Tooltip>
           <IconButton
