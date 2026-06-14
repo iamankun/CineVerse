@@ -30,6 +30,7 @@ function getCSPPolicy(nonce: string): string {
       "'self'",
       "'unsafe-inline'",
       'fonts.googleapis.com',
+      'https://cdn.mathpix.com',
     ],
     'img-src': [
       "'self'",
