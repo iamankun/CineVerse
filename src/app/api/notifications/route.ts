@@ -1,4 +1,6 @@
 import { NextResponse } from "next/server";
+import { promises as fs } from "fs";
+import path from "path";
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -13,17 +15,14 @@ interface Notification {
   createdAt: string;
 }
 
+const NOTIFICATION_DIRECTORIES = [
+  path.join(process.cwd(), "public", "notifications"),
+  path.join(process.cwd(), "src", "app", "admin", "notifications"),
+];
+
 export async function GET() {
   try {
-    const { promises: fs } = await import("fs");
-    const path = await import("path");
-
-    const possibleDirs = [
-      path.join(process.cwd(), "public", "notifications"),
-      path.join(process.cwd(), "src", "app", "admin", "notifications"),
-    ];
-
-    for (const dir of possibleDirs) {
+    for (const dir of NOTIFICATION_DIRECTORIES) {
       try {
         await fs.access(dir);
         const files = await fs.readdir(dir);

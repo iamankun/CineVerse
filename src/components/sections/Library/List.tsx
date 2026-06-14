@@ -9,7 +9,8 @@ import useSupabaseUser from "@/hooks/useSupabaseUser";
 import { isEmpty } from "@/utils/helpers";
 import { Trash } from "@/utils/icons";
 import { addToast, Button, Select, SelectItem, Spinner } from "@heroui/react";
-import { useDisclosure, useInViewport } from "@mantine/hooks";
+import { useInView } from "react-intersection-observer";
+import { useDisclosure } from "@mantine/hooks";
 import { useInfiniteQuery, useMutation } from "@tanstack/react-query";
 import { Suspense, useEffect, useMemo, useState, useTransition } from "react";
 import MoviePosterCard from "../Movie/Cards/Poster";
@@ -29,7 +30,7 @@ const SORT_OPTIONS: { key: SortOption; label: string }[] = [
 ];
 
 const LibraryList = () => {
-  const { ref, inViewport } = useInViewport();
+  const { ref, inView } = useInView();
   const { content } = useDiscoverFilters();
   const { data: user, isLoading: isUserLoading } = useSupabaseUser();
   const [isPending, startTransition] = useTransition();
@@ -55,10 +56,10 @@ const LibraryList = () => {
     });
 
   useEffect(() => {
-    if (inViewport && hasNextPage && !isFetchingNextPage) {
+    if (inView && hasNextPage && !isFetchingNextPage) {
       fetchNextPage();
     }
-  }, [inViewport]);
+  }, [inView]);
 
   const clearWatchlistMutation = useMutation({
     mutationFn: async (type: "movie" | "tv") => {

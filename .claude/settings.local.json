@@ -1,9 +1,0 @@
-{
-  "permissions": {
-    "allow": [
-      "Bash(find /d/CineVerse/src/app/api -name \"route.ts\" -exec grep -L \"Cache-Control\" {})",
-      "Bash(grep -l Cache-Control /d/CineVerse/src/app/api/*/route.ts /d/CineVerse/src/app/api/*/*/route.ts /d/CineVerse/src/app/api/*/*/*/route.ts)",
-      "Bash(npx tsc:*)"
-    ]
-  }
-}

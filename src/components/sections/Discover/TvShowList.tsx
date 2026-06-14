@@ -8,14 +8,14 @@ import useFetchDiscoverTvShows from "@/hooks/useFetchDiscoverTvShow";
 import { DiscoverTvShowsFetchQueryType } from "@/types/movie";
 import { getLoadingLabel } from "@/utils/movies";
 import { Spinner } from "@heroui/react";
-import { useInViewport } from "@mantine/hooks";
+import { useInView } from "react-intersection-observer";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { notFound } from "next/navigation";
 import { useEffect } from "react";
 import TvShowPosterCard from "../TV/Cards/Poster";
 
 const TvShowDiscoverList = () => {
-  const { ref, inViewport } = useInViewport();
+  const { ref, inView } = useInView();
   const { genresString, queryType } = useDiscoverFilters();
   const { data, isPending, status, fetchNextPage, isFetchingNextPage, hasNextPage } =
     useInfiniteQuery({
@@ -32,10 +32,10 @@ const TvShowDiscoverList = () => {
     });
 
   useEffect(() => {
-    if (inViewport) {
+    if (inView) {
       fetchNextPage();
     }
-  }, [inViewport]);
+  }, [inView]);
 
   if (status === "error") return notFound();
 

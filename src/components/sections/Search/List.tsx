@@ -6,7 +6,8 @@ import BackToTopButton from "@/components/ui/button/BackToTopButton";
 import { ContentType } from "@/types";
 import { isEmpty } from "@/utils/helpers";
 import { Spinner } from "@heroui/react";
-import { useDebouncedValue, useInViewport, useLocalStorage } from "@mantine/hooks";
+import { useDebouncedValue, useLocalStorage } from "@mantine/hooks";
+import { useInView } from "react-intersection-observer";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { parseAsString, parseAsStringLiteral, useQueryState } from "nuqs";
 import { useEffect } from "react";
@@ -46,7 +47,7 @@ const SearchList = () => {
 
   const isSearchTriggered = !isEmpty(debouncedSearchQuery);
 
-  const { ref, inViewport } = useInViewport();
+  const { ref, inView } = useInView();
   const { data, isPending, fetchNextPage, isFetchingNextPage, hasNextPage } = useInfiniteQuery({
     enabled: isSearchTriggered,
     queryKey: ["search-list", content, debouncedSearchQuery],
@@ -58,10 +59,10 @@ const SearchList = () => {
   });
 
   useEffect(() => {
-    if (inViewport) {
+    if (inView) {
       fetchNextPage();
     }
-  }, [inViewport]);
+  }, [inView]);
 
   const handleSearchSubmit = (query: string) => {
     // Save to history only when user presses Enter

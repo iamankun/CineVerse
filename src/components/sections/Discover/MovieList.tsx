@@ -2,7 +2,7 @@
 
 import BackToTopButton from "@/components/ui/button/BackToTopButton";
 import { Spinner } from "@heroui/react";
-import { useInViewport } from "@mantine/hooks";
+import { useInView } from "react-intersection-observer";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { notFound } from "next/navigation";
 import { memo, useEffect } from "react";
@@ -15,7 +15,7 @@ import PosterCardSkeleton from "@/components/ui/other/PosterCardSkeleton";
 import { getLoadingLabel } from "@/utils/movies";
 
 const MovieDiscoverList = () => {
-  const { ref, inViewport } = useInViewport();
+  const { ref, inView } = useInView();
   const { genresString, queryType } = useDiscoverFilters();
 
   const { data, isPending, status, fetchNextPage, isFetchingNextPage, hasNextPage } =
@@ -33,10 +33,10 @@ const MovieDiscoverList = () => {
     });
 
   useEffect(() => {
-    if (inViewport && !isPending) {
+    if (inView && !isPending) {
       fetchNextPage();
     }
-  }, [inViewport]);
+  }, [inView]);
 
   if (status === "error") return notFound();
 

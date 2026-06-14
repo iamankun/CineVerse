@@ -6,7 +6,7 @@ import Carousel from "@/components/ui/wrapper/Carousel";
 import { QueryList } from "@/types";
 import { Skeleton } from "@heroui/react";
 import Link from "next/link";
-import { useInViewport } from "@mantine/hooks";
+import { useInView } from "react-intersection-observer";
 import { useQuery } from "@tanstack/react-query";
 import { kebabCase } from "string-ts";
 import { Movie } from "tmdb-ts/dist/types";
@@ -14,11 +14,11 @@ import { IoChevronForward } from "react-icons/io5";
 
 const MovieHomeList: React.FC<QueryList<Movie>> = ({ query, name, param }) => {
   const key = kebabCase(name) + "-list";
-  const { ref, inViewport } = useInViewport();
-  const { data, isPending } = useQuery({
+  const { ref, inView } = useInView({ triggerOnce: true, initialInView: true });
+  const { data, isPending, isError } = useQuery({
     queryFn: query,
     queryKey: [key],
-    enabled: inViewport,
+    enabled: inView,
   });
 
   return (
@@ -30,6 +30,13 @@ const MovieHomeList: React.FC<QueryList<Movie>> = ({ query, name, param }) => {
             <Skeleton className="h-5 w-20 rounded-full" />
           </div>
           <Skeleton className="h-[250px] rounded-lg md:h-[300px]" />
+        </div>
+      ) : isError ? (
+        <div className="z-3 flex flex-col gap-2">
+          <div className="flex grow items-center justify-between">
+            <SectionTitle>{name}</SectionTitle>
+          </div>
+          <p className="text-foreground/50 text-sm">Không thể tải dữ liệu</p>
         </div>
       ) : (
         <div className="z-3 flex flex-col gap-2">

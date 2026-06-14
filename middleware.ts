@@ -12,7 +12,6 @@ function getCSPPolicy(nonce: string): string {
     'default-src': ["'self'"],
     'script-src': [
       "'self'",
-      "'unsafe-inline'",
       "'unsafe-eval'",
       `'nonce-${nonce}'`,
       "'strict-dynamic'",
