@@ -1,6 +1,5 @@
 "use client";
 
-import BackToTopButton from "@/components/ui/button/BackToTopButton";
 import { Spinner } from "@heroui/react";
 import { useInView } from "react-intersection-observer";
 import { useInfiniteQuery } from "@tanstack/react-query";
@@ -69,7 +68,6 @@ const MovieDiscoverList = () => {
           </p>
         )}
       </div>
-      <BackToTopButton />
     </div>
   );
 };

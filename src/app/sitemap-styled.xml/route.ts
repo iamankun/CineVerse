@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { tmdb } from "@/api/tmdb";
+import { tmdb, fetchWithFallback } from "@/api/tmdb";
 
 const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://cineverse.ankun.dev";
 
@@ -11,10 +11,22 @@ export async function GET() {
 
     // Fetch all data (simplified version)
     const [popularMovies, popularTvShows, trendingMovies, trendingTvShows] = await Promise.all([
-      tmdb.movies.popular({ language: "vi-VN" }),
-      tmdb.tvShows.popular({ language: "vi-VN" }),
-      tmdb.trending.trending("movie", "week", { language: "vi-VN" }),
-      tmdb.trending.trending("tv", "week", { language: "vi-VN" }),
+      fetchWithFallback(
+        () => tmdb.movies.popular({ language: "vi-VN" }),
+        () => tmdb.movies.popular({ language: "en-US" }),
+      ),
+      fetchWithFallback(
+        () => tmdb.tvShows.popular({ language: "vi-VN" }),
+        () => tmdb.tvShows.popular({ language: "en-US" }),
+      ),
+      fetchWithFallback(
+        () => tmdb.trending.trending("movie", "week", { language: "vi-VN" }),
+        () => tmdb.trending.trending("movie", "week", { language: "en-US" }),
+      ),
+      fetchWithFallback(
+        () => tmdb.trending.trending("tv", "week", { language: "vi-VN" }),
+        () => tmdb.trending.trending("tv", "week", { language: "en-US" }),
+      ),
     ]);
 
     // Build URLs array

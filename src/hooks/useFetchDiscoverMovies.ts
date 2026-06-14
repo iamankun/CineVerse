@@ -1,8 +1,7 @@
 "use client";
 
-import { tmdb } from "@/api/tmdb";
+import { tmdb, fetchWithFallback } from "@/api/tmdb";
 import { DiscoverMoviesFetchQueryType } from "@/types/movie";
-import { MovieDiscoverResult } from "tmdb-ts/dist/types/discover";
 
 interface FetchDiscoverMovies {
   page?: number;
@@ -14,26 +13,44 @@ const useFetchDiscoverMovies = ({
   page = 1,
   type = "discover",
   genres,
-}: FetchDiscoverMovies): Promise<MovieDiscoverResult> => {
-  const discover = () => tmdb.discover.movie({ page: page, with_genres: genres, language: 'vi-VN' });
-  const todayTrending = () => tmdb.trending.trending("movie", "day", { page: page, language: 'vi-VN' });
-  const thisWeekTrending = () => tmdb.trending.trending("movie", "week", { page: page, language: 'vi-VN' });
-  const popular = () => tmdb.movies.popular({ page: page, language: 'vi-VN' });
-  const nowPlaying = () => tmdb.movies.nowPlaying({ page: page, language: 'vi-VN' });
-  const upcoming = () => tmdb.movies.upcoming({ page: page, language: 'vi-VN' });
-  const topRated = () => tmdb.movies.topRated({ page: page, language: 'vi-VN' });
-
-  const queryData = {
-    discover,
-    todayTrending,
-    thisWeekTrending,
-    popular,
-    nowPlaying,
-    upcoming,
-    topRated,
-  }[type];
-
-  return queryData();
+}: FetchDiscoverMovies) => {
+  switch (type) {
+    case "todayTrending":
+      return fetchWithFallback(
+        () => tmdb.trending.trending("movie", "day", { page, language: 'vi-VN' }),
+        () => tmdb.trending.trending("movie", "day", { page, language: 'en-US' }),
+      );
+    case "thisWeekTrending":
+      return fetchWithFallback(
+        () => tmdb.trending.trending("movie", "week", { page, language: 'vi-VN' }),
+        () => tmdb.trending.trending("movie", "week", { page, language: 'en-US' }),
+      );
+    case "popular":
+      return fetchWithFallback(
+        () => tmdb.movies.popular({ page, language: 'vi-VN' }),
+        () => tmdb.movies.popular({ page, language: 'en-US' }),
+      );
+    case "nowPlaying":
+      return fetchWithFallback(
+        () => tmdb.movies.nowPlaying({ page, language: 'vi-VN' }),
+        () => tmdb.movies.nowPlaying({ page, language: 'en-US' }),
+      );
+    case "upcoming":
+      return fetchWithFallback(
+        () => tmdb.movies.upcoming({ page, language: 'vi-VN' }),
+        () => tmdb.movies.upcoming({ page, language: 'en-US' }),
+      );
+    case "topRated":
+      return fetchWithFallback(
+        () => tmdb.movies.topRated({ page, language: 'vi-VN' }),
+        () => tmdb.movies.topRated({ page, language: 'en-US' }),
+      );
+    default:
+      return fetchWithFallback(
+        () => tmdb.discover.movie({ page, with_genres: genres, language: 'vi-VN' }),
+        () => tmdb.discover.movie({ page, with_genres: genres, language: 'en-US' }),
+      );
+  }
 };
 
 export default useFetchDiscoverMovies;

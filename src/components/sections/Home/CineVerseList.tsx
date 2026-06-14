@@ -10,7 +10,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Movie, TV } from "tmdb-ts/dist/types";
 import { IoChevronForward } from "react-icons/io5";
 import { Movie as MovieIcon, TV as TVIcon } from "@/utils/icons";
-import { env } from "@/utils/env";
+import { tmdb, fetchDetailWithFallback } from "@/api/tmdb";
 import { useState } from "react";
 
 type SourceItem = {
@@ -56,20 +56,22 @@ const fetchCineVerseSources = async (): Promise<SourceItem[]> => {
   }
 };
 
-// Fetch chi tiết từ TMDB
+// Fetch chi tiết từ TMDB với fallback ngôn ngữ
 const fetchTMDBDetails = async (id: number, type: "movie" | "tv") => {
-  const token = env.NEXT_PUBLIC_TMDB_ACCESS_TOKEN;
-  const endpoint = type === "movie" ? "movie" : "tv";
-
-  const response = await fetch(`https://api.themoviedb.org/3/${endpoint}/${id}?language=vi-VN`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-      "Content-Type": "application/json",
-    },
-  });
-
-  if (!response.ok) return null;
-  return response.json();
+  try {
+    if (type === "movie") {
+      return await fetchDetailWithFallback(
+        () => tmdb.movies.details(id, [], 'vi-VN'),
+        () => tmdb.movies.details(id, [], 'en-US'),
+      );
+    }
+    return await fetchDetailWithFallback(
+      () => tmdb.tvShows.details(id, [], 'vi-VN'),
+      () => tmdb.tvShows.details(id, [], 'en-US'),
+    );
+  } catch {
+    return null;
+  }
 };
 
 // Fetch tất cả content với TMDB details
@@ -83,14 +85,14 @@ const fetchCineVerseContent = async () => {
   const moviePromises = movieSources.map((s) => fetchTMDBDetails(s.tmdbId, "movie"));
   const movieResults = await Promise.all(moviePromises);
   const movies = movieResults.filter(
-    (result): result is Movie => result !== null && result.id !== undefined,
+    (result): result is NonNullable<typeof result> => result !== null,
   );
 
   // Fetch TMDB details cho TV shows
   const tvPromises = tvSources.map((s) => fetchTMDBDetails(s.tmdbId, "tv"));
   const tvResults = await Promise.all(tvPromises);
   const tvShows = tvResults.filter(
-    (result): result is TV => result !== null && result.id !== undefined,
+    (result): result is NonNullable<typeof result> => result !== null,
   );
 
   return { movies, tvShows };
@@ -176,7 +178,7 @@ const CineVerseList: React.FC = () => {
                   key={movie.id}
                   className="embla__slide flex min-h-fit max-w-fit items-center px-1 py-2"
                 >
-                  <MoviePosterCard movie={movie} />
+                  <MoviePosterCard movie={movie as unknown as Movie} />
                 </div>
               ))}
             </Carousel>
@@ -202,7 +204,7 @@ const CineVerseList: React.FC = () => {
                   key={tv.id}
                   className="embla__slide flex min-h-fit max-w-fit items-center px-1 py-2"
                 >
-                  <TvShowPosterCard tv={tv} />
+                  <TvShowPosterCard tv={tv as unknown as TV} />
                 </div>
               ))}
             </Carousel>

@@ -1,5 +1,5 @@
 import { MetadataRoute } from "next";
-import { tmdb } from "@/api/tmdb";
+import { tmdb, fetchWithFallback } from "@/api/tmdb";
 
 const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://cineverse.ankun.dev";
 
@@ -46,7 +46,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   try {
     // 1. Fetch phim phổ biến (Popular Movies)
     console.log("📽️ Đang tải phim phổ biến...");
-    const popularMovies = await tmdb.movies.popular({ language: "vi-VN" });
+    const popularMovies = await fetchWithFallback(
+      () => tmdb.movies.popular({ language: "vi-VN" }),
+      () => tmdb.movies.popular({ language: "en-US" }),
+    );
     const moviePages: MetadataRoute.Sitemap = popularMovies.results.slice(0, 100).map((movie) => ({
       url: `${BASE_URL}/movie/${movie.id}`,
       lastModified: currentDate,
@@ -57,7 +60,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
     // 2. Fetch TV show phổ biến (Popular TV Shows)
     console.log("📺 Đang tải TV show phổ biến...");
-    const popularTvShows = await tmdb.tvShows.popular({ language: "vi-VN" });
+    const popularTvShows = await fetchWithFallback(
+      () => tmdb.tvShows.popular({ language: "vi-VN" }),
+      () => tmdb.tvShows.popular({ language: "en-US" }),
+    );
     const tvPages: MetadataRoute.Sitemap = popularTvShows.results.slice(0, 100).map((tv) => ({
       url: `${BASE_URL}/tv/${tv.id}`,
       lastModified: currentDate,
@@ -68,29 +74,38 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
     // 3. Fetch phim trending (Trending Movies)
     console.log("🔥 Đang tải phim trending...");
-    const trendingMovies = await tmdb.trending.trending("movie", "week", { language: "vi-VN" });
+    const trendingMovies = await fetchWithFallback(
+      () => tmdb.trending.trending("movie", "week", { language: "vi-VN" }),
+      () => tmdb.trending.trending("movie", "week", { language: "en-US" }),
+    );
     const trendingMoviePages: MetadataRoute.Sitemap = trendingMovies.results.slice(0, 50).map((movie) => ({
       url: `${BASE_URL}/movie/${movie.id}`,
       lastModified: currentDate,
       changeFrequency: "daily" as const,
-      priority: 0.9, // Cao hơn vì trending
+      priority: 0.9,
     }));
     console.log(`✅ Đã thêm ${trendingMoviePages.length} phim trending`);
 
     // 4. Fetch TV show trending (Trending TV Shows)
     console.log("🔥 Đang tải TV show trending...");
-    const trendingTvShows = await tmdb.trending.trending("tv", "week", { language: "vi-VN" });
+    const trendingTvShows = await fetchWithFallback(
+      () => tmdb.trending.trending("tv", "week", { language: "vi-VN" }),
+      () => tmdb.trending.trending("tv", "week", { language: "en-US" }),
+    );
     const trendingTvPages: MetadataRoute.Sitemap = trendingTvShows.results.slice(0, 50).map((tv) => ({
       url: `${BASE_URL}/tv/${tv.id}`,
       lastModified: currentDate,
       changeFrequency: "daily" as const,
-      priority: 0.9, // Cao hơn vì trending
+      priority: 0.9,
     }));
     console.log(`✅ Đã thêm ${trendingTvPages.length} TV show trending`);
 
     // 5. Fetch phim top rated (Top Rated Movies)
     console.log("⭐ Đang tải phim đánh giá cao...");
-    const topRatedMovies = await tmdb.movies.topRated({ language: "vi-VN" });
+    const topRatedMovies = await fetchWithFallback(
+      () => tmdb.movies.topRated({ language: "vi-VN" }),
+      () => tmdb.movies.topRated({ language: "en-US" }),
+    );
     const topRatedMoviePages: MetadataRoute.Sitemap = topRatedMovies.results.slice(0, 50).map((movie) => ({
       url: `${BASE_URL}/movie/${movie.id}`,
       lastModified: currentDate,
@@ -101,7 +116,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
     // 6. Fetch TV show top rated (Top Rated TV Shows)
     console.log("⭐ Đang tải Chương trình TV được đánh giá cao...");
-    const topRatedTvShows = await tmdb.tvShows.topRated({ language: "vi-VN" });
+    const topRatedTvShows = await fetchWithFallback(
+      () => tmdb.tvShows.topRated({ language: "vi-VN" }),
+      () => tmdb.tvShows.topRated({ language: "en-US" }),
+    );
     const topRatedTvPages: MetadataRoute.Sitemap = topRatedTvShows.results.slice(0, 50).map((tv) => ({
       url: `${BASE_URL}/tv/${tv.id}`,
       lastModified: currentDate,
@@ -112,7 +130,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
     // 7. Fetch phim sắp ra (Upcoming Movies)
     console.log("🎬 Đang tải phim sắp ra...");
-    const upcomingMovies = await tmdb.movies.upcoming({ language: "vi-VN" });
+    const upcomingMovies = await fetchWithFallback(
+      () => tmdb.movies.upcoming({ language: "vi-VN" }),
+      () => tmdb.movies.upcoming({ language: "en-US" }),
+    );
     const upcomingMoviePages: MetadataRoute.Sitemap = upcomingMovies.results.slice(0, 30).map((movie) => ({
       url: `${BASE_URL}/movie/${movie.id}`,
       lastModified: currentDate,
@@ -123,7 +144,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
     // 8. Fetch phim đang chiếu (Now Playing Movies)
     console.log("🎥 Đang tải phim đang chiếu...");
-    const nowPlayingMovies = await tmdb.movies.nowPlaying({ language: "vi-VN" });
+    const nowPlayingMovies = await fetchWithFallback(
+      () => tmdb.movies.nowPlaying({ language: "vi-VN" }),
+      () => tmdb.movies.nowPlaying({ language: "en-US" }),
+    );
     const nowPlayingMoviePages: MetadataRoute.Sitemap = nowPlayingMovies.results.slice(0, 30).map((movie) => ({
       url: `${BASE_URL}/movie/${movie.id}`,
       lastModified: currentDate,

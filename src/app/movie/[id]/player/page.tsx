@@ -1,6 +1,6 @@
 "use client";
 
-import { tmdb } from "@/api/tmdb";
+import { tmdb, fetchDetailWithFallback } from "@/api/tmdb";
 import { getMovieLastPosition } from "@/actions/histories";
 import MoviePlayer from "@/components/sections/Movie/Player/Player";
 import { Params } from "@/types";
@@ -19,7 +19,10 @@ const MoviePlayerPage: NextPage<Params<{ id: number }>> = ({ params }) => {
     isPending,
     error,
   } = useQuery({
-    queryFn: () => tmdb.movies.details(id, [], 'vi-VN'),
+    queryFn: () => fetchDetailWithFallback(
+      () => tmdb.movies.details(id, [], 'vi-VN'),
+      () => tmdb.movies.details(id, [], 'en-US'),
+    ),
     queryKey: ["movie-player-detail", id],
     staleTime: 86400000, // 24 hours (1 ngày)
     gcTime: 86400000, // 24 hours

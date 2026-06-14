@@ -1,8 +1,7 @@
 "use client";
 
-import { tmdb } from "@/api/tmdb";
+import { tmdb, fetchWithFallback } from "@/api/tmdb";
 import { DiscoverTvShowsFetchQueryType } from "@/types/movie";
-import { TvShowDiscoverResult } from "tmdb-ts/dist/types/discover";
 
 interface FetchDiscoverTvShows {
   page?: number;
@@ -14,29 +13,42 @@ const useFetchDiscoverTvShows = ({
   page = 1,
   type = "discover",
   genres,
-}: FetchDiscoverTvShows): Promise<TvShowDiscoverResult> => {
-  const discover = () => tmdb.discover.tvShow({ 
-    page: page, 
-    with_genres: genres,
-    language: 'vi'
-  });
-  const todayTrending = () => tmdb.trending.trending("tv", "day", { page: page, language: 'vi-VN' });
-  const thisWeekTrending = () => tmdb.trending.trending("tv", "week", { page: page, language: 'vi-VN' });
-  const popular = () => tmdb.tvShows.popular({ page: page, language: 'vi-VN' });
-  const onTheAir = () => tmdb.tvShows.onTheAir({ page: page, language: 'vi-VN' });
-  const topRated = () => tmdb.tvShows.topRated({ page: page, language: 'vi-VN' });
-
-  const queryData = {
-    discover,
-    todayTrending,
-    thisWeekTrending,
-    popular,
-    onTheAir,
-    topRated,
-  }[type];
-
-  // @ts-expect-error: Property 'adult' is missing in type 'PopularTvShowResult' but required in type 'TV'.
-  return queryData();
+}: FetchDiscoverTvShows) => {
+  switch (type) {
+    case "todayTrending":
+      return fetchWithFallback(
+        () => tmdb.trending.trending("tv", "day", { page, language: 'vi-VN' }),
+        () => tmdb.trending.trending("tv", "day", { page, language: 'en-US' }),
+      );
+    case "thisWeekTrending":
+      return fetchWithFallback(
+        () => tmdb.trending.trending("tv", "week", { page, language: 'vi-VN' }),
+        () => tmdb.trending.trending("tv", "week", { page, language: 'en-US' }),
+      );
+    case "popular":
+      // @ts-expect-error: Property 'adult' is missing in type 'PopularTvShowResult'
+      return fetchWithFallback(
+        () => tmdb.tvShows.popular({ page, language: 'vi-VN' }),
+        () => tmdb.tvShows.popular({ page, language: 'en-US' }),
+      );
+    case "onTheAir":
+      // @ts-expect-error: Property 'adult' is missing in type 'OnTheAirResult'
+      return fetchWithFallback(
+        () => tmdb.tvShows.onTheAir({ page, language: 'vi-VN' }),
+        () => tmdb.tvShows.onTheAir({ page, language: 'en-US' }),
+      );
+    case "topRated":
+      // @ts-expect-error: Property 'adult' is missing in type 'TopRatedTvShowResult'
+      return fetchWithFallback(
+        () => tmdb.tvShows.topRated({ page, language: 'vi-VN' }),
+        () => tmdb.tvShows.topRated({ page, language: 'en-US' }),
+      );
+    default:
+      return fetchWithFallback(
+        () => tmdb.discover.tvShow({ page, with_genres: genres, language: 'vi' }),
+        () => tmdb.discover.tvShow({ page, with_genres: genres, language: 'en-US' }),
+      );
+  }
 };
 
 export default useFetchDiscoverTvShows;

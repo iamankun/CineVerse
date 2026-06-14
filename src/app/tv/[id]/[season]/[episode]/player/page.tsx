@@ -1,6 +1,6 @@
 "use client";
 
-import { tmdb, getTvSeasonDetailsWithCineVerse } from "@/api/tmdb";
+import { tmdb, getTvSeasonDetailsWithCineVerse, fetchDetailWithFallback } from "@/api/tmdb";
 import { Params } from "@/types";
 import { Spinner } from "@heroui/react";
 import { useQuery } from "@tanstack/react-query";
@@ -21,7 +21,10 @@ const TvShowPlayerPage: NextPage<Params<{ id: number; season: number; episode: n
     isPending: isPendingTv,
     error: errorTv,
   } = useQuery({
-    queryFn: () => tmdb.tvShows.details(id, [], 'vi-VN'),
+    queryFn: () => fetchDetailWithFallback(
+      () => tmdb.tvShows.details(id, [], 'vi-VN'),
+      () => tmdb.tvShows.details(id, [], 'en-US'),
+    ),
     queryKey: ["tv-show-player-details", id],
     staleTime: 86400000, // 24 hours (1 ngày)
     gcTime: 86400000, // 24 hours
@@ -32,7 +35,10 @@ const TvShowPlayerPage: NextPage<Params<{ id: number; season: number; episode: n
     isPending: isPendingSeasons,
   } = useQuery({
     queryFn: async () => {
-      const details = await tmdb.tvShows.details(id, [], 'vi-VN');
+      const details = await fetchDetailWithFallback(
+        () => tmdb.tvShows.details(id, [], 'vi-VN'),
+        () => tmdb.tvShows.details(id, [], 'en-US'),
+      );
       return details.seasons;
     },
     queryKey: ["tv-show-seasons", id],

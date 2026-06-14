@@ -5,7 +5,7 @@ import { Input, Button, Card, CardBody, CardHeader, Spinner, Select, SelectItem,
 import { Copy, Search, Film, Tv, ExternalLink, Check } from "lucide-react";
 import { kkphim, KKPhimResponse, KKPhimEpisode } from "@/services";
 import { parseAsString, useQueryState } from "nuqs";
-import { tmdb } from "@/api/tmdb";
+import { tmdb, fetchWithFallback } from "@/api/tmdb";
 import { useDebouncedValue } from "@mantine/hooks";
 import { Movie, TV } from "tmdb-ts/dist/types";
 import { isEmpty } from "@/utils/helpers";
@@ -71,8 +71,14 @@ export default function KKPhimPage() {
     setTmdbLoading(true);
     try {
       const [movieResults, tvResults] = await Promise.all([
-        tmdb.search.movies({ query: debouncedSearchQuery, page: 1, language: "vi-VN", region: "VN" }),
-        tmdb.search.tvShows({ query: debouncedSearchQuery, page: 1, language: "vi-VN" })
+        fetchWithFallback(
+          () => tmdb.search.movies({ query: debouncedSearchQuery, page: 1, language: "vi-VN", region: "VN" }),
+          () => tmdb.search.movies({ query: debouncedSearchQuery, page: 1, language: "en-US" }),
+        ),
+        fetchWithFallback(
+          () => tmdb.search.tvShows({ query: debouncedSearchQuery, page: 1, language: "vi-VN" }),
+          () => tmdb.search.tvShows({ query: debouncedSearchQuery, page: 1, language: "en-US" }),
+        ),
       ]);
 
       const combinedResults: TMDBSearchResult[] = [

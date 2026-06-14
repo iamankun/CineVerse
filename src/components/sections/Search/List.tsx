@@ -1,8 +1,7 @@
 "use client";
 
-import { tmdb } from "@/api/tmdb";
+import { tmdb, fetchWithFallback } from "@/api/tmdb";
 import TvShowHomeCard from "@/components/sections/TV/Cards/Poster";
-import BackToTopButton from "@/components/ui/button/BackToTopButton";
 import { ContentType } from "@/types";
 import { isEmpty } from "@/utils/helpers";
 import { Spinner } from "@heroui/react";
@@ -29,8 +28,14 @@ const fetchData = async ({
   type = "movie",
   query,
 }: FetchType): Promise<Search<Movie> | Search<TV>> => {
-  if (type === "movie") return tmdb.search.movies({ query, page, language: "vi-VN", region: "VN" });
-  return tmdb.search.tvShows({ query, page, language: "vi-VN" });
+  if (type === "movie") return fetchWithFallback(
+    () => tmdb.search.movies({ query, page, language: "vi-VN", region: "VN" }),
+    () => tmdb.search.movies({ query, page, language: "en-US" }),
+  );
+  return fetchWithFallback(
+    () => tmdb.search.tvShows({ query, page, language: "vi-VN" }),
+    () => tmdb.search.tvShows({ query, page, language: "en-US" }),
+  );
 };
 
 const SearchList = () => {
@@ -161,7 +166,6 @@ const SearchList = () => {
         </>
       )}
 
-      <BackToTopButton />
     </div>
   );
 };

@@ -83,6 +83,8 @@ const BookmarkButton: React.FC<BookmarkButtonProps> = ({ data, isTooltipDisabled
             });
           }
         } else {
+          startVibration([100]);
+
           const watchlistItem = {
             id: data.id,
             type: data.type,
@@ -98,7 +100,6 @@ const BookmarkButton: React.FC<BookmarkButtonProps> = ({ data, isTooltipDisabled
 
           if (result.success) {
             setIsSaved(true);
-            startVibration([100]);
             addToast({
               title: `${data.title} added to your watchlist!`,
               color: "success",

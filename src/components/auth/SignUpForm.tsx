@@ -9,7 +9,7 @@ import ThreeDMarquee from "@/components/ui/background/ThreeDMarquee";
 import { cn, isEmpty, shuffleArray } from "@/utils/helpers";
 import { getImageUrl } from "@/utils/movies";
 import { useQuery } from "@tanstack/react-query";
-import { tmdb } from "@/api/tmdb";
+import { tmdb, fetchWithFallback } from "@/api/tmdb";
 
 /**
  * Validate password với cảnh báo tiếng Việt
@@ -49,12 +49,18 @@ export function SignUpForm() {
 
   // 🔥 Get movie images for background (same as LoginForm)
   const { data: movies, isPending: isPendingMovies } = useQuery({
-    queryFn: () => tmdb.trending.trending("movie", "day", { language: 'vi-VN' }),
+    queryFn: () => fetchWithFallback(
+      () => tmdb.trending.trending("movie", "day", { language: 'vi-VN' }),
+      () => tmdb.trending.trending("movie", "day", { language: 'en-US' }),
+    ),
     queryKey: ["movie-auth-posters-signup"],
   });
 
   const { data: tvShows, isPending: isPendingTv } = useQuery({
-    queryFn: () => tmdb.trending.trending("tv", "day", { language: 'vi-VN' }),
+    queryFn: () => fetchWithFallback(
+      () => tmdb.trending.trending("tv", "day", { language: 'vi-VN' }),
+      () => tmdb.trending.trending("tv", "day", { language: 'en-US' }),
+    ),
     queryKey: ["tv-auth-posters-signup"],
   });
 

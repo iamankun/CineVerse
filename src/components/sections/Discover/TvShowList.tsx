@@ -1,6 +1,5 @@
 "use client";
 
-import BackToTopButton from "@/components/ui/button/BackToTopButton";
 import Loop from "@/components/ui/other/Loop";
 import PosterCardSkeleton from "@/components/ui/other/PosterCardSkeleton";
 import useDiscoverFilters from "@/hooks/useDiscoverFilters";
@@ -70,7 +69,6 @@ const TvShowDiscoverList = () => {
           </p>
         )}
       </div>
-      <BackToTopButton />
     </div>
   );
 };

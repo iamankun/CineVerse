@@ -1,6 +1,6 @@
 "use client";
 
-import { tmdb } from "@/api/tmdb";
+import { tmdb, fetchWithFallback } from "@/api/tmdb";
 import TvShowHomeCard from "@/components/sections/TV/Cards/Poster";
 import MoviePosterCard from "@/components/sections/Movie/Cards/Poster";
 import { ContentType } from "@/types";
@@ -16,8 +16,14 @@ const fetchSearchData = async (
   type: ContentType,
 ): Promise<SearchType<Movie> | SearchType<TV>> => {
   if (type === "movie")
-    return tmdb.search.movies({ query, page: 1, language: "vi-VN", region: "VN" });
-  return tmdb.search.tvShows({ query, page: 1, language: "vi-VN" });
+    return fetchWithFallback(
+      () => tmdb.search.movies({ query, page: 1, language: "vi-VN", region: "VN" }),
+      () => tmdb.search.movies({ query, page: 1, language: "en-US" }),
+    );
+  return fetchWithFallback(
+    () => tmdb.search.tvShows({ query, page: 1, language: "vi-VN" }),
+    () => tmdb.search.tvShows({ query, page: 1, language: "en-US" }),
+  );
 };
 
 const HomeSearch = () => {

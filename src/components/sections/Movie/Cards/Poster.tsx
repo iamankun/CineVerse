@@ -3,7 +3,7 @@ import VaulDrawer from "@/components/ui/overlay/VaulDrawer";
 import useBreakpoints from "@/hooks/useBreakpoints";
 import useDeviceVibration from "@/hooks/useDeviceVibration";
 import { getImageUrl, mutateMovieTitle } from "@/utils/movies";
-import { Card, CardBody, CardFooter, CardHeader, Chip, Image, Tooltip, Button } from "@heroui/react";
+import { Card, CardBody, CardFooter, CardHeader, Chip, Image, Tooltip } from "@heroui/react";
 import { Icon } from "@iconify/react";
 import { useDisclosure, useHover } from "@mantine/hooks";
 import Link from "next/link";
@@ -28,7 +28,7 @@ const MoviePosterCard: React.FC<MoviePosterCardProps> = ({ movie, variant = "ful
 
   const callback = useCallback(() => {
     handlers.open();
-    setTimeout(() => startVibration([100]), 300);
+    startVibration([100]);
   }, []);
 
   const longPress = useLongPress(mobile ? callback : null, {
@@ -132,16 +132,6 @@ const MoviePosterCard: React.FC<MoviePosterCardProps> = ({ movie, variant = "ful
                 <p>{releaseYear}</p>
                 <div className="flex items-center gap-2">
                   <Rating rate={movie.vote_average} />
-                  <Button
-                    as="div"
-                    onClick={() => window.location.href = `/kkphim?type=movie&id=${movie.id}`}
-                    size="sm"
-                    color="primary"
-                    variant="flat"
-                    className="min-w-[60px] h-6 text-xs cursor-pointer"
-                  >
-                    KKPhim
-                  </Button>
                 </div>
               </CardFooter>
             </Card>

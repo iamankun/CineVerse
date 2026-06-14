@@ -9,7 +9,7 @@ import ThreeDMarquee from "@/components/ui/background/ThreeDMarquee";
 import { cn, isEmpty, shuffleArray } from "@/utils/helpers";
 import { getImageUrl } from "@/utils/movies";
 import { useQuery } from "@tanstack/react-query";
-import { tmdb } from "@/api/tmdb";
+import { tmdb, fetchWithFallback } from "@/api/tmdb";
 
 export function LoginForm() {
   const [email, setEmail] = useState("");
@@ -32,12 +32,18 @@ export function LoginForm() {
 
   // Fetch trending movies for background
   const { data: movies, isPending: isPendingMovies } = useQuery({
-    queryFn: () => tmdb.trending.trending("movie", "day", { language: 'vi-VN' }),
+    queryFn: () => fetchWithFallback(
+      () => tmdb.trending.trending("movie", "day", { language: 'vi-VN' }),
+      () => tmdb.trending.trending("movie", "day", { language: 'en-US' }),
+    ),
     queryKey: ["movie-auth-posters"],
   });
 
   const { data: tvShows, isPending: isPendingTv } = useQuery({
-    queryFn: () => tmdb.trending.trending("tv", "day", { language: 'vi-VN' }),
+    queryFn: () => fetchWithFallback(
+      () => tmdb.trending.trending("tv", "day", { language: 'vi-VN' }),
+      () => tmdb.trending.trending("tv", "day", { language: 'en-US' }),
+    ),
     queryKey: ["tv-auth-posters"],
   });
 

@@ -7,7 +7,7 @@ import { type SEOConfig } from "@/utils/seo/yoast-algorithm";
 import { generateCompleteSEO } from "@/utils/seo/content-generator";
 import { IoAnalytics, IoSearch, IoArrowBack } from "react-icons/io5";
 import { useQuery } from "@tanstack/react-query";
-import { tmdb } from "@/api/tmdb";
+import { tmdb, fetchWithFallback, fetchDetailWithFallback } from "@/api/tmdb";
 import { Movie, TV } from "tmdb-ts";
 import { getImageUrl } from "@/utils/movies";
 import { useRouter } from "next/navigation";
@@ -33,9 +33,15 @@ export default function SEOPage() {
     queryFn: async () => {
       if (!searchQuery || searchQuery.length < 2) return null;
       if (selectedType === "movie") {
-        return await tmdb.search.movies({ query: searchQuery, language: "vi-VN" });
+        return await fetchWithFallback(
+          () => tmdb.search.movies({ query: searchQuery, language: "vi-VN" }),
+          () => tmdb.search.movies({ query: searchQuery, language: "en-US" }),
+        );
       } else {
-        return await tmdb.search.tvShows({ query: searchQuery, language: "vi-VN" });
+        return await fetchWithFallback(
+          () => tmdb.search.tvShows({ query: searchQuery, language: "vi-VN" }),
+          () => tmdb.search.tvShows({ query: searchQuery, language: "en-US" }),
+        );
       }
     },
     enabled: searchQuery.length >= 2,
@@ -46,9 +52,15 @@ export default function SEOPage() {
     queryFn: async () => {
       if (!selectedId) return null;
       if (selectedType === "movie") {
-        return await tmdb.movies.details(selectedId, undefined, "vi-VN");
+        return await fetchDetailWithFallback(
+          () => tmdb.movies.details(selectedId, undefined, "vi-VN"),
+          () => tmdb.movies.details(selectedId, undefined, "en-US"),
+        );
       } else {
-        return await tmdb.tvShows.details(selectedId, undefined, "vi-VN");
+        return await fetchDetailWithFallback(
+          () => tmdb.tvShows.details(selectedId, undefined, "vi-VN"),
+          () => tmdb.tvShows.details(selectedId, undefined, "en-US"),
+        );
       }
     },
     enabled: !!selectedId,

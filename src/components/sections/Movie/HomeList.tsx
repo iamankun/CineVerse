@@ -6,7 +6,6 @@ import Carousel from "@/components/ui/wrapper/Carousel";
 import { QueryList } from "@/types";
 import { Skeleton } from "@heroui/react";
 import Link from "next/link";
-import { useInView } from "react-intersection-observer";
 import { useQuery } from "@tanstack/react-query";
 import { kebabCase } from "string-ts";
 import { Movie } from "tmdb-ts/dist/types";
@@ -14,15 +13,15 @@ import { IoChevronForward } from "react-icons/io5";
 
 const MovieHomeList: React.FC<QueryList<Movie>> = ({ query, name, param }) => {
   const key = kebabCase(name) + "-list";
-  const { ref, inView } = useInView({ triggerOnce: true, initialInView: true });
-  const { data, isPending, isError } = useQuery({
+  const { data, isPending, isError, error } = useQuery({
     queryFn: query,
     queryKey: [key],
-    enabled: inView,
   });
 
+  if (isError) console.error(`[MovieHomeList] ${name}:`, error);
+
   return (
-    <section id={key} className="min-h-[250px] md:min-h-[300px]" ref={ref}>
+    <section id={key} className="min-h-[250px] md:min-h-[300px]">
       {isPending ? (
         <div className="flex w-full flex-col gap-5">
           <div className="flex grow items-center justify-between">

@@ -10,7 +10,9 @@ if (isEmpty(token)) {
 
 // Khởi tạo TMDB client với cấu hình ngôn ngữ mặc định
 // Ưu tiên: Việt Nam -> Nhật -> Anh -> khác
-const tmdbClient = new TMDB(token);
+const tmdbClient = new TMDB(token, {
+  fetch: (...args) => fetch(...args),
+});
 
 export const tmdb = tmdbClient;
 
@@ -72,145 +74,142 @@ async function fetchWithRetry(
 // Helper functions với include_image_language
 // =======================
 
+function buildDetailUrl(
+  mediaType: 'movie' | 'tv',
+  id: number,
+  language: string,
+  appendToResponse: string[],
+  includeImages: boolean,
+) {
+  const params = new URLSearchParams({ language });
+
+  if (appendToResponse.length > 0) {
+    params.append('append_to_response', appendToResponse.join(','));
+  }
+
+  if (includeImages || appendToResponse.includes('images')) {
+    params.append('include_image_language', 'vi,ja,en,null');
+  }
+
+  if (appendToResponse.includes('videos')) {
+    params.append('include_video_language', 'vi,ja,en,null');
+  }
+
+  const path = mediaType === 'movie' ? `movie/${id}` : `tv/${id}`;
+  const tagName = mediaType === 'movie' ? 'movies' : 'tv-shows';
+
+  return {
+    url: `https://api.themoviedb.org/3/${path}?${params.toString()}`,
+    tags: ['tmdb', tagName, `${mediaType}-${id}`, 'images', 'videos', 'trailers', 'logos'],
+  };
+}
+
+async function fetchDetailWithFallbackBuilt(
+  mediaType: 'movie' | 'tv',
+  id: number,
+  appendToResponse: string[],
+  includeImages: boolean,
+) {
+  const viConfig = buildDetailUrl(mediaType, id, 'vi-VN', appendToResponse, includeImages);
+  const enConfig = buildDetailUrl(mediaType, id, 'en-US', appendToResponse, includeImages);
+
+  const options: RequestInit = {
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'accept': 'application/json',
+    },
+    cache: 'force-cache',
+    next: { revalidate: 86400, tags: viConfig.tags } as any,
+  };
+
+  const [vi, en] = await Promise.all([
+    fetchWithRetry(viConfig.url, options).then(r => r.json()),
+    fetchWithRetry(enConfig.url, options).then(r => r.json()),
+  ]);
+
+  const title = vi.title ?? vi.name ?? '';
+  const originalTitle = vi.original_title ?? vi.original_name ?? '';
+
+  if (title !== originalTitle) return vi;
+
+  const enTitle = en.title ?? en.name ?? '';
+  const enOriginal = en.original_title ?? en.original_name ?? '';
+  if (enTitle !== enOriginal) {
+    return {
+      ...vi,
+      title: enTitle,
+      name: enTitle,
+      overview: en.overview ?? vi.overview,
+      tagline: en.tagline ?? vi.tagline,
+    };
+  }
+
+  return vi;
+}
+
 /**
  * Lấy movie details với support cho include_image_language và include_video_language
- * Để lấy logo/images/videos đa ngôn ngữ (vi, en, null)
+ * Để lấy logo/images/videos đa ngôn ngữ (vi, en, null), kèm fallback tiếng Việt → tiếng Anh.
  */
 export async function getMovieDetails(
   movieId: number,
   appendToResponse: string[] = [],
   includeImages: boolean = false
 ) {
-  const params = new URLSearchParams({
-    language: 'vi-VN',
-  });
-
-  if (appendToResponse.length > 0) {
-    params.append('append_to_response', appendToResponse.join(','));
-  }
-
-  // Thêm include_image_language nếu có images trong append_to_response
-  // Ưu tiên: Việt -> Nhật -> Anh -> khác
-  if (includeImages || appendToResponse.includes('images')) {
-    params.append('include_image_language', 'vi,ja,en,null');
-  }
-
-  // Thêm include_video_language nếu có videos trong append_to_response
-  // Ưu tiên: Việt -> Nhật -> Anh -> khác
-  if (appendToResponse.includes('videos')) {
-    params.append('include_video_language', 'vi,ja,en,null');
-  }
-
-  const response = await fetchWithRetry(
-    `https://api.themoviedb.org/3/movie/${movieId}?${params.toString()}`,
-    {
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'accept': 'application/json'
-      },
-      cache: 'force-cache',
-      next: { 
-        revalidate: 86400, // Cache 24 hours (1 ngày) - Tăng từ 1h lên 1 ngày cho xem liên tục
-        tags: ['tmdb', 'movies', `movie-${movieId}`, 'images', 'videos', 'trailers', 'logos']
-      }
-    } as any
-  );
-
-  if (!response.ok) {
-    throw new Error(`Failed to fetch movie details: ${response.statusText}`);
-  }
-
-  return response.json();
+  return fetchDetailWithFallbackBuilt('movie', movieId, appendToResponse, includeImages);
 }
 
 /**
  * Lấy TV show details với support cho include_image_language và include_video_language
+ * Kèm fallback tiếng Việt → tiếng Anh.
  */
 export async function getTvShowDetails(
   tvId: number,
   appendToResponse: string[] = [],
   includeImages: boolean = false
 ) {
-  const params = new URLSearchParams({
-    language: 'vi-VN',
-  });
-
-  if (appendToResponse.length > 0) {
-    params.append('append_to_response', appendToResponse.join(','));
-  }
-
-  // Thêm include_image_language nếu có images trong append_to_response
-  // Ưu tiên: Việt -> Nhật -> Anh -> khác
-  if (includeImages || appendToResponse.includes('images')) {
-    params.append('include_image_language', 'vi,ja,en,null');
-  }
-
-  // Thêm include_video_language nếu có videos trong append_to_response
-  // Ưu tiên: Việt -> Nhật -> Anh -> khác
-  if (appendToResponse.includes('videos')) {
-    params.append('include_video_language', 'vi,ja,en,null');
-  }
-
-  const response = await fetchWithRetry(
-    `https://api.themoviedb.org/3/tv/${tvId}?${params.toString()}`,
-    {
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'accept': 'application/json'
-      },
-      cache: 'force-cache',
-      next: { 
-        revalidate: 86400, // Cache 24 hours (1 ngày)
-        tags: ['tmdb', 'tv-shows', `tv-${tvId}`, 'images', 'videos', 'trailers', 'logos']
-      }
-    } as any
-  );
-
-  if (!response.ok) {
-    throw new Error(`Failed to fetch TV show details: ${response.statusText}`);
-  }
-
-  return response.json();
+  return fetchDetailWithFallbackBuilt('tv', tvId, appendToResponse, includeImages);
 }
 
 /**
- * Lấy TV season details với support cho include_image_language
+ * Lấy TV season details với support cho include_image_language, kèm fallback tiếng Việt → tiếng Anh.
  */
 export async function getTvSeasonDetails(
   tvId: number,
   seasonNumber: number,
   includeImages: boolean = false
 ) {
-  const params = new URLSearchParams({
-    language: 'vi-VN',
-  });
+  const buildUrl = (language: string) => {
+    const params = new URLSearchParams({ language });
+    if (includeImages) {
+      params.append('include_image_language', 'vi,ja,en,null');
+    }
+    return `https://api.themoviedb.org/3/tv/${tvId}/season/${seasonNumber}?${params.toString()}`;
+  };
 
-  // Thêm include_image_language nếu cần
-  // Ưu tiên: Việt -> Nhật -> Anh -> khác
-  if (includeImages) {
-    params.append('include_image_language', 'vi,ja,en,null');
+  const options: RequestInit = {
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'accept': 'application/json',
+    },
+    cache: 'force-cache',
+    next: { revalidate: 86400, tags: ['tmdb', 'tv-shows', `tv-${tvId}`, `season-${seasonNumber}`, 'images', 'posters'] } as any,
+  };
+
+  const [vi, en] = await Promise.all([
+    fetchWithRetry(buildUrl('vi-VN'), options).then(r => r.json()),
+    fetchWithRetry(buildUrl('en-US'), options).then(r => r.json()),
+  ]);
+
+  if (!vi.name || vi.name !== vi.original_name) {
+    return vi;
   }
 
-  const response = await fetchWithRetry(
-    `https://api.themoviedb.org/3/tv/${tvId}/season/${seasonNumber}?${params.toString()}`,
-    {
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'accept': 'application/json'
-      },
-      cache: 'force-cache',
-      next: { 
-        revalidate: 86400, // Cache 24 hours (1 ngày)
-        tags: ['tmdb', 'tv-shows', `tv-${tvId}`, `season-${seasonNumber}`, 'images', 'posters']
-      }
-    } as any
-  );
-
-  if (!response.ok) {
-    throw new Error(`Failed to fetch TV season details: ${response.statusText}`);
+  if (en.name && en.name !== en.original_name) {
+    return { ...vi, name: en.name, overview: en.overview ?? vi.overview };
   }
 
-  return response.json();
+  return vi;
 }
 
 /**
@@ -240,12 +239,10 @@ export async function getTvSeasonDetailsWithCineVerse(
 export async function searchMovies(query: string, page = 1) {
   if (!query.trim()) return [];
   try {
-    const results = await tmdb.search.movies({
-      query,
-      page,
-      include_adult: false,
-      language: "vi-VN",
-    });
+    const results = await fetchWithFallback(
+      () => tmdb.search.movies({ query, page, include_adult: false, language: "vi-VN" }),
+      () => tmdb.search.movies({ query, page, include_adult: false, language: "en-US" }),
+    );
     return results.results;
   } catch (error) {
     console.error("Lỗi khi tìm kiếm phim:", error);
@@ -257,7 +254,10 @@ export async function searchMovies(query: string, page = 1) {
 export async function searchTV(query: string, page = 1) {
   if (!query.trim()) return [];
   try {
-    const results = await tmdb.search.tvShows({ query, page, language: "vi-VN" });
+    const results = await fetchWithFallback(
+      () => tmdb.search.tvShows({ query, page, language: "vi-VN" }),
+      () => tmdb.search.tvShows({ query, page, language: "en-US" }),
+    );
     return results.results;
   } catch (error) {
     console.error("Lỗi khi tìm kiếm TV:", error);
@@ -347,4 +347,79 @@ export async function getTvContentRatings(tvId: number) {
   }
 
   return response.json();
+}
+
+// =======================
+// Language fallback helper
+// =======================
+
+type ListResult<T> = {
+  page: number;
+  results: T[];
+  total_pages: number;
+  total_results: number;
+};
+
+/**
+ * Fetch list with language fallback: vi-VN → en-US → original.
+ * Nếu không có bản dịch tiếng Việt, dùng tiếng Anh.
+ * Nếu không có bản dịch tiếng Anh, giữ nguyên gốc.
+ */
+export async function fetchWithFallback<T extends { id: number; original_title?: string; original_name?: string; title?: string; name?: string; original_language?: string }>(
+  fetchVi: () => Promise<ListResult<T>>,
+  fetchEn: () => Promise<ListResult<T>>,
+): Promise<ListResult<T>> {
+  const [vi, en] = await Promise.all([fetchVi(), fetchEn()]);
+  const enById = new Map(en.results.map(r => [r.id, r]));
+
+  return {
+    ...vi,
+    results: vi.results.map(item => {
+      const title = item.title ?? item.name ?? '';
+      const originalTitle = item.original_title ?? item.original_name ?? '';
+
+      // Có bản dịch tiếng Việt (title khác original_title)
+      if (title !== originalTitle) return item;
+
+      // Không có bản dịch tiếng Việt → thử dùng tiếng Anh
+      const enItem = enById.get(item.id);
+      if (enItem) {
+        const enTitle = enItem.title ?? enItem.name ?? '';
+        const enOriginal = enItem.original_title ?? enItem.original_name ?? '';
+        if (enTitle !== enOriginal) {
+          return { ...item, title: enTitle, name: enTitle };
+        }
+      }
+
+      // Giữ nguyên gốc
+      return item;
+    }),
+  };
+}
+
+type DetailWithFallback<T> = T & { title?: string; name?: string };
+
+/**
+ * Fetch single item with language fallback: vi-VN → en-US → original.
+ * Dùng cho các API details (tmdb.movies.details, tmdb.tvShows.details).
+ */
+export async function fetchDetailWithFallback<T extends { id: number; original_title?: string; original_name?: string; title?: string; name?: string }>(
+  fetchVi: () => Promise<T>,
+  fetchEn: () => Promise<T>,
+): Promise<DetailWithFallback<T>> {
+  const [vi, en] = await Promise.all([fetchVi(), fetchEn()]);
+  const title = vi.title ?? vi.name ?? '';
+  const originalTitle = vi.original_title ?? vi.original_name ?? '';
+
+  // Có bản dịch tiếng Việt
+  if (title !== originalTitle) return vi;
+
+  // Không có → thử tiếng Anh
+  const enTitle = en.title ?? en.name ?? '';
+  const enOriginal = en.original_title ?? en.original_name ?? '';
+  if (enTitle !== enOriginal) {
+    return { ...vi, title: enTitle, name: enTitle };
+  }
+
+  return vi;
 }

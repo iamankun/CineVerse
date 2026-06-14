@@ -1,6 +1,6 @@
 "use server";
 
-import { tmdb } from "@/api/tmdb";
+import { tmdb, fetchDetailWithFallback } from "@/api/tmdb";
 import { VidlinkEventData } from "@/hooks/useVidlinkPlayer";
 import { ActionResponse } from "@/types";
 import { HistoryDetail } from "@/types/movie";
@@ -54,10 +54,16 @@ export const syncHistory = async (
       };
     }
 
-    const media =
-      data.mediaType === "movie"
-        ? await tmdb.movies.details(data.mtmdbId, [], 'vi-VN')
-        : await tmdb.tvShows.details(data.mtmdbId, [], 'vi-VN');
+    let media: any;
+    if (data.mediaType === "movie") {
+      const vi: any = await tmdb.movies.details(data.mtmdbId, [], 'vi-VN');
+      const en: any = await tmdb.movies.details(data.mtmdbId, [], 'en-US');
+      media = vi.title !== vi.original_title ? vi : { ...vi, title: en.title || vi.title, name: en.name || vi.name };
+    } else {
+      const vi: any = await tmdb.tvShows.details(data.mtmdbId, [], 'vi-VN');
+      const en: any = await tmdb.tvShows.details(data.mtmdbId, [], 'en-US');
+      media = vi.name !== vi.original_name ? vi : { ...vi, name: en.name || vi.name, title: en.title || vi.title };
+    }
 
     // Insert or update history
     const { data: history, error } = await (supabase as any)
