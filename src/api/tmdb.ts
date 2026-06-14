@@ -127,14 +127,14 @@ async function fetchDetailWithFallbackBuilt(
     fetchWithRetry(enConfig.url, options).then(r => r.json()),
   ]);
 
-  const title = vi.title ?? vi.name ?? '';
-  const originalTitle = vi.original_title ?? vi.original_name ?? '';
-
-  if (title !== originalTitle) return vi;
-
+  const viTitle = vi.title ?? vi.name ?? '';
   const enTitle = en.title ?? en.name ?? '';
-  const enOriginal = en.original_title ?? en.original_name ?? '';
-  if (enTitle !== enOriginal) {
+
+  // Có bản dịch tiếng Việt
+  if (viTitle && viTitle !== enTitle) return vi;
+
+  // Không có → dùng tiếng Anh
+  if (enTitle) {
     return {
       ...vi,
       title: enTitle,
@@ -375,20 +375,16 @@ export async function fetchWithFallback<T extends { id: number; original_title?:
   return {
     ...vi,
     results: vi.results.map(item => {
-      const title = item.title ?? item.name ?? '';
-      const originalTitle = item.original_title ?? item.original_name ?? '';
-
-      // Có bản dịch tiếng Việt (title khác original_title)
-      if (title !== originalTitle) return item;
-
-      // Không có bản dịch tiếng Việt → thử dùng tiếng Anh
+      const viTitle = item.title ?? item.name ?? '';
       const enItem = enById.get(item.id);
-      if (enItem) {
-        const enTitle = enItem.title ?? enItem.name ?? '';
-        const enOriginal = enItem.original_title ?? enItem.original_name ?? '';
-        if (enTitle !== enOriginal) {
-          return { ...item, title: enTitle, name: enTitle };
-        }
+      const enTitle = enItem?.title ?? enItem?.name ?? '';
+
+      // Có bản dịch tiếng Việt (title khác với title tiếng Anh)
+      if (viTitle && viTitle !== enTitle) return item;
+
+      // Không có bản dịch tiếng Việt → dùng tiếng Anh
+      if (enTitle) {
+        return { ...item, title: enTitle, name: enTitle };
       }
 
       // Giữ nguyên gốc
@@ -403,21 +399,19 @@ type DetailWithFallback<T> = T & { title?: string; name?: string };
  * Fetch single item with language fallback: vi-VN → en-US → original.
  * Dùng cho các API details (tmdb.movies.details, tmdb.tvShows.details).
  */
-export async function fetchDetailWithFallback<T extends { id: number; original_title?: string; original_name?: string; title?: string; name?: string }>(
+export async function fetchDetailWithFallback<T extends { id: number; title?: string; name?: string }>(
   fetchVi: () => Promise<T>,
   fetchEn: () => Promise<T>,
 ): Promise<DetailWithFallback<T>> {
   const [vi, en] = await Promise.all([fetchVi(), fetchEn()]);
-  const title = vi.title ?? vi.name ?? '';
-  const originalTitle = vi.original_title ?? vi.original_name ?? '';
+  const viTitle = vi.title ?? vi.name ?? '';
+  const enTitle = en.title ?? en.name ?? '';
 
   // Có bản dịch tiếng Việt
-  if (title !== originalTitle) return vi;
+  if (viTitle && viTitle !== enTitle) return vi;
 
-  // Không có → thử tiếng Anh
-  const enTitle = en.title ?? en.name ?? '';
-  const enOriginal = en.original_title ?? en.original_name ?? '';
-  if (enTitle !== enOriginal) {
+  // Không có → dùng tiếng Anh
+  if (enTitle) {
     return { ...vi, title: enTitle, name: enTitle };
   }
 
