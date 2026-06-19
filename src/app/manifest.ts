@@ -2,9 +2,9 @@ import type { MetadataRoute } from 'next';
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: 'CineVerse - Vũ Trụ Điện Ảnh',
+    name: 'CineVerse - Vũ trụ điện ảnh',
     short_name: 'CineVerse',
-    description: 'Dịch vụ xem phim và chương trình truyền hình đỉnh cao',
+    description: 'Vũ trụ điện ảnh dành cho bạn',
     start_url: '/',
     display: 'standalone',
     background_color: '#000000',

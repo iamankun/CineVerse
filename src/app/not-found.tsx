@@ -276,7 +276,7 @@ const NotFound: React.FC = () => {
                 {/* Nội dung Lỗi */}
                 <div className="error">
                     <h1 className="error__title">Lỗi 404</h1>
-                    <h2 className="error__subtitle">CineVerse - Vũ trụ Điện Ảnh</h2>
+                    <h2 className="error__subtitle">CẢNH BÁO NỘI DUNG</h2>
                     <p className="error__description">
                         Haizzz, không có nội dung.
                         <br />
