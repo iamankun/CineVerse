@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useId } from 'react';
+import React, { useState, useId, useMemo } from 'react';
 import Link from "next/link";
 import { motion, AnimatePresence } from 'framer-motion';
 import { useYouTubePlayer, PlayerState } from '@/hooks/useYouTubePlayer';
@@ -81,8 +81,6 @@ export const YouTubePlayer: React.FC<YouTubePlayerProps> = ({
   const [hasError, setHasError] = useState(false);
   const [showUI, setShowUI] = useState(true);
   const [showQualityMenu, setShowQualityMenu] = useState(false);
-  const [showSkipIntro, setShowSkipIntro] = useState(false);
-  const [showNextEpisode, setShowNextEpisode] = useState(false);
   const containerRef = React.useRef<HTMLDivElement>(null);
   const hideTimerRef = React.useRef<NodeJS.Timeout | null>(null);
   const progressEventRef = React.useRef<{
@@ -121,21 +119,9 @@ export const YouTubePlayer: React.FC<YouTubePlayerProps> = ({
     },
   });
 
-  // Sync with external idle state
-  React.useEffect(() => {
-    if (externalIdle) {
-      setShowUI(false);
-      if (hideTimerRef.current) {
-        clearTimeout(hideTimerRef.current);
-      }
-    } else {
-      setShowUI(true);
-      resetHideTimer();
-    }
-  }, [externalIdle]);
-
   // Auto-hide controls và cursor sau 3s
-  const resetHideTimer = React.useCallback(() => {
+   
+  const resetHideTimer = () => {
     setShowUI(true);
     
     if (hideTimerRef.current) {
@@ -153,10 +139,42 @@ export const YouTubePlayer: React.FC<YouTubePlayerProps> = ({
         setShowUI(false);
       }, 3000);
     }
-  }, [isReady, playerState, showQualityMenu, externalIdle]); // Dùng playerState thay vì currentTime/duration
+  };
+
+  const resetHideTimerRef = React.useRef(resetHideTimer);
+  React.useEffect(() => {
+    resetHideTimerRef.current = resetHideTimer;
+  });
+
+  // Sync with external idle state (timer management only)
+  React.useEffect(() => {
+    if (externalIdle) {
+      if (hideTimerRef.current) {
+        clearTimeout(hideTimerRef.current);
+      }
+    } else {
+      resetHideTimerRef.current();
+    }
+  }, [externalIdle]);
 
   const isPlaying = playerState === PlayerState.PLAYING;
   const progressPercentage = duration > 0 ? (currentTime / duration) * 100 : 0;
+
+  // Derived display state - accounts for external idle and pause state
+  const displayUI = useMemo(() => {
+    if (externalIdle) return false;
+    if (isReady && playerState === 2) return true; // Always show controls when paused
+    return showUI;
+  }, [externalIdle, isReady, playerState, showUI]);
+
+  // Computed intro/outro button visibility from video timing
+  const computedShowSkipIntro = useMemo(() => {
+    return isReady && playerState === 1 && !!(intro && currentTime >= intro.start && currentTime <= intro.end);
+  }, [isReady, playerState, intro, currentTime]);
+
+  const computedShowNextEpisode = useMemo(() => {
+    return isReady && playerState === 1 && !!(outro && currentTime >= outro.start && currentTime <= outro.end);
+  }, [isReady, playerState, outro, currentTime]);
 
   // Mobile touch events
   React.useEffect(() => {
@@ -243,7 +261,7 @@ export const YouTubePlayer: React.FC<YouTubePlayerProps> = ({
 
     const handleMouseMove = () => {
       setShowUI(true);
-      resetHideTimer();
+      resetHideTimerRef.current();
     };
 
     container.addEventListener('mouseenter', handleMouseEnter);
@@ -258,17 +276,16 @@ export const YouTubePlayer: React.FC<YouTubePlayerProps> = ({
         clearTimeout(hideTimerRef.current);
       }
     };
-  }, [isPlaying, isReady, playerState, externalIdle, resetHideTimer]); // Loại bỏ currentTime, duration
+  }, [isPlaying, isReady, playerState, externalIdle]); // Loại bỏ currentTime, duration
 
-  // Khi pause, luôn hiện controls
+  // Khi pause, clear hide timer
   React.useEffect(() => {
     if (isReady && playerState === 2) { // YT.PlayerState.PAUSED = 2
-      setShowUI(true);
       if (hideTimerRef.current) {
         clearTimeout(hideTimerRef.current);
       }
     }
-  }, [isReady, playerState]); // Dùng playerState thay vì currentTime/duration
+  }, [isReady, playerState]);
 
   // Khởi động auto-hide timer khi video bắt đầu playing
   React.useEffect(() => {
@@ -283,30 +300,10 @@ export const YouTubePlayer: React.FC<YouTubePlayerProps> = ({
     }
   }, [isReady, playerState, externalIdle]); // Chỉ chạy khi state thay đổi
 
-  // Check intro/outro timing - chỉ khi video đang playing
-  React.useEffect(() => {
-    if (!isReady || playerState !== 1) return; // Chỉ khi playing
-
-    // Check if in intro range
-    if (intro && currentTime >= intro.start && currentTime <= intro.end) {
-      setShowSkipIntro(true);
-    } else {
-      setShowSkipIntro(false);
-    }
-
-    // Check if in outro range
-    if (outro && currentTime >= outro.start && currentTime <= outro.end) {
-      setShowNextEpisode(true);
-    } else {
-      setShowNextEpisode(false);
-    }
-  }, [currentTime, intro, outro, isReady, playerState]); // Giữ currentTime vì cần check range
-
   // Skip intro handler
   const handleSkipIntro = () => {
     if (intro) {
       seekTo(intro.end);
-      setShowSkipIntro(false);
     }
   };
 
@@ -581,56 +578,56 @@ export const YouTubePlayer: React.FC<YouTubePlayerProps> = ({
         case ' ': // Space - Play/Pause
           e.preventDefault();
           togglePlayPause();
-          resetHideTimer();
+          resetHideTimerRef.current();
           break;
         
         case 'ArrowLeft': // Left - Tua lùi 10s
           e.preventDefault();
           seekTo(Math.max(0, currentTime - 10));
-          resetHideTimer();
+          resetHideTimerRef.current();
           break;
         
         case 'ArrowRight': // Right - Tua tới 10s
           e.preventDefault();
           seekTo(Math.min(duration, currentTime + 10));
-          resetHideTimer();
+          resetHideTimerRef.current();
           break;
         
         case 'ArrowUp': // Up - Tăng volume
           e.preventDefault();
           setVolume(Math.min(100, volume + 10));
-          resetHideTimer();
+          resetHideTimerRef.current();
           break;
         
         case 'ArrowDown': // Down - Giảm volume
           e.preventDefault();
           setVolume(Math.max(0, volume - 10));
-          resetHideTimer();
+          resetHideTimerRef.current();
           break;
         
         case 'f':
         case 'F': // F - Toggle fullscreen
           e.preventDefault();
           toggleFullscreen();
-          resetHideTimer();
+          resetHideTimerRef.current();
           break;
       }
     };
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [togglePlayPause, seekTo, setVolume, volume, resetHideTimer, toggleFullscreen]); // Loại bỏ currentTime, duration
+  }, [togglePlayPause, seekTo, setVolume, volume, toggleFullscreen]); // Loại bỏ currentTime, duration
 
   // Listen for fullscreen changes and reset hide timer
   React.useEffect(() => {
     const handleFullscreenChange = () => {
       setIsFullscreen(!!document.fullscreenElement);
-      resetHideTimer();
+      resetHideTimerRef.current();
     };
 
     document.addEventListener('fullscreenchange', handleFullscreenChange);
     return () => document.removeEventListener('fullscreenchange', handleFullscreenChange);
-  }, [resetHideTimer]);
+  }, []);
 
   // Quality label mapping
   const qualityLabels: Record<string, string> = {
@@ -648,7 +645,7 @@ export const YouTubePlayer: React.FC<YouTubePlayerProps> = ({
     <div
       ref={containerRef}
       className={`relative w-full h-full bg-black overflow-hidden ${className}`}
-      style={{ cursor: showUI ? 'default' : 'none' }}
+      style={{ cursor: displayUI ? 'default' : 'none' }}
       onClick={(e) => {
         // Đóng quality menu khi click outside
         if (showQualityMenu && !(e.target as HTMLElement).closest('.quality-menu-container')) {
@@ -661,7 +658,7 @@ export const YouTubePlayer: React.FC<YouTubePlayerProps> = ({
         <div id={playerId} className="absolute inset-0" />
 
         {/* Invisible overlay để capture mouse events khi controls ẩn */}
-        {!showUI && (
+        {!displayUI && (
           <div 
             className="absolute inset-0 z-50" 
             style={{ cursor: 'none' }}
@@ -698,7 +695,7 @@ export const YouTubePlayer: React.FC<YouTubePlayerProps> = ({
         )}
 
         {/* Skip Intro Button */}
-        {showSkipIntro && !externalIdle && (
+        {computedShowSkipIntro && !externalIdle && (
           <button
             onClick={handleSkipIntro}
             className="absolute bottom-32 right-4 px-4 py-2 border-2 border-white/90 hover:border-white hover:scale-105 text-white font-semibold rounded-full transition-all duration-300 flex items-center gap-2 z-50 animate-[slideInRight_0.3s_ease-out,pulse_2s_ease-in-out_infinite]"
@@ -709,7 +706,7 @@ export const YouTubePlayer: React.FC<YouTubePlayerProps> = ({
         )}
 
         {/* Next Episode Button */}
-        {nextEpisodeNumber && showNextEpisode && !externalIdle && (
+        {nextEpisodeNumber && computedShowNextEpisode && !externalIdle && (
           <>
             <Link
               href={`/tv/${id}/${seasonNumber}/${nextEpisodeNumber}/player?src=${selectedSource}`}
@@ -733,7 +730,7 @@ export const YouTubePlayer: React.FC<YouTubePlayerProps> = ({
         {/* Custom Controls Overlay */}
         {showControls && isReady && !externalIdle && (
           <AnimatePresence>
-            {showUI && (
+            {displayUI && (
               <motion.div
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}

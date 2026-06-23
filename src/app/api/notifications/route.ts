@@ -15,40 +15,33 @@ interface Notification {
   createdAt: string;
 }
 
-const NOTIFICATION_DIRECTORIES = [
-  path.join(process.cwd(), "public", "notifications"),
-  path.join(process.cwd(), "src", "app", "admin", "notifications"),
-];
+const NOTIFICATION_DIR = "public" + path.sep + "notifications";
 
 export async function GET() {
   try {
-    for (const dir of NOTIFICATION_DIRECTORIES) {
-      try {
-        await fs.access(dir);
-        const files = await fs.readdir(dir);
-        const jsonFiles = files.filter((f: string) => f.endsWith('.json'));
+    try {
+      await fs.access(NOTIFICATION_DIR);
+      const files = await fs.readdir(NOTIFICATION_DIR);
+      const jsonFiles = files.filter((f: string) => f.endsWith('.json'));
 
-        const allNotifications: Notification[] = await Promise.all(
-          jsonFiles.map(async (file: string) => {
-            const content = await fs.readFile(path.join(dir, file), 'utf-8');
-            return JSON.parse(content);
-          })
-        );
+      const allNotifications: Notification[] = await Promise.all(
+        jsonFiles.map(async (file: string) => {
+          const content = await fs.readFile(path.join(NOTIFICATION_DIR, file), 'utf-8');
+          return JSON.parse(content);
+        })
+      );
 
-        const activeNotifications = allNotifications
-          .filter((n: Notification) => n.active)
-          .sort((a: Notification, b: Notification) => {
-            const order: Record<string, number> = { high: 3, medium: 2, low: 1 };
-            return (order[b.priority] || 0) - (order[a.priority] || 0);
-          });
+      const activeNotifications = allNotifications
+        .filter((n: Notification) => n.active)
+        .sort((a: Notification, b: Notification) => {
+          const order: Record<string, number> = { high: 3, medium: 2, low: 1 };
+          return (order[b.priority] || 0) - (order[a.priority] || 0);
+        });
 
-        return NextResponse.json({ notifications: activeNotifications });
-      } catch {
-        continue;
-      }
+      return NextResponse.json({ notifications: activeNotifications });
+    } catch {
+      return NextResponse.json({ notifications: [] });
     }
-
-    return NextResponse.json({ notifications: [] });
   } catch {
     return NextResponse.json({ notifications: [] });
   }

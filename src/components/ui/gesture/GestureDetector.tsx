@@ -4,7 +4,7 @@ import { useRef, forwardRef, useImperativeHandle } from 'react';
 import { Card, CardBody, Chip, Switch, Button, Tooltip } from '@heroui/react';
 import { IoHandRight, IoVideocam, IoClose, IoCheckmark, IoWarning } from 'react-icons/io5';
 import { useGestureControl } from '@/hooks/useGestureControl';
-import { GestureCallbacks, GestureName } from '@/types/gesture';
+import { GestureCallbacks, GestureName, GestureConfig } from '@/types/gesture';
 import { cn } from '@/utils/helpers';
 
 interface GestureDetectorProps {
@@ -71,12 +71,12 @@ const GestureDetector = forwardRef<GestureDetectorRef, GestureDetectorProps>(({
     config,
     startDetection,
     stopDetection,
-  } = useGestureControl({ enabled, callbacks });
+  } = useGestureControl({ enabled, showDebugOverlay: true }, callbacks);
 
   useImperativeHandle(ref, () => ({
     start: async () => {
       if (videoRef.current && canvasRef.current) {
-        await startDetection(videoRef.current, canvasRef.current);
+        await startDetection();
       }
     },
     stop: () => {
@@ -90,14 +90,14 @@ const GestureDetector = forwardRef<GestureDetectorRef, GestureDetectorProps>(({
     onEnabledChange?.(isEnabled);
     
     if (isEnabled && videoRef.current && canvasRef.current) {
-      await startDetection(videoRef.current, canvasRef.current);
+      await startDetection();
     } else {
       stopDetection();
     }
   };
 
   // Get current gesture config
-  const currentGestureConfig = config.gestures[currentGesture];
+  const currentGestureConfig = currentGesture ? config.gestures?.[currentGesture] : undefined;
 
   if (showMiniView) {
     // Compact mini view for video player
@@ -134,9 +134,9 @@ const GestureDetector = forwardRef<GestureDetectorRef, GestureDetectorProps>(({
         />
 
         {/* Mini gesture indicator */}
-        {cameraActive && handDetected && currentGesture !== 'None' && (
+        {cameraActive && handDetected && currentGesture && currentGesture !== 'None' && (
           <div className="absolute -top-10 left-1/2 -translate-x-1/2 bg-black/80 px-3 py-1 rounded-full flex items-center gap-2 animate-fade-in">
-            <span className="text-xl">{GESTURE_EMOJIS[currentGesture]}</span>
+            <span className="text-xl">{GESTURE_EMOJIS[currentGesture as keyof typeof GESTURE_EMOJIS]}</span>
             <span className="text-xs text-white">
               {currentGestureConfig?.action ? GESTURE_ACTIONS[currentGestureConfig.action] : currentGesture}
             </span>
@@ -235,10 +235,10 @@ const GestureDetector = forwardRef<GestureDetectorRef, GestureDetectorProps>(({
               <div className="absolute bottom-3 left-3 right-3">
                 <div className="flex items-center justify-between bg-black/60 backdrop-blur-sm rounded-lg p-3">
                   <div className="flex items-center gap-3">
-                    <span className="text-4xl">{GESTURE_EMOJIS[currentGesture]}</span>
+                    <span className="text-4xl">{GESTURE_EMOJIS[currentGesture as keyof typeof GESTURE_EMOJIS]}</span>
                     <div>
                       <p className="text-white font-semibold">
-                        {currentGesture === 'None' ? 'Không nhận diện' : currentGesture.replace('_', ' ')}
+                        {currentGesture === 'None' ? 'Không nhận diện' : currentGesture?.replace('_', ' ') ?? ''}
                       </p>
                       {currentGestureConfig && currentGesture !== 'None' && (
                         <p className="text-sm text-gray-300">
@@ -265,7 +265,7 @@ const GestureDetector = forwardRef<GestureDetectorRef, GestureDetectorProps>(({
         {/* Gesture Legend */}
         {showDebugPanel && (
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-            {Object.entries(config.gestures).map(([name, gestureConfig]) => (
+            {Object.entries(config.gestures ?? {}).map(([name, gestureConfig]) => (
               <div
                 key={name}
                 className={cn(

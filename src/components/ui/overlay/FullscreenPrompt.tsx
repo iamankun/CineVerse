@@ -7,14 +7,9 @@ import { MdFullscreen } from "react-icons/md";
 
 const FullscreenPrompt = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [isMounted, setIsMounted] = useState(false);
+  const [isMounted] = useState(() => typeof window !== 'undefined');
   const { toggle, fullscreen } = useFullscreen();
   const isMobile = useMediaQuery("(max-width: 768px)");
-
-  // Ensure component is mounted before showing modal
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
 
   useEffect(() => {
     // Kiểm tra xem user đã từng bật fullscreen hoặc dismiss modal chưa

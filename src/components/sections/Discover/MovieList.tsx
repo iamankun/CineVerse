@@ -17,15 +17,15 @@ const MovieDiscoverList = () => {
   const { ref, inView } = useInView();
   const { genresString, queryType } = useDiscoverFilters();
 
+  const fetchMovies = useFetchDiscoverMovies({
+    type: queryType as DiscoverMoviesFetchQueryType,
+    genres: genresString,
+  });
+
   const { data, isPending, status, fetchNextPage, isFetchingNextPage, hasNextPage } =
     useInfiniteQuery({
       queryKey: ["discover-movies", queryType, genresString],
-      queryFn: ({ pageParam }) =>
-        useFetchDiscoverMovies({
-          page: pageParam,
-          type: queryType as DiscoverMoviesFetchQueryType,
-          genres: genresString,
-        }),
+      queryFn: ({ pageParam }) => fetchMovies({ page: pageParam }),
       initialPageParam: 1,
       getNextPageParam: (lastPage) =>
         lastPage.page < lastPage.total_pages ? lastPage.page + 1 : undefined,

@@ -15,7 +15,8 @@ interface TrailerProps {
 
 const Trailer: React.FC<TrailerProps> = ({ videos, color = "primary" }) => {
   const [opened, handlers] = useDisclosure(false);
-  const c = useCustomCarousel();
+  const { emblaRef, scrollNext, scrollPrev, scrollTo, canScrollNext, canScrollPrev, selectedIndex } =
+    useCustomCarousel();
   
   // Lọc trailers YouTube
   const youtubeTrailers = videos.filter(
@@ -40,7 +41,7 @@ const Trailer: React.FC<TrailerProps> = ({ videos, color = "primary" }) => {
 
   const handleClose = () => {
     handlers.close();
-    c.scrollTo(0);
+    scrollTo(0);
   };
 
   // Nếu không có trailer, không hiển thị gì
@@ -68,8 +69,8 @@ const Trailer: React.FC<TrailerProps> = ({ videos, color = "primary" }) => {
                   <>
                     <div className={clsx("absolute z-10 md:-translate-x-5")}>
                       <IconButton
-                        isDisabled={!c.canScrollPrev}
-                        onPress={c.scrollPrev}
+                        isDisabled={!canScrollPrev}
+                        onPress={scrollPrev}
                         size="sm"
                         radius="full"
                         icon="mingcute:left-fill"
@@ -78,8 +79,8 @@ const Trailer: React.FC<TrailerProps> = ({ videos, color = "primary" }) => {
                     </div>
                     <div className={clsx("absolute z-10 place-self-end md:translate-x-5")}>
                       <IconButton
-                        isDisabled={!c.canScrollNext}
-                        onPress={c.scrollNext}
+                        isDisabled={!canScrollNext}
+                        onPress={scrollNext}
                         size="sm"
                         radius="full"
                         icon="mingcute:right-fill"
@@ -88,10 +89,10 @@ const Trailer: React.FC<TrailerProps> = ({ videos, color = "primary" }) => {
                     </div>
                   </>
                 )}
-                <div className="embla__viewport" ref={c.emblaRef}>
+                <div className="embla__viewport" ref={emblaRef}>
                   <div className="embla__container gap-2">
                     {trailers.map((trailer, index) => {
-                      const inView = index === c.selectedIndex;
+                      const inView = index === selectedIndex;
                       return (
                         <div
                           key={trailer.key}
@@ -117,7 +118,7 @@ const Trailer: React.FC<TrailerProps> = ({ videos, color = "primary" }) => {
               {multiple && (
                 <div className="embla__dots inline-flex justify-center gap-2">
                   {trailers.map((trailer, index) => {
-                    const inView = index === c.selectedIndex;
+                    const inView = index === selectedIndex;
                     return (
                       <Tooltip
                         key={trailer.key}
@@ -126,7 +127,7 @@ const Trailer: React.FC<TrailerProps> = ({ videos, color = "primary" }) => {
                         showArrow
                       >
                         <button
-                          onClick={() => c.scrollTo(index)}
+                          onClick={() => scrollTo(index)}
                           className={cn("size-2 rounded-full bg-foreground transition-all", {
                             [`w-6 ${colors({ color })}`]: inView,
                           })}

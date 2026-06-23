@@ -1,7 +1,9 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import Image from "next/image"
+import { useState } from 'react'
 import { motion } from 'framer-motion'
+import { useQuery } from '@tanstack/react-query'
 import { 
   Users, 
   Shield, 
@@ -41,30 +43,18 @@ interface TeamMember {
 }
 
 export function TeamPage() {
-  const [teamMembers, setTeamMembers] = useState<TeamMember[]>([])
-  const [loading, setLoading] = useState(true)
   const [selectedMember, setSelectedMember] = useState<string | null>(null)
   const [hoveredCard, setHoveredCard] = useState<string | null>(null)
 
-  useEffect(() => {
-    fetchTeamMembers()
-  }, []) // Empty dependency array ensures this runs only once
-
-  const fetchTeamMembers = async () => {
-    if (!loading) return // Prevent multiple calls
-    
-    try {
+  const { data: teamMembers = [], isPending: loading } = useQuery({
+    queryKey: ['team-members'],
+    queryFn: async () => {
       const response = await fetch('/api/team')
-      if (response.ok) {
-        const members = await response.json()
-        setTeamMembers(members)
-      }
-    } catch (error) {
-      console.error('Failed to fetch team members:', error)
-    } finally {
-      setLoading(false)
-    }
-  }
+      if (!response.ok) throw new Error('Failed to fetch team members')
+      return response.json() as Promise<TeamMember[]>
+    },
+    staleTime: 60000,
+  })
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -251,9 +241,11 @@ export function TeamPage() {
                       className="relative w-24 h-24 mx-auto"
                     >
                       {member.avatar_url ? (
-                        <img
+                        <Image
                           src={member.avatar_url}
                           alt={member.name}
+                          width={96}
+                          height={96}
                           className="w-full h-full rounded-full object-cover border-3 border-white/30"
                         />
                       ) : (

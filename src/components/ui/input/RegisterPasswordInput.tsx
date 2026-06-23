@@ -33,6 +33,8 @@ const PasswordRequirement = memo(({ meets, label }: { meets: boolean; label: str
   );
 });
 
+PasswordRequirement.displayName = "PasswordRequirement";
+
 type RegisterPasswordInputProps = Omit<React.ComponentProps<typeof Input>, "type" | "endContent"> & {
   withStrengthMeter?: boolean;
   isConfirmPassword?: boolean;

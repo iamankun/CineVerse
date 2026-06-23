@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useState, useRef, useEffect } from "react";
 import { Card, CardBody, Button, Chip } from "@heroui/react";
 import { Tv, Play, Settings } from "lucide-react";
@@ -308,9 +309,11 @@ const TiviStreamPage: NextPage = () => {
                 <div className="flex flex-col items-center gap-3">
                   {/* Channel Logo */}
                   <div className="w-16 h-16 flex items-center justify-center bg-gray-100 dark:bg-gray-800 rounded-lg p-2">
-                    <img
+                    <Image
                       src={channel.logo}
                       alt={channel.name}
+                      width={64}
+                      height={64}
                       className="w-full h-full object-contain"
                       crossOrigin="anonymous"
                       loading="lazy"
@@ -400,9 +403,11 @@ const TiviStreamPage: NextPage = () => {
               {!isPlaying && !isLoading ? (
                 <div className="absolute inset-0 flex items-center justify-center bg-black/80">
                   <div className="text-center">
-                    <img
+                    <Image
                       src={selectedChannel.logo}
                       alt={selectedChannel.name}
+                      width={96}
+                      height={96}
                       className="w-24 h-24 mx-auto mb-4 object-contain"
                       crossOrigin="anonymous"
                       loading="lazy"
@@ -470,9 +475,11 @@ const TiviStreamPage: NextPage = () => {
                   {/* Channel Info Overlay */}
                   <div className="absolute top-4 left-4">
                     <div className="flex items-center gap-2 bg-black/60 backdrop-blur-sm rounded-lg px-3 py-2">
-                      <img
+                      <Image
                         src={selectedChannel.logo}
                         alt={selectedChannel.name}
+                        width={32}
+                        height={32}
                         className="w-8 h-8 object-contain"
                         crossOrigin="anonymous"
                         loading="lazy"
@@ -550,7 +557,7 @@ const TiviStreamPage: NextPage = () => {
                 </h3>
                 <ul className="text-sm text-blue-800 dark:text-blue-200 space-y-1">
                   <li>• Chọn kênh bạn muốn xem từ danh sách bên trên</li>
-                  <li>• Nhấn nút "Xem" để bắt đầu phát</li>
+                  <li>• Nhấn nút &ldquo;Xem&rdquo; để bắt đầu phát</li>
                   <li>• Các kênh có chất lượng HD</li>
                   <li>• Sử dụng trình duyệt Chrome, Firefox, Safari để có trải nghiệm tốt nhất</li>
                 </ul>

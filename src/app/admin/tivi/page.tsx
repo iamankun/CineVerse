@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useState, useEffect } from "react";
 import { Card, CardBody, Button, Input, Select, SelectItem, Textarea, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, useDisclosure } from "@heroui/react";
 import { Tv, Plus, Edit, Trash2, Save, X } from "lucide-react";
@@ -210,9 +211,11 @@ const AdminTiviPage: NextPage = () => {
                     <tr key={channel.id} className="border-b border-gray-100 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800/50">
                       <td className="p-4">
                         <div className="w-12 h-12 flex items-center justify-center bg-gray-100 dark:bg-gray-800 rounded-lg p-2">
-                          <img
+                          <Image
                             src={channel.logo}
                             alt={channel.name}
+                            width={48}
+                            height={48}
                             className="w-full h-full object-contain"
                             onError={(e) => {
                               const target = e.target as HTMLImageElement;

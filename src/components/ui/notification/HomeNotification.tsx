@@ -1,10 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState, useMemo } from "react";
 import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, Chip } from "@heroui/react";
 import { useRouter } from "next/navigation";
 import { IoClose, IoPlayCircle, IoInformationCircle, IoDownload } from "react-icons/io5";
 import { usePWAInstall } from "@/hooks/usePWAInstall";
+import { useQuery } from "@tanstack/react-query";
 
 type NotificationType = "movie" | "tv" | "app" | "announcement";
 type NotificationPriority = "low" | "medium" | "high";
@@ -26,47 +27,36 @@ const DISMISSED_KEY = "cineverse_dismissed_notifications";
 export default function HomeNotification() {
   const router = useRouter();
   const { isInstallable, isInstalled, promptInstall } = usePWAInstall();
-  const [notifications, setNotifications] = useState<Notification[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [isOpen, setIsOpen] = useState(false);
-  const [dismissedIds, setDismissedIds] = useState<number[]>([]);
-
-  useEffect(() => {
-    // Load dismissed notifications from localStorage
-    const dismissed = localStorage.getItem(DISMISSED_KEY);
-    if (dismissed) {
-      setDismissedIds(JSON.parse(dismissed));
+  const [dismissedIds, setDismissedIds] = useState<number[]>(() => {
+    if (typeof window !== 'undefined') {
+      const dismissed = localStorage.getItem(DISMISSED_KEY);
+      return dismissed ? JSON.parse(dismissed) : [];
     }
+    return [];
+  });
 
-    // Fetch active notifications
-    fetchNotifications();
-  }, []);
-
-  const fetchNotifications = async () => {
-    try {
+  const { data: notificationsData } = useQuery({
+    queryKey: ["home-notifications"],
+    queryFn: async () => {
       const response = await fetch("/api/notifications");
       if (!response.ok) {
         console.warn("Failed to fetch notifications:", response.status);
-        return;
+        return { notifications: [] };
       }
-      const data = await response.json();
-      
-      // Filter out dismissed notifications
-      const dismissed = localStorage.getItem(DISMISSED_KEY);
-      const dismissedList = dismissed ? JSON.parse(dismissed) : [];
-      
-      const filteredNotifications = data.notifications.filter(
-        (n: Notification) => !dismissedList.includes(n.id)
-      );
+      return response.json();
+    },
+    staleTime: 30000,
+  });
 
-      if (filteredNotifications.length > 0) {
-        setNotifications(filteredNotifications);
-        setIsOpen(true);
-      }
-    } catch (error) {
-      console.error("Error fetching notifications:", error);
-    }
-  };
+  const notifications = useMemo(() => {
+    if (!notificationsData?.notifications) return [];
+    return notificationsData.notifications.filter(
+      (n: Notification) => !dismissedIds.includes(n.id)
+    );
+  }, [notificationsData, dismissedIds]);
+
+  const isOpen = notifications.length > 0;
 
   const currentNotification = notifications[currentIndex];
 
@@ -78,11 +68,8 @@ export default function HomeNotification() {
     setDismissedIds(newDismissedIds);
     localStorage.setItem(DISMISSED_KEY, JSON.stringify(newDismissedIds));
 
-    // Show next notification or close
     if (currentIndex < notifications.length - 1) {
       setCurrentIndex(currentIndex + 1);
-    } else {
-      setIsOpen(false);
     }
   };
 
@@ -129,11 +116,8 @@ export default function HomeNotification() {
       }
     }
 
-    // Close modal or show next
     if (currentIndex < notifications.length - 1) {
       setCurrentIndex(currentIndex + 1);
-    } else {
-      setIsOpen(false);
     }
   };
 

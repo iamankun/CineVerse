@@ -10,11 +10,8 @@ const themes = siteConfig.themes;
 const ThemeSwitchDropdown = () => {
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
   const themeIcon = themes.find(({ name }) => name === theme)?.icon;
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   if (!mounted) {
     return null;

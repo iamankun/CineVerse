@@ -4,17 +4,16 @@ import { tmdb, fetchWithFallback } from "@/api/tmdb";
 import { DiscoverMoviesFetchQueryType } from "@/types/movie";
 
 interface FetchDiscoverMovies {
-  page?: number;
   type?: DiscoverMoviesFetchQueryType;
   genres?: string;
 }
 
 const useFetchDiscoverMovies = ({
-  page = 1,
   type = "discover",
   genres,
 }: FetchDiscoverMovies) => {
-  switch (type) {
+  return ({ page = 1 }: { page?: number }) => {
+    switch (type) {
     case "todayTrending":
       return fetchWithFallback(
         () => tmdb.trending.trending("movie", "day", { page, language: 'vi-VN' }),
@@ -51,6 +50,7 @@ const useFetchDiscoverMovies = ({
         () => tmdb.discover.movie({ page, with_genres: genres, language: 'en-US' }),
       );
   }
+  };
 };
 
 export default useFetchDiscoverMovies;

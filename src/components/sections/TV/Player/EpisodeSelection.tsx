@@ -4,7 +4,7 @@ import { Episode, Season } from "tmdb-ts";
 import { EpisodeListCard } from "../Details/Episodes";
 import { motion } from "framer-motion";
 import { Select, SelectItem } from "@heroui/react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 
 interface TvShowPlayerEpisodeSelectionProps extends HandlerType {
   id: number;
@@ -28,19 +28,19 @@ const TvShowPlayerEpisodeSelection: React.FC<TvShowPlayerEpisodeSelectionProps> 
   // Filter seasons to exclude season 0 (specials)
   const filteredSeasons = seasons?.filter(s => s.season_number > 0) || [];
 
-  // Set initial season based on current episode
-  useEffect(() => {
-    if (episodes.length > 0 && !selectedSeason) {
+  // Compute default season from current episode
+  const activeSeason = useMemo(() => {
+    if (selectedSeason !== null) return selectedSeason;
+    if (episodes.length > 0) {
       const currentEpisode = episodes.find(e => e.episode_number === currentEpisodeNumber);
-      if (currentEpisode) {
-        setSelectedSeason(currentEpisode.season_number);
-      }
+      return currentEpisode?.season_number ?? null;
     }
-  }, [episodes, currentEpisodeNumber, selectedSeason]);
+    return null;
+  }, [selectedSeason, episodes, currentEpisodeNumber]);
 
   // Fetch episodes when season changes
   useEffect(() => {
-    if (selectedSeason) {
+    if (activeSeason) {
       const fetchSeasonEpisodes = async () => {
         setIsLoadingSeason(true);
         try {
@@ -51,10 +51,10 @@ const TvShowPlayerEpisodeSelection: React.FC<TvShowPlayerEpisodeSelectionProps> 
             const tvData = result.tvSeries || [];
             const tvShow = tvData.find((item: any) => item.tmdb_id === id);
             
-            if (tvShow?.seasons?.[selectedSeason]) {
-              const seasonData = tvShow.seasons[selectedSeason];
+            if (tvShow?.seasons?.[activeSeason]) {
+              const seasonData = tvShow.seasons[activeSeason];
               const episodes = Object.entries(seasonData).map(([episodeNum, episodeData]: [string, any]) => ({
-                id: id * 1000 + Number(selectedSeason) * 100 + Number(episodeNum),
+                id: id * 1000 + Number(activeSeason) * 100 + Number(episodeNum),
                 episode_number: Number(episodeNum),
                 name: episodeData.title || `Tập ${episodeNum}`,
                 overview: episodeData.description || '',
@@ -84,11 +84,11 @@ const TvShowPlayerEpisodeSelection: React.FC<TvShowPlayerEpisodeSelectionProps> 
       
       fetchSeasonEpisodes();
     }
-  }, [selectedSeason, id]);
+  }, [activeSeason, id]);
 
   // Filter episodes by selected season
-  const filteredEpisodes = selectedSeason 
-    ? seasonEpisodes.filter(episode => episode.season_number === selectedSeason)
+  const filteredEpisodes = activeSeason 
+    ? seasonEpisodes.filter(episode => episode.season_number === activeSeason)
     : seasonEpisodes;
 
   // Debug logging

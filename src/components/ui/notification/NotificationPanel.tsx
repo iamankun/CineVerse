@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { 
   Modal, 
   ModalContent, 
@@ -20,6 +20,7 @@ import {
   IoCheckmark
 } from "react-icons/io5";
 import { useRouter } from "next/navigation";
+import { useQuery } from "@tanstack/react-query";
 
 interface NotificationItem {
   id: string | number;
@@ -46,50 +47,37 @@ interface NotificationPanelProps {
 }
 
 export default function NotificationPanel({ isOpen, onClose }: NotificationPanelProps) {
-  const [notifications, setNotifications] = useState<NotificationItem[]>([]);
-  const [loading, setLoading] = useState(false);
   const router = useRouter();
 
-  useEffect(() => {
-    if (isOpen) {
-      fetchNotifications();
-    }
-  }, [isOpen]);
-
-  const fetchNotifications = async () => {
-    setLoading(true);
-    try {
-      // Fetch admin notifications
-      const adminResponse = await fetch("/api/notifications");
+  const { data: notifications = [], isFetching: loading } = useQuery({
+    queryKey: ["notification-panel"],
+    queryFn: async () => {
+      const [adminResponse, repliesResponse] = await Promise.all([
+        fetch("/api/notifications"),
+        fetch("/api/notifications/replies"),
+      ]);
       const adminData = await adminResponse.json();
-      
-      // Fetch reply notifications
-      const repliesResponse = await fetch("/api/notifications/replies");
       const repliesData = await repliesResponse.json();
 
-      // Combine and format notifications
       const adminNotifications = (adminData.notifications || []).map((n: any) => ({
         ...n,
         type: 'admin' as const,
-        read: false
+        read: false,
       }));
 
       const replyNotifications = (repliesData.replies || []).map((r: any) => ({
         ...r,
-        read: false
+        read: false,
       }));
 
-      // Combine and sort by date
       const allNotifications = [...adminNotifications, ...replyNotifications]
         .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
 
-      setNotifications(allNotifications);
-    } catch (error) {
-      console.error("Error fetching notifications:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+      return allNotifications as NotificationItem[];
+    },
+    enabled: isOpen,
+    staleTime: 30000,
+  });
 
   const handleNotificationClick = (notification: NotificationItem) => {
     // Mark as read (we'll implement this later)
@@ -114,7 +102,6 @@ export default function NotificationPanel({ isOpen, onClose }: NotificationPanel
 
   const markAllAsRead = async () => {
     // We'll implement this later
-    setNotifications(prev => prev.map(n => ({ ...n, read: true })));
   };
 
   const getNotificationIcon = (type: string) => {

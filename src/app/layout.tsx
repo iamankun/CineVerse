@@ -36,21 +36,24 @@ export const metadata: Metadata = {
     },
   },
   twitter: {
-    card: "summary",
+    card: "summary_large_image",
     title: {
       default: siteConfig.name,
-      template: siteConfig.name,
+      template: "%s | CineVerse",
     },
     description: siteConfig.description,
+    images: [siteConfig.ogImage],
   },
   openGraph: {
     type: "website",
     siteName: siteConfig.name,
+    locale: "vi_VN",
     title: {
       default: siteConfig.name,
-      template: siteConfig.name,
+      template: "%s | CineVerse",
     },
     description: siteConfig.description,
+    images: [{ url: siteConfig.ogImage, width: 1200, height: 630 }],
   },
   formatDetection: {
     telephone: false,
@@ -82,6 +85,14 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
         <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
         <link rel="dns-prefetch" href="https://www.google-analytics.com" />
         <link rel="dns-prefetch" href="https://va.vercel-scripts.com" />
+        {/* FOUC prevention: apply theme before React hydrates */}
+        <Script
+          id="theme-fouc"
+          strategy="beforeInteractive"
+          dangerouslySetInnerHTML={{
+            __html: `try{var t=localStorage.getItem("theme")||"dark";t==="system"&&(t=window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light");document.documentElement.classList.remove("light","dark");document.documentElement.classList.add(t)}catch(e){}`,
+          }}
+        />
       </head>
       <body className={cn("bg-background min-h-dvh antialiased select-none flex flex-col overflow-x-hidden", Mulish.className)}>
         {/* Google Analytics - Lazy load với low priority */}

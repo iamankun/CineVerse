@@ -22,8 +22,8 @@ const TvShowPlayerPage: NextPage<Params<{ id: number; season: number; episode: n
     error: errorTv,
   } = useQuery({
     queryFn: () => fetchDetailWithFallback(
-      () => tmdb.tvShows.details(id, [], 'vi-VN'),
-      () => tmdb.tvShows.details(id, [], 'en-US'),
+      () => tmdb.tvShows.details(id, [], 'vi-VN') as Promise<any>,
+      () => tmdb.tvShows.details(id, [], 'en-US') as Promise<any>,
     ),
     queryKey: ["tv-show-player-details", id],
     staleTime: 86400000, // 24 hours (1 ngày)
@@ -36,8 +36,8 @@ const TvShowPlayerPage: NextPage<Params<{ id: number; season: number; episode: n
   } = useQuery({
     queryFn: async () => {
       const details = await fetchDetailWithFallback(
-        () => tmdb.tvShows.details(id, [], 'vi-VN'),
-        () => tmdb.tvShows.details(id, [], 'en-US'),
+        () => tmdb.tvShows.details(id, [], 'vi-VN') as Promise<any>,
+        () => tmdb.tvShows.details(id, [], 'en-US') as Promise<any>,
       );
       return details.seasons;
     },

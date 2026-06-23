@@ -7,6 +7,7 @@ import { analyzeSEO, type SEOConfig, type SEOAnalysisResult } from "@/utils/seo/
  * @returns SEO analysis result
  */
 export function useSEOAnalysis(config: SEOConfig): SEOAnalysisResult {
+  const imagesStr = JSON.stringify(config.images);
   return useMemo(() => {
     return analyzeSEO(config);
   }, [
@@ -15,7 +16,7 @@ export function useSEOAnalysis(config: SEOConfig): SEOAnalysisResult {
     config.url,
     config.content,
     config.focusKeyphrase,
-    JSON.stringify(config.images),
+    imagesStr,
   ]);
 }
 

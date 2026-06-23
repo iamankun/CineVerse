@@ -8,7 +8,7 @@ interface AgeRatingProps {
 }
 
 const AgeRating: React.FC<AgeRatingProps> = ({ rating, ratingDescription, isLoading = false }) => {
-  const [isExpanded, setIsExpanded] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(() => ageRatingConfig.repeatInterval === 0);
   const [hasPlayedAudio, setHasPlayedAudio] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
@@ -55,13 +55,7 @@ const AgeRating: React.FC<AgeRatingProps> = ({ rating, ratingDescription, isLoad
   }, [isLoading, hasPlayedAudio, rating]);
 
   useEffect(() => {
-    // Special case: repeatInterval = 0 means always show expanded
-    if (ageRatingConfig.repeatInterval === 0) {
-      setIsExpanded(true);
-      return;
-    }
-
-    // Normal mode: Show expanded rating notification based on config
+    // Normal mode (repeatInterval = 0 is handled by useState initializer): Show expanded rating notification based on config
     const showRating = () => {
       setIsExpanded(true);
       // Don't play audio here - only play once on initial load

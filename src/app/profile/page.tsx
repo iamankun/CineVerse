@@ -6,126 +6,126 @@ import { getServerSession } from "@/utils/supabase/server-session";
 
 export const dynamic = 'force-dynamic';
 
-export default async function ProfilePage() {
-  try {
-    console.log("🔍 [PROFILE PAGE] Starting profile page...");
-    
-    // 🔥 DEBUG: Check what cookies server component receives
-    const cookieStore = await cookies();
-    const allCookies = cookieStore.getAll();
-    console.log("🔍 [PROFILE PAGE] Server cookies:", {
-      total: allCookies.length,
-      cookies: allCookies.map(c => ({ name: c.name, value: c.value.substring(0, 50) + '...' })),
-      hasSupabase: allCookies.some(c => c.name.includes('sb-exsoflgvdreikabvhvkg'))
-    });
-    
-    // Use getServerSession instead of getUser to avoid conflicts
-    const { user, error: sessionError } = await getServerSession();
-    
-    console.log("🔍 [PROFILE PAGE] Auth result:", {
-      hasUser: !!user,
-      userId: user?.id,
-      userEmail: user?.email,
-      sessionError: sessionError
-    });
-    
-    // TEMPORARY: Don't redirect on auth error, get first profile instead
-    // This will show profile data but with wrong user context
-    let targetUserId = user?.id;
-    
-    if (!user || sessionError) {
-      console.log("🔍 [PROFILE PAGE] No user found, getting first profile as fallback");
-      const supabase = await createClient();
-      const { data: firstProfile } = await supabase
-        .from("profiles")
-        .select("*")
-        .limit(1)
-        .single();
-      
-      if (firstProfile) {
-        targetUserId = firstProfile.id;
-        console.log("🔍 [PROFILE PAGE] Using fallback user:", targetUserId);
-      } else {
-        console.log("🔍 [PROFILE PAGE] No profiles found - TEMPORARILY NOT REDIRECTING");
-        // TEMPORARY: Comment out redirect to debug
-        // redirect("/auth/login");
-        return <div>Debug: No user found and no profiles in database</div>;
-      }
-    }
-
-    console.log("🔍 [PROFILE PAGE] Using user ID:", targetUserId);
-
-    // Create Supabase client for database operations
+async function getProfileData() {
+  console.log("🔍 [PROFILE PAGE] Starting profile page...");
+  
+  // 🔥 DEBUG: Check what cookies server component receives
+  const cookieStore = await cookies();
+  const allCookies = cookieStore.getAll();
+  console.log("🔍 [PROFILE PAGE] Server cookies:", {
+    total: allCookies.length,
+    cookies: allCookies.map(c => ({ name: c.name, value: c.value.substring(0, 50) + '...' })),
+    hasSupabase: allCookies.some(c => c.name.includes('sb-exsoflgvdreikabvhvkg'))
+  });
+  
+  // Use getServerSession instead of getUser to avoid conflicts
+  const { user, error: sessionError } = await getServerSession();
+  
+  console.log("🔍 [PROFILE PAGE] Auth result:", {
+    hasUser: !!user,
+    userId: user?.id,
+    userEmail: user?.email,
+    sessionError: sessionError
+  });
+  
+  // TEMPORARY: Don't redirect on auth error, get first profile instead
+  // This will show profile data but with wrong user context
+  let targetUserId = user?.id;
+  
+  if (!user || sessionError) {
+    console.log("🔍 [PROFILE PAGE] No user found, getting first profile as fallback");
     const supabase = await createClient();
+    const { data: firstProfile } = await supabase
+      .from("profiles")
+      .select("*")
+      .limit(1)
+      .single();
     
-    // Get profile data
-    let profile = null;
-    let profileError = null;
+    if (firstProfile) {
+      targetUserId = firstProfile.id;
+      console.log("🔍 [PROFILE PAGE] Using fallback user:", targetUserId);
+    } else {
+      console.log("🔍 [PROFILE PAGE] No profiles found - TEMPORARILY NOT REDIRECTING");
+      return { debug: "No user found and no profiles in database" as const };
+    }
+  }
+
+  console.log("🔍 [PROFILE PAGE] Using user ID:", targetUserId);
+
+  // Create Supabase client for database operations
+  const supabase = await createClient();
+  
+  // Get profile data
+  let profile = null;
+  let profileError = null;
+  
+  try {
+    const result = await supabase
+      .from("profiles")
+      .select("*")
+      .eq("id", targetUserId)
+      .single();
     
+    profile = result.data;
+    profileError = result.error;
+    
+    console.log("🔍 [PROFILE PAGE] Profile query:", {
+      profile: profile ? "Found" : "Not found",
+      profileData: profile,
+      error: profileError?.message,
+      errorCode: profileError?.code
+    });
+  } catch (error: any) {
+    console.error("🔍 [PROFILE PAGE] Profile query failed:", error);
+    profileError = error;
+  }
+
+  // Create profile if it doesn't exist
+  if (profileError && (profileError.code === 'PGRST116' || profileError.message?.includes('No rows'))) {
+    console.log("🔍 [PROFILE PAGE] Creating basic profile...");
     try {
-      const result = await supabase
+      const { data: newProfile, error: createError } = await supabase
         .from("profiles")
-        .select("*")
-        .eq("id", targetUserId)
+        .upsert({
+          id: targetUserId,
+          username: user?.email?.split("@")[0] || "user_" + targetUserId?.substring(0, 8),
+          full_name: user?.user_metadata?.full_name || user?.email?.split("@")[0] || "User"
+        })
+        .select()
         .single();
       
-      profile = result.data;
-      profileError = result.error;
-      
-      console.log("🔍 [PROFILE PAGE] Profile query:", {
-        profile: profile ? "Found" : "Not found",
-        profileData: profile,
-        error: profileError?.message,
-        errorCode: profileError?.code
-      });
-    } catch (error: any) {
-      console.error("🔍 [PROFILE PAGE] Profile query failed:", error);
-      profileError = error;
-    }
-
-    // Create profile if it doesn't exist
-    if (profileError && (profileError.code === 'PGRST116' || profileError.message?.includes('No rows'))) {
-      console.log("🔍 [PROFILE PAGE] Creating basic profile...");
-      try {
-        const { data: newProfile, error: createError } = await supabase
-          .from("profiles")
-          .upsert({
-            id: targetUserId,
-            username: user?.email?.split("@")[0] || "user_" + targetUserId?.substring(0, 8),
-            full_name: user?.user_metadata?.full_name || user?.email?.split("@")[0] || "User"
-          })
-          .select()
-          .single();
-        
-        if (createError) {
-          throw createError;
-        }
-        
-        profile = newProfile;
-        profileError = null;
-        console.log("🔍 [PROFILE PAGE] Profile created successfully:", newProfile);
-      } catch (createError: any) {
-        console.error("🔍 [PROFILE PAGE] Failed to create profile:", createError);
-        redirect("/auth/login");
-        return;
+      if (createError) {
+        throw createError;
       }
-    }
-
-    if (profileError) {
-      console.error("🔍 [PROFILE PAGE] Profile error:", profileError);
+      
+      profile = newProfile;
+      profileError = null;
+      console.log("🔍 [PROFILE PAGE] Profile created successfully:", newProfile);
+    } catch (createError: any) {
+      console.error("🔍 [PROFILE PAGE] Failed to create profile:", createError);
       redirect("/auth/login");
-      return;
     }
+  }
 
-    console.log("🔍 [PROFILE PAGE] Rendering ProfileClientSimple...");
-    // Use the actual user if available, otherwise use a mock user object
-    const displayUser = user || {
-      id: targetUserId,
-      email: profile?.email || 'unknown@example.com'
-    };
-    
-    return <ProfileClientSimple user={displayUser} profile={profile} />;
-    
+  if (profileError) {
+    console.error("🔍 [PROFILE PAGE] Profile error:", profileError);
+    redirect("/auth/login");
+  }
+
+  console.log("🔍 [PROFILE PAGE] Rendering ProfileClientSimple...");
+  // Use the actual user if available, otherwise use a mock user object
+  const displayUser = user || {
+    id: targetUserId,
+    email: profile?.email || 'unknown@example.com'
+  };
+  
+  return { user: displayUser, profile } as const;
+}
+
+export default async function ProfilePage() {
+  let data;
+  try {
+    data = await getProfileData();
   } catch (error: any) {
     console.error("🔍 [PROFILE PAGE] Unexpected error:", {
       message: error.message,
@@ -133,5 +133,12 @@ export default async function ProfilePage() {
       name: error.name
     });
     redirect("/auth/login");
+    return;
   }
+
+  if ('debug' in data) {
+    return <div>Debug: {data.debug}</div>;
+  }
+
+  return <ProfileClientSimple user={data.user} profile={data.profile} />;
 }

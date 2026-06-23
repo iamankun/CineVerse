@@ -23,13 +23,7 @@ export default function AutoSaveIndicator({
   onRestore,
   hasCachedData = false
 }: AutoSaveIndicatorProps) {
-  const [showRestorePrompt, setShowRestorePrompt] = useState(false);
-
-  useEffect(() => {
-    if (hasCachedData && !lastSaved) {
-      setShowRestorePrompt(true);
-    }
-  }, [hasCachedData, lastSaved]);
+  const showRestorePrompt = hasCachedData && !lastSaved;
 
   const formatLastSaved = (date: Date | null) => {
     if (!date) return null;
@@ -68,7 +62,6 @@ export default function AutoSaveIndicator({
                   color="primary"
                   onPress={() => {
                     onRestore?.();
-                    setShowRestorePrompt(false);
                   }}
                   className="text-xs"
                 >
@@ -79,7 +72,6 @@ export default function AutoSaveIndicator({
                   variant="light"
                   onPress={() => {
                     onDiscard?.();
-                    setShowRestorePrompt(false);
                   }}
                   className="text-xs text-yellow-700 dark:text-yellow-300"
                 >
@@ -91,7 +83,7 @@ export default function AutoSaveIndicator({
               isIconOnly
               size="sm"
               variant="light"
-              onPress={() => setShowRestorePrompt(false)}
+              onPress={() => {}}
               className="text-yellow-600 dark:text-yellow-400"
             >
               <X className="w-3 h-3" />

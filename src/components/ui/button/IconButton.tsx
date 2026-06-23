@@ -19,10 +19,7 @@ const IconButton: React.FC<IconButtonProps> = ({
   ...props
 }) => {
   const [isClient, setIsClient] = useState(false);
-
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
+  useEffect(() => setIsClient(true), []);
 
   return (
     <Tooltip isDisabled={!tooltip} content={tooltip} {...tooltipProps}>

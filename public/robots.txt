@@ -10,8 +10,7 @@ Disallow: /admin/
 Disallow: /api/admin/
 
 # Không cho index trang player (tránh duplicate content)
-# Uncomment dòng dưới nếu muốn chặn player pages
-# Disallow: /*/player
+Disallow: /*/player
 
 # Sitemap
 Sitemap: https://cineverse.ankun.dev/sitemap.xml

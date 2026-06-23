@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { Card, CardBody, CardHeader } from "@heroui/react";
 import { Button } from "@heroui/react";
 import { Input } from "@heroui/react";
@@ -45,11 +46,6 @@ export default function SettingsPage() {
   const [activeTab, setActiveTab] = useState<"player" | "development">("player");
   const [uploading, setUploading] = useState(false);
 
-  // Load config
-  useEffect(() => {
-    fetchConfig();
-  }, []);
-
   const fetchConfig = async () => {
     try {
       const response = await fetch('/api/admin/overlay-config');
@@ -68,6 +64,12 @@ export default function SettingsPage() {
       setLoading(false);
     }
   };
+
+  // Load config
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    fetchConfig();
+  }, []);
 
   const handleSave = async () => {
     if (!config) return;
@@ -327,9 +329,11 @@ export default function SettingsPage() {
                 {config.brandLogo.logoPath ? (
                   <div className="flex items-center gap-4 rounded-lg border-2 border-dashed border-foreground/20 bg-foreground/5 p-4">
                     <div className="flex-shrink-0">
-                      <img 
+                      <Image 
                         src={config.brandLogo.logoPath} 
                         alt="Brand Logo" 
+                        width={200}
+                        height={64}
                         className="h-16 w-auto object-contain"
                       />
                     </div>

@@ -13,21 +13,16 @@ export default function LoadingWrapper({ children, delay = 3000 }: LoadingWrappe
   const [hasLoadedBefore, setHasLoadedBefore] = useState(false);
 
   useEffect(() => {
-    // Kiểm tra xem đã load trang chủ trước đó chưa (trong session)
-    const hasVisited = sessionStorage.getItem('homepage-visited');
-    
-    if (hasVisited === 'true') {
-      // Đã visit rồi, không loading nữa
+    const visited = sessionStorage.getItem('homepage-visited') === 'true';
+    setHasLoadedBefore(visited);
+    if (visited) {
       setIsLoading(false);
-      setHasLoadedBefore(true);
       return;
     }
 
-    // Lần đầu visit, hiển thị loading
     const timer = setTimeout(() => {
       setIsLoading(false);
       setHasLoadedBefore(true);
-      // Đánh dấu đã visit trong session này
       sessionStorage.setItem('homepage-visited', 'true');
     }, delay);
 

@@ -1,6 +1,16 @@
+import type { Metadata } from "next";
 import { NextPage } from "next";
 import dynamic from "next/dynamic";
 import LoadingWrapper from "@/components/LoadingWrapper";
+
+const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://cineverse.ankun.dev";
+
+export const metadata: Metadata = {
+  title: "Trang chủ",
+  alternates: {
+    canonical: BASE_URL,
+  },
+};
 const ContinueWatching = dynamic(() => import("@/components/sections/Home/ContinueWatching"));
 const HomePageList = dynamic(() => import("@/components/sections/Home/List"));
 const CineVerseSources = dynamic(() => import("@/components/sections/Home/CineVerseSources"));

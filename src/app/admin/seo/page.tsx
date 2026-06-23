@@ -1,5 +1,6 @@
 ﻿"use client";
 
+import Image from "next/image";
 import { useState, useEffect } from "react";
 import { Card, CardBody, CardHeader, Input, Textarea, Autocomplete, AutocompleteItem, Spinner, Tabs, Tab, Button } from "@heroui/react";
 import SEOAnalyzer from "@/components/ui/seo/SEOAnalyzer";
@@ -53,25 +54,26 @@ export default function SEOPage() {
       if (!selectedId) return null;
       if (selectedType === "movie") {
         return await fetchDetailWithFallback(
-          () => tmdb.movies.details(selectedId, undefined, "vi-VN"),
-          () => tmdb.movies.details(selectedId, undefined, "en-US"),
+          () => tmdb.movies.details(selectedId, undefined, "vi-VN") as Promise<any>,
+          () => tmdb.movies.details(selectedId, undefined, "en-US") as Promise<any>,
         );
       } else {
         return await fetchDetailWithFallback(
-          () => tmdb.tvShows.details(selectedId, undefined, "vi-VN"),
-          () => tmdb.tvShows.details(selectedId, undefined, "en-US"),
+          () => tmdb.tvShows.details(selectedId, undefined, "vi-VN") as Promise<any>,
+          () => tmdb.tvShows.details(selectedId, undefined, "en-US") as Promise<any>,
         );
       }
     },
     enabled: !!selectedId,
   });
 
+  const seoData = itemDetails && selectedId ? generateCompleteSEO(itemDetails as any, selectedType) : null;
   useEffect(() => {
-    if (itemDetails && selectedId) {
-      const seoData = generateCompleteSEO(itemDetails as any, selectedType);
+    if (seoData) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setConfig(seoData);
     }
-  }, [itemDetails, selectedId, selectedType]);
+  }, [seoData]);
 
   const handleManualChange = (field: keyof SEOConfig, value: string) => {
     setConfig((prev) => ({ ...prev, [field]: value }));
@@ -139,9 +141,11 @@ export default function SEOPage() {
                   >
                     <div className="flex items-center gap-3">
                       {item.poster_path && (
-                        <img
+                        <Image
                           src={getImageUrl(item.poster_path, "poster")}
                           alt={item.title || item.name}
+                          width={32}
+                          height={48}
                           className="h-12 w-8 rounded object-cover"
                         />
                       )}

@@ -64,6 +64,7 @@ export function SignUpForm() {
     queryKey: ["tv-auth-posters-signup"],
   });
 
+  // eslint-disable-next-line react-hooks/preserve-manual-memoization
   const IMAGES = useMemo(() => {
     if (!movies?.results || !tvShows?.results) return [];
     const moviePosters = movies.results

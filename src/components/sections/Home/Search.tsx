@@ -134,8 +134,8 @@ const HomeSearch = () => {
             </div>
           ) : isEmpty(data?.results) ? (
             <p className="py-8 text-center text-foreground-500">
-              Không tìm thấy {contentType === "movie" ? "phim" : "chương trình TV"} nào với từ khóa "
-              <span className="font-bold text-warning">{searchTerm}</span>"
+              Không tìm thấy {contentType === "movie" ? "phim" : "chương trình TV"} nào với từ khóa &ldquo;
+              <span className="font-bold text-warning">{searchTerm}</span>&rdquo;
             </p>
           ) : (
             <>

@@ -42,6 +42,7 @@ export type SiteConfigType = {
   name: string;
   description: string;
   favicon: string;
+  ogImage: string;
   navItems: {
     label: string;
     href: string;

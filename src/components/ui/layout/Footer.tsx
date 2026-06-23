@@ -130,7 +130,7 @@ const Footer: React.FC<FooterProps> = ({ className }) => {
                 <span>GitHub</span>
               </Link>
               <Link
-                href="mailto:contact@ankun.dev"
+                href="mailto:admin@ankun.dev"
                 className="flex items-center gap-2 text-sm text-foreground transition-colors hover:text-warning"
               >
                 <IoMail size={20} />
@@ -182,7 +182,7 @@ const Footer: React.FC<FooterProps> = ({ className }) => {
           <span>Dữ liệu phim được cung cấp bởi</span>
           <Link
             isExternal
-            href="https://www.themoviedb.org"
+            href="https://www.themoviedb.org/u/ankun"
             className="inline-block transition-opacity hover:opacity-80"
           >
             <Image
@@ -190,8 +190,8 @@ const Footer: React.FC<FooterProps> = ({ className }) => {
               alt="The Movie Database (TMDB)"
               width={80}
               height={20}
-              className="h-5 w-auto"
-              style={{ width: 'auto' }}
+              className="h-5"
+              style={{ width: 'auto', height: 'auto' }}
               loading="lazy"
             />
           </Link>

@@ -884,12 +884,6 @@ export default function DashboardPage() {
   const [jsonInput, setJsonInput] = useState<string>("");
   const [showJsonInput, setShowJsonInput] = useState(false);
 
-  // Load existing sources
-  useEffect(() => {
-    loadExistingSources();
-    loadAllSources(); // Load tất cả sources cho bảng
-  }, [contentType]);
-
   const loadExistingSources = async () => {
     setIsLoadingExisting(true);
     try {
@@ -935,6 +929,14 @@ export default function DashboardPage() {
       console.error("Error loading all sources from Supabase:", error);
     }
   };
+
+  // Load existing sources
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    loadExistingSources();
+     
+    loadAllSources(); // Load tất cả sources cho bảng
+  }, [contentType]);
 
   // Search TMDB
   const handleSearch = async () => {

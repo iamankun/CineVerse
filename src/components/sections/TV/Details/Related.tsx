@@ -9,7 +9,6 @@ interface TvShowRelatedSectionProps {
 }
 
 const TvShowRelatedSection: React.FC<TvShowRelatedSectionProps> = ({ tv }) => {
-  // @ts-expect-error: wrong type.
   const recommendations = tv.recommendations.results as TV[];
   const similar = tv.similar.results as TV[];
 

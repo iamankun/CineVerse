@@ -17,6 +17,7 @@ export const siteConfig: SiteConfigType = {
   name: "CineVerse",
   description: "Vũ trụ điện ảnh của bạn",
   favicon: "/favicon.ico",
+  ogImage: "https://cineverse.ankun.dev/og-image.png",
   navItems: [
     {
       label: "CineVerse",

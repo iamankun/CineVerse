@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useState, useRef } from "react";
 import { createClient } from "@/utils/supabase/client";
 
@@ -295,9 +296,12 @@ export default function ProfileClientSimple({ user, profile }: ProfileClientProp
                   <label className="block text-sm font-medium text-gray-300">Ảnh đại diện</label>
                   <div className="mt-1 flex items-center space-x-4">
                     <div className="relative">
-                      <img
+                      <Image
                         src={profile?.avatar_url || `https://ui-avatars.com/api/?name=${profile?.full_name || user?.email}&background=1f2937&color=fff&size=100`}
                         alt="Avatar"
+                        width={80}
+                        height={80}
+                        loading="eager"
                         className="h-20 w-20 rounded-full object-cover border-2 border-gray-600"
                       />
                       <button
@@ -461,9 +465,12 @@ export default function ProfileClientSimple({ user, profile }: ProfileClientProp
           <div className="px-6 py-6">
             <div className="flex items-start space-x-6">
               <div className="shrink-0">
-                <img
+                <Image
                   src={profile?.avatar_url || `https://ui-avatars.com/api/?name=${profile?.full_name || user?.email}&background=1f2937&color=fff&size=120`}
                   alt="Avatar"
+                  width={96}
+                  height={96}
+                  loading="eager"
                   className="h-24 w-24 rounded-full object-cover border-2 border-gray-600"
                 />
               </div>

@@ -156,6 +156,12 @@ export function generateStructuredData(item: Movie | TV, url: string) {
   const releaseDate = "release_date" in item ? item.release_date : "first_air_date" in item ? item.first_air_date : null;
   const datePublished = releaseDate;
 
+  const genres = item.genre_ids
+    ? item.genre_ids.map((id: number) => getGenreName(id)).filter(Boolean)
+    : (item as any).genres
+      ? (item as any).genres.map((g: { id: number; name: string }) => g.name)
+      : undefined;
+
   const structuredData = {
     "@context": "https://schema.org",
     "@type": type,
@@ -175,7 +181,7 @@ export function generateStructuredData(item: Movie | TV, url: string) {
           worstRating: 0,
         }
       : undefined,
-    genre: item.genre_ids?.map((id: number) => getGenreName(id)).filter(Boolean),
+    genre: genres,
   };
 
   return structuredData;

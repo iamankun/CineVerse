@@ -43,28 +43,6 @@ export default function KKPhimPage() {
   const [type] = useQueryState("type", parseAsString);
   const [id] = useQueryState("id", parseAsString);
 
-  // Auto-search when coming from search page
-  useEffect(() => {
-    if (type && id) {
-      setSearchType("tmdb");
-      setContentType(type as "movie" | "tv");
-      setSearchQuery(id);
-      // Trigger search after a short delay to ensure state is updated
-      setTimeout(() => {
-        handleSearch();
-      }, 100);
-    }
-  }, [type, id]);
-
-  // TMDB Search when query changes
-  useEffect(() => {
-    if (searchType === "name" && debouncedSearchQuery) {
-      handleTMDBSearch();
-    } else {
-      setTmdbResults([]);
-    }
-  }, [debouncedSearchQuery, searchType]);
-
   const handleTMDBSearch = async () => {
     if (!debouncedSearchQuery || searchType !== "name") return;
     
@@ -223,6 +201,33 @@ export default function KKPhimPage() {
       setLoading(false);
     }
   };
+
+  // Auto-search when coming from search page
+  useEffect(() => {
+    if (type && id) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setSearchType("tmdb");
+       
+      setContentType(type as "movie" | "tv");
+       
+      setSearchQuery(id);
+      // Trigger search after a short delay to ensure state is updated
+      setTimeout(() => {
+        handleSearch();
+      }, 100);
+    }
+  }, [type, id]);
+
+  // TMDB Search when query changes
+  useEffect(() => {
+    if (searchType === "name" && debouncedSearchQuery) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      handleTMDBSearch();
+    } else {
+       
+      setTmdbResults([]);
+    }
+  }, [debouncedSearchQuery, searchType]);
 
   const handleCopyLink = async (link: string) => {
     try {

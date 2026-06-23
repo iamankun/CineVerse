@@ -2,7 +2,7 @@
 
 import useEmblaCarousel from "embla-carousel-react";
 import { EmblaOptionsType, EmblaPluginType } from "embla-carousel";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 /**
  * Custom hook that provides carousel functionality using Embla Carousel.
@@ -29,13 +29,22 @@ export const useCustomCarousel = (options?: EmblaOptionsType, plugins?: EmblaPlu
   const scrollPrev = useCallback(() => embla && embla.scrollPrev(), [embla]);
   const scrollNext = useCallback(() => embla && embla.scrollNext(), [embla]);
 
-  if (embla) {
-    embla.on("select", () => {
+  useEffect(() => {
+    if (!embla) return;
+
+    const onSelect = () => {
       setCanScrollPrev(embla.canScrollPrev());
       setCanScrollNext(embla.canScrollNext());
       setSelectedIndex(embla.selectedScrollSnap());
-    });
-  }
+    };
+
+    embla.on("select", onSelect);
+    onSelect();
+
+    return () => {
+      embla.off("select", onSelect);
+    };
+  }, [embla]);
 
   return { emblaRef, scrollTo, scrollNext, scrollPrev, selectedIndex, canScrollNext, canScrollPrev };
 };

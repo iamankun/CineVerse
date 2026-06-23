@@ -1,70 +1,74 @@
-"use client";
+import type { Metadata } from "next";
+import Script from "next/script";
+import { getMovieDetails } from "@/api/tmdb";
+import { generateSEOTitle, generateSEODescription, generateStructuredData } from "@/utils/seo/content-generator";
+import MovieDetailClient from "./MovieDetailClient";
 
-import { Suspense, use } from "react";
-import { Spinner } from "@heroui/spinner";
-import { useQuery } from "@tanstack/react-query";
-import { tmdb, getMovieDetails } from "@/api/tmdb";
-import { Cast } from "tmdb-ts/dist/types/credits";
-import { notFound } from "next/navigation";
-import { Image } from "tmdb-ts";
-import dynamic from "next/dynamic";
-import { Params } from "@/types";
-import { NextPage } from "next";
-const PhotosSection = dynamic(() => import("@/components/ui/other/PhotosSection"));
-const BackdropSection = dynamic(() => import("@/components/sections/Movie/Detail/Backdrop"));
-const OverviewSection = dynamic(() => import("@/components/sections/Movie/Detail/Overview"));
-const CastsSection = dynamic(() => import("@/components/sections/Movie/Detail/Casts"));
-const RelatedSection = dynamic(() => import("@/components/sections/Movie/Detail/Related"));
-const CommentsSection = dynamic(() => import("@/components/sections/Movie/Detail/Comments"));
+const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://cineverse.ankun.dev";
 
-const MovieDetailPage: NextPage<Params<{ id: number }>> = ({ params }) => {
-  const { id } = use(params);
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
+  const { id } = await params;
+  const movieId = Number(id);
+  if (isNaN(movieId)) return {};
 
-  const {
-    data: movie,
-    isPending,
-    error,
-  } = useQuery({
-    queryFn: () =>
-      getMovieDetails(id, [
-        "images",
-        "videos",
-        "credits",
-        "recommendations",
-        "similar",
-        "reviews",
-        "alternative_titles",
-        "translations",
-        "keywords",
-        "release_dates",
-      ], true),
-    queryKey: ["movie-details", id],
-  });
+  const movie = await getMovieDetails(movieId, [], false);
+  const title = generateSEOTitle(movie);
+  const description = generateSEODescription(movie);
+  const image = movie.poster_path
+    ? `https://image.tmdb.org/t/p/original${movie.poster_path}`
+    : undefined;
 
-  if (isPending) {
-    return <Spinner size="lg" className="absolute-center" variant="simple" />;
-  }
+  return {
+    title,
+    description,
+    alternates: {
+      canonical: `${BASE_URL}/movie/${movieId}`,
+    },
+    openGraph: {
+      title,
+      description,
+      type: "video.movie",
+      images: image ? [{ url: image, width: 1000, height: 1500 }] : undefined,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: image ? [image] : undefined,
+    },
+  };
+}
 
-  if (error) notFound();
+export default async function MovieDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  const movieId = Number(id);
+  if (isNaN(movieId)) return null;
+
+  const movie = await getMovieDetails(movieId, [
+    "images",
+    "videos",
+    "credits",
+    "recommendations",
+    "similar",
+    "reviews",
+    "alternative_titles",
+    "translations",
+    "keywords",
+    "release_dates",
+  ], true);
+
+  const url = `${BASE_URL}/movie/${movieId}`;
+  const jsonLd = generateStructuredData(movie, url);
 
   return (
-    <div className="mx-auto max-w-5xl px-3 sm:px-5 relative z-20">
-      <Suspense fallback={<Spinner size="lg" className="absolute-center" variant="simple" />}>
-        <div className="flex flex-col gap-10">
-          <BackdropSection movie={movie} />
-          <div className="mt-8 md:mt-12 lg:mt-16">
-            <OverviewSection movie={movie} />
-            <CastsSection casts={movie.credits.cast as Cast[]} />
-            <PhotosSection images={movie.images.backdrops as Image[]} />
-            <div className="relative z-30 mt-10">
-              <CommentsSection movieId={id} />
-            </div>
-            <RelatedSection movie={movie} />
-          </div>
-        </div>
-      </Suspense>
-    </div>
+    <>
+      <Script
+        id="movie-jsonld"
+        type="application/ld+json"
+        strategy="beforeInteractive"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <MovieDetailClient id={movieId} initialData={movie} />
+    </>
   );
-};
-
-export default MovieDetailPage;
+}

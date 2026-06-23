@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import IconButton from "./IconButton";
 import { IoNotificationsOutline, IoNotifications } from "react-icons/io5";
 import NotificationPanel from "../notification/NotificationPanel";
+import { useQuery } from "@tanstack/react-query";
 
 interface NotificationCount {
   admin: number;
@@ -12,48 +13,32 @@ interface NotificationCount {
 }
 
 const NotificationBellButton: React.FC = () => {
-  const [notifications, setNotifications] = useState<NotificationCount>({
-    admin: 0,
-    replies: 0,
-    total: 0
-  });
-  const [hasNotifications, setHasNotifications] = useState(false);
   const [isPanelOpen, setIsPanelOpen] = useState(false);
 
-  useEffect(() => {
-    fetchNotificationCounts();
-    
-    // Set up polling for real-time updates
-    const interval = setInterval(fetchNotificationCounts, 30000); // 30 seconds
-    
-    return () => clearInterval(interval);
-  }, []);
-
-  const fetchNotificationCounts = async () => {
-    try {
-      // Fetch admin notifications
-      const adminResponse = await fetch("/api/notifications");
+  const { data: notificationCounts, refetch } = useQuery({
+    queryKey: ["notification-counts"],
+    queryFn: async () => {
+      const [adminResponse, repliesResponse] = await Promise.all([
+        fetch("/api/notifications"),
+        fetch("/api/notifications/replies"),
+      ]);
       const adminData = await adminResponse.json();
-      const adminCount = adminData.notifications?.filter((n: any) => n.active).length || 0;
-
-      // Fetch reply notifications
-      const repliesResponse = await fetch("/api/notifications/replies");
       const repliesData = await repliesResponse.json();
+      const adminCount = adminData.notifications?.filter((n: any) => n.active).length || 0;
       const repliesCount = repliesData.count || 0;
-
       const total = adminCount + repliesCount;
-      
-      setNotifications({
-        admin: adminCount,
-        replies: repliesCount,
-        total
-      });
-      
-      setHasNotifications(total > 0);
-    } catch (error) {
-      console.error("Error fetching notification counts:", error);
-    }
-  };
+      return { admin: adminCount, replies: repliesCount, total };
+    },
+    staleTime: 30000,
+  });
+
+  const notifications = notificationCounts ?? { admin: 0, replies: 0, total: 0 };
+  const hasNotifications = notifications.total > 0;
+
+  useEffect(() => {
+    const interval = setInterval(refetch, 30000);
+    return () => clearInterval(interval);
+  }, [refetch]);
 
   const icon = hasNotifications ? (
     <IoNotifications className="size-full text-warning" />

@@ -1,8 +1,11 @@
 import { useEffect, useRef, useCallback, useState } from 'react';
 
-interface Config {
-  enabled: boolean;
-  showDebugOverlay: boolean;
+import { GestureConfig } from "@/types/gesture";
+type Config = Partial<GestureConfig>;
+
+interface HandPosition {
+  x: number;
+  y: number;
 }
 
 interface State {
@@ -11,14 +14,15 @@ interface State {
   isLoading: boolean;
   error: string | null;
   currentGesture: string | null;
+  confidence: number;
   handDetected: boolean;
   currentHandPose: any;
+  handPosition: HandPosition | null;
 }
 
 interface Callbacks {
-  onGesture?: (gesture: string) => void;
   onHandDetected?: (detected: boolean) => void;
-  onError?: (error: string) => void;
+  [key: string]: any;
 }
 
 export function useGestureControl(config: Config, callbacks: Callbacks = {}) {
@@ -27,16 +31,18 @@ export function useGestureControl(config: Config, callbacks: Callbacks = {}) {
   const detectorRef = useRef<any>(null);
   const modelPromiseRef = useRef<Promise<any> | null>(null);
   const handposePromiseRef = useRef<Promise<any> | null>(null);
-  const animationFrameRef = useRef<number>(0);
+  const animationFrameRef = useRef<number | null>(null);
 
   const [state, setState] = useState<State>({
     isInitialized: false,
     cameraActive: false,
     isLoading: false,
-    error: null as string | null,
-    currentGesture: null as string | null,
+    error: null,
+    currentGesture: null,
+    confidence: 0,
     handDetected: false,
-    currentHandPose: null as any,
+    currentHandPose: null,
+    handPosition: null,
   });
 
   // FIXED: Prevent concurrent initialization
@@ -60,7 +66,7 @@ export function useGestureControl(config: Config, callbacks: Callbacks = {}) {
       return modelPromiseRef.current;
     } catch (error) {
       console.error('Failed to load models:', error);
-      setState(prev => ({ ...prev, error: error.message as string, isLoading: false }));
+      setState(prev => ({ ...prev, error: (error as Error).message, isLoading: false }));
       return null;
     }
   }, []);
@@ -86,7 +92,7 @@ export function useGestureControl(config: Config, callbacks: Callbacks = {}) {
       return stream;
     } catch (error) {
       console.error('Camera access denied:', error);
-      setState(prev => ({ ...prev, error: error.message as string, isLoading: false }));
+      setState(prev => ({ ...prev, error: (error as Error).message, isLoading: false }));
       throw error;
     }
   }, []);
@@ -125,7 +131,7 @@ export function useGestureControl(config: Config, callbacks: Callbacks = {}) {
       return { models, stream };
     } catch (error) {
       console.error('Initialization failed:', error);
-      setState(prev => ({ ...prev, error: error.message as string, isLoading: false, isInitialized: false }));
+      setState(prev => ({ ...prev, error: (error as Error).message, isLoading: false, isInitialized: false }));
       isInitializingRef.current = false;
     }
   }, [preloadModels, requestCameraAccess]);
@@ -152,10 +158,13 @@ export function useGestureControl(config: Config, callbacks: Callbacks = {}) {
 
       // FIXED: Safe gesture detection with error handling
       if (predictions && predictions.length > 0) {
+        const landmarks = predictions[0]?.landmarks;
+        const handPos = landmarks?.[0] ? { x: landmarks[0].x, y: landmarks[0].y } : null;
         setState(prev => ({ 
           ...prev, 
           handDetected: true, 
-          currentHandPose: predictions[0] 
+          currentHandPose: predictions[0],
+          handPosition: handPos,
         }));
 
         // Process gestures safely
@@ -176,7 +185,7 @@ export function useGestureControl(config: Config, callbacks: Callbacks = {}) {
           }
         }
       } else {
-        setState(prev => ({ ...prev, handDetected: false }));
+        setState(prev => ({ ...prev, handDetected: false, handPosition: null }));
         if (callbacks.onHandDetected) {
           callbacks.onHandDetected(false);
         }
@@ -279,6 +288,7 @@ export function useGestureControl(config: Config, callbacks: Callbacks = {}) {
 
   return {
     ...state,
+    config,
     initialize,
     startCamera,
     stopCamera,

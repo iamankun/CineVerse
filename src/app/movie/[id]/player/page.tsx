@@ -20,8 +20,8 @@ const MoviePlayerPage: NextPage<Params<{ id: number }>> = ({ params }) => {
     error,
   } = useQuery({
     queryFn: () => fetchDetailWithFallback(
-      () => tmdb.movies.details(id, [], 'vi-VN'),
-      () => tmdb.movies.details(id, [], 'en-US'),
+      () => tmdb.movies.details(id, [], 'vi-VN') as Promise<any>,
+      () => tmdb.movies.details(id, [], 'en-US') as Promise<any>,
     ),
     queryKey: ["movie-player-detail", id],
     staleTime: 86400000, // 24 hours (1 ngày)

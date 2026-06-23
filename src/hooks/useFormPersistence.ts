@@ -1,4 +1,4 @@
-import { useEffect, useRef, useCallback } from 'react';
+import { useEffect, useRef, useCallback, useState } from 'react';
 
 interface FormPersistenceOptions {
   formKey: string; // Unique key for this form
@@ -25,6 +25,7 @@ export function useFormPersistenceFIXED({
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const lastSaveRef = useRef<string>('');
   const hasUnsavedRef = useRef<boolean>(false);
+  const [isDirty, setIsDirty] = useState(false);
 
   // Storage keys
   const DATA_KEY = `form_data_${formKey}`;
@@ -77,6 +78,7 @@ export function useFormPersistenceFIXED({
       if (!isAutoSave) {
         localStorage.removeItem(UNSAVED_KEY);
         hasUnsavedRef.current = false;
+        setIsDirty(false);
       }
       
       lastSaveRef.current = JSON.stringify(saveData);
@@ -92,23 +94,25 @@ export function useFormPersistenceFIXED({
   }, [formKey, onSave]); // ✅ Added dependencies
 
   // Clear cache - FIXED with proper dependencies
-  const clearCache = useCallback(() => {
+  function clearCache() {
     try {
       localStorage.removeItem(DATA_KEY);
       localStorage.removeItem(TIMESTAMP_KEY);
       localStorage.removeItem(UNSAVED_KEY);
       lastSaveRef.current = '';
       hasUnsavedRef.current = false;
+      setIsDirty(false);
       console.log('🗑️ Cache cleared for:', formKey);
     } catch (error) {
       console.error('Error clearing cache:', error);
     }
-  }, [formKey]); // ✅ Added dependencies
+  }
 
   // Mark as having unsaved changes - FIXED with proper dependencies
   const markAsUnsaved = useCallback(() => {
     localStorage.setItem(UNSAVED_KEY, 'true');
     hasUnsavedRef.current = true;
+    setIsDirty(true);
   }, [formKey]); // ✅ Added dependencies
 
   // Check if has unsaved changes - FIXED with proper dependencies
@@ -147,7 +151,7 @@ export function useFormPersistenceFIXED({
     if (!autoSave || !data) return;
 
     if (hasUnsavedChanges(data)) {
-      markAsUnsaved();
+      hasUnsavedRef.current = true;
       debouncedSave(data);
     }
   }, [data, autoSave, hasUnsavedChanges, debouncedSave]);
@@ -218,7 +222,7 @@ export function useFormPersistenceFIXED({
         intervalRef.current = null;
       }
     };
-  }, [confirmOnLeave, data, hasUnsavedRef, saveToCache, onSave]);
+  }, [confirmOnLeave, data, saveToCache, onSave]);
 
   return {
     getCachedData,
@@ -226,6 +230,6 @@ export function useFormPersistenceFIXED({
     clearCache,
     markAsUnsaved,
     hasUnsavedChanges,
-    isDirty: hasUnsavedRef.current
+    isDirty
   };
 }

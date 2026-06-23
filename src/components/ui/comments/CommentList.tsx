@@ -191,7 +191,7 @@ export default function CommentList({ movieId, tvId, currentUser }: CommentListP
             )}
 
             {/* Comments */}
-            {comments.map((comment: CommentWithReplies, index) => {
+            {comments.map((comment: CommentWithReplies, index: number) => {
               return (
                 <Comment
                   key={comment.id}

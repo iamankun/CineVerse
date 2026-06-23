@@ -419,9 +419,11 @@ const WatchingWithBrand: React.FC<WatchingWithBrandProps> = ({
   posterPath,
   videoCurrentTime = 0
 }) => {
-  const [showMessage, setShowMessage] = useState(false);
-  const [isExpanded, setIsExpanded] = useState(false);
-  const [animationPhase, setAnimationPhase] = useState<'hidden' | 'astronaut-entry' | 'content-show' | 'floating' | 'exit'>('hidden');
+  const [showMessage, setShowMessage] = useState(() => watchingWithBrandConfig.repeatInterval === 0);
+  const [isExpanded, setIsExpanded] = useState(() => watchingWithBrandConfig.repeatInterval === 0);
+  const [animationPhase, setAnimationPhase] = useState<'hidden' | 'astronaut-entry' | 'content-show' | 'floating' | 'exit'>(
+    () => watchingWithBrandConfig.repeatInterval === 0 ? 'floating' : 'hidden'
+  );
 
   useEffect(() => {
     // Inject astronaut animation styles
@@ -435,14 +437,7 @@ const WatchingWithBrand: React.FC<WatchingWithBrandProps> = ({
   }, []);
 
   useEffect(() => {
-    // Special case: repeatInterval = 0 means always show (no animation, no hide)
-    if (watchingWithBrandConfig.repeatInterval === 0) {
-      console.log('🎬 WatchingWithBrand: Always visible mode (repeatInterval = 0)');
-      setShowMessage(true);
-      setIsExpanded(true);
-      setAnimationPhase('floating');
-      return; // Don't set any timers
-    }
+    if (watchingWithBrandConfig.repeatInterval === 0) return;
 
     // Normal mode: Show with animation based on config
     const showWithAnimation = () => {
@@ -582,9 +577,11 @@ const WatchingWithBrand: React.FC<WatchingWithBrandProps> = ({
                 background: "transparent",
               }}
             >
-              <img
+              <Image
                 src={imageUrl}
                 alt={movieTitle}
+                width={160}
+                height={60}
                 className="md:hidden"
                 style={{
                   maxWidth: "100%",
@@ -594,9 +591,11 @@ const WatchingWithBrand: React.FC<WatchingWithBrandProps> = ({
                   objectFit: "contain",
                 }}
               />
-              <img
+              <Image
                 src={imageUrl}
                 alt={movieTitle}
+                width={180}
+                height={70}
                 className="hidden md:block"
                 style={{
                   maxWidth: "180px",

@@ -10,21 +10,22 @@ import { Spinner } from "@heroui/react";
 import { useInView } from "react-intersection-observer";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { notFound } from "next/navigation";
+import { TV } from "tmdb-ts/dist/types";
 import { useEffect } from "react";
 import TvShowPosterCard from "../TV/Cards/Poster";
 
 const TvShowDiscoverList = () => {
   const { ref, inView } = useInView();
   const { genresString, queryType } = useDiscoverFilters();
+  const fetchTvShows = useFetchDiscoverTvShows({
+    type: queryType as DiscoverTvShowsFetchQueryType,
+    genres: genresString,
+  });
+
   const { data, isPending, status, fetchNextPage, isFetchingNextPage, hasNextPage } =
     useInfiniteQuery({
       queryKey: ["discover-tv-shows", queryType, genresString],
-      queryFn: ({ pageParam }) =>
-        useFetchDiscoverTvShows({
-          page: pageParam,
-          type: queryType as DiscoverTvShowsFetchQueryType,
-          genres: genresString,
-        }),
+      queryFn: ({ pageParam }) => fetchTvShows({ page: pageParam }),
       initialPageParam: 1,
       getNextPageParam: (lastPage) =>
         lastPage.page < lastPage.total_pages ? lastPage.page + 1 : undefined,
@@ -55,7 +56,7 @@ const TvShowDiscoverList = () => {
       <div className="movie-grid">
         {data.pages.map((page) => {
           return page.results.map((tv) => {
-            return <TvShowPosterCard key={tv.id} tv={tv} variant="bordered" />;
+            return <TvShowPosterCard key={tv.id} tv={tv as unknown as TV} variant="bordered" />;
           });
         })}
       </div>

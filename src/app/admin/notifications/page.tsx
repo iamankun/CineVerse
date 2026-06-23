@@ -51,10 +51,6 @@ export default function NotificationAdminPage() {
   const [active, setActive] = useState(true);
   const [priority, setPriority] = useState<NotificationPriority>("medium");
 
-  useEffect(() => {
-    fetchNotifications();
-  }, []);
-
   const fetchNotifications = async () => {
     try {
       const response = await fetch("/api/admin/notifications");
@@ -66,6 +62,11 @@ export default function NotificationAdminPage() {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    fetchNotifications();
+  }, []);
 
   const handleSubmit = async () => {
     if (!title || !message) {

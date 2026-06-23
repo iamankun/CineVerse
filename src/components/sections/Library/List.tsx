@@ -93,6 +93,7 @@ const LibraryList = () => {
     },
   });
 
+  // eslint-disable-next-line react-hooks/preserve-manual-memoization
   const sortedWatchlist = useMemo(() => {
     if (!data?.pages) return [];
 

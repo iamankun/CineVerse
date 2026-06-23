@@ -61,13 +61,14 @@ const fetchTMDBDetails = async (id: number, type: "movie" | "tv") => {
   try {
     if (type === "movie") {
       return await fetchDetailWithFallback(
-        () => tmdb.movies.details(id, [], 'vi-VN'),
-        () => tmdb.movies.details(id, [], 'en-US'),
+        () => tmdb.movies.details(id, [], 'vi-VN') as Promise<any>,
+        () => tmdb.movies.details(id, [], 'en-US') as Promise<any>,
       );
     }
     return await fetchDetailWithFallback(
-      () => tmdb.tvShows.details(id, [], 'vi-VN'),
-      () => tmdb.tvShows.details(id, [], 'en-US'),
+      () => tmdb.tvShows.details(id, [], 'vi-VN') as Promise<any>,
+       
+      () => tmdb.tvShows.details(id, [], 'en-US') as Promise<any>,
     );
   } catch {
     return null;

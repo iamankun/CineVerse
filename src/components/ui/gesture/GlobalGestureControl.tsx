@@ -12,8 +12,6 @@ import VirtualCursor from './VirtualCursor';
  */
 export function GlobalGestureControl() {
   const { enabled } = useGestureContext();
-  const [miniView, setMiniView] = useState(false);
-  const [cursorPos, setCursorPos] = useState({ x: 0, y: 0 });
   const [isClicking, setIsClicking] = useState(false);
   const lastClickTimeRef = useRef(0);
   const CLICK_COOLDOWN = 300; // ms between clicks
@@ -36,6 +34,9 @@ export function GlobalGestureControl() {
     setTimeout(() => setIsClicking(false), 200);
   }, []);
 
+  // Ref for cursor position (accessed in gesture event handlers only — safe)
+  const cursorPosRef = useRef({ x: 0, y: 0 });
+
   // Gesture callbacks for global navigation
   const gestureCallbacks: GestureCallbacks = useMemo(() => ({
     // Scroll gestures
@@ -57,12 +58,12 @@ export function GlobalGestureControl() {
     onGestureDetected: (result: GestureResult) => {
       console.log('Gesture detected:', result.gesture, result.confidence);
       
-      // Handle click gesture (Closed_Fist)
+      // Handle click gesture (Closed_Fist) using latest cursor position
       if (result.gesture === 'Closed_Fist') {
-        handleClickAtCursor(cursorPos.x, cursorPos.y);
+        handleClickAtCursor(cursorPosRef.current.x, cursorPosRef.current.y);
       }
     },
-  }), [handleClickAtCursor, cursorPos]);
+  }), [handleClickAtCursor]);
 
   const {
     isInitialized,
@@ -71,26 +72,26 @@ export function GlobalGestureControl() {
     handDetected,
     isLoading,
     handPosition,
+    initialize,
     startDetection,
     stopDetection,
-  } = useGestureControl({
-    enabled,
-    callbacks: gestureCallbacks,
-  });
+  } = useGestureControl({ enabled }, gestureCallbacks);
 
-  // Update cursor position from hand tracking
+  // Keep ref in sync when handPosition changes
   useEffect(() => {
     if (handPosition) {
-      setCursorPos(handPosition);
+      cursorPosRef.current = handPosition;
     }
   }, [handPosition]);
 
-  // Sync miniView with enabled state
+  // Track user dismissal of mini view
+  const [miniViewDismissed, setMiniViewDismissed] = useState(false);
+  // Compute miniView directly from enabled and user dismissal
+  const miniView = enabled && !miniViewDismissed;
+
+  // Side effect: stop detection when disabled
   useEffect(() => {
-    if (enabled) {
-      setMiniView(true);
-    } else {
-      setMiniView(false);
+    if (!enabled) {
       stopDetection();
     }
   }, [enabled, stopDetection]);
@@ -105,7 +106,8 @@ export function GlobalGestureControl() {
         if (video && canvas) {
           console.log('🎬 Starting gesture detection with video and canvas');
           try {
-            await startDetection(video, canvas);
+            await initialize(video, canvas);
+            await startDetection();
             console.log('✅ Gesture detection started successfully');
           } catch (error) {
             console.error('❌ Failed to start detection:', error);
@@ -133,7 +135,7 @@ export function GlobalGestureControl() {
                 <span className="text-xs font-semibold">Điều khiển cử chỉ</span>
               </div>
               <button
-                onClick={() => setMiniView(false)}
+                onClick={() => setMiniViewDismissed(true)}
                 className="text-xs text-white/60 hover:text-white"
               >
                 ×
@@ -190,8 +192,8 @@ export function GlobalGestureControl() {
 
       {/* Virtual Cursor */}
       <VirtualCursor
-        x={cursorPos.x}
-        y={cursorPos.y}
+        x={handPosition?.x ?? 0}
+        y={handPosition?.y ?? 0}
         isClicking={isClicking}
         visible={enabled && handDetected}
       />
