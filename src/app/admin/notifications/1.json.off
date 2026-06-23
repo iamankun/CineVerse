@@ -1,0 +1,11 @@
+{
+  "id": 1,
+  "type": "movie",
+  "tmdbId": 602269,
+  "title": "Phim mới: Người máy và con người",
+  "message": "Phim mới: Người máy và con người",
+  "action": "Watch",
+  "active": true,
+  "priority": "high",
+  "createdAt": "2026-10-25T08:56:07.878Z"
+}
