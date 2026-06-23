@@ -92,10 +92,10 @@ enabled = true
 # Port to use for the email testing server web interface.
 port = 54324
 # Uncomment to expose additional ports for testing user applications that send emails.
-# smtp_port = 54325
+# smtp_port = 587
 # pop3_port = 54326
-# admin_email = "admin@email.com"
-# sender_name = "Admin"
+# admin_email = "admin@ankun.dev"
+# sender_name = "An Kun Studio"
 
 [storage]
 enabled = true
@@ -184,7 +184,7 @@ otp_expiry = 3600
 [auth.email.smtp]
 enabled = true
 host = "env(SUPABASE_AUTH_SMTP_HOST)"
-port = "env(SUPABASE_AUTH_SMTP_PORT)"
+port = 587
 user = "env(SUPABASE_AUTH_SMTP_EMAIL)"
 pass = "env(SUPABASE_AUTH_SMTP_PASSWORD)"
 admin_email = "env(SUPABASE_AUTH_SMTP_EMAIL)"
