@@ -183,11 +183,11 @@ otp_expiry = 3600
 # Use a production-ready SMTP server
 [auth.email.smtp]
 enabled = true
-host = "env(SUPABASE_AUTH_SMTP_HOST)"
+host = "smtp.mail.me.com"
 port = 587
-user = "env(SUPABASE_AUTH_SMTP_EMAIL)"
-pass = "env(SUPABASE_AUTH_SMTP_PASSWORD)"
-admin_email = "env(SUPABASE_AUTH_SMTP_EMAIL)"
+user = "admin@ankun.dev"
+pass = "grsa-aaxz-midn-pjta"
+admin_email = "admin@ankun.dev"
 sender_name = "CineVerse - Thông báo tài khoản"
 
 # Uncomment to customize email template
@@ -283,8 +283,8 @@ skip_nonce_check = false
 
 [auth.external.google]
 enabled = true
-client_id = "env(SUPABASE_AUTH_GOOGLE_CLIENT_ID)"
-secret = "env(SUPABASE_AUTH_GOOGLE_SECRET_KEY)"
+client_id = "409936905197-20p9q6m6jiardh8ij32plfsn3nkq2uk8.apps.googleusercontent.com"
+secret = "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"
 redirect_uri = "http://localhost:54321/auth/v1/callback"
 url = ""
 skip_nonce_check = true
