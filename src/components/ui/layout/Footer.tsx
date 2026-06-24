@@ -5,7 +5,6 @@ import { siteConfig } from "@/config/site";
 import { cn } from "@/utils/helpers";
 import { Link } from "@heroui/react";
 import { usePathname } from "next/navigation";
-import Image from "next/image";
 import { FaFacebook, FaYoutube, FaGithub } from "react-icons/fa";
 import { IoMail } from "react-icons/io5";
 import { clearAllCache, reloadAfterCacheClear } from "@/utils/cache";
@@ -185,14 +184,12 @@ const Footer: React.FC<FooterProps> = ({ className }) => {
             href="https://www.themoviedb.org/u/ankun"
             className="inline-block transition-opacity hover:opacity-80"
           >
-            <Image
+            <img
               src="https://www.themoviedb.org/assets/2/v4/logos/v2/blue_short-8e7b30f73a4020692ccca9c88bafe5dcb6f8a62a4c6bc55cd9ba82bb2cd95f6c.svg"
               alt="The Movie Database (TMDB)"
               width={80}
               height={20}
-              className="h-5"
-              style={{ width: 'auto', height: 'auto' }}
-              loading="lazy"
+              className="h-5 w-auto"
             />
           </Link>
         </div>

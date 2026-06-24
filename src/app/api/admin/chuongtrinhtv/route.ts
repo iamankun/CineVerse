@@ -1,6 +1,9 @@
 import { createClient } from "@/utils/supabase/server";
 import { NextResponse } from "next/server";
 
+export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
+
 // GET all TV series
 export async function GET() {
   try {
