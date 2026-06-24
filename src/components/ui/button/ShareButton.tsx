@@ -78,7 +78,7 @@ const SHARE_BUTTONS = [
 ];
 
 const ShareButton: React.FC<ShareButtonProps> = ({ title, id, type = "movie" }) => {
-  const url = `https://${location.hostname}/${type}/${id}`;
+  const url = typeof window !== 'undefined' ? `https://${window.location.hostname}/${type}/${id}` : '';
   const description = `Kiểm tra đầu ra và trực tiếp ${title} trên CineVerse cho Gen!!`;
 
   const [opened, { open, close }] = useDisclosure(false);
