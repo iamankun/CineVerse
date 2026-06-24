@@ -89,6 +89,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
         <Script
           id="theme-fouc"
           strategy="beforeInteractive"
+          nonce={nonce}
           dangerouslySetInnerHTML={{
             __html: `try{var t=localStorage.getItem("theme")||"dark";t==="system"&&(t=window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light");document.documentElement.classList.remove("light","dark");document.documentElement.classList.add(t)}catch(e){}`,
           }}
