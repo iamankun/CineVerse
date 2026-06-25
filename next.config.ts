@@ -56,6 +56,7 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  allowedDevOrigins: ["172.20.10.3"],
   experimental: {
     optimizePackageImports: ["@heroui/react"],
     optimizeCss: true,
