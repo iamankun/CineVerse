@@ -47,6 +47,7 @@ function getCSPPolicy(nonce: string): string {
     'font-src': ["'self'", 'data:', 'fonts.gstatic.com', 'https://cdn.mathpix.com'],
     'connect-src': [
       "'self'",
+      '*.ngrok-free.app',
       'https://live.fptplay53.net',
       'https://ott1.nethubtv.vn',
       '*.vercel.live',

@@ -121,9 +121,9 @@ export default function LivePlayer({ streamUrl, status, poster, channelName }: L
           {status === "offline" && (
             <div className="text-center">
               <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gray-800 flex items-center justify-center">
-                <span className="text-3xl">TV</span>
+                <span className="text-3xl">C</span>
               </div>
-              <p className="text-gray-400">Stream chưa bắt đầu</p>
+              <p className="text-gray-400">Chương trình chưa bắt đầu</p>
             </div>
           )}
           {status === "starting" && (

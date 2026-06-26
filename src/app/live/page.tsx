@@ -77,8 +77,8 @@ export default function LivePage() {
         <Card>
           <CardBody className="p-8 text-center">
             <RadioTower className="w-16 h-16 text-gray-500 mx-auto mb-4" />
-            <h3 className="text-lg font-semibold text-gray-300 mb-2">Chưa có kênh nào đang phát</h3>
-            <p className="text-gray-500">Hiện tại không có kênh trực tiếp nào. Hãy quay lại sau!</p>
+            <h3 className="text-lg font-semibold text-gray-300 mb-2">Đang chờ chương trình lên sóng</h3>
+            <p className="text-gray-500">Hiện không có chương trình, hãy quay lại sau!</p>
           </CardBody>
         </Card>
       )}

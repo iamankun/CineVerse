@@ -56,7 +56,7 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-  allowedDevOrigins: ["172.20.10.3"],
+  allowedDevOrigins: ["172.20.10.3", "*.ngrok-free.app"],
   experimental: {
     optimizePackageImports: ["@heroui/react"],
     optimizeCss: true,
