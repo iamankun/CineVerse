@@ -4,9 +4,6 @@ import { platform } from "os";
 import path from "path";
 import net from "net";
 
-const MS_HOST = process.env.MEDIA_SERVER_HOST;
-const isRemote = !!MS_HOST;
-
 let childPid: number | null = null;
 let running = false;
 
@@ -21,50 +18,13 @@ function checkPort(port: number): Promise<boolean> {
   });
 }
 
-async function checkRemote(): Promise<boolean> {
-  try {
-    const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), 3000);
-    const res = await fetch(`http://${MS_HOST}:8000/live/health.flv`, {
-      method: "HEAD",
-      signal: controller.signal,
-    });
-    clearTimeout(timer);
-    return true;
-  } catch {
-    return false;
-  }
-}
-
 export async function GET() {
-  if (isRemote) {
-    const ok = await checkRemote();
-    return NextResponse.json({ running: ok, remote: true });
-  }
-  if (process.env.VERCEL) {
-    return NextResponse.json(
-      { running: false, message: "Thiếu biến môi trường MEDIA_SERVER_HOST" },
-      { status: 503 }
-    );
-  }
   const rtmp = await checkPort(1935);
   const http = await checkPort(8000);
   return NextResponse.json({ running: running || rtmp || http });
 }
 
 export async function POST() {
-  if (isRemote) {
-    return NextResponse.json(
-      { running: false, message: "Media server chạy trên VPS, không thể điều khiển từ đây" },
-      { status: 400 }
-    );
-  }
-  if (process.env.VERCEL) {
-    return NextResponse.json(
-      { running: false, message: "Media server không khả dụng trên serverless" },
-      { status: 503 }
-    );
-  }
   if (running) return NextResponse.json({ running: true });
 
   const already = await checkPort(1935);
@@ -100,12 +60,6 @@ export async function POST() {
 }
 
 export async function DELETE() {
-  if (isRemote) {
-    return NextResponse.json(
-      { running: false, message: "Media server chạy trên VPS, không thể điều khiển từ đây" },
-      { status: 400 }
-    );
-  }
   if (!running && !childPid) {
     return NextResponse.json({ running: false, message: "Media server không chạy" });
   }
