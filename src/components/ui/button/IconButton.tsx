@@ -1,7 +1,7 @@
 import { Tooltip, Button, ButtonProps, TooltipProps } from "@heroui/react";
 import { Icon } from "@iconify/react";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useSyncExternalStore } from "react";
 
 export interface IconButtonProps extends Omit<ButtonProps, "isIconOnly"> {
   icon: string | React.ReactNode;
@@ -18,8 +18,11 @@ const IconButton: React.FC<IconButtonProps> = ({
   tooltipProps,
   ...props
 }) => {
-  const [isClient, setIsClient] = useState(false);
-  useEffect(() => setIsClient(true), []);
+  const isClient = useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false
+  );
 
   return (
     <Tooltip isDisabled={!tooltip} content={tooltip} {...tooltipProps}>

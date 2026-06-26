@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Cookie, X } from 'lucide-react';
 import { Button } from '@heroui/react';
 
@@ -9,31 +9,27 @@ interface CookieConsentProps {
 }
 
 export default function CookieConsent({ className = "" }: CookieConsentProps) {
-  const [isVisible, setIsVisible] = useState(false);
-  const [isAccepted, setIsAccepted] = useState(false);
-
-  useEffect(() => {
-    const consent = localStorage.getItem('cookie-consent');
-    if (consent) {
-      setIsAccepted(true);
-    } else {
-      setIsVisible(true);
+  const [consent, setConsent] = useState(() => {
+    if (typeof window !== "undefined") {
+      const stored = localStorage.getItem('cookie-consent');
+      if (stored) {
+        return { isVisible: false, isAccepted: true };
+      }
     }
-  }, []);
+    return { isVisible: true, isAccepted: false };
+  });
 
   const handleAccept = () => {
     localStorage.setItem('cookie-consent', 'accepted');
-    setIsAccepted(true);
-    setIsVisible(false);
+    setConsent({ isVisible: false, isAccepted: true });
   };
 
   const handleDecline = () => {
     localStorage.setItem('cookie-consent', 'declined');
-    setIsAccepted(true);
-    setIsVisible(false);
+    setConsent({ isVisible: false, isAccepted: true });
   };
 
-  if (!isVisible || isAccepted) {
+  if (!consent.isVisible || consent.isAccepted) {
     return null;
   }
 

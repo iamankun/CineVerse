@@ -9,27 +9,27 @@ interface LoadingWrapperProps {
 }
 
 export default function LoadingWrapper({ children, delay = 3000 }: LoadingWrapperProps) {
-  const [isLoading, setIsLoading] = useState(true);
-  const [hasLoadedBefore, setHasLoadedBefore] = useState(false);
+  const [hasLoadedBefore] = useState(() => {
+    if (typeof window !== "undefined") {
+      return sessionStorage.getItem('homepage-visited') === 'true';
+    }
+    return false;
+  });
+  const [timerDone, setTimerDone] = useState(false);
+  const isLoading = !hasLoadedBefore && !timerDone;
 
   useEffect(() => {
-    const visited = sessionStorage.getItem('homepage-visited') === 'true';
-    setHasLoadedBefore(visited);
-    if (visited) {
-      setIsLoading(false);
-      return;
-    }
+    if (hasLoadedBefore) return;
 
     const timer = setTimeout(() => {
-      setIsLoading(false);
-      setHasLoadedBefore(true);
+      setTimerDone(true);
       sessionStorage.setItem('homepage-visited', 'true');
     }, delay);
 
     return () => clearTimeout(timer);
-  }, [delay]);
+  }, [delay, hasLoadedBefore]);
 
-  if (isLoading && !hasLoadedBefore) {
+  if (isLoading) {
     return <Loading />;
   }
 

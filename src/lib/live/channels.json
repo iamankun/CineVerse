@@ -1,0 +1,17 @@
+[
+  {
+    "id": "mqv96k1s31n641",
+    "name": "HTV3",
+    "userId": "ec581c6e-1506-4a6d-b120-c2660e9dfabd",
+    "userName": "ankun.n.m@gmail.com",
+    "status": "offline",
+    "streamKey": "live_dwpzy64d4kj1yua75upn2c7if7gfvdub",
+    "ingestUrl": "rtmp://192.168.1.102:1935/live",
+    "hlsUrl": null,
+    "viewerCount": 0,
+    "startedAt": null,
+    "category": "other",
+    "thumbnail": null,
+    "flvUrl": null
+  }
+]

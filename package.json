@@ -1,6 +1,6 @@
 {
   "name": "cineverse",
-  "version": "2.0.2",
+  "version": "2.1.0",
   "language-region": "vi-VN",
   "private": true,
   "type": "module",
@@ -20,7 +20,8 @@
     "sb-stop": "supabase stop --debug --all",
     "sb-restart": "supabase stop --debug --all && supabase start --debug --ignore-health-check",
     "sb-db-reset": "supabase db reset",
-    "sb-db-types": "supabase gen types typescript --local > src/utils/supabase/types.ts"
+    "sb-db-types": "supabase gen types typescript --local > src/utils/supabase/types.ts",
+    "media-server": "node scripts/media-server.mjs"
   },
   "dependencies": {
     "@bprogress/next": "^3.2.12",
@@ -47,9 +48,11 @@
     "hint": "^2.0.0",
     "hls.js": "^1.6.15",
     "lucide-react": "^0.562.0",
+    "mpegts.js": "^1.8.0",
     "ms": "^2.1.3",
     "next": "^16.2.9",
     "next-themes": "^0.4.6",
+    "node-media-server": "^4.2.8",
     "nuqs": "^2.8.6",
     "postcss-custom-properties": "^15.0.0",
     "react": "19.2.3",

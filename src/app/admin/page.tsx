@@ -24,6 +24,13 @@ export default function AdminPage() {
       color: "bg-gradient-to-br from-red-500 to-pink-500",
     },
     {
+      title: "Phát trực tiếp",
+      description: "Phát luồng RTMP qua OBS Studio",
+      icon: "📡",
+      path: "/admin/live",
+      color: "bg-gradient-to-br from-red-600 to-orange-500",
+    },
+    {
       title: "Thông báo",
       description: "Quản lý thông báo và tin tức",
       icon: "🔔",

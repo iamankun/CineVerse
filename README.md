@@ -2,7 +2,7 @@
 
 An Kun Studio hân hạnh giới thiệu dự án CineVerse - Vũ trụ điện ảnh
 
-![Ảnh chụp màn hình Mockup CINEXTMA](./public/mockup.gif)
+![Ảnh chụp màn hình Mockup](./public/mockup.gif)
 
 🎬 CineVerse – Vũ trụ nội dung số dành cho thế hệ mới CineVerse là nền tảng giải trí đa phương tiện do AN KUN STUDIO phát triển, hướng đến việc xây dựng một “vũ trụ điện ảnh” dành cho thế hệ Gen Z và cộng đồng yêu thích nội dung số. Không bị ràng buộc bởi mô hình truyền thống, CineVerse cho phép phân phối linh hoạt các loại nội dung như phim điện ảnh, chương trình truyền hình, video theo yêu cầu (VOD), podcast và các sản phẩm sáng tạo khác.
 
