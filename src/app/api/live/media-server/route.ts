@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { exec, spawn } from "child_process";
 import { platform } from "os";
+import path from "path";
 import net from "net";
 
 let childPid: number | null = null;
@@ -17,7 +18,13 @@ function check(port: number): Promise<boolean> {
   });
 }
 
+const UNAVAILABLE = NextResponse.json(
+  { running: false, message: "Media server không khả dụng trên môi trường serverless" },
+  { status: 503 }
+);
+
 export function GET() {
+  if (process.env.VERCEL) return UNAVAILABLE;
   const rtmp = check(1935);
   const http = check(8000);
   return Promise.all([rtmp, http]).then(([r, h]) =>
@@ -26,15 +33,16 @@ export function GET() {
 }
 
 export function POST() {
+  if (process.env.VERCEL) return UNAVAILABLE;
   if (running) return NextResponse.json({ running: true });
 
   return check(1935).then((already) => {
     if (already) return NextResponse.json({ running: true });
 
-    const cwd = process.cwd();
+    const scriptPath = path.join(process.cwd(), "scripts", "media-server.mjs");
 
     return new Promise<NextResponse>((resolve) => {
-      const child = exec("npm run media-server", { cwd }, (err, stdout, stderr) => {
+      const child = exec(`node ${scriptPath}`, (err, stdout, stderr) => {
         if (stdout) console.log("[MS]", stdout.trim());
         if (stderr) console.error("[MS]", stderr.trim());
         running = false;
