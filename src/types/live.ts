@@ -9,6 +9,7 @@ export interface LiveChannel {
   streamKey: string;
   ingestUrl: string;
   flvUrl: string | null;
+  hlsUrl: string | null;
   viewerCount: number;
   startedAt: string | null;
   category: string;

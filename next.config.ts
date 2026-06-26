@@ -54,6 +54,9 @@ const nextConfig: NextConfig = {
       {
         pathname: "/icons/**",
       },
+      {
+        pathname: "/logo-cineverse.webp",
+      },
     ],
   },
   allowedDevOrigins: ["172.20.10.3", "*.ngrok-free.app"],

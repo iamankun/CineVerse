@@ -36,7 +36,7 @@ const BookmarkButton: React.FC<BookmarkButtonProps> = ({ data, isTooltipDisabled
       setIsChecking(true);
       try {
         const result = await checkInWatchlist(data.id, data.type);
-        if (result.success) {
+        if (result?.success) {
           setIsSaved(result.isInWatchlist);
         }
       } catch (error) {

@@ -1,22 +1,89 @@
 import { LiveChannel, LiveStatus } from "@/types/live";
-import { readFile, writeFile } from "fs/promises";
-import path from "path";
-import os from "os";
+import { createClient } from "@/utils/supabase/server";
 
-const STORE_PATH = path.join(process.cwd(), "src/lib/live/channels.json");
+const MEDIA_SERVER_HOST = process.env.MEDIA_SERVER_HOST || "localhost";
 
-let memoryStore: LiveChannel[] | null = null;
+function mapRow(row: any): LiveChannel {
+  return {
+    id: row.id,
+    name: row.name,
+    userId: row.user_id,
+    userName: row.user_name,
+    status: row.status as LiveStatus,
+    streamKey: row.stream_key,
+    ingestUrl: row.ingest_url,
+    flvUrl: row.flv_url,
+    hlsUrl: row.hls_url,
+    viewerCount: row.viewer_count,
+    startedAt: row.started_at,
+    category: row.category,
+    thumbnail: row.thumbnail,
+  };
+}
 
-function getServerAddress(): string {
-  const nets = os.networkInterfaces();
-  for (const name of Object.keys(nets)) {
-    for (const net of nets[name] ?? []) {
-      if (net.family === "IPv4" && !net.internal) {
-        return net.address;
-      }
+async function isStreamLive(streamKey: string): Promise<boolean> {
+  try {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 3000);
+    const res = await fetch(`http://${MEDIA_SERVER_HOST}:8000/live/${streamKey}.flv`, {
+      method: "HEAD",
+      signal: controller.signal,
+    });
+    clearTimeout(timer);
+    return res.ok;
+  } catch {
+    return false;
+  }
+}
+
+export async function getAllChannels(): Promise<LiveChannel[]> {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("livestream")
+    .select("*")
+    .in("status", ["live", "starting"]);
+
+  if (error) throw error;
+  if (!data?.length) return [];
+
+  for (const row of data) {
+    const live = row.stream_key ? await isStreamLive(row.stream_key) : false;
+
+    if (row.status === "starting" && live) {
+      const flvUrl = `/api/proxy/stream?url=${encodeURIComponent(`http://${MEDIA_SERVER_HOST}:8000/live/${row.stream_key}.flv`)}`;
+      await supabase.from("livestream").update({ status: "live", flv_url: flvUrl }).eq("id", row.id);
+      row.status = "live";
+      row.flv_url = flvUrl;
+    } else if (row.status === "live" && !live) {
+      await supabase.from("livestream").update({ status: "offline", flv_url: null, started_at: null }).eq("id", row.id);
     }
   }
-  return "localhost";
+
+  return data.filter((r) => r.status === "live" || r.status === "starting").map(mapRow);
+}
+
+export async function getChannel(id: string): Promise<LiveChannel | null> {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("livestream")
+    .select("*")
+    .eq("id", id)
+    .single();
+
+  if (error || !data) return null;
+  return mapRow(data);
+}
+
+export async function getUserChannel(userId: string): Promise<LiveChannel | null> {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("livestream")
+    .select("*")
+    .eq("user_id", userId)
+    .maybeSingle();
+
+  if (error || !data) return null;
+  return mapRow(data);
 }
 
 function generateId(): string {
@@ -32,149 +99,110 @@ function generateStreamKey(): string {
   return `live_${key}`;
 }
 
-async function readStore(): Promise<LiveChannel[]> {
-  if (memoryStore) return memoryStore;
-  try {
-    const data = await readFile(STORE_PATH, "utf-8");
-    memoryStore = JSON.parse(data);
-  } catch {
-    memoryStore = [];
-  }
-  return memoryStore!;
-}
-
-async function writeStore(channels: LiveChannel[]): Promise<void> {
-  memoryStore = channels;
-  try {
-    await writeFile(STORE_PATH, JSON.stringify(channels, null, 2), "utf-8");
-  } catch (e) {
-    console.error("[LIVE STORE] Write failed:", e);
-  }
-}
-
-async function isStreamLive(streamKey: string): Promise<boolean> {
-  try {
-    const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), 3000);
-    const res = await fetch(`http://localhost:8000/live/${streamKey}.flv`, {
-      signal: controller.signal,
-    });
-    clearTimeout(timer);
-    return res.ok;
-  } catch {
-    return false;
-  }
-}
-
-export async function getAllChannels(): Promise<LiveChannel[]> {
-  const channels = await readStore();
-  const result: LiveChannel[] = [];
-
-  for (const ch of channels) {
-    if (ch.status === "live" || ch.status === "starting") {
-      const live = ch.streamKey ? await isStreamLive(ch.streamKey) : false;
-      if (ch.status === "starting" && live) {
-        ch.status = "live";
-        const host = getServerAddress();
-        ch.flvUrl = `/api/proxy/stream?url=${encodeURIComponent(
-          `http://${host}:8000/live/${ch.streamKey}.flv`
-        )}`;
-      } else if (ch.status === "live" && !live) {
-        ch.status = "offline";
-        ch.flvUrl = null;
-        ch.startedAt = null;
-      }
-      if (ch.status === "live" || ch.status === "starting") {
-        result.push(ch);
-      }
-    }
-  }
-
-  await writeStore(channels);
-  return result;
-}
-
-export async function getChannel(id: string): Promise<LiveChannel | null> {
-  const channels = await readStore();
-  return channels.find((c) => c.id === id) ?? null;
-}
-
-export async function getUserChannel(userId: string): Promise<LiveChannel | null> {
-  const channels = await readStore();
-  return channels.find((c) => c.userId === userId) ?? null;
-}
-
 export async function createChannel(
   userId: string,
   userName: string,
   name: string,
   category = "other"
 ): Promise<LiveChannel> {
-  const channels = await readStore();
-  const existing = channels.find((c) => c.userId === userId);
+  const supabase = await createClient();
+  const existing = await getUserChannel(userId);
   if (existing) return existing;
 
-  const host = getServerAddress();
-  const channel: LiveChannel = {
+  const channel = {
     id: generateId(),
     name,
-    userId,
-    userName,
-    status: "offline",
-    streamKey: generateStreamKey(),
-    ingestUrl: `rtmp://${host}:1935/live`,
-    flvUrl: null,
-    viewerCount: 0,
-    startedAt: null,
+    user_id: userId,
+    user_name: userName,
+    status: "offline" as const,
+    stream_key: generateStreamKey(),
+    ingest_url: `rtmp://${MEDIA_SERVER_HOST}:1935/live`,
+    flv_url: null,
+    hls_url: null,
+    viewer_count: 0,
+    started_at: null,
     category,
     thumbnail: null,
   };
 
-  channels.push(channel);
-  await writeStore(channels);
-  return channel;
+  const { error } = await supabase.from("livestream").insert(channel);
+  if (error) throw error;
+
+  return mapRow(channel);
 }
 
 export async function startStream(
   channelId: string,
   userId: string
 ): Promise<LiveChannel | null> {
-  const channels = await readStore();
-  const idx = channels.findIndex((c) => c.id === channelId && c.userId === userId);
-  if (idx === -1) return null;
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("livestream")
+    .select("*")
+    .eq("id", channelId)
+    .eq("user_id", userId)
+    .single();
 
-  const host = getServerAddress();
-  channels[idx] = {
-    ...channels[idx],
+  if (error || !data) return null;
+
+  const { error: updateError } = await supabase
+    .from("livestream")
+    .update({
+      status: "starting",
+      started_at: new Date().toISOString(),
+      viewer_count: 0,
+      flv_url: null,
+      ingest_url: `rtmp://${MEDIA_SERVER_HOST}:1935/live`,
+    })
+    .eq("id", channelId)
+    .eq("user_id", userId);
+
+  if (updateError) throw updateError;
+
+  return {
+    ...mapRow(data),
     status: "starting",
     startedAt: new Date().toISOString(),
     viewerCount: 0,
     flvUrl: null,
-    ingestUrl: `rtmp://${host}:1935/live`,
+    ingestUrl: `rtmp://${MEDIA_SERVER_HOST}:1935/live`,
   };
-
-  await writeStore(channels);
-  return channels[idx];
 }
 
 export async function stopStream(
   channelId: string,
   userId: string
 ): Promise<LiveChannel | null> {
-  const channels = await readStore();
-  const idx = channels.findIndex((c) => c.id === channelId && c.userId === userId);
-  if (idx === -1) return null;
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("livestream")
+    .select("*")
+    .eq("id", channelId)
+    .eq("user_id", userId)
+    .single();
 
-  channels[idx] = {
-    ...channels[idx],
+  if (error || !data) return null;
+
+  const { error: updateError } = await supabase
+    .from("livestream")
+    .update({
+      status: "offline",
+      flv_url: null,
+      viewer_count: 0,
+      started_at: null,
+    })
+    .eq("id", channelId)
+    .eq("user_id", userId);
+
+  if (updateError) throw updateError;
+
+  return {
+    ...mapRow(data),
     status: "offline",
     flvUrl: null,
     viewerCount: 0,
     startedAt: null,
   };
-
-  await writeStore(channels);
-  return channels[idx];
 }
 
 export async function updateChannelName(
@@ -182,12 +210,17 @@ export async function updateChannelName(
   userId: string,
   name: string
 ): Promise<LiveChannel | null> {
-  const channels = await readStore();
-  const idx = channels.findIndex((c) => c.id === channelId && c.userId === userId);
-  if (idx === -1) return null;
-  channels[idx].name = name;
-  await writeStore(channels);
-  return channels[idx];
+  const supabase = await createClient();
+  const { error } = await supabase
+    .from("livestream")
+    .update({ name })
+    .eq("id", channelId)
+    .eq("user_id", userId);
+
+  if (error) throw error;
+
+  const channel = await getChannel(channelId);
+  return channel;
 }
 
 export async function checkStatus(channelId: string): Promise<{
@@ -197,14 +230,11 @@ export async function checkStatus(channelId: string): Promise<{
   previewAvailable: boolean;
   previewFlvUrl: string | null;
 } | null> {
-  const channels = await readStore();
-  const channel = channels.find((c) => c.id === channelId);
+  const channel = await getChannel(channelId);
   if (!channel) return null;
 
   let status = channel.status;
   let flvUrl = channel.flvUrl;
-
-  const host = getServerAddress();
   let previewAvailable = false;
   let previewFlvUrl: string | null = null;
 
@@ -213,7 +243,7 @@ export async function checkStatus(channelId: string): Promise<{
     if (live) {
       previewAvailable = true;
       previewFlvUrl = `/api/proxy/stream?url=${encodeURIComponent(
-        `http://${host}:8000/live/${channel.streamKey}.flv`
+        `http://${MEDIA_SERVER_HOST}:8000/live/${channel.streamKey}.flv`
       )}`;
     }
 

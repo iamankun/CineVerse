@@ -1,6 +1,6 @@
 "use client";
 
-import { ReactNode, useEffect, useState } from "react";
+import { ReactNode, useEffect, useRef, useState } from "react";
 import Loading from "@/app/loading";
 
 interface LoadingWrapperProps {
@@ -9,27 +9,21 @@ interface LoadingWrapperProps {
 }
 
 export default function LoadingWrapper({ children, delay = 3000 }: LoadingWrapperProps) {
-  const [hasLoadedBefore] = useState(() => {
-    if (typeof window !== "undefined") {
-      return sessionStorage.getItem('homepage-visited') === 'true';
-    }
-    return false;
-  });
-  const [timerDone, setTimerDone] = useState(false);
-  const isLoading = !hasLoadedBefore && !timerDone;
+  const [showContent, setShowContent] = useState(false);
+  const visitedRef = useRef(false);
 
   useEffect(() => {
-    if (hasLoadedBefore) return;
+    visitedRef.current = sessionStorage.getItem('homepage-visited') === 'true';
 
     const timer = setTimeout(() => {
-      setTimerDone(true);
+      setShowContent(true);
       sessionStorage.setItem('homepage-visited', 'true');
-    }, delay);
+    }, visitedRef.current ? 0 : delay);
 
     return () => clearTimeout(timer);
-  }, [delay, hasLoadedBefore]);
+  }, [delay]);
 
-  if (isLoading) {
+  if (!showContent) {
     return <Loading />;
   }
 

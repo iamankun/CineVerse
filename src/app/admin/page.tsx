@@ -1,60 +1,74 @@
 "use client";
 
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { Card, CardBody, CardHeader } from "@heroui/react";
 import AdminGuard from "@/components/AdminGuard";
 import { getVersionString } from "@/utils/version";
+import { IoStatsChart, IoNotifications, IoSettingsSharp, IoAnalytics, IoShieldCheckmarkOutline } from "react-icons/io5";
+import { RadioTower } from "lucide-react";
+import { createClient } from "@/utils/supabase/client";
+import { useState, useEffect } from "react";
 
 export default function AdminPage() {
   const router = useRouter();
+  const [fullName, setFullName] = useState("");
+
+  useEffect(() => {
+    const supabase = createClient();
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      if (!user) return;
+      supabase
+        .from("profiles")
+        .select("full_name")
+        .eq("id", user.id)
+        .single()
+        .then(({ data }) => {
+          if (data?.full_name) setFullName(data.full_name);
+        });
+    });
+  }, []);
 
   const adminOptions = [
     {
-      title: "Bảng điều khiển",
-      description: "Quản lý phim, chương trình truyền hình và hệ thống",
-      icon: "📊",
+      title: "Dashboard",
+      description: "Quản lý phim, chương trình truyền hình",
+      icon: <IoStatsChart className="size-10" />,
       path: "/admin/dashboard",
       color: "bg-gradient-to-br from-blue-500 to-cyan-500",
     },
     {
-      title: "TV",
-      description: "Quản lý luồng phát Tivi trực tiếp",
-      icon: "📺",
-      path: "/admin/tivi",
-      color: "bg-gradient-to-br from-red-500 to-pink-500",
-    },
-    {
-      title: "Phát trực tiếp",
-      description: "Phát luồng RTMP qua OBS Studio",
-      icon: "📡",
+      title: "Live Stream",
+      description: "Phát luồng RTMP",
+      icon: <RadioTower className="size-10" />,
       path: "/admin/live",
       color: "bg-gradient-to-br from-red-600 to-orange-500",
     },
-    {
-      title: "Thông báo",
+      {
+        title: "Thông báo",
       description: "Quản lý thông báo và tin tức",
-      icon: "🔔",
+      icon: <IoNotifications className="size-10" />,
       path: "/admin/notifications",
       color: "bg-gradient-to-br from-orange-500 to-red-500",
     },
     {
-      title: "Cài đặt trình phát",
+      title: "Player Settings",
       description: "Quản lý cài đặt hiển thị trong trình phát",
-      icon: "⚙️",
+      icon: <IoSettingsSharp className="size-10" />,
       path: "/admin/settings",
       color: "bg-gradient-to-br from-purple-500 to-pink-500",
     },
     {
-      title: "Phân tích SEO",
+      title: "SEO Analysis",
       description: "Phân tích và tối ưu hóa SEO với Yoast Algorithm",
-      icon: "📈",
+      icon: <IoAnalytics className="size-10" />,
       path: "/admin/seo",
       color: "bg-gradient-to-br from-green-500 to-teal-500",
     },
     {
-      title: "Chăn quảng cáo",
+      title: "Ad Blocker",
       description: "Quản lý filters chặn quảng cáo",
-      icon: "🛡️",
+      icon: <IoShieldCheckmarkOutline className="size-10" />,
       path: "/admin/filters",
       color: "bg-gradient-to-br from-red-500 to-orange-500",
     },
@@ -65,13 +79,13 @@ export default function AdminPage() {
       <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-gray-900 via-gray-800 to-black p-4">
         <div className="w-full max-w-5xl">
         {/* Header */}
-        <div className="mb-12 text-center">
-          <h1 className="mb-4 text-5xl font-bold text-white">
-            CineVerse by An Kun Studio
-          </h1>
-          <p className="text-xl text-gray-400">
-            Lựa chọn tính năng
-          </p>
+        <div className="mb-12 flex items-center gap-4">
+          <Image src="/logo-cineverse.webp" alt="CineVerse" width={64} height={64} />
+          <div>
+            <p className="text-2xl text-gray-300">
+              Xin chào, <span className="font-bold text-white">{fullName || "bạn"}</span> đã quay trở lại
+            </p>
+          </div>
         </div>
 
         {/* Options Grid */}
@@ -86,7 +100,7 @@ export default function AdminPage() {
             >
               <CardHeader className="flex-col items-start px-6 pt-6">
                 <div
-                  className={`mb-4 flex h-20 w-20 items-center justify-center rounded-2xl ${option.color} text-white shadow-lg text-4xl`}
+                  className={`mb-4 flex h-20 w-20 items-center justify-center rounded-2xl ${option.color} text-white shadow-lg`}
                 >
                   {option.icon}
                 </div>

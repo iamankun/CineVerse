@@ -10,7 +10,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Movie, TV } from "tmdb-ts/dist/types";
 import { IoChevronForward } from "react-icons/io5";
 import { Movie as MovieIcon, TV as TVIcon } from "@/utils/icons";
-import { tmdb, fetchDetailWithFallback } from "@/api/tmdb";
+import { fetchDetailWithFallback } from "@/api/tmdb";
 import { useState } from "react";
 
 type SourceItem = {
@@ -56,19 +56,15 @@ const fetchCineVerseSources = async (): Promise<SourceItem[]> => {
   }
 };
 
-// Fetch chi tiết từ TMDB với fallback ngôn ngữ
+// Fetch chi tiết từ TMDB qua proxy (tránh CORS)
 const fetchTMDBDetails = async (id: number, type: "movie" | "tv") => {
   try {
-    if (type === "movie") {
-      return await fetchDetailWithFallback(
-        () => tmdb.movies.details(id, [], 'vi-VN') as Promise<any>,
-        () => tmdb.movies.details(id, [], 'en-US') as Promise<any>,
-      );
-    }
+    const proxyUrl = (lang: string) =>
+      `/api/proxy/tmdb/${type}/${id}?language=${lang}`;
+
     return await fetchDetailWithFallback(
-      () => tmdb.tvShows.details(id, [], 'vi-VN') as Promise<any>,
-       
-      () => tmdb.tvShows.details(id, [], 'en-US') as Promise<any>,
+      () => fetch(proxyUrl('vi-VN')).then(r => r.ok ? r.json() : Promise.reject()),
+      () => fetch(proxyUrl('en-US')).then(r => r.ok ? r.json() : Promise.reject()),
     );
   } catch {
     return null;
