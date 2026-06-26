@@ -123,7 +123,7 @@ export async function createChannel(
     user_name: userName,
     status: "offline" as const,
     stream_key: generateStreamKey(),
-    ingest_url: `rtmp://${MEDIA_SERVER_HOST}:1935/live`,
+    ingest_url: "rtmp://192.168.1.102:1935/live",
     flv_url: null,
     hls_url: null,
     viewer_count: 0,
@@ -159,7 +159,7 @@ export async function startStream(
       started_at: new Date().toISOString(),
       viewer_count: 0,
       flv_url: null,
-      ingest_url: `rtmp://${MEDIA_SERVER_HOST}:1935/live`,
+      ingest_url: "rtmp://192.168.1.102:1935/live",
     })
     .eq("id", channelId)
     .eq("user_id", userId);
@@ -172,7 +172,7 @@ export async function startStream(
     startedAt: new Date().toISOString(),
     viewerCount: 0,
     flvUrl: null,
-    ingestUrl: `rtmp://${MEDIA_SERVER_HOST}:1935/live`,
+    ingestUrl: "rtmp://192.168.1.102:1935/live",
   };
 }
 
