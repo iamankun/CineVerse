@@ -6,6 +6,8 @@ import os from "os";
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 function getIP() {
+  const host = process.env.MEDIA_SERVER_HOST;
+  if (host) return host.replace(/^https?:\/\//, "");
   const nets = os.networkInterfaces();
   for (const name of Object.keys(nets)) {
     for (const net of nets[name] ?? []) {
