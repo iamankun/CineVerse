@@ -1,7 +1,10 @@
+import dotenv from "dotenv";
 import NodeMediaServer from "node-media-server";
 import { fileURLToPath } from "url";
 import path from "path";
 import os from "os";
+
+dotenv.config({ path: path.resolve(import.meta.dirname, "../.env.local") });
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
