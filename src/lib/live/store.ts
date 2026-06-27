@@ -1,5 +1,6 @@
 import { LiveChannel, LiveStatus } from "@/types/live";
 import { createClient } from "@/utils/supabase/server";
+import http from "http";
 
 const MEDIA_SERVER_HOST = (process.env.MEDIA_SERVER_HOST || "localhost").replace(/^https?:\/\//, "");
 
@@ -21,25 +22,25 @@ function mapRow(row: any): LiveChannel {
   };
 }
 
-async function isStreamLive(streamKey: string): Promise<boolean> {
-  const hosts = process.env.VERCEL
-    ? [MEDIA_SERVER_HOST.replace(/^https?:\/\//, "")]
-    : ["localhost"];
+function httpGet(url: string): Promise<http.IncomingMessage> {
+  return new Promise((resolve, reject) => {
+    const req = http.get(url, (res) => {
+      res.destroy();
+      resolve(res);
+    });
+    req.setTimeout(2000, () => { req.destroy(); reject(new Error("timeout")); });
+    req.on("error", reject);
+  });
+}
 
-  for (const host of hosts) {
-    try {
-      const controller = new AbortController();
-      const timer = setTimeout(() => controller.abort(), 3000);
-      const res = await fetch(`http://${host}:8000/live/${streamKey}.flv`, {
-        method: "GET",
-        headers: { Range: "bytes=0-0" },
-        signal: controller.signal,
-      });
-      clearTimeout(timer);
-      if (res.status === 200 || res.status === 206) return true;
-    } catch {}
+async function isStreamLive(streamKey: string): Promise<boolean> {
+  const host = process.env.VERCEL ? MEDIA_SERVER_HOST : "localhost";
+  try {
+    const res = await httpGet(`http://${host}:8000/live/${streamKey}.flv`);
+    return res.statusCode === 200;
+  } catch {
+    return false;
   }
-  return false;
 }
 
 export async function getAllChannels(): Promise<LiveChannel[]> {
@@ -57,7 +58,7 @@ export async function getAllChannels(): Promise<LiveChannel[]> {
 
     if (row.status === "starting" && live) {
       const streamHost = process.env.VERCEL ? MEDIA_SERVER_HOST : "localhost";
-      const flvUrl = `/api/proxy/stream?url=${encodeURIComponent(`http://${streamHost}:8000/live/${row.stream_key}.flv`)}`;
+      const flvUrl = `http://${streamHost}:8000/live/${row.stream_key}.flv`;
       await supabase.from("livestream").update({ status: "live", flv_url: flvUrl }).eq("id", row.id);
       row.status = "live";
       row.flv_url = flvUrl;
@@ -250,9 +251,7 @@ export async function checkStatus(channelId: string): Promise<{
     if (live) {
       previewAvailable = true;
       const streamHost = process.env.VERCEL ? MEDIA_SERVER_HOST : "localhost";
-      previewFlvUrl = `/api/proxy/stream?url=${encodeURIComponent(
-        `http://${streamHost}:8000/live/${channel.streamKey}.flv`
-      )}`;
+      previewFlvUrl = `http://${streamHost}:8000/live/${channel.streamKey}.flv`;
     }
 
     if (status === "starting" && live) {
