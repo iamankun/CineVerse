@@ -34,6 +34,9 @@ export default function LivePage() {
     return () => clearInterval(interval);
   }, []);
 
+  const liveUrl = channel?.flvUrl || null;
+  const isLive = !!liveUrl;
+
   if (loading) {
     return (
       <div className="flex flex-col gap-6 pt-4 md:pt-8 pb-8">
@@ -63,13 +66,13 @@ export default function LivePage() {
         </span>
       </SectionTitle>
 
-      {channel ? (
+      {isLive ? (
         <Card>
           <CardBody className="p-0">
             <LivePlayer
-              streamUrl={channel.flvUrl}
-              status={channel.status}
-              channelName={channel.name}
+              streamUrl={liveUrl}
+              status="live"
+              channelName={channel?.name || "Trực tiếp"}
             />
           </CardBody>
         </Card>

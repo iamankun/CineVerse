@@ -52,12 +52,16 @@ export async function POST(request: NextRequest) {
 
     const existing = await getUserChannel(userId);
     if (existing) {
+      if (existing.name !== name.trim()) {
+        await updateChannelName(existing.id, userId, name.trim());
+      }
       return NextResponse.json({
         channelId: existing.id,
         ingestUrl: existing.ingestUrl,
         streamKey: existing.streamKey,
-        channelName: existing.name,
+        channelName: name.trim(),
         status: existing.status,
+        flvUrl: existing.flvUrl,
       });
     }
 
@@ -68,6 +72,7 @@ export async function POST(request: NextRequest) {
       streamKey: channel.streamKey,
       channelName: channel.name,
       status: channel.status,
+      flvUrl: channel.flvUrl,
     });
   } catch (error) {
     console.error("[LIVE INFO]", error);

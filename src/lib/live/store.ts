@@ -48,7 +48,7 @@ export async function getAllChannels(): Promise<LiveChannel[]> {
   const { data, error } = await supabase
     .from("livestream")
     .select("*")
-    .in("status", ["live", "starting"]);
+    .or("status.in.(live,starting),flv_url.not.is.null");
 
   if (error) throw error;
   if (!data?.length) return [];
@@ -62,12 +62,12 @@ export async function getAllChannels(): Promise<LiveChannel[]> {
       await supabase.from("livestream").update({ status: "live", flv_url: flvUrl }).eq("id", row.id);
       row.status = "live";
       row.flv_url = flvUrl;
-    } else if (row.status === "live" && !live) {
+    } else if (row.status === "live" && !live && !row.flv_url) {
       await supabase.from("livestream").update({ status: "offline", flv_url: null, started_at: null }).eq("id", row.id);
     }
   }
 
-  return data.filter((r) => r.status === "live" || r.status === "starting").map(mapRow);
+  return data.filter((r) => r.status === "live" || r.status === "starting" || r.flv_url).map(mapRow);
 }
 
 export async function getChannel(id: string): Promise<LiveChannel | null> {
@@ -222,6 +222,24 @@ export async function updateChannelName(
   const { error } = await supabase
     .from("livestream")
     .update({ name })
+    .eq("id", channelId)
+    .eq("user_id", userId);
+
+  if (error) throw error;
+
+  const channel = await getChannel(channelId);
+  return channel;
+}
+
+export async function updateStreamUrl(
+  channelId: string,
+  userId: string,
+  streamUrl: string
+): Promise<LiveChannel | null> {
+  const supabase = await createClient();
+  const { error } = await supabase
+    .from("livestream")
+    .update({ flv_url: streamUrl })
     .eq("id", channelId)
     .eq("user_id", userId);
 

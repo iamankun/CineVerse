@@ -10,6 +10,10 @@ interface LivePlayerProps {
   channelName?: string;
 }
 
+function isEmbedUrl(url: string): boolean {
+  return /player|embed|iframe/i.test(url);
+}
+
 export default function LivePlayer({ streamUrl, status, poster, channelName }: LivePlayerProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const playerRef = useRef<any>(null);
@@ -17,6 +21,8 @@ export default function LivePlayer({ streamUrl, status, poster, channelName }: L
   const [mpegtsModule, setMpegtsModule] = useState<any>(null);
   const reconnectRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const streamUrlRef = useRef<string | null>(null);
+
+  const useIframe = streamUrl ? isEmbedUrl(streamUrl) : false;
 
   useEffect(() => {
     mountedRef.current = true;
@@ -78,6 +84,8 @@ export default function LivePlayer({ streamUrl, status, poster, channelName }: L
   }, [connect]);
 
   useEffect(() => {
+    if (useIframe) return;
+
     streamUrlRef.current = streamUrl;
 
     if (!streamUrl || status !== "live") {
@@ -104,7 +112,31 @@ export default function LivePlayer({ streamUrl, status, poster, channelName }: L
         playerRef.current = null;
       }
     };
-  }, [streamUrl, status, mpegtsModule, connect]);
+  }, [streamUrl, status, mpegtsModule, connect, useIframe]);
+
+  if (useIframe && streamUrl) {
+    return (
+      <div className="relative w-full aspect-video bg-black rounded-xl overflow-hidden">
+        <iframe
+          src={streamUrl}
+          className="w-full h-full border-0"
+          allow="autoplay; fullscreen; picture-in-picture"
+          allowFullScreen
+        />
+        {channelName && (
+          <div className="absolute top-4 left-4 bg-black/60 backdrop-blur-sm rounded-lg px-3 py-2">
+            <div className="flex items-center gap-2">
+              <span className="w-2 h-2 bg-red-500 rounded-full animate-pulse" />
+              <span className="text-white text-sm font-semibold">{channelName}</span>
+              <span className="text-red-400 text-xs font-medium uppercase tracking-wider ml-1">
+                Live
+              </span>
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  }
 
   return (
     <div className="relative w-full aspect-video bg-black rounded-xl overflow-hidden">
