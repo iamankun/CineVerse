@@ -69,6 +69,7 @@ function getCSPPolicy(nonce: string): string {
       'https://cloudnestra.com',
       'https://kkphim.com',
       'https://phimapi.com',
+      'https://player.wpstream.net',
     ],
     'media-src': [
       "'self'",
@@ -79,6 +80,7 @@ function getCSPPolicy(nonce: string): string {
       'https://tmstr4.wanderlynest.com',
       'https://tmstr4.orchidpixelgardens.com',
       'https://tmstr4.cloudnestra.com',
+      'https://player.wpstream.net',
     ],
     'frame-src': [
       "'self'",
@@ -103,6 +105,7 @@ function getCSPPolicy(nonce: string): string {
       'https://kkphim.com',
       'https://player.phimapi.com',
       'https://s6.kkphimplayer6.com',
+      'https://player.wpstream.net',
     ],
     'frame-ancestors': ["'self'", 'https://www.google.com'],
     'child-src': ["'self'"],
