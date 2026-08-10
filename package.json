@@ -71,7 +71,7 @@
     "zod": "^4.3.5"
   },
   "devDependencies": {
-    "@iconify/react": "^6.0.0",
+    "@iconify/react": "^6.0.2",
     "@tailwindcss/postcss": "^4.1.17",
     "@tanstack/react-query-devtools": "^5.90.12",
     "@types/long": "^4.0.2",
