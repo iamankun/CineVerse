@@ -1,16 +1,20 @@
 "use client";
 
-import { Button, Chip } from "@heroui/react";
+import { Chip, addToast } from "@heroui/react";
 import { useQuery } from "@tanstack/react-query";
 import { Movie, TV } from "tmdb-ts/dist/types";
-import { useState, useEffect, useRef, useCallback } from "react";
-import { IoPlayOutline, IoInformationCircleOutline, IoVolumeHighOutline, IoVolumeMuteOutline } from "react-icons/io5";
+import { useState, useEffect, useRef, useCallback, useTransition } from "react";
+import { IoInformationCircleOutline, IoVolumeHighOutline, IoVolumeMuteOutline } from "react-icons/io5";
 import { IoIosArrowBack, IoIosArrowForward } from "react-icons/io";
+import { BsBookmarkFill, BsBookmarkCheckFill } from "react-icons/bs";
 import { getImageUrl } from "@/utils/movies";
 import { useMovieLogo } from "@/hooks/useMovieLogo";
 import Link from "next/link";
 import Image from "next/image";
 import { env } from "@/utils/env";
+import useSupabaseUser from "@/hooks/useSupabaseUser";
+import { addToWatchlist, removeFromWatchlist, checkInWatchlist } from "@/actions/library";
+import { queryClient } from "@/app/providers";
 
 interface Video {
   iso_639_1: string;
@@ -142,6 +146,9 @@ const CineVerseHero = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isMuted, setIsMuted] = useState(true);
   const iframeRef = useRef<HTMLIFrameElement>(null);
+  const { data: user } = useSupabaseUser();
+  const [isBookmarkPending, startTransition] = useTransition();
+  const [isSaved, setIsSaved] = useState(false);
 
   const { data: content, isPending } = useQuery({
     queryKey: ["cineverse-sources", "vi-VN"],
@@ -266,6 +273,56 @@ const CineVerseHero = () => {
     };
   }, [content, handleNext, currentIndex, trailer]);
 
+  // Check watchlist status when currentIndex changes
+  useEffect(() => {
+    if (!user || !currentItem) {
+      setIsSaved(false);
+      return;
+    }
+    const check = async () => {
+      try {
+        const result = await checkInWatchlist(currentItem.id, currentItem.contentType);
+        if (result?.success) setIsSaved(result.isInWatchlist);
+      } catch {}
+    };
+    check();
+  }, [user, currentItem]);
+
+  const handleBookmark = () => {
+    if (!user) {
+      addToast({ title: "Đăng nhập để lưu danh sách", color: "warning" });
+      return;
+    }
+    if (!currentItem) return;
+    startTransition(async () => {
+      try {
+        const watchlistItem = {
+          id: currentItem.id,
+          type: currentItem.contentType,
+          adult: "adult" in currentItem ? !!currentItem.adult : false,
+          backdrop_path: currentItem.backdrop_path || "",
+          poster_path: "poster_path" in currentItem ? (currentItem.poster_path as string) || null : null,
+          release_date: "release_date" in currentItem ? (currentItem.release_date as string) : "first_air_date" in currentItem ? (currentItem.first_air_date as string) : "",
+          title: title,
+          vote_average: "vote_average" in currentItem ? (currentItem.vote_average as number) : 0,
+        };
+        if (isSaved) {
+          const result = await removeFromWatchlist(currentItem.id, currentItem.contentType);
+          if (result.success) {
+            setIsSaved(false);
+            addToast({ title: `Đã xóa khỏi danh sách`, color: "danger" });
+          }
+        } else {
+          const result = await addToWatchlist(watchlistItem);
+          if (result.success) {
+            setIsSaved(true);
+            addToast({ title: `Đã lưu vào danh sách`, color: "success" });
+          }
+        }
+      } catch {}
+    });
+  };
+
   const detailUrl = item && item.contentType === "movie" 
     ? `/movie/${item.id}` 
     : item ? `/tv/${item.id}` : "/";
@@ -384,42 +441,147 @@ const CineVerseHero = () => {
             )}
           </div>
 
-          {/* Buttons */}
-          <div className="flex flex-wrap gap-2">
-            <Button
-              as={Link}
+          {/* Buttons - Space Theme */}
+          <div className="flex flex-wrap items-center gap-3 pt-1">
+            {/* Xem ngay - Play Button with rotating ring */}
+            <Link
               href={playerUrl}
-              size="md"
-              color="default"
-              variant="flat"
-              startContent={<IoPlayOutline className="text-xl" />}
-              className="bg-white/20 font-semibold text-white backdrop-blur-md border border-white/30 hover:bg-white/30"
+              className="group relative flex h-14 w-14 items-center justify-center"
             >
-              Xem ngay
-            </Button>
-            <Button
-              as={Link}
-              href={detailUrl}
-              size="md"
-              color="default"
-              variant="flat"
-              startContent={<IoInformationCircleOutline className="text-xl" />}
-              className="bg-white/20 font-semibold text-white backdrop-blur-md border border-white/30 hover:bg-white/30"
-            >
-              Chi tiết
+              {/* Rotating ring */}
+              <svg
+                className="absolute inset-0 h-full w-full -rotate-90 transition-transform duration-700 ease-out group-hover:rotate-[270deg]"
+                viewBox="0 0 56 56"
+                fill="none"
+              >
+                <circle
+                  cx="28"
+                  cy="28"
+                  r="26"
+                  stroke="rgba(255,255,255,0.25)"
+                  strokeWidth="1.5"
+                  strokeDasharray="4 4"
+                />
+                <circle
+                  cx="28"
+                  cy="28"
+                  r="26"
+                  stroke="url(#playGradient)"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  className="transition-all duration-700 ease-out"
+                  style={{
+                    strokeDasharray: "163.36",
+                    strokeDashoffset: "163.36",
+                  }}
+                />
+                <defs>
+                  <linearGradient id="playGradient" x1="0" y1="0" x2="56" y2="56">
+                    <stop offset="0%" stopColor="#a78bfa" />
+                    <stop offset="50%" stopColor="#60a5fa" />
+                    <stop offset="100%" stopColor="#22d3ee" />
+                  </linearGradient>
+                </defs>
+              </svg>
+              {/* Inner glow on hover */}
+              <span
+                className="absolute inset-1 rounded-full opacity-0 transition-opacity duration-500 group-hover:opacity-100"
+                style={{
+                  background: "radial-gradient(circle, rgba(139,92,246,0.25) 0%, transparent 70%)",
+                }}
+              />
+              {/* Play icon */}
+              <span className="relative z-10 flex h-10 w-10 items-center justify-center rounded-full text-white transition-all duration-300 group-hover:scale-110 group-hover:drop-shadow-[0_0_12px_rgba(167,139,250,0.6)]">
+                <svg width="20" height="22" viewBox="0 0 20 22" fill="currentColor">
+                  <path d="M18.2 9.1L2.8 0.7C1.9 0.2 0.9 0.8 0.9 1.8V20.2C0.9 21.2 1.9 21.8 2.8 21.3L18.2 12.9C19.1 12.4 19.1 9.6 18.2 9.1Z" />
+                </svg>
+              </span>
+            </Link>
 
-            </Button>
-            {/* Nút mute chuyển lên cùng hàng */}
+            {/* Lưu danh sách - Bookmark */}
+            <button
+              onClick={handleBookmark}
+              disabled={isBookmarkPending}
+              className={`group relative inline-flex items-center gap-2.5 overflow-hidden rounded-full px-5 py-2.5 font-semibold backdrop-blur-md transition-all duration-300 hover:scale-105 ${
+                isSaved
+                  ? "text-amber-300"
+                  : "text-white"
+              }`}
+              style={{
+                background: isSaved
+                  ? "linear-gradient(135deg, rgba(245,158,11,0.3) 0%, rgba(251,191,36,0.2) 100%)"
+                  : "linear-gradient(135deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.05) 100%)",
+                border: isSaved
+                  ? "1px solid rgba(245,158,11,0.4)"
+                  : "1px solid rgba(255,255,255,0.15)",
+                boxShadow: isSaved
+                  ? "0 0 20px rgba(245,158,11,0.2), inset 0 1px 0 rgba(255,255,255,0.1)"
+                  : "0 0 15px rgba(255,255,255,0.05), inset 0 1px 0 rgba(255,255,255,0.08)",
+              }}
+            >
+              <span
+                className="absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+                style={{
+                  background: isSaved
+                    ? "linear-gradient(135deg, rgba(245,158,11,0.4) 0%, rgba(251,191,36,0.3) 100%)"
+                    : "linear-gradient(135deg, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0.08) 100%)",
+                  boxShadow: isSaved
+                    ? "0 0 30px rgba(245,158,11,0.3), inset 0 1px 0 rgba(255,255,255,0.15)"
+                    : "0 0 20px rgba(255,255,255,0.08), inset 0 1px 0 rgba(255,255,255,0.1)",
+                }}
+              />
+              {isSaved ? (
+                <BsBookmarkCheckFill className="relative z-10 text-lg transition-transform duration-300 group-hover:scale-110" />
+              ) : (
+                <BsBookmarkFill className="relative z-10 text-lg transition-transform duration-300 group-hover:scale-110" />
+              )}
+              <span className="relative z-10 text-sm">{isSaved ? "Đã lưu" : "Lưu"}</span>
+            </button>
+
+            {/* Chi tiết - Info */}
+            <Link
+              href={detailUrl}
+              className="group relative inline-flex items-center gap-2.5 overflow-hidden rounded-full px-5 py-2.5 font-semibold text-white backdrop-blur-md transition-all duration-300 hover:scale-105"
+              style={{
+                background: "linear-gradient(135deg, rgba(6,182,212,0.25) 0%, rgba(34,211,238,0.15) 100%)",
+                border: "1px solid rgba(255,255,255,0.15)",
+                boxShadow: "0 0 15px rgba(6,182,212,0.15), inset 0 1px 0 rgba(255,255,255,0.08)",
+              }}
+            >
+              <span
+                className="absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+                style={{
+                  background: "linear-gradient(135deg, rgba(6,182,212,0.4) 0%, rgba(34,211,238,0.3) 100%)",
+                  boxShadow: "0 0 25px rgba(6,182,212,0.3), inset 0 1px 0 rgba(255,255,255,0.12)",
+                }}
+              />
+              <IoInformationCircleOutline className="relative z-10 text-lg transition-transform duration-300 group-hover:rotate-12" />
+              <span className="relative z-10 text-sm">Chi tiết</span>
+            </Link>
+
+            {/* Mute toggle */}
             {trailerUrl && (
               <button
                 onClick={() => setIsMuted(!isMuted)}
-                className="ml-2 flex h-10 w-10 items-center justify-center rounded-full border-2 border-gray-500/50 dark:border-white/50 bg-white/30 dark:bg-black/30 text-gray-900 dark:text-white backdrop-blur-sm transition-all hover:bg-white/50 dark:hover:bg-black/50"
-                title={isMuted ? 'Bật tiếng' : 'Tắt tiếng'}
+                className="group relative ml-1 flex h-10 w-10 items-center justify-center rounded-full backdrop-blur-md transition-all duration-300 hover:scale-110"
+                style={{
+                  background: "linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%)",
+                  border: "1px solid rgba(255,255,255,0.2)",
+                  boxShadow: "0 0 12px rgba(255,255,255,0.05)",
+                }}
+                title={isMuted ? "Bật tiếng" : "Tắt tiếng"}
               >
+                <span
+                  className="absolute inset-0 rounded-full opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+                  style={{
+                    background: "linear-gradient(135deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.08) 100%)",
+                    boxShadow: "0 0 20px rgba(255,255,255,0.1)",
+                  }}
+                />
                 {isMuted ? (
-                  <IoVolumeMuteOutline className="text-xl" />
+                  <IoVolumeMuteOutline className="relative z-10 text-xl text-gray-300 transition-colors group-hover:text-white" />
                 ) : (
-                  <IoVolumeHighOutline className="text-xl" />
+                  <IoVolumeHighOutline className="relative z-10 text-xl text-gray-300 transition-colors group-hover:text-white" />
                 )}
               </button>
             )}
