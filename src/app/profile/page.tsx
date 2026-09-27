@@ -28,27 +28,11 @@ async function getProfileData() {
     sessionError: sessionError
   });
   
-  // TEMPORARY: Don't redirect on auth error, get first profile instead
-  // This will show profile data but with wrong user context
-  let targetUserId = user?.id;
-  
   if (!user || sessionError) {
-    console.log("🔍 [PROFILE PAGE] No user found, getting first profile as fallback");
-    const supabase = await createClient();
-    const { data: firstProfile } = await supabase
-      .from("profiles")
-      .select("*")
-      .limit(1)
-      .single();
-    
-    if (firstProfile) {
-      targetUserId = firstProfile.id;
-      console.log("🔍 [PROFILE PAGE] Using fallback user:", targetUserId);
-    } else {
-      console.log("🔍 [PROFILE PAGE] No profiles found - TEMPORARILY NOT REDIRECTING");
-      return { debug: "No user found and no profiles in database" as const };
-    }
+    redirect("/auth/login");
   }
+
+  const targetUserId = user.id;
 
   console.log("🔍 [PROFILE PAGE] Using user ID:", targetUserId);
 
@@ -113,13 +97,8 @@ async function getProfileData() {
   }
 
   console.log("🔍 [PROFILE PAGE] Rendering ProfileClientSimple...");
-  // Use the actual user if available, otherwise use a mock user object
-  const displayUser = user || {
-    id: targetUserId,
-    email: profile?.email || 'unknown@example.com'
-  };
-  
-  return { user: displayUser, profile } as const;
+
+  return { user, profile } as const;
 }
 
 export default async function ProfilePage() {
@@ -134,10 +113,6 @@ export default async function ProfilePage() {
     });
     redirect("/auth/login");
     return;
-  }
-
-  if ('debug' in data) {
-    return <div>Debug: {data.debug}</div>;
   }
 
   return <ProfileClientSimple user={data.user} profile={data.profile} />;

@@ -7,6 +7,7 @@ import { Input, Button, Card, CardHeader, CardBody, addToast } from "@heroui/rea
 import BrandLogo from "@/components/ui/other/BrandLogo";
 import ThreeDMarquee from "@/components/ui/background/ThreeDMarquee";
 import { cn, isEmpty, shuffleArray } from "@/utils/helpers";
+import { translateAuthError } from "@/utils/auth-errors";
 import { getImageUrl } from "@/utils/movies";
 import { useQuery } from "@tanstack/react-query";
 import { tmdb, fetchWithFallback } from "@/api/tmdb";
@@ -102,33 +103,11 @@ export function LoginForm() {
       
       if (error) {
         console.error('❌ [ĐĂNG NHẬP] Lỗi đăng nhập:', error);
-        
-        // Handle specific error types with better messages
-        if (error.message?.includes('Invalid login credentials')) {
-          // Try to get more specific error info
-          try {
-            const { data: user } = await supabase.auth.getUser();
-            console.log('👤 [ĐĂNG NHẬP] User sau khi đăng nhập thất bại:', user);
-            
-            if (!user) {
-              setError('Email hoặc mật khẩu không đúng. Vui lòng thử lại.');
-            } else {
-              setError('Mật khẩu không đúng. Vui lòng kiểm tra lại.');
-            }
-          } catch (userCheckError) {
-            console.error('❌ [ĐĂNG NHẬP] Kiểm tra user thất bại:', userCheckError);
-            setError('Email hoặc mật khẩu không đúng. Vui lòng thử lại.');
-          }
-        } else if (error.message?.includes('Email not confirmed')) {
-          setError('Email chưa được xác minh. Vui lòng kiểm tra hộp thư và xác minh email.');
-        } else if (error.message?.includes('Too many requests')) {
-          setError('Quá nhiều lần thử. Vui lòng đợi 5 phút và thử lại.');
-        } else if (error.message?.includes('User already registered')) {
-          setError('Tài khoản đã tồn tại. Vui lòng đăng nhập.');
-        } else {
-          setError(error.message || 'Đăng nhập thất bại. Vui lòng thử lại.');
-        }
-        throw error;
+
+        setError(
+          translateAuthError(error, 'Đăng nhập thất bại. Vui lòng thử lại.'),
+        );
+        return;
       }
       
       addToast({
@@ -145,9 +124,23 @@ export function LoginForm() {
       }, 500);
     } catch (error: unknown) {
       console.error('❌ [ĐĂNG NHẬP] Lỗi đăng nhập không mong muốn:', error);
-      const errorMessage = error instanceof Error ? error.message : "Đăng nhập thất bại. Vui lòng thử lại.";
+
+      const isSupabaseError =
+        typeof error === 'object' &&
+        error !== null &&
+        'code' in error;
+
+      const errorMessage = isSupabaseError
+        ? translateAuthError(
+            error as { code?: string; message?: string },
+            'Đăng nhập thất bại. Vui lòng thử lại.',
+          )
+        : error instanceof Error
+          ? `Đăng nhập thất bại: ${error.message}`
+          : 'Đăng nhập thất bại. Vui lòng thử lại.';
+
       setError(errorMessage);
-      
+
       addToast({
         title: errorMessage,
         color: "danger",

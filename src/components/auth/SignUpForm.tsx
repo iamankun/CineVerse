@@ -7,6 +7,7 @@ import { Input, Button, Card, CardHeader, CardBody, addToast } from "@heroui/rea
 import BrandLogo from "@/components/ui/other/BrandLogo";
 import ThreeDMarquee from "@/components/ui/background/ThreeDMarquee";
 import { cn, isEmpty, shuffleArray } from "@/utils/helpers";
+import { translateAuthError } from "@/utils/auth-errors";
 import { getImageUrl } from "@/utils/movies";
 import { useQuery } from "@tanstack/react-query";
 import { tmdb, fetchWithFallback } from "@/api/tmdb";
@@ -282,8 +283,19 @@ export function SignUpForm() {
       }
     } catch (error: unknown) {
       console.error('❌ [ĐĂNG KÝ CINEVERSE] Lỗi đăng ký không mong muốn:', error);
-      const errorMessage = error instanceof Error ? error.message : "Đăng ký thất bại. Vui lòng thử lại.";
-      
+
+      const isSupabaseError =
+        typeof error === 'object' && error !== null && 'code' in error;
+
+      const errorMessage = isSupabaseError
+        ? translateAuthError(
+            error as { code?: string; message?: string },
+            'Đăng ký thất bại. Vui lòng thử lại.',
+          )
+        : error instanceof Error
+          ? `Đăng ký thất bại: ${error.message}`
+          : 'Đăng ký thất bại. Vui lòng thử lại.';
+
       addToast({
         title: errorMessage,
         color: "danger",
