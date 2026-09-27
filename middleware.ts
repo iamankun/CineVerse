@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
+import { createServerClient } from '@supabase/ssr';
 
 function generateNonce(): string {
   const array = new Uint8Array(16);
@@ -131,45 +132,75 @@ function getCSPPolicy(nonce: string): string {
     .join('; ');
 }
 
+const PROTECTED_ROUTES = ['/profile', '/profiles', '/protected', '/admin'];
+
+function isProtectedRoute(pathname: string): boolean {
+  return PROTECTED_ROUTES.some(
+    (route) => pathname === route || pathname.startsWith(`${route}/`),
+  );
+}
+
+function loginRedirect(request: NextRequest, pathname: string): NextResponse {
+  const redirectUrl = new URL('/auth/login', request.url);
+  redirectUrl.searchParams.set('redirectTo', pathname);
+  return NextResponse.redirect(redirectUrl);
+}
+
+function applySecurityHeaders(response: NextResponse, nonce: string): NextResponse {
+  response.headers.set('Content-Security-Policy', getCSPPolicy(nonce));
+  response.headers.set('X-CSP-Nonce', nonce);
+  response.headers.set(
+    'Strict-Transport-Security',
+    'max-age=63072000; includeSubDomains; preload',
+  );
+  response.headers.set('Cross-Origin-Opener-Policy', 'unsafe-none');
+  return response;
+}
+
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
-
-  const protectedRoutes = ['/profile', '/profiles', '/protected', '/admin'];
-  const isProtectedRoute = protectedRoutes.some(route => pathname.startsWith(route));
-
   const nonce = generateNonce();
-  let response: NextResponse;
 
-  if (!isProtectedRoute) {
-    response = NextResponse.next();
-  } else {
-    const cookieHeader = request.headers.get('cookie') || '';
-    const hasAuthCookie = /sb-exsoflgvdreikabvhvkg-auth-token\.[01]=/.test(cookieHeader) ||
-                         /sb-access-token=/.test(cookieHeader) ||
-                         /sb:access-token=/.test(cookieHeader) ||
-                         /supabase\.auth\.token=/.test(cookieHeader);
-
-    if (!hasAuthCookie) {
-      const redirectUrl = new URL('/auth/login', request.url);
-      redirectUrl.searchParams.set('redirectTo', pathname);
-      return NextResponse.redirect(redirectUrl);
-    }
-
-    response = NextResponse.next();
+  if (!isProtectedRoute(pathname)) {
+    return applySecurityHeaders(NextResponse.next(), nonce);
   }
 
-  const cspPolicy = getCSPPolicy(nonce);
-  response.headers.set('Content-Security-Policy', cspPolicy);
-  response.headers.set('X-CSP-Nonce', nonce);
-  
-  response.headers.set(
-    'Strict-Transport-Security', 
-    'max-age=63072000; includeSubDomains; preload'
-  );
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.NEXT_SUPABASE_URL;
+  const supabaseAnonKey =
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.NEXT_SUPABASE_ANON_KEY;
 
-  response.headers.set('Cross-Origin-Opener-Policy', 'unsafe-none');
+  if (!supabaseUrl || !supabaseAnonKey) {
+    return applySecurityHeaders(loginRedirect(request, pathname), nonce);
+  }
 
-  return response;
+  let response = NextResponse.next({ request });
+
+  // @supabase/ssr suy ra tên cookie từ NEXT_PUBLIC_SUPABASE_URL nên không phụ thuộc
+  // domain hay project ref, đồng thời tự làm mới token hết hạn.
+  const supabase = createServerClient(supabaseUrl, supabaseAnonKey, {
+    cookies: {
+      getAll() {
+        return request.cookies.getAll();
+      },
+      setAll(cookiesToSet) {
+        cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value));
+        response = NextResponse.next({ request });
+        cookiesToSet.forEach(({ name, value, options }) =>
+          response.cookies.set(name, value, options),
+        );
+      },
+    },
+  });
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return applySecurityHeaders(loginRedirect(request, pathname), nonce);
+  }
+
+  return applySecurityHeaders(response, nonce);
 }
 
 export const config = {
