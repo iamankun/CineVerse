@@ -6,6 +6,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import {
   Card,
   CardHeader,
@@ -27,9 +28,12 @@ import {
   Tab
 } from '@heroui/react';
 import { Plus, Trash2, Edit, Shield, Code, Eye, Filter } from 'lucide-react';
+import { IoArrowBack } from 'react-icons/io5';
 import type { FilterRule, NetworkFilterRule, CosmeticFilterRule, ScriptletFilterRule } from '@/types/adblock';
+import AdminGuard from '@/components/AdminGuard';
 
 export default function FiltersPage() {
+  const router = useRouter();
   const [filters, setFilters] = useState<FilterRule[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedFilter, setSelectedFilter] = useState<FilterRule | null>(null);
@@ -107,15 +111,24 @@ export default function FiltersPage() {
   const scriptletFilters = filters.filter(f => f.type === 'scriptlet');
 
   return (
-    <div className="space-y-6 p-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold">Quản lý Filters</h1>
-          <p className="text-default-500 mt-2">
-            Tổng số: {filters.length} filters - Đang hoạt động: {filters.filter(f => f.enabled).length}
-          </p>
+    <AdminGuard>
+      <div className="space-y-6 p-6">
+        <div className="flex items-center gap-3">
+          <Button
+            isIconOnly
+            variant="light"
+            aria-label="Quay lại"
+            onPress={() => router.push('/admin')}
+          >
+            <IoArrowBack size={24} />
+          </Button>
+          <div>
+            <h1 className="text-3xl font-bold">Quản lý Filters</h1>
+            <p className="text-default-500 mt-2">
+              Tổng số: {filters.length} filters - Đang hoạt động: {filters.filter(f => f.enabled).length}
+            </p>
+          </div>
         </div>
-      </div>
 
       <Card>
         <CardHeader className="flex gap-3">
@@ -198,7 +211,8 @@ export default function FiltersPage() {
         filterType={filterType}
         onSuccess={loadFilters}
       />
-    </div>
+      </div>
+    </AdminGuard>
   );
 }
 

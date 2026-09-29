@@ -1,13 +1,16 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import AdminGuard from "@/components/AdminGuard";
 import LivePlayer from "@/components/LivePlayer";
 import { Card, CardBody, Button, Input, Chip } from "@heroui/react";
 import { RadioTower, Link as LinkIcon, Trash2, AlertCircle, Copy, Check } from "lucide-react";
+import { IoArrowBack } from "react-icons/io5";
 import { LiveStatus } from "@/types/live";
 
 export default function AdminLivePage() {
+  const router = useRouter();
   const [channelName, setChannelName] = useState("");
   const [channelId, setChannelId] = useState<string | null>(null);
   const [channelLoading, setChannelLoading] = useState(false);
@@ -105,6 +108,15 @@ export default function AdminLivePage() {
         {/* Header */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
+            <Button
+              isIconOnly
+              variant="light"
+              aria-label="Quay lại"
+              onPress={() => router.push("/admin")}
+              className="shrink-0 text-white"
+            >
+              <IoArrowBack size={24} />
+            </Button>
             <RadioTower className="w-7 h-7 text-red-500" />
             <h1 className="text-2xl md:text-3xl font-bold text-white">Phát trực tiếp</h1>
           </div>

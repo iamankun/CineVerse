@@ -8,6 +8,7 @@ import { IoInformationCircleOutline, IoVolumeHighOutline, IoVolumeMuteOutline } 
 import { IoIosArrowBack, IoIosArrowForward } from "react-icons/io";
 import { BsBookmarkFill, BsBookmarkCheckFill } from "react-icons/bs";
 import { getImageUrl } from "@/utils/movies";
+import { extractYouTubeId } from "@/utils/video-helpers";
 import { defaultAgeRating, getTmdbAgeRating } from "@/utils/age-rating";
 import { useMovieLogo } from "@/hooks/useMovieLogo";
 import Link from "next/link";
@@ -272,6 +273,12 @@ const CineVerseHero = () => {
     videos.find((v: Video) => v.type === "Trailer" && v.site === "YouTube") ||
     videos.find((v: Video) => v.site === "YouTube");
   
+  // Ưu tiên "Video Giới thiệu" lưu trong database, không có thì fallback về trailer TMDB
+  const introVideoKey = sourceMetadata?.metadata?.["introductory-video"]
+    ? extractYouTubeId(sourceMetadata.metadata["introductory-video"])
+    : "";
+  const heroVideoKey = introVideoKey || trailer?.key || "";
+
   // Debug log
   if (item) {
     console.log(`Slide ${currentIndex + 1} (${title}):`, {
@@ -280,16 +287,19 @@ const CineVerseHero = () => {
       videos: videos.map((v: Video) => ({ type: v.type, site: v.site, key: v.key, lang: v.iso_639_1 })),
       trailerFound: !!trailer,
       trailerKey: trailer?.key,
-      trailerLang: trailer?.iso_639_1
+      trailerLang: trailer?.iso_639_1,
+      introVideoKey,
+      usingIntroVideo: !!introVideoKey,
+      heroVideoKey
     });
   }
-  
+
   // Sử dụng youtube-nocookie.com để tránh third-party cookies
-  const trailerUrl = trailer ? `https://www.youtube-nocookie.com/embed/${trailer.key}?autoplay=1&mute=${isMuted ? 1 : 0}&controls=0&loop=1&playlist=${trailer.key}&playsinline=1&modestbranding=1&rel=0&showinfo=0` : null;
+  const trailerUrl = heroVideoKey ? `https://www.youtube-nocookie.com/embed/${heroVideoKey}?autoplay=1&mute=${isMuted ? 1 : 0}&controls=0&loop=1&playlist=${heroVideoKey}&playsinline=1&modestbranding=1&rel=0&showinfo=0` : null;
 
   // Auto-advance to next trailer after video duration - MUST be before any return
   useEffect(() => {
-    if (!content || content.length === 0 || !trailer) return;
+    if (!content || content.length === 0 || !heroVideoKey) return;
 
     // Tự động chuyển trailer sau 2 phút (120 giây)
     const autoAdvanceTimer = setTimeout(() => {
@@ -300,7 +310,7 @@ const CineVerseHero = () => {
     return () => {
       clearTimeout(autoAdvanceTimer);
     };
-  }, [content, handleNext, currentIndex, trailer]);
+  }, [content, handleNext, currentIndex, heroVideoKey]);
 
   // Check watchlist status when currentIndex changes
   useEffect(() => {
@@ -376,7 +386,7 @@ const CineVerseHero = () => {
             <div className="absolute inset-0 overflow-hidden">
               <iframe
                 ref={iframeRef}
-                key={`trailer-${currentIndex}`}
+                key={`trailer-${currentIndex}-${heroVideoKey}`}
                 src={trailerUrl}
                 className="absolute left-1/2 top-1/2 h-[56.25vw] min-h-full w-[177.77vh] min-w-full -translate-x-1/2 -translate-y-1/2 scale-120"
                 allow="autoplay; encrypted-media"

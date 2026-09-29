@@ -136,10 +136,10 @@ export default function NotificationAdminPage() {
       
       if (result.success) {
         addToast({
-          title: "Đăng xuất admin thành công",
+          title: "Đăng xuất quản trị viên thành công",
           color: "success",
         });
-        router.push("/admin/login");
+        router.push("/auth/login");
         router.refresh();
       } else {
         addToast({
@@ -148,7 +148,7 @@ export default function NotificationAdminPage() {
         });
       }
     } catch (error) {
-      console.error("Admin logout error:", error);
+      console.error("Lỗi đăng xuất quản trị viên:", error);
       addToast({
         title: "Lỗi kết nối. Vui lòng thử lại.",
         color: "danger",

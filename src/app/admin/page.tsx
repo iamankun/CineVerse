@@ -2,10 +2,10 @@
 
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { Card, CardBody, CardHeader } from "@heroui/react";
+import { Button, Card, CardBody, CardHeader } from "@heroui/react";
 import AdminGuard from "@/components/AdminGuard";
 import { getVersionString } from "@/utils/version";
-import { IoStatsChart, IoNotifications, IoSettingsSharp, IoAnalytics, IoShieldCheckmarkOutline } from "react-icons/io5";
+import { IoArrowBack, IoStatsChart, IoNotifications, IoSettingsSharp, IoAnalytics, IoShieldCheckmarkOutline } from "react-icons/io5";
 import { RadioTower } from "lucide-react";
 import { createClient } from "@/utils/supabase/client";
 import { useState, useEffect } from "react";
@@ -80,6 +80,15 @@ export default function AdminPage() {
         <div className="w-full max-w-5xl">
         {/* Header */}
         <div className="mb-12 flex items-center gap-4">
+          <Button
+            isIconOnly
+            variant="light"
+            aria-label="Quay lại trang chủ"
+            onPress={() => router.push("/")}
+            className="shrink-0 text-white"
+          >
+            <IoArrowBack size={24} />
+          </Button>
           <Image src="/logo-cineverse.webp" alt="CineVerse" width={64} height={64} />
           <div>
             <p className="text-2xl text-gray-300">

@@ -12,6 +12,7 @@ import { tmdb, fetchWithFallback, fetchDetailWithFallback } from "@/api/tmdb";
 import { Movie, TV } from "tmdb-ts";
 import { getImageUrl } from "@/utils/movies";
 import { useRouter } from "next/navigation";
+import AdminGuard from "@/components/AdminGuard";
 
 type MediaType = "movie" | "tv";
 
@@ -82,8 +83,9 @@ export default function SEOPage() {
   const results = searchResults?.results || [];
 
   return (
-    <div className="container mx-auto space-y-4 p-4">
-      <div className="flex items-center gap-3 mb-4">
+    <AdminGuard>
+      <div className="container mx-auto space-y-4 p-4">
+        <div className="flex items-center gap-3 mb-4">
         <Button
           isIconOnly
           variant="light"
@@ -254,6 +256,7 @@ export default function SEOPage() {
           )}
         </div>
       </div>
-    </div>
+      </div>
+    </AdminGuard>
   );
 }

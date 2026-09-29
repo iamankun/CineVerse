@@ -827,6 +827,7 @@ interface ExistingSource {
   metadata?: {
     "movie-rating"?: string;
     audioVersion?: string;
+    "introductory-video"?: string;
     lastUpdate?: string;
   };
   // TV-specific
@@ -858,6 +859,7 @@ export default function DashboardPage() {
     metadata: {
       "movie-rating": "K",
       audioVersion: "PhuDe", // "PhuDe", "LongTieng", or "Goc"
+      "introductory-video": "",
       lastUpdate: new Date().toISOString(),
       genre: [] as string[],
       duration: 0,
@@ -1371,7 +1373,7 @@ export default function DashboardPage() {
           title: "Đăng xuất admin thành công",
           color: "success",
         });
-        router.push("/admin/login");
+        router.push("/auth/login");
         router.refresh();
       } else {
         addToast({
@@ -1508,6 +1510,7 @@ export default function DashboardPage() {
     const metadata = {
       "movie-rating": parsedData.metadata?.["movie-rating"] || "K",
       audioVersion: audioVersion,
+      "introductory-video": parsedData.metadata?.["introductory-video"] || "",
       lastUpdate: lastUpdateValue,
       genre: parsedData.metadata?.genre || [],
       duration: parsedData.metadata?.duration || 0,
@@ -1598,6 +1601,7 @@ export default function DashboardPage() {
     const metadata = {
       "movie-rating": "K",
       audioVersion: "LongTieng", // Default to dubbed for multiple links
+      "introductory-video": "",
       lastUpdate: new Date().toISOString(),
       genre: [],
       duration: 0,
@@ -2307,20 +2311,55 @@ export default function DashboardPage() {
                         <SelectItem key="Goc">Nguyên bản</SelectItem>
                       </Select>
 
-                      <Input
-                        label="Thời gian cập nhật"
-                        type="datetime-local"
-                        value={formData.metadata.lastUpdate ? new Date(formData.metadata.lastUpdate).toISOString().slice(0, 16) : ""}
-                        onChange={(e) => setFormData((prev: any) => ({
-                          ...prev,
-                          metadata: { ...prev.metadata, lastUpdate: new Date(e.target.value).toISOString() }
-                        }))}
-                        classNames={{
-                          input: "text-white",
-                          inputWrapper: "bg-gray-700",
-                        }}
-                      />
-                    </div>
+<Input
+                          label="Thời gian cập nhật"
+                          type="datetime-local"
+                          value={formData.metadata.lastUpdate ? new Date(formData.metadata.lastUpdate).toISOString().slice(0, 16) : ""}
+                          onChange={(e) => setFormData((prev: any) => ({
+                            ...prev,
+                            metadata: { ...prev.metadata, lastUpdate: new Date(e.target.value).toISOString() }
+                          }))}
+                          classNames={{
+                            input: "text-white",
+                            inputWrapper: "bg-gray-700",
+                          }}
+                        />
+                        <Input
+                          label="Video Giới thiệu"
+                          placeholder="https://www.youtube.com/watch?v=..."
+                          description="Link YouTube video giới thiệu phim, được lưu vào metadata"
+                          value={formData.metadata["introductory-video"] || ""}
+                          onChange={(e) => setFormData((prev: any) => ({
+                            ...prev,
+                            metadata: { ...prev.metadata, "introductory-video": e.target.value }
+                          }))}
+                          onPaste={(e) => {
+                            const pastedText = e.clipboardData.getData('text');
+                            if (pastedText && (pastedText.includes('youtube.com') || pastedText.includes('youtu.be'))) {
+                              e.preventDefault();
+                              const norm = normalizeYouTubeUrl(pastedText);
+                              setFormData((prev: any) => ({
+                                ...prev,
+                                metadata: {
+                                  ...prev.metadata,
+                                  "introductory-video": norm ? norm.url : pastedText,
+                                }
+                              }));
+                            }
+                          }}
+                          classNames={{
+                            input: "text-white",
+                            inputWrapper: "bg-gray-700",
+                          }}
+                        />
+                      </div>
+
+                      {formData.metadata["introductory-video"] && (
+                        <VideoPreview
+                          videoId={normalizeYouTubeUrl(formData.metadata["introductory-video"])?.id || ''}
+                          iframeId="introductory-video-preview"
+                        />
+                      )}
 
                     <Textarea
                       label="Ghi chú"
@@ -2568,6 +2607,7 @@ export default function DashboardPage() {
                             sources: [],
                             metadata: {
                               "movie-rating": "K",
+                              "introductory-video": "",
                               genre: [],
                               duration: 0,
                               status: "Released",

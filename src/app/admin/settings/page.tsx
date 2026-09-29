@@ -8,6 +8,7 @@ import { Tabs, Tab } from "@heroui/react";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { IoArrowBack } from "react-icons/io5";
+import AdminGuard from "@/components/AdminGuard";
 
 interface OverlayConfig {
   ageRating: {
@@ -202,8 +203,9 @@ export default function SettingsPage() {
   }
 
   return (
-    <div className="container mx-auto max-w-6xl p-4">
-      <div className="flex items-center gap-3 mb-6">
+    <AdminGuard>
+      <div className="container mx-auto max-w-6xl p-4">
+        <div className="flex items-center gap-3 mb-6">
         <Button
           isIconOnly
           variant="light"
@@ -432,6 +434,7 @@ export default function SettingsPage() {
           </CardBody>
         </Card>
       )}
-    </div>
+      </div>
+    </AdminGuard>
   );
 }
