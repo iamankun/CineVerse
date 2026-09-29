@@ -38,7 +38,7 @@ function normalizeYouTubeUrl(url: string): { id: string, url: string } | null {
   }
 }
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import {
   Button,
   Input,
@@ -877,7 +877,28 @@ export default function DashboardPage() {
   // Existing sources
   const [existingSources, setExistingSources] = useState<ExistingSource[]>([]);
   const [allSources, setAllSources] = useState<ExistingSource[]>([]); // Tất cả sources cho bảng
+  const [sourcesSearch, setSourcesSearch] = useState(""); // Tìm kiếm trong bảng sources
   const [isLoadingExisting, setIsLoadingExisting] = useState(false);
+
+  // Lọc danh sách sources theo từ khóa tìm kiếm (tiêu đề, TMDB ID, năm, rating, loại)
+  const filteredSources = useMemo(() => {
+    const term = sourcesSearch.trim().toLowerCase();
+    if (!term) return allSources;
+
+    return allSources.filter((source) => {
+      const haystack = [
+        source.title,
+        String(source.tmdb_id ?? source.tmdbId ?? ""),
+        String(source.year ?? ""),
+        source.type === "movie" ? "phim" : "tv",
+        source.metadata?.["movie-rating"] ?? "",
+        source.metadata?.audioVersion ?? "",
+      ]
+        .join(" ")
+        .toLowerCase();
+      return haystack.includes(term);
+    });
+  }, [allSources, sourcesSearch]);
   const [currentJsonData, setCurrentJsonData] = useState<string>("");
   
   // JSON paste feature
@@ -1882,18 +1903,30 @@ export default function DashboardPage() {
         {viewMode === "table" ? (
           /* TABLE VIEW: Hiển thị tất cả sources */
           <Card className="bg-gray-800/50 backdrop-blur-sm">
-            <CardHeader className="flex items-center justify-between">
+            <CardHeader className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <h3 className="text-2xl font-semibold text-white">
-                Tất cả nguồn phim ({allSources.length})
+                Tất cả nguồn phim ({sourcesSearch ? `${filteredSources.length}/${allSources.length}` : allSources.length})
               </h3>
-              <Button
-                size="sm"
-                isIconOnly
-                variant="flat"
-                onPress={loadAllSources}
-              >
-                <IoRefresh />
-              </Button>
+              <div className="flex w-full items-center gap-2 sm:w-auto">
+                <Input
+                  size="sm"
+                  value={sourcesSearch}
+                  onValueChange={setSourcesSearch}
+                  placeholder="Tìm theo tiêu đề, TMDB ID, năm..."
+                  startContent={<IoSearch className="text-gray-400" />}
+                  isClearable
+                  onClear={() => setSourcesSearch("")}
+                  className="w-full sm:w-72"
+                />
+                <Button
+                  size="sm"
+                  isIconOnly
+                  variant="flat"
+                  onPress={loadAllSources}
+                >
+                  <IoRefresh />
+                </Button>
+              </div>
             </CardHeader>
             <CardBody>
               <Table
@@ -1914,8 +1947,8 @@ export default function DashboardPage() {
                   <TableColumn>Ngày cập nhật</TableColumn>
                   <TableColumn>Hành động</TableColumn>
                 </TableHeader>
-                <TableBody>
-                  {allSources.map((source, index) => (
+                <TableBody emptyContent="Không tìm thấy nguồn phim nào">
+                  {filteredSources.map((source, index) => (
                     <TableRow key={`${source.type}-${index}`}>
                       <TableCell>
                         <Chip

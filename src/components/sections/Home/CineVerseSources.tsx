@@ -8,6 +8,7 @@ import { IoInformationCircleOutline, IoVolumeHighOutline, IoVolumeMuteOutline } 
 import { IoIosArrowBack, IoIosArrowForward } from "react-icons/io";
 import { BsBookmarkFill, BsBookmarkCheckFill } from "react-icons/bs";
 import { getImageUrl } from "@/utils/movies";
+import { defaultAgeRating, getTmdbAgeRating } from "@/utils/age-rating";
 import { useMovieLogo } from "@/hooks/useMovieLogo";
 import Link from "next/link";
 import Image from "next/image";
@@ -188,7 +189,12 @@ const CineVerseHero = () => {
         if (!response.ok) return null;
         const result = await response.json();
         const data = currentContentType === "movie" ? result.movies : result.tvSeries;
-        const item = data?.find((item: any) => item.tmdb_id === currentId);
+        // So sánh linh hoạt string/number vì Supabase có thể trả tmdb_id dạng string
+        const item = data?.find(
+          (item: any) =>
+            String(item?.tmdb_id) === String(currentId) ||
+            Number(item?.tmdb_id) === currentId
+        );
         return item || null;
       } catch (error) {
         console.error("Error fetching source metadata from Supabase:", error);
@@ -199,7 +205,7 @@ const CineVerseHero = () => {
     staleTime: 1000 * 60 * 60,
   });
 
-  // Fetch movie-rating definitions
+  // Fetch movie-rating definitions (miêu tả từng mức, kể cả mã quốc tế)
   const { data: movieRatings } = useQuery({
     queryKey: ["movie-ratings"],
     queryFn: async () => {
@@ -216,6 +222,31 @@ const CineVerseHero = () => {
     staleTime: Infinity, // Cache forever since ratings don't change
   });
 
+  // Rating từ database (giống admin). Nếu database không có → fallback TMDB
+  const dbRatingCode = sourceMetadata?.metadata?.["movie-rating"];
+  const dbRatingDescription = dbRatingCode && movieRatings ? movieRatings[dbRatingCode] : null;
+
+  const { data: tmdbRatingInfo } = useQuery({
+    queryKey: ["tmdb-age-rating-fallback", currentId, currentContentType],
+    queryFn: () => getTmdbAgeRating(currentContentType, currentId),
+    enabled: !!currentId && sourceMetadata !== undefined && !dbRatingCode,
+    staleTime: 1000 * 60 * 60,
+  });
+
+  // Chỉ hiện badge khi đã xác định xong rating (DB resolve, nếu thiếu thì chờ TMDB)
+  const ratingResolved =
+    sourceMetadata !== undefined &&
+    (dbRatingCode ? true : tmdbRatingInfo !== undefined);
+
+  const ratingInfo = ratingResolved
+    ? dbRatingCode
+      ? {
+          rating: dbRatingCode,
+          description: dbRatingDescription || "Phân loại độ tuổi",
+        }
+      : tmdbRatingInfo ?? defaultAgeRating(currentContentType)
+    : null;
+
   // Calculate all values before early return
   const item = currentItem as NonNullable<typeof currentItem>;
   const title = item && ("title" in item ? item.title : "name" in item ? item.name : "");
@@ -226,12 +257,10 @@ const CineVerseHero = () => {
     ? new Date(item.first_air_date).getFullYear()
     : "";
 
-  // Get movie rating info
-  const ratingCode = sourceMetadata?.metadata?.["movie-rating"];
-  const ratingDescription = ratingCode && movieRatings ? movieRatings[ratingCode] : null;
-  const ratingDisplay = ratingCode && ratingDescription 
-    ? `${ratingCode} - ${ratingDescription}` 
-    : ratingCode || null;
+  // Ưu tiên hiện rating database, chỉ dùng TMDB khi database không có rating
+  const ratingDisplay = ratingInfo
+    ? `${ratingInfo.rating} - ${ratingInfo.description}`
+    : null;
 
   // Lấy trailer/video từ TMDB videos với ưu tiên ngôn ngữ
   const videos: Video[] = item?.videos?.results || [];

@@ -15,8 +15,7 @@ import { useMovieLogo } from "@/hooks/useMovieLogo";
 import { PlayersProps } from "@/types";
 import { playerAdBlocker } from "@/utils/player-ad-blocker";
 import { usePinchToZoom } from "@/hooks/usePinchToZoom";
-import { getTvContentRatings } from "@/api/tmdb";
-import { getVietnamRatingFromContentRatings, vietnamRatingTV } from "@/utils/rating-converter";
+import { getAgeRating } from "@/utils/age-rating";
 import { useGestureContext } from "@/contexts/GestureContext";
 import YouTubePlayer from "@/components/ui/YouTubePlayer";
 import "@/styles/youtube-player.css";
@@ -276,72 +275,13 @@ const TvShowPlayer: React.FC<TvShowPlayerProps> = ({
       }
     });
 
-    // Fetch TV rating from database
+    // Fetch TV rating: ưu tiên database (giống admin), fallback TMDB
     const fetchTVRating = async () => {
-      try {
-        console.log(`🎬 Đang tải TV rating từ database cho ID: ${id}`);
-        console.log(`🎬 ID type:`, typeof id, `ID value:`, id);
-        const response = await fetch(`/api/admin/chuongtrinhtv`);
-        console.log(`📡 Database response status:`, response.status, response.ok);
-        const result = response.ok ? await response.json() : {};
-        console.log(`📊 Database response data:`, result);
-        const tvData = result.tvSeries || [];
-        console.log(`📺 TV Series count:`, tvData.length);
-        
-        // Log tất cả IDs để debug
-        console.log(`🔍 All TV IDs in database:`, tvData.map((item: any) => ({
-          tmdb_id: item.tmdb_id,
-          title: item.title,
-          id_type: typeof item.tmdb_id
-        })));
-        
-        const tvShowData = tvData.find((item: any) => {
-          // Try both string and number comparison
-          const itemId = String(item.tmdb_id);
-          const searchId = String(id);
-          const tvIdNum = Number(id);
-          return itemId === searchId || item.tmdb_id === tvIdNum;
-        });
-        console.log(`🎯 Found TV show:`, !!tvShowData, tvShowData?.title);
-        console.log(`🎯 ID comparison:`, {
-          search_id: id,
-          search_type: typeof id,
-          found_id: tvShowData?.tmdb_id,
-          found_type: typeof tvShowData?.tmdb_id,
-          strict_equal: tvShowData?.tmdb_id === id,
-          loose_equal: tvShowData?.tmdb_id == id
-        });
-        
-        if (tvShowData?.metadata?.["movie-rating"]) {
-          const rating = tvShowData.metadata["movie-rating"];
-          console.log(`✅ TV Rating loaded (database):`, rating);
-          if (isMounted) setMovieRating({ 
-            rating, 
-            description: vietnamRatingTV[rating as keyof typeof vietnamRatingTV] || "Chương trình phân loại độ tuổi" 
-          });
-        } else {
-          console.log(`⚠️ TV show found but no rating metadata`);
-        }
-      } catch (err) {
-        console.error(`❌ Không tải được TV rating từ database:`, err);
-        // Fallback to TMDB if database fails
-        const fetchTMDBRating = async () => {
-          try {
-            console.log(`🌐 Đang lấy rating từ TMDB cho TV ID: ${id}`);
-            const contentRatings = await getTvContentRatings(id);
-            const vietnamRating = getVietnamRatingFromContentRatings(contentRatings);
-            
-            if (vietnamRating && isMounted) {
-              console.log(`✅ TMDB TV Rating converted:`, vietnamRating);
-              setMovieRating(vietnamRating);
-            } else {
-              console.log(`⚠️ Không tìm thấy rating phù hợp từ TMDB`);
-            }
-          } catch (err) {
-            console.error(`❌ Lỗi khi lấy rating từ TMDB:`, err);
-          }
-        };
-        fetchTMDBRating();
+      console.log(`🎬 Đang tải TV rating cho ID: ${id}`);
+      const rating = await getAgeRating("tv", id);
+      if (rating && isMounted) {
+        console.log(`✅ TV Rating loaded:`, rating);
+        setMovieRating(rating);
       }
     };
 

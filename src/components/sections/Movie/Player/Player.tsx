@@ -16,8 +16,7 @@ import { useMovieLogo } from "@/hooks/useMovieLogo";
 import { PlayersProps } from "@/types";
 import { playerAdBlocker } from "@/utils/player-ad-blocker";
 import { usePinchToZoom } from "@/hooks/usePinchToZoom";
-import { getMovieReleaseDates } from "@/api/tmdb";
-import { getVietnamRatingFromReleaseDates, vietnamRatingDienAnh } from "@/utils/rating-converter";
+import { getAgeRating } from "@/utils/age-rating";
 import { useGestureContext } from "@/contexts/GestureContext";
 import YouTubePlayer from "@/components/ui/YouTubePlayer";
 import "@/styles/youtube-player.css";
@@ -270,65 +269,13 @@ const MoviePlayer: React.FC<MoviePlayerProps> = ({ movie, startAt }) => {
       if (isMounted) console.error('Error fetching players:', err);
     });
 
-    // Fetch movie rating from database
+    // Fetch movie rating: ưu tiên database (giống admin), fallback TMDB
     const fetchMovieRating = async () => {
-      try {
-        console.log(`🎬 Đang tải movie rating từ database cho ID: ${movie.id}`);
-        console.log(`🎬 ID type:`, typeof movie.id, `ID value:`, movie.id);
-        const response = await fetch(`/api/admin/dienanh`, { next: { revalidate: 3600 } } as RequestInit);
-        console.log(`📡 Database response status:`, response.status, response.ok);
-        const result = response.ok ? await response.json() : null;
-        console.log(`📊 Database response data:`, result);
-        const movies = result?.movies || [];
-        console.log(`🎬 Movies count:`, movies.length);
-        
-        // Log tất cả IDs để debug
-        console.log(`🔍 All Movie IDs in database:`, movies.map((item: any) => ({
-          tmdb_id: item.tmdb_id,
-          title: item.title,
-          id_type: typeof item.tmdb_id
-        })));
-        
-        const movieData = movies.find((item: any) => {
-          // Try both string and number comparison
-          const itemId = String(item.tmdb_id);
-          const searchId = String(movie.id);
-          const movieIdNum = Number(movie.id);
-          return itemId === searchId || item.tmdb_id === movieIdNum;
-        });
-        
-        console.log(`🎯 Found movie:`, !!movieData, movieData?.title);
-        console.log(`🎯 ID comparison:`, {
-          search_id: movie.id,
-          search_type: typeof movie.id,
-          found_id: movieData?.tmdb_id,
-          found_type: typeof movieData?.tmdb_id,
-          strict_equal: movieData?.tmdb_id === movie.id,
-          loose_equal: movieData?.tmdb_id == movie.id
-        });
-        
-        if (movieData?.metadata?.["movie-rating"]) {
-          const rating = movieData.metadata["movie-rating"];
-          console.log(`✅ Movie Rating loaded (database):`, rating);
-          if (isMounted) setMovieRating({ 
-            rating, 
-            description: vietnamRatingDienAnh[rating as keyof typeof vietnamRatingDienAnh] || "Phim phân loại độ tuổi" 
-          });
-        } else {
-          console.log(`⚠️ Movie found but no rating metadata`);
-        }
-      } catch (err) {
-        console.error('Error fetching movie rating:', err);
-        // Fallback to TMDB if database fails
-        const fetchTMDBRating = async () => {
-          try {
-            console.log(`🌐 Đang lấy rating từ TMDB cho movie ID: ${movie.id}`);
-            const releaseDates = await getMovieReleaseDates(movie.id);
-            const vietnamRating = getVietnamRatingFromReleaseDates(releaseDates);
-            if (vietnamRating && isMounted) setMovieRating(vietnamRating);
-          } catch {}
-        };
-        fetchTMDBRating();
+      console.log(`🎬 Đang tải movie rating cho ID: ${movie.id}`);
+      const rating = await getAgeRating("movie", movie.id);
+      if (rating && isMounted) {
+        console.log(`✅ Movie Rating loaded:`, rating);
+        setMovieRating(rating);
       }
     };
 
