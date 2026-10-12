@@ -3,7 +3,7 @@
 import { Chip, addToast } from "@heroui/react";
 import { useQuery } from "@tanstack/react-query";
 import { Movie, TV } from "tmdb-ts/dist/types";
-import { useState, useEffect, useRef, useCallback, useTransition } from "react";
+import { useState, useEffect, useRef, useCallback, useTransition, useId } from "react";
 import { IoInformationCircleOutline, IoVolumeHighOutline, IoVolumeMuteOutline } from "react-icons/io5";
 import { IoIosArrowBack, IoIosArrowForward } from "react-icons/io";
 import { BsBookmarkFill, BsBookmarkCheckFill } from "react-icons/bs";
@@ -17,6 +17,7 @@ import { env } from "@/utils/env";
 import useSupabaseUser from "@/hooks/useSupabaseUser";
 import { addToWatchlist, removeFromWatchlist, checkInWatchlist } from "@/actions/library";
 import { queryClient } from "@/app/providers";
+import { useYouTubePlayer, PlayerState } from "@/hooks/useYouTubePlayer";
 
 interface Video {
   iso_639_1: string;
@@ -144,10 +145,37 @@ const fetchCineVerseContent = async () => {
   return allContent;
 };
 
+// Hiển thị mô tả đầy đủ với hiệu ứng đánh chữ khi hover
+const TypewriterText = ({ text }: { text: string }) => {
+  const [displayed, setDisplayed] = useState("");
+
+  useEffect(() => {
+    if (!text) return;
+    let i = 0;
+    const interval = setInterval(() => {
+      i += 1;
+      setDisplayed(text.slice(0, i));
+      if (i >= text.length) clearInterval(interval);
+    }, 12);
+    return () => clearInterval(interval);
+  }, [text]);
+
+  return (
+    <>
+      {displayed}
+      {displayed.length < text.length && (
+        <span className="ml-0.5 inline-block h-4 w-0.5 animate-pulse bg-current opacity-80 align-middle" />
+      )}
+    </>
+  );
+};
+
 const CineVerseHero = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isMuted, setIsMuted] = useState(true);
-  const iframeRef = useRef<HTMLIFrameElement>(null);
+  const [isDescHovered, setIsDescHovered] = useState(false);
+  const hasUserToggledMute = useRef(false);
+  const heroPlayerId = useId().replace(/[^a-zA-Z0-9_-]/g, "");
   const { data: user } = useSupabaseUser();
   const [isBookmarkPending, startTransition] = useTransition();
   const [isSaved, setIsSaved] = useState(false);
@@ -294,23 +322,48 @@ const CineVerseHero = () => {
     });
   }
 
-  // Sử dụng youtube-nocookie.com để tránh third-party cookies
-  const trailerUrl = heroVideoKey ? `https://www.youtube-nocookie.com/embed/${heroVideoKey}?autoplay=1&mute=${isMuted ? 1 : 0}&controls=0&loop=1&playlist=${heroVideoKey}&playsinline=1&modestbranding=1&rel=0&showinfo=0` : null;
+  // Khởi tạo YouTube player qua IFrame API để lấy đúng thời lượng video
+  const { playerRef, isReady, duration } = useYouTubePlayer(heroPlayerId, {
+    videoId: heroVideoKey,
+    autoplay: true,
+    onReady: () => {
+      // Mặc định bắt đầu muted để autoplay hoạt động chắc chắn
+      if (!hasUserToggledMute.current) {
+        playerRef.current?.mute();
+        setIsMuted(true);
+      }
+    },
+    onStateChange: (state) => {
+      // Video kết thúc (PlayerState.ENDED) → tự động chuyển slide
+      if (state === PlayerState.ENDED) {
+        console.log('Video ended - advancing to next slide');
+        handleNext();
+      }
+    },
+  });
 
-  // Auto-advance to next trailer after video duration - MUST be before any return
+  // Ghi nhận thời lượng video & tự động chuyển slide khi hết video - MUST be before any return
   useEffect(() => {
-    if (!content || content.length === 0 || !heroVideoKey) return;
+    if (!content || content.length === 0) return;
 
-    // Tự động chuyển trailer sau 2 phút (120 giây)
+    // Dùng đúng thời lượng video nếu đã lấy được, fallback 2 phút khi chưa biết
+    const fallbackSeconds = 120;
+    const totalSeconds = duration > 0 ? duration : fallbackSeconds;
+
+    if (isReady && duration > 0) {
+      console.log(`Đã ghi nhận thời lượng video slide ${currentIndex + 1}: ${duration}s`);
+    }
+
+    // Timer fallback: chuyển slide ngay sau khi video hết (+2s đệm), chỉ dùng khi sự kiện ENDED không bắn
     const autoAdvanceTimer = setTimeout(() => {
-      console.log('Auto-advancing to next trailer after 2 minutes');
+      console.log(`Auto-advancing to next slide after ${totalSeconds}s`);
       handleNext();
-    }, 120000); // 120 seconds = 2 minutes
+    }, (totalSeconds + 2) * 1000);
 
     return () => {
       clearTimeout(autoAdvanceTimer);
     };
-  }, [content, handleNext, currentIndex, heroVideoKey]);
+  }, [content, handleNext, currentIndex, isReady, duration]);
 
   // Check watchlist status when currentIndex changes
   useEffect(() => {
@@ -362,6 +415,20 @@ const CineVerseHero = () => {
     });
   };
 
+  const handleToggleMute = () => {
+    // Đánh dấu người dùng đã tự điều chỉnh để giữ nguyên trạng thái qua các slide
+    hasUserToggledMute.current = true;
+    const player = playerRef.current;
+    if (!player) return;
+    if (player.isMuted()) {
+      player.unMute();
+      setIsMuted(false);
+    } else {
+      player.mute();
+      setIsMuted(true);
+    }
+  };
+
   const detailUrl = item && item.contentType === "movie" 
     ? `/movie/${item.id}` 
     : item ? `/tv/${item.id}` : "/";
@@ -381,24 +448,13 @@ const CineVerseHero = () => {
     <div className="relative h-[600px] w-screen overflow-hidden md:h-[800px] [@media(max-width:500px)_and_(orientation:landscape)]:h-[60vw]">
       {/* Background - Trailer Video hoặc Backdrop Image */}
       <div className="absolute inset-0 z-0">
-        {trailerUrl ? (
-          <>
-            <div className="absolute inset-0 overflow-hidden">
-              <iframe
-                ref={iframeRef}
-                key={`trailer-${currentIndex}-${heroVideoKey}`}
-                src={trailerUrl}
-                className="absolute left-1/2 top-1/2 h-[56.25vw] min-h-full w-[177.77vh] min-w-full -translate-x-1/2 -translate-y-1/2 scale-120"
-                allow="autoplay; encrypted-media"
-                allowFullScreen
-                style={{ border: 'none', pointerEvents: 'none' }}
-              />
+        <div className="absolute inset-0 overflow-hidden">
+          {heroVideoKey ? (
+            <div className="pointer-events-none absolute left-1/2 top-1/2 h-[56.25vw] min-h-full w-[177.77vh] min-w-full -translate-x-1/2 -translate-y-1/2 scale-120">
+              {/* YT.Player sẽ thay thế div này bằng iframe, cover toàn màn hình */}
+              <div id={heroPlayerId} className="h-full w-full" />
             </div>
-            <div className="absolute inset-0 bg-linear-to-r from-white/95 via-white/60 to-transparent dark:from-black/90 dark:via-black/50 dark:to-transparent" />
-            <div className="absolute inset-0 bg-linear-to-b from-white/80 via-transparent to-white/95 dark:from-black/70 dark:via-transparent dark:to-black/90" />
-          </>
-        ) : (
-          <>
+          ) : (
             <Image
               src={backdropUrl}
               alt={title}
@@ -408,10 +464,10 @@ const CineVerseHero = () => {
               priority
               quality={90}
             />
-            <div className="absolute inset-0 bg-linear-to-r from-white/95 via-white/60 to-transparent dark:from-black/90 dark:via-black/50 dark:to-transparent" />
-            <div className="absolute inset-0 bg-linear-to-b from-white/80 via-transparent to-white/95 dark:from-black/70 dark:via-transparent dark:to-black/90" />
-          </>
-        )}
+          )}
+          <div className="absolute inset-0 bg-linear-to-r from-white/95 via-white/60 to-transparent dark:from-black/90 dark:via-black/50 dark:to-transparent" />
+          <div className="absolute inset-0 bg-linear-to-b from-white/80 via-transparent to-white/95 dark:from-black/70 dark:via-transparent dark:to-black/90" />
+        </div>
       </div>
 
       {/* Content */}
@@ -456,9 +512,30 @@ const CineVerseHero = () => {
           </div>
 
           {/* Description */}
-          <p className="line-clamp-2 text-sm text-gray-700 dark:text-gray-200 md:text-base">
-            {item.overview || "Nội dung đang được cập nhật..."}
-          </p>
+          <div
+            className="relative"
+            onMouseEnter={() => setIsDescHovered(true)}
+            onMouseLeave={() => setIsDescHovered(false)}
+          >
+            <p
+              className={`line-clamp-3 max-w-[330px] text-sm transition-opacity duration-300 ${
+                item.overview && isDescHovered ? "opacity-0" : "opacity-100"
+              } text-gray-700 dark:text-gray-200 md:text-base`}
+            >
+              {item.overview || "Nội dung đang được cập nhật..."}
+            </p>
+
+            {item.overview && isDescHovered && (
+              <div
+                key={`desc-${currentIndex}`}
+                className="pointer-events-none absolute left-0 top-0 z-50 max-h-64 w-[330px] overflow-y-auto rounded-xl border border-white/20 bg-white/70 p-4 shadow-2xl backdrop-blur-xl dark:border-white/10 dark:bg-black/45"
+              >
+                <p className="whitespace-pre-line text-sm leading-relaxed text-gray-900 dark:text-gray-100 md:text-base">
+                  <TypewriterText text={item.overview} />
+                </p>
+              </div>
+            )}
+          </div>
 
           {/* Rating Badge - TMDB, Year, AgeRating */}
           <div className="flex items-center gap-2 flex-wrap">
@@ -599,9 +676,9 @@ const CineVerseHero = () => {
             </Link>
 
             {/* Mute toggle */}
-            {trailerUrl && (
+            {heroVideoKey && (
               <button
-                onClick={() => setIsMuted(!isMuted)}
+                onClick={handleToggleMute}
                 className="group relative ml-1 flex h-10 w-10 items-center justify-center rounded-full backdrop-blur-md transition-all duration-300 hover:scale-110"
                 style={{
                   background: "linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%)",
