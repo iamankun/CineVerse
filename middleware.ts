@@ -161,8 +161,15 @@ export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const nonce = generateNonce();
 
+  // Phải đặt nonce + CSP lên REQUEST headers (không chỉ response):
+  // - Next.js đọc nonce từ request header `content-security-policy` để tự gắn
+  //   nonce cho các inline script nội bộ (bootstrap, flight data...).
+  // - Server Components đọc `x-csp-nonce` qua headers() của next/headers.
+  request.headers.set('x-csp-nonce', nonce);
+  request.headers.set('content-security-policy', getCSPPolicy(nonce));
+
   if (!isProtectedRoute(pathname)) {
-    return applySecurityHeaders(NextResponse.next(), nonce);
+    return applySecurityHeaders(NextResponse.next({ request }), nonce);
   }
 
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.NEXT_SUPABASE_URL;
