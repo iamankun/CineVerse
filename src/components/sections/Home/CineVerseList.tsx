@@ -3,10 +3,12 @@
 import MoviePosterCard from "@/components/sections/Movie/Cards/Poster";
 import TvShowPosterCard from "@/components/sections/TV/Cards/Poster";
 import SectionTitle from "@/components/ui/other/SectionTitle";
+import PosterCardSkeleton from "@/components/ui/other/PosterCardSkeleton";
 import Carousel from "@/components/ui/wrapper/Carousel";
 import { Skeleton, Tab, Tabs } from "@heroui/react";
 import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
+import { useInView } from "react-intersection-observer";
 import { Movie, TV } from "tmdb-ts/dist/types";
 import { IoChevronForward } from "react-icons/io5";
 import { Movie as MovieIcon, TV as TVIcon } from "@/utils/icons";
@@ -19,6 +21,36 @@ type SourceItem = {
   year: number;
   type: "movie" | "tv";
 };
+
+// Giới hạn số request TMDB chạy đồng thời để tránh dội hàng loạt khi nhiều
+// slide cùng lọt vào viewport. Các request vượt ngưỡng sẽ xếp hàng chờ.
+function createLimiter(max: number) {
+  let active = 0;
+  const queue: Array<() => void> = [];
+
+  const runNext = () => {
+    if (active >= max) return;
+    const task = queue.shift();
+    if (task) task();
+  };
+
+  return function limit<T>(fn: () => Promise<T>): Promise<T> {
+    return new Promise<T>((resolve, reject) => {
+      queue.push(() => {
+        active += 1;
+        fn()
+          .then(resolve, reject)
+          .finally(() => {
+            active -= 1;
+            runNext();
+          });
+      });
+      runNext();
+    });
+  };
+}
+
+const tmdbDetailLimiter = createLimiter(6);
 
 // Fetch danh sách sources từ Supabase
 const fetchCineVerseSources = async (): Promise<SourceItem[]> => {
@@ -62,44 +94,60 @@ const fetchTMDBDetails = async (id: number, type: "movie" | "tv") => {
     const proxyUrl = (lang: string) =>
       `/api/proxy/tmdb/${type}/${id}?language=${lang}`;
 
+    // Bọc qua limiter cho từng request để không bắn quá nhiều cùng lúc.
+    const request = (lang: string) =>
+      tmdbDetailLimiter(() =>
+        fetch(proxyUrl(lang)).then((r) => (r.ok ? r.json() : Promise.reject())),
+      );
+
     return await fetchDetailWithFallback(
-      () => fetch(proxyUrl('vi-VN')).then(r => r.ok ? r.json() : Promise.reject()),
-      () => fetch(proxyUrl('en-US')).then(r => r.ok ? r.json() : Promise.reject()),
+      () => request("vi-VN"),
+      () => request("en-US"),
     );
   } catch {
     return null;
   }
 };
 
-// Fetch tất cả content với TMDB details
-const fetchCineVerseContent = async () => {
-  const sources = await fetchCineVerseSources();
+/**
+ * Slide poster chỉ tải chi tiết TMDB khi lọt vào viewport.
+ * Trước đó hiển thị skeleton để giữ chỗ, tránh gọi API hàng loạt.
+ */
+const LazyPoster: React.FC<{ source: SourceItem }> = ({ source }) => {
+  const { ref, inView } = useInView({ triggerOnce: true, rootMargin: "300px" });
 
-  const movieSources = sources.filter((s) => s.type === "movie");
-  const tvSources = sources.filter((s) => s.type === "tv");
+  const { data } = useQuery({
+    queryKey: ["cineverse-detail", source.type, source.tmdbId],
+    queryFn: () => fetchTMDBDetails(source.tmdbId, source.type),
+    enabled: inView,
+    staleTime: 1000 * 60 * 60, // Cache 1 giờ
+  });
 
-  // Fetch TMDB details cho movies
-  const moviePromises = movieSources.map((s) => fetchTMDBDetails(s.tmdbId, "movie"));
-  const movieResults = await Promise.all(moviePromises);
-  const movies = movieResults.filter(
-    (result): result is NonNullable<typeof result> => result !== null,
+  return (
+    <div
+      ref={ref}
+      className="embla__slide flex min-h-fit max-w-fit items-center px-1 py-2"
+    >
+      {data ? (
+        source.type === "movie" ? (
+          <MoviePosterCard movie={data as unknown as Movie} />
+        ) : (
+          <TvShowPosterCard tv={data as unknown as TV} />
+        )
+      ) : (
+        <div className="h-[250px] aspect-2/3 md:h-[300px]">
+          <PosterCardSkeleton variant="full" />
+        </div>
+      )}
+    </div>
   );
-
-  // Fetch TMDB details cho TV shows
-  const tvPromises = tvSources.map((s) => fetchTMDBDetails(s.tmdbId, "tv"));
-  const tvResults = await Promise.all(tvPromises);
-  const tvShows = tvResults.filter(
-    (result): result is NonNullable<typeof result> => result !== null,
-  );
-
-  return { movies, tvShows };
 };
 
 const CineVerseList: React.FC = () => {
   const [selectedTab, setSelectedTab] = useState<string>("movie");
-  const { data, isPending } = useQuery({
-    queryKey: ["cineverse-list"],
-    queryFn: fetchCineVerseContent,
+  const { data: sources = [], isPending } = useQuery({
+    queryKey: ["cineverse-sources"],
+    queryFn: fetchCineVerseSources,
     staleTime: 1000 * 60 * 60, // Cache 1 giờ
   });
 
@@ -116,7 +164,8 @@ const CineVerseList: React.FC = () => {
     );
   }
 
-  const { movies = [], tvShows = [] } = data || {};
+  const movies = sources.filter((s) => s.type === "movie");
+  const tvShows = sources.filter((s) => s.type === "tv");
 
   // Nếu không có content nào thì không hiển thị
   if (movies.length === 0 && tvShows.length === 0) {
@@ -170,13 +219,8 @@ const CineVerseList: React.FC = () => {
             }
           >
             <Carousel>
-              {movies.map((movie) => (
-                <div
-                  key={movie.id}
-                  className="embla__slide flex min-h-fit max-w-fit items-center px-1 py-2"
-                >
-                  <MoviePosterCard movie={movie as unknown as Movie} />
-                </div>
+              {movies.map((source) => (
+                <LazyPoster key={`movie-${source.tmdbId}`} source={source} />
               ))}
             </Carousel>
             {movies.length === 0 && (
@@ -196,13 +240,8 @@ const CineVerseList: React.FC = () => {
             }
           >
             <Carousel>
-              {tvShows.map((tv) => (
-                <div
-                  key={tv.id}
-                  className="embla__slide flex min-h-fit max-w-fit items-center px-1 py-2"
-                >
-                  <TvShowPosterCard tv={tv as unknown as TV} />
-                </div>
+              {tvShows.map((source) => (
+                <LazyPoster key={`tv-${source.tmdbId}`} source={source} />
               ))}
             </Carousel>
             {tvShows.length === 0 && (
