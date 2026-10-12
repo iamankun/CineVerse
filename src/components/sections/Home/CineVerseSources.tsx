@@ -444,6 +444,10 @@ const CineVerseHero = () => {
     return null;
   }
 
+  // Ẩn các phần phía dưới mô tả khi đang hover để mô tả full text chiếm chỗ
+  const descOverlayVisible = !!(item.overview && isDescHovered);
+  const belowVisibility = descOverlayVisible ? "invisible opacity-0" : "visible opacity-100";
+
   return (
     <div className="relative h-[600px] w-screen overflow-hidden md:h-[800px] [@media(max-width:500px)_and_(orientation:landscape)]:h-[60vw]">
       {/* Background - Trailer Video hoặc Backdrop Image */}
@@ -528,9 +532,9 @@ const CineVerseHero = () => {
             {item.overview && isDescHovered && (
               <div
                 key={`desc-${currentIndex}`}
-                className="pointer-events-none absolute left-0 top-0 z-50 max-h-64 w-[330px] overflow-y-auto rounded-xl border border-white/20 bg-white/70 p-4 shadow-2xl backdrop-blur-xl dark:border-white/10 dark:bg-black/45"
+                className="pointer-events-none absolute left-0 top-0 z-50 max-h-64 w-[330px] overflow-y-auto"
               >
-                <p className="whitespace-pre-line text-sm leading-relaxed text-gray-900 dark:text-gray-100 md:text-base">
+                <p className="whitespace-pre-line text-sm leading-relaxed text-gray-700 dark:text-gray-200 md:text-base">
                   <TypewriterText text={item.overview} />
                 </p>
               </div>
@@ -538,7 +542,7 @@ const CineVerseHero = () => {
           </div>
 
           {/* Rating Badge - TMDB, Year, AgeRating */}
-          <div className="flex items-center gap-2 flex-wrap">
+          <div className={`flex items-center gap-2 flex-wrap transition-opacity duration-300 ${belowVisibility}`}>
             {"vote_average" in item && item.vote_average > 0 && (
               <Chip color="success" variant="flat" size="sm" className="font-semibold">
                 <span className="text-cyan-500">TMDB</span>{" "}
@@ -558,7 +562,7 @@ const CineVerseHero = () => {
           </div>
 
           {/* Buttons - Space Theme */}
-          <div className="flex flex-wrap items-center gap-3 pt-1">
+          <div className={`flex flex-wrap items-center gap-3 pt-1 transition-opacity duration-300 ${belowVisibility}`}>
             {/* Xem ngay - Play Button with rotating ring */}
             <Link
               href={playerUrl}
