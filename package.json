@@ -101,6 +101,13 @@
       "prettier-plugin-tailwindcss"
     ]
   },
+  "allowScripts": {
+    "@heroui/shared-utils@2.1.12": true,
+    "core-js@3.29.1": true,
+    "esbuild@0.28.1": true,
+    "sharp@0.34.5": true,
+    "unrs-resolver@1.12.2": true
+  },
   "overrides": {
     "@types/react": "19.2.7",
     "@types/react-dom": "19.2.3"
