@@ -13,6 +13,7 @@ import CookieConsent from "@/components/ui/CookieConsent";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Analytics } from "@vercel/analytics/next";
 import { cn } from "@/utils/helpers";
+import { env } from "@/utils/env";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { Suspense } from "react";
 
@@ -79,7 +80,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
         {/* Chỉ giữ preconnect cho origins thực sự cần ngay lập tức */}
         {/* TMDB images - dns-prefetch thay vì preconnect vì không dùng ngay */}
         <link rel="dns-prefetch" href="https://image.tmdb.org" />
-        <link rel="dns-prefetch" href="https://api.themoviedb.org" />
+        <link rel="dns-prefetch" href={new URL(env.NEXT_PUBLIC_TMDB_URL).origin} />
         {/* Fonts được self-host bởi Next.js nên không cần preconnect */}
         {/* Google Analytics - dns-prefetch là đủ vì load lazy */}
         <link rel="dns-prefetch" href="https://www.googletagmanager.com" />

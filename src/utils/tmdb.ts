@@ -1,3 +1,5 @@
+import { env } from "@/utils/env";
+
 // Base configuration for Vietnamese language
 const VI_CONFIG = {
   language: 'vi-VN',
@@ -5,7 +7,7 @@ const VI_CONFIG = {
 };
 
 // Base TMDB API URL
-const TMDB_BASE_URL = 'https://api.themoviedb.org/3';
+const TMDB_BASE_URL = env.NEXT_PUBLIC_TMDB_URL;
 
 // Helper function to make TMDB API requests
 export const tmdbFetch = async (url: string, params: any = {}) => {
@@ -35,7 +37,7 @@ export const tmdbFetch = async (url: string, params: any = {}) => {
 export const getMovieDetailsInVietnamese = async (movieId: number, append_to_response?: string[]) => {
   try {
     const response = await fetch(
-      `https://api.themoviedb.org/3/movie/${movieId}?language=vi-VN&region=VN${
+      `${TMDB_BASE_URL}/movie/${movieId}?language=vi-VN&region=VN${
         append_to_response ? `&append_to_response=${append_to_response.join(',')}` : ''
       }`,
       {

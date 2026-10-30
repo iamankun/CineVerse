@@ -132,7 +132,7 @@ const fetchCineVerseContent = async () => {
   const limitedHeroIds = heroIds.slice(0, 15);
   const contentPromises = limitedHeroIds.map((item) =>
     fetchWithLanguageFallback(
-      `https://api.themoviedb.org/3/${item.type === "movie" ? "movie" : "tv"}/${item.id}`,
+      `${env.NEXT_PUBLIC_TMDB_URL}/${item.type === "movie" ? "movie" : "tv"}/${item.id}`,
       item.type
     ).then(data => data ? { ...data, contentType: item.type } : null)
   );

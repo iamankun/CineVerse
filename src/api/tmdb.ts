@@ -3,6 +3,8 @@ import { isEmpty } from "@/utils/helpers";
 import { TMDB } from "tmdb-ts";
 
 const token = env.NEXT_PUBLIC_TMDB_ACCESS_TOKEN;
+const TMDB_URL = env.NEXT_PUBLIC_TMDB_URL;
+const TMDB_DEFAULT_URL = "https://api.themoviedb.org/3";
 
 if (isEmpty(token)) {
   throw new Error("TMDB chưa được cài token API");
@@ -11,7 +13,14 @@ if (isEmpty(token)) {
 // Khởi tạo TMDB client với cấu hình ngôn ngữ mặc định
 // Ưu tiên: Việt Nam -> Nhật -> Anh -> khác
 const tmdbClient = new TMDB(token, {
-  fetch: (...args) => fetch(...args),
+  // tmdb-ts hardcodes api.themoviedb.org, so rewrite requests to the configured base URL
+  fetch: (input, init) =>
+    fetch(
+      typeof input === "string" && input.startsWith(TMDB_DEFAULT_URL)
+        ? TMDB_URL + input.slice(TMDB_DEFAULT_URL.length)
+        : input,
+      init,
+    ),
 });
 
 export const tmdb = tmdbClient;
@@ -99,7 +108,7 @@ function buildDetailUrl(
   const tagName = mediaType === 'movie' ? 'movies' : 'tv-shows';
 
   return {
-    url: `https://api.themoviedb.org/3/${path}?${params.toString()}`,
+    url: `${TMDB_URL}/${path}?${params.toString()}`,
     tags: ['tmdb', tagName, `${mediaType}-${id}`, 'images', 'videos', 'trailers', 'logos'],
   };
 }
@@ -184,7 +193,7 @@ export async function getTvSeasonDetails(
     if (includeImages) {
       params.append('include_image_language', 'vi,ja,en,null');
     }
-    return `https://api.themoviedb.org/3/tv/${tvId}/season/${seasonNumber}?${params.toString()}`;
+    return `${TMDB_URL}/tv/${tvId}/season/${seasonNumber}?${params.toString()}`;
   };
 
   const options: RequestInit = {
@@ -299,7 +308,7 @@ export async function search(
  */
 export async function getMovieReleaseDates(movieId: number) {
   const response = await fetch(
-    `https://api.themoviedb.org/3/movie/${movieId}/release_dates`,
+    `${TMDB_URL}/movie/${movieId}/release_dates`,
     {
       headers: {
         'Authorization': `Bearer ${token}`,
@@ -327,7 +336,7 @@ export async function getMovieReleaseDates(movieId: number) {
  */
 export async function getTvContentRatings(tvId: number) {
   const response = await fetch(
-    `https://api.themoviedb.org/3/tv/${tvId}/content_ratings`,
+    `${TMDB_URL}/tv/${tvId}/content_ratings`,
     {
       headers: {
         'Authorization': `Bearer ${token}`,

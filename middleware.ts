@@ -2,6 +2,10 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { createServerClient } from '@supabase/ssr';
 
+const TMDB_API_ORIGIN = new URL(
+  process.env.NEXT_PUBLIC_TMDB_URL || 'https://api.themoviedb.org/3'
+).origin;
+
 function generateNonce(): string {
   const array = new Uint8Array(16);
   crypto.getRandomValues(array);
@@ -39,7 +43,7 @@ function getCSPPolicy(nonce: string): string {
       'https:',
       'blob:',
       'https://image.tmdb.org',
-      'https://api.themoviedb.org',
+      TMDB_API_ORIGIN,
       'https://www.themoviedb.org',
       'https://kkphim.com',
       'https://phimapi.com',
@@ -54,7 +58,7 @@ function getCSPPolicy(nonce: string): string {
       '*.vercel.live',
       '*.vercel.app',
       'blob:',
-      'https://api.themoviedb.org',
+      TMDB_API_ORIGIN,
       'https://www.themoviedb.org',
       'https://api.iconify.design',
       'https://api.simplesvg.com',
