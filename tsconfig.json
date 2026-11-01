@@ -31,7 +31,12 @@
         "./supabase/"
       ]
     },
-    "target": "ES2022"
+    "target": "ES2022",
+    "types": [
+      "node",
+      "react",
+      "react-dom"
+    ]
   },
   "include": [
     "next-env.d.ts",
